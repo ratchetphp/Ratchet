@@ -4,8 +4,20 @@ namespace Ratchet;
 class Socket {
     protected $_socket;
 
-    public function __construct() {
-//        $this->_socket = socket_open();
+    public static $_defaults = Array(
+        'domain'   => AF_INET
+      , 'type'     => SOCK_STREAM
+      , 'protocol' => SOL_TCP
+    );
+
+    public function __construct($domain = null, $type = null, $protocol = null) {
+        foreach (static::$_default as $key => $val) {
+            if (null === $$key) {
+                $$key = $val;
+            }
+        }
+
+        $this->_socket = socket_create($domain, $type, $protocol);
     }
 
     public function __call($method, $arguments) {
