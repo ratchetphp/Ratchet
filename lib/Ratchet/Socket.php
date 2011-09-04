@@ -11,13 +11,18 @@ class Socket {
     );
 
     public function __construct($domain = null, $type = null, $protocol = null) {
-        foreach (static::$_default as $key => $val) {
+        list($domain, $type, $protocol) = static::getConfig($domain, $type, $protocol);
+        $this->_socket = socket_create($domain, $type, $protocol);
+    }
+
+    protected static function getConfig($domain = null, $type = null, $protocol = null) {
+        foreach (static::$_defaults as $key => $val) {
             if (null === $$key) {
                 $$key = $val;
             }
         }
 
-        $this->_socket = socket_create($domain, $type, $protocol);
+        return Array($domain, $type, $protocol);
     }
 
     public function __call($method, $arguments) {
