@@ -4,9 +4,9 @@ use Ratchet\Protocol\ProtocolInterface;
 
 class Server implements ServerInterface {
     protected $_master = null;
-    protected $_app    = null;
     protected $_debug  = false;
 
+    protected $_receivers   = Array();
     protected $_connections = Array();
 
     /**
@@ -18,8 +18,8 @@ class Server implements ServerInterface {
         $this->_debug  = (boolean)$debug;
     }
 
-    public function attatchApplication(ApplicationInterface $app) {
-        $this->_app = $app;
+    public function attatchReceiver(ReceiverInterface $receiver) {
+        $this->_receivers[spl_object_hash($receiver)] = $receiver;
     }
 
     /*
@@ -28,8 +28,8 @@ class Server implements ServerInterface {
      * @throws Ratchet\Exception
      */
     public function run($address = '127.0.0.1', $port = 1025) {
-        if (!($this->_app instanceof ApplicationInterface)) {
-            throw new \RuntimeException("No application has been bound to the server");
+        if (count($this->_receivers) == 0) {
+            throw new \RuntimeException("No receiver has been attatched to the server");
         }
 
         set_time_limit(0);

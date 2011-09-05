@@ -1,18 +1,18 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\ApplicationInterface;
+use Ratchet\ReceiverInterface;
 
-class Application implements ApplicationInterface {
+class Application implements ReceiverInterface {
     public function getName() {
         return 'mock_application';
     }
 
-    public function onConnect() {
+    public function handleConnect() {
     }
 
-    public function onMessage() {
+    public function handleMessage() {
     }
 
-    public function onClose() {
+    public function handleClose() {
     }
 }

@@ -24,17 +24,18 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->_server->run();
     }
 
-    public function testAttatchedApplicationIsSet() {
+    public function testAttatchedReceiverIsSet() {
         $app = new TestApp();
 
-        $this->_server->attatchApplication($app);
-        $this->assertAttributeEquals($app, '_app', $this->_server);
+        $this->_server->attatchReceiver($app);
+// todo, use proper assertions...can't look them up atm, no internet
+        $this->assertAttributeEquals(Array(spl_object_hash($app) => $app), '_receivers', $this->_server);
     }
 
     public function testBindToInvalidAddress() {
         $app = new TestApp();
 
-        $this->_server->attatchApplication($app);
+        $this->_server->attatchReceiver($app);
         $this->setExpectedException('\\Ratchet\\Exception');
 
         $this->_server->run('la la la', 80);

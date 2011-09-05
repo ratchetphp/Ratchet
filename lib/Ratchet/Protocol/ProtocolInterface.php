@@ -1,8 +1,8 @@
 <?php
 namespace Ratchet\Protocol;
-use Ratchet\ServerInterface;
+use Ratchet\ReceiverInterface;
 
-interface ProtocolInterface extends ServerInterface {
+interface ProtocolInterface extends ReceiverInterface {
     /**
      * @return Array
      */
