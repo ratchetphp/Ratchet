@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Protocol;
-use Ratchet\Server;
+use Ratchet\ServerInterface;
 
-interface ProtocolInterface {
-    function __construct(Server $server);
+interface ProtocolInterface extends ServerInterface {
 }
