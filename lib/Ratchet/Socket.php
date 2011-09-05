@@ -26,7 +26,9 @@ class Socket {
     public function __construct($domain = null, $type = null, $protocol = null) {
         list($domain, $type, $protocol) = static::getConfig($domain, $type, $protocol);
 
-        if (false === ($this->_socket = socket_create($domain, $type, $protocol))) {
+        $this->_socket = @socket_create($domain, $type, $protocol);
+
+        if (!is_resource($this->_socket)) {
             throw new Exception();
         }
     }

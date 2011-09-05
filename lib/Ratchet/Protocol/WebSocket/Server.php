@@ -2,6 +2,7 @@
 namespace Ratchet\Protocol\WebSocket;
 use Ratchet\ServerInterface;
 use Ratchet\Protocol\ProtocolInterface;
+use Ratchet\ApplicationInterface;
 
 class Server implements ProtocolInterface {
     protected $_server = null;
@@ -23,6 +24,8 @@ class Server implements ProtocolInterface {
             )
         );
     }
+
+    public function attatchApplication(ApplicationInterface $app) {}
 
     public function run() {
     }

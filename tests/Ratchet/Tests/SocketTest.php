@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Tests;
 use Ratchet\Tests\Mock\Socket;
+use Ratchet\Socket as RealSocket;
 
 /**
  * @covers Ratchet\Socket
@@ -20,10 +21,21 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $this->_socket = new Socket();
     }
 
-    public function testGetConfigForConstruct() {
+/*
+    public function testWhatGoesInConstructComesOut() {
+        $this->assertTrue(false);
+    }
+*/
+
+    public function testGetDefaultConfigForConstruct() {
         $ref_conf = static::getMethod('getConfig');
         $config   = $ref_conf->invokeArgs($this->_socket, Array());
 
         $this->assertEquals(array_values(Socket::$_defaults), $config);
+    }
+
+    public function testInvalidConstructorArguments() {
+        $this->setExpectedException('\\Ratchet\\Exception');
+        $socket = new RealSocket('invalid', 'param', 'derp');
     }
 }
