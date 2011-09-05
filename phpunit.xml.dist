@@ -7,6 +7,7 @@
     backupGlobals="false"
     backupStaticAttributes="false"
     syntaxCheck="false"
+    stopOnError="false"
 >
 
     <testsuites>
@@ -14,4 +15,10 @@
             <directory>./tests/Ratchet/</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <blacklist>
+            <directory>./tests/</directory>
+        </blacklist>
+    </filter>
 </phpunit>

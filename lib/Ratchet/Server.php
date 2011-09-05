@@ -10,5 +10,9 @@ class Server implements ServerInterface {
     }
 
     public function run() {
+        set_time_limit(0);
+        ob_implicit_flush();
+//        $this->_master->set_nonblock();
+//        declare(ticks = 1); 
     }
 }
