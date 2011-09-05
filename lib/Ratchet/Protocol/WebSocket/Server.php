@@ -27,6 +27,6 @@ class Server implements ProtocolInterface {
 
     public function attatchApplication(ApplicationInterface $app) {}
 
-    public function run() {
+    public function run($address = '127.0.0.1', $port = 1025) {
     }
 }

@@ -30,4 +30,13 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->_server->attatchApplication($app);
         $this->assertAttributeEquals($app, '_app', $this->_server);
     }
+
+    public function testBindToInvalidAddress() {
+        $app = new TestApp();
+
+        $this->_server->attatchApplication($app);
+        $this->setExpectedException('\\Ratchet\\Exception');
+
+        $this->_server->run('la la la', 80);
+    }
 }
