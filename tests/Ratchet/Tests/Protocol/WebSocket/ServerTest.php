@@ -23,4 +23,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $constraint = $this->isInstanceOf('\\Ratchet\\Protocol\ProtocolInterface');
         $this->assertThat($this->_server, $constraint);
     }
+
+    public function testGetConfigReturnsArray() {
+        $this->assertInternalType('array', $this->_server->getDefaultConfig());
+    }
 }

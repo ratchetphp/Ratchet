@@ -38,4 +38,14 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\\Ratchet\\Exception');
         $socket = new RealSocket('invalid', 'param', 'derp');
     }
+
+    public function testConstructAndCallByOpenAndClose() {
+        $socket = new RealSocket();
+        $socket->close();
+    }
+
+    public function testInvalidSocketCall() {
+        $this->setExpectedException('\\BadMethodCallException');
+        $this->_socket->fake_method();
+    }
 }

@@ -35,6 +35,10 @@ class Socket {
 
     /**
      * @internal
+     * @param int Specifies the protocol family to be used by the socket.
+     * @param int The type of communication to be used by the socket
+     * @param int Sets the specific protocol within the specified domain to be used when communicating on the returned socket
+     * @return Array
      */
     protected static function getConfig($domain = null, $type = null, $protocol = null) {
         foreach (static::$_defaults as $key => $val) {
@@ -48,11 +52,17 @@ class Socket {
 
     /**
      * @internal
+     * @param string
+     * @param Array
+     * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call($method, $arguments) {
         if (function_exists('socket_' . $method)) {
             array_unshift($arguments, $this->_socket);
             return call_user_func_array('socket_' . $method, $arguments);
         }
+
+        throw new \BadMethodCallException("{$method} is not a valid socket function");
     }
 }
