@@ -30,7 +30,7 @@ class Socket extends RealSocket {
     }
 
     public function set_option($level, $optname, $optval) {
-        if (!is_array($this->_options[$level])) {
+        if (!isset($this->_options[$level])) {
             $this->_options[$level] = Array();
         }
 

@@ -54,8 +54,7 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $protocol = new Protocol();
         $socket   = Socket::createFromConfig($protocol);
 
-        $constraint = $this->isInstanceOf('\\Ratchet\\Socket');
-        $this->assertThat($socket, $constraint);
+        $this->assertInstanceOf('\\Ratchet\\Socket', $socket);
     }
 
     public function testCreationFromConfigOutputMatchesInput() {

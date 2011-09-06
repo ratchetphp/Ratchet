@@ -41,9 +41,7 @@ class Socket {
      */
     public static function createFromConfig(ProtocolInterface $protocol) {
         $config = $protocol::getDefaultConfig();
-
-// todo - this is wrong when class is extended, I don't have internet, can't look up the fn - unit test fails
-        $class  = __CLASS__;
+        $class  = get_called_class();
 
         $socket = new $class($config['domain'] ?: null, $config['type'] ?: null, $config['protocol'] ?: null);
 
@@ -54,6 +52,8 @@ class Socket {
                 }
             }
         }
+
+        return $socket;
     }
 
     /**
