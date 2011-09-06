@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet;
+use Ratchet\Protocol\ProtocolInterface;
 
 /**
  * A wrapper for the PHP socket_ functions
@@ -30,6 +31,28 @@ class Socket {
 
         if (!is_resource($this->_socket)) {
             throw new Exception();
+        }
+    }
+
+    /**
+     * @param Ratchet\Protocol\ProtocolInterface
+     * @return Ratchet\Socket
+     * @throws Ratchet\Exception
+     */
+    public static function createFromConfig(ProtocolInterface $protocol) {
+        $config = $protocol::getDefaultConfig();
+
+// todo - this is wrong when class is extended, I don't have internet, can't look up the fn - unit test fails
+        $class  = __CLASS__;
+
+        $socket = new $class($config['domain'] ?: null, $config['type'] ?: null, $config['protocol'] ?: null);
+
+        if (is_array($config['options'])) {
+            foreach ($config['options'] as $level => $pair) {
+                foreach ($pair as $optname => $optval) {
+                    $socket->set_option($level, $optname, $optval);
+                }
+            }
         }
     }
 

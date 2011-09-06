@@ -3,10 +3,11 @@ namespace Ratchet\Tests\Mock;
 use Ratchet\Socket as RealSocket;
 
 class Socket extends RealSocket {
-    protected $_options = Array();
+    protected $_arguments = Array();
+    protected $_options   = Array();
 
     public function __construct($domain = null, $type = null, $protocol = null) {
-        list($domain, $type, $protocol) = static::getConfig($domain, $type, $protocol);
+        list($this->_arguments['domain'], $this->_arguments['type'], $this->_arguments['protocol']) = static::getConfig($domain, $type, $protocol);
     }
 
     public function accept() {
