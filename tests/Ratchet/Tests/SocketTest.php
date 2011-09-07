@@ -62,9 +62,33 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $socket   = Socket::createFromConfig($protocol);
         $config   = $protocol::getDefaultConfig();
 
-        // chnage this to array_filter late
+        // change this to array_filter late
         unset($config['options']);
 
         $this->assertAttributeEquals($config, '_arguments', $socket);
+    }
+
+    public function asArrayProvider() {
+        return Array(
+            Array(Array('hello' => 'world'), Array('hello' => 'world'))
+          , Array(null, null)
+          , Array(Array('hello' => 'world'), new \ArrayObject(Array('hello' => 'world')))
+        );
+    }
+
+    /**
+     * @dataProvider asArrayProvider
+     */
+    public function testMethodMungforselectReturnsExpectedValues($output, $input) {
+        $method = static::getMethod('mungForSelect');
+        $return = $method->invokeArgs($this->_socket, Array($input));
+
+        $this->assertEquals($return, $output);
+    }
+
+    public function testMethodMungforselectRejectsNonTraversable() {
+        $this->setExpectedException('\\InvalidArgumentException');
+        $method = static::getMethod('mungForSelect');
+        $method->invokeArgs($this->_socket, Array('I am upset with PHP ATM'));
     }
 }
