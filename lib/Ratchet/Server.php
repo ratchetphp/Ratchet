@@ -32,8 +32,7 @@ class Server implements ServerInterface {
 
         $socket = $host->getResource();
 
-        $this->_resources[]          = $socket;
-        $this->_connections[$socket] = $host;
+        $this->_resources[] = $socket;
     }
 
     /**
@@ -84,25 +83,17 @@ class Server implements ServerInterface {
 			$num_changed = @socket_select($changed, $write = NULL, $except = NULL, NULL);
 			foreach($changed as $resource) {
                 if ($this->_master->getResource() == $resource) {
-                    $new_connection     = clone $this->_master;
-                    $this->_resources[] = $new_connection->getResource();
-                    $this->_connections[$new_connection->getResource()] = $new_connection;
-
-                    // /here $this->_receivers->handleConnection($new_connection);
-                    $this->tmpRIterator('handleConnect', $new_connection);
+                    $this->onConnect($this->_master);
                 } else {
                     $conn  = $this->_connections[$resource];
                     $data  = null;
                     $bytes = $conn->recv($data, 4096, 0);
 
                     if ($bytes == 0) {
-                        $this->tmpRIterator('handleClose', $conn);
-                        // $this->_receivers->handleDisconnect($conn);
-
-                        unset($this->_connections[$resource]);
-                        unset($this->_resources[array_search($resource, $this->_resources)]);
+                        $this->onClose($conn);
                     } else {
-                        $this->tmpRIterator('handleMessage', $data, $conn);
+                        $this->onMessage($data, $conn);
+
                         // new Message
                         // $this->_receivers->handleMessage($msg, $conn);
                     }
@@ -112,6 +103,28 @@ class Server implements ServerInterface {
 
 //        $this->_master->set_nonblock();
 //        declare(ticks = 1); 
+    }
+
+    protected function onConnect(Socket $master) {
+        $new_connection     = clone $master;
+        $this->_resources[] = $new_connection->getResource();
+        $this->_connections[$new_connection->getResource()] = $new_connection;
+
+        // /here $this->_receivers->handleConnection($new_connection);
+        $this->tmpRIterator('handleConnect', $new_connection);
+    }
+
+    protected function onMessage($msg, Socket $from) {
+        $this->tmpRIterator('handleMessage', $data, $conn);
+    }
+
+    protected function onClose(Socket $conn) {
+        $resource = $conn->getResource();
+        $this->tmpRIterator('handleClose', $conn);
+        // $this->_receivers->handleDisconnect($conn);
+
+        unset($this->_connections[$resource]);
+        unset($this->_resources[array_search($resource, $this->_resources)]);
     }
 
     protected function tmpRIterator() {
