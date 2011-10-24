@@ -2,6 +2,8 @@
 namespace Ratchet;
 use Ratchet\Server\Aggregator;
 use Ratchet\Protocol\ProtocolInterface;
+use Ratchet\Logging\LoggerInterface;
+use Ratchet\Logging\NullLogger;
 
 class Server implements ServerInterface {
     /**
@@ -16,23 +18,39 @@ class Server implements ServerInterface {
      */
     protected $_receivers   = array();
 
+    /**
+     * @var array of Socket Resources
+     */
     protected $_resources   = array();
 
     /**
-     * @type array of Ratchet\Server\Client
+     * @var array of Ratchet\Server\Client
      */
     protected $_connections = array();
 
     /**
+     * @type Logging\LoggerInterface;
+     */
+    protected $_log;
+
+    /**
      * @param Ratchet\Socket
      * @param boolean True, enables debug mode and the server doesn't infiniate loop
+     * @param Logging\LoggerInterface
      */
-    public function __construct(Socket $host) {
+    public function __construct(Socket $host, LoggerInterface $logger = null) {
         $this->_master = $host;
-
         $socket = $host->getResource();
-
         $this->_resources[] = $socket;
+
+        if (null === $logger) {
+            $logger = new NullLogger;
+        }
+        $this->_log = $logger;
+    }
+
+    public function setLogger(LoggerInterface $logger) {
+        $this->_log = $logger;
     }
 
     /**
@@ -110,12 +128,15 @@ class Server implements ServerInterface {
         $this->_resources[] = $new_connection->getResource();
         $this->_connections[$new_connection->getResource()] = $new_connection;
 
+        $this->_log->note('New connection, ' . count($this->_connections) . ' total');
+
         // /here $this->_receivers->handleConnection($new_connection);
         $this->tmpRIterator('handleConnect', $new_connection);
     }
 
     protected function onMessage($msg, Socket $from) {
-        $this->tmpRIterator('handleMessage', $data, $conn);
+        $this->_log->note('New message "' . trim($msg) . '"');
+        $this->tmpRIterator('handleMessage', $msg, $from);
     }
 
     protected function onClose(Socket $conn) {
@@ -125,6 +146,8 @@ class Server implements ServerInterface {
 
         unset($this->_connections[$resource]);
         unset($this->_resources[array_search($resource, $this->_resources)]);
+
+        $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain (' . count($this->_resources) . ')');
     }
 
     protected function tmpRIterator() {
