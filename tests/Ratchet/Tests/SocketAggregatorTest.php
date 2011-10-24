@@ -5,9 +5,9 @@ use Ratchet\Socket as RealSocket;
 use Ratchet\Tests\Mock\Protocol;
 
 /**
- * @covers Ratchet\Socket
+ * @covers Ratchet\SocketAggregator
  */
-class SocketTest extends \PHPUnit_Framework_TestCase {
+class SocketAggregatorTest extends \PHPUnit_Framework_TestCase {
     protected $_socket;
 
     protected static function getMethod($name) {

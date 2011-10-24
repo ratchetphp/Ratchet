@@ -10,7 +10,7 @@ class Socket {
     /**
      * @type resource
      */
-    public $_resource;
+    protected $_resource;
 
     public static $_defaults = Array(
         'domain'   => AF_INET
@@ -32,6 +32,17 @@ class Socket {
         if (!is_resource($this->_resource)) {
             throw new Exception();
         }
+    }
+
+    /**
+     * @return resource (Socket)
+     */
+    public function getResource() {
+        return $this->_resource;
+    }
+
+    public function __clone() {
+        $this->_resource = @socket_accept($this->_resource);
     }
 
     /**
@@ -70,7 +81,7 @@ class Socket {
             }
         }
 
-        return Array($domain, $type, $protocol);
+        return array($domain, $type, $protocol);
     }
 
     /**
@@ -88,7 +99,17 @@ class Socket {
         $write  = static::mungForSelect($write);
         $except = static::mungForSelect($except);
 
-        socket_select($read, $write, $except, $tv_sec, $tv_usec);
+        return socket_select($read, $write, $except, $tv_sec, $tv_usec);
+    }
+
+    /**
+     * @param string
+     * @param int
+     * @param int
+     * @return int
+     */
+    public function recv(&$buf, $len, $flags) {
+        return socket_recv($this->_resource, $buf, $len, $flags);
     }
 
     /**
@@ -105,9 +126,9 @@ class Socket {
             throw new \InvalidArgumentException('Object pass is not traversable');
         }
 
-        $return = Array();
+        $return = array();
         foreach ($collection as $key => $socket) {
-            $return[$key] = ($socket instanceof \Ratchet\Socket ? $socket->_resource : $socket);
+            $return[$key] = ($socket instanceof \Ratchet\Socket ? $socket->getResource() : $socket);
         }
 
         return $return;
@@ -118,12 +139,19 @@ class Socket {
      * @param string
      * @param Array
      * @return mixed
+     * @throws Exception
      * @throws \BadMethodCallException
      */
     public function __call($method, $arguments) {
         if (function_exists('socket_' . $method)) {
             array_unshift($arguments, $this->_resource);
-            return call_user_func_array('socket_' . $method, $arguments);
+            $result = @call_user_func_array('socket_' . $method, $arguments);
+
+            if (false === $result) {
+                throw new Exception;
+            }
+
+            return $result;
         }
 
         throw new \BadMethodCallException("{$method} is not a valid socket function");

@@ -1,5 +1,8 @@
 <?php
 namespace Ratchet;
+use Ratchet\Server;
+use Ratchet\Server\Client;
+use Ratchet\Server\Message;
 
 interface ReceiverInterface {
     /**
@@ -7,9 +10,11 @@ interface ReceiverInterface {
      */
     function getName();
 
-    function handleConnect();
+    function setUp(Server $server);
 
-    function handleMessage();
+    function handleConnect(Socket $client);
 
-    function handleClose();
+    function handleMessage($message, Socket $from);
+
+    function handleClose(Socket $client);
 }

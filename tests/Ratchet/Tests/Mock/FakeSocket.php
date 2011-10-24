@@ -2,7 +2,7 @@
 namespace Ratchet\Tests\Mock;
 use Ratchet\Socket as RealSocket;
 
-class Socket extends RealSocket {
+class FakeSocket extends RealSocket {
     protected $_arguments = Array();
     protected $_options   = Array();
 

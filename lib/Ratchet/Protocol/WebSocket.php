@@ -1,6 +1,13 @@
 <?php
 namespace Ratchet\Protocol;
+use Ratchet\Server;
+use Ratchet\Server\Client;
+use Ratchet\Server\Message;
+use Ratchet\Socket;
 
+/**
+ * @link http://ca.php.net/manual/en/ref.http.php
+ */
 class WebSocket implements ProtocolInterface {
     /**
      * @return Array
@@ -20,15 +27,18 @@ class WebSocket implements ProtocolInterface {
      * @return string
      */
     function getName() {
-        return __CLASS__;
+        return 'WebSocket';
     }
 
-    function handleConnect() {
+    public function setUp(Server $server) {
     }
 
-    function handleMessage() {
+    function handleConnect(Socket $client) {
     }
 
-    function handleClose() {
+    function handleMessage($message, Socket $from) {
+    }
+
+    function handleClose(Socket $client) {
     }
 }

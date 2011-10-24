@@ -1,6 +1,8 @@
 <?php
 namespace Ratchet\Tests\Mock;
 use Ratchet\Protocol\ProtocolInterface;
+use Ratchet\Server;
+use Ratchet\Socket;
 
 class Protocol implements ProtocolInterface {
     public static function getDefaultConfig() {
@@ -18,12 +20,15 @@ class Protocol implements ProtocolInterface {
         return 'mock_protocol';
     }
 
-    public function handleConnect() {
+    public function setUp(Server $server) {
     }
 
-    public function handleMessage() {
+    public function handleConnect(Socket $client) {
     }
 
-    public function handleClose() {
+    public function handleMessage($msg, Socket $client) {
+    }
+
+    public function handleClose(Socket $client) {
     }
 }
