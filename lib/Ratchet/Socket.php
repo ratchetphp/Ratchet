@@ -43,6 +43,10 @@ class Socket {
 
     public function __clone() {
         $this->_resource = @socket_accept($this->_resource);
+
+        if (false === $this->_resource) {
+            throw new Exception;
+        }
     }
 
     /**
@@ -99,7 +103,13 @@ class Socket {
         $write  = static::mungForSelect($write);
         $except = static::mungForSelect($except);
 
-        return socket_select($read, $write, $except, $tv_sec, $tv_usec);
+        $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
+
+        if (false === $num) {
+            throw new Exception;
+        }
+
+        return $num;
     }
 
     /**

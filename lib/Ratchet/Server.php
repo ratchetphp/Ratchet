@@ -49,6 +49,9 @@ class Server implements ServerInterface {
         $this->_log = $logger;
     }
 
+    /**
+     * @param Logging\LoggerInterface
+     */
     public function setLogger(LoggerInterface $logger) {
         $this->_log = $logger;
     }
@@ -59,15 +62,27 @@ class Server implements ServerInterface {
     public function setClientFactory($s) {
     }
 
+    /**
+     * @param ReceiverInterface
+     * @return Server
+     */
     public function attatchReceiver(ReceiverInterface $receiver) {
         $receiver->setUp($this);
         $this->_receivers[spl_object_hash($receiver)] = $receiver;
+
+        return $this;
     }
 
+    /**
+     * @return Socket
+     */
     public function getMaster() {
         return $this->_master;
     }
 
+    /**
+     * @return array of Sockets
+     */
     public function getClients() {
         return $this->_connections;
     }
@@ -77,6 +92,7 @@ class Server implements ServerInterface {
      * @param int
      * @throws Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
+     * @todo Should I make handling open/close/msg an application?
      */
     public function run($address = '127.0.0.1', $port = 1025) {
         if (count($this->_receivers) == 0) {
@@ -86,9 +102,7 @@ class Server implements ServerInterface {
         set_time_limit(0);
         ob_implicit_flush();
 
-// socket_create_listen($port); instead of create, bind, listen
-
-        if (false === ($this->_master->bind($address, (int)$port))) { // perhaps I should do some checks here...
+        if (false === ($this->_master->bind($address, (int)$port))) {
             throw new Exception;
         }
 
@@ -97,25 +111,30 @@ class Server implements ServerInterface {
         }
 
         do {
-			$changed     = $this->_resources;
-			$num_changed = @socket_select($changed, $write = NULL, $except = NULL, NULL);
-			foreach($changed as $resource) {
-                if ($this->_master->getResource() == $resource) {
-                    $this->onConnect($this->_master);
-                } else {
-                    $conn  = $this->_connections[$resource];
-                    $data  = null;
-                    $bytes = $conn->recv($data, 4096, 0);
+            try {
+                $changed     = $this->_resources;
+                $num_changed = $this->_master->select($changed, $write = null, $except = null, null);
 
-                    if ($bytes == 0) {
-                        $this->onClose($conn);
+    			foreach($changed as $resource) {
+                    if ($this->_master->getResource() === $resource) {
+                        $this->onConnect($this->_master);
                     } else {
-                        $this->onMessage($data, $conn);
+                        $conn  = $this->_connections[$resource];
+                        $data  = null;
+                        $bytes = $conn->recv($data, 4096, 0);
+
+                        if ($bytes == 0) {
+                            $this->onClose($conn);
+                        } else {
+                            $this->onMessage($data, $conn);
 
                         // new Message
                         // $this->_receivers->handleMessage($msg, $conn);
+                        }
                     }
                 }
+            } catch (Exception $e) {
+                $this->_log->error($e->getMessage());
             }
         } while (true);
 
@@ -150,6 +169,9 @@ class Server implements ServerInterface {
         $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain (' . count($this->_resources) . ')');
     }
 
+    /**
+     * @todo Remove this method, make the receivers container implement the composite pattern
+     */
     protected function tmpRIterator() {
         $args = func_get_args();
         $fn   = array_shift($args);
