@@ -3,8 +3,8 @@ namespace Ratchet\Tests\Mock;
 use Ratchet\Socket as RealSocket;
 
 class FakeSocket extends RealSocket {
-    protected $_arguments = Array();
-    protected $_options   = Array();
+    protected $_arguments = array();
+    protected $_options   = array();
 
     public function __construct($domain = null, $type = null, $protocol = null) {
         list($this->_arguments['domain'], $this->_arguments['type'], $this->_arguments['protocol']) = static::getConfig($domain, $type, $protocol);
@@ -23,7 +23,7 @@ class FakeSocket extends RealSocket {
         return $this->_options[$level][$optname];
     }
 
-    public function listen($backlog) {
+    public function listen($backlog = 0) {
     }
 
     public function recv($buf, $len, $flags) {

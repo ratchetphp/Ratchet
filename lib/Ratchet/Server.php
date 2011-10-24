@@ -24,9 +24,9 @@ class Server implements ServerInterface {
     protected $_resources   = array();
 
     /**
-     * @var array of Ratchet\Server\Client
+     * @var ArrayIterator of Resouces (Socket type) as keys, Ratchet\Socket as values
      */
-    protected $_connections = array();
+    protected $_connections;
 
     /**
      * @type Logging\LoggerInterface;
@@ -47,6 +47,8 @@ class Server implements ServerInterface {
             $logger = new NullLogger;
         }
         $this->_log = $logger;
+
+        $this->_connections = new \ArrayIterator(array());
     }
 
     /**
@@ -81,9 +83,9 @@ class Server implements ServerInterface {
     }
 
     /**
-     * @return array of Sockets
+     * @return ArrayIterator of Sockets
      */
-    public function getClients() {
+    public function getIterator() {
         return $this->_connections;
     }
 

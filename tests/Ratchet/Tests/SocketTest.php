@@ -11,7 +11,7 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     protected $_socket;
 
     protected static function getMethod($name) {
-        $class  = new \ReflectionClass('\\Ratchet\\Tests\\Mock\\Socket');
+        $class  = new \ReflectionClass('\\Ratchet\\Tests\\Mock\\FakeSocket');
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 
@@ -30,7 +30,7 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetDefaultConfigForConstruct() {
         $ref_conf = static::getMethod('getConfig');
-        $config   = $ref_conf->invokeArgs($this->_socket, Array());
+        $config   = $ref_conf->invokeArgs($this->_socket, array());
 
         $this->assertEquals(array_values(Socket::$_defaults), $config);
     }
