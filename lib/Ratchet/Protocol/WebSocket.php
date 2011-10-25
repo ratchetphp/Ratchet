@@ -10,6 +10,18 @@ use Ratchet\Socket;
  */
 class WebSocket implements ProtocolInterface {
     /**
+     * @type Ratchet\Server
+     */
+    protected $_server;
+
+    /**
+     * @type Ratchet\Protocol\WebSocket\Version\VersionInterface
+     */
+    protected $_version = null;
+
+    protected $_shook_hands = false;
+
+    /**
      * @return Array
      */
     public static function getDefaultConfig() {
@@ -31,6 +43,7 @@ class WebSocket implements ProtocolInterface {
     }
 
     public function setUp(Server $server) {
+        $this->_server = $server;
     }
 
     function handleConnect(Socket $client) {

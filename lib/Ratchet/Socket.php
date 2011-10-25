@@ -30,7 +30,7 @@ class Socket {
         $this->_resource = @socket_create($domain, $type, $protocol);
 
         if (!is_resource($this->_resource)) {
-            throw new Exception();
+            throw new Exception;
         }
     }
 
@@ -41,6 +41,10 @@ class Socket {
         return $this->_resource;
     }
 
+    /**
+     * Calls socket_accept, duplicating its self
+     * @throws Exception
+     */
     public function __clone() {
         $this->_resource = @socket_accept($this->_resource);
 
@@ -50,9 +54,46 @@ class Socket {
     }
 
     /**
+     * Since PHP is retarded and their golden hammer, the array, doesn't implement any interfaces I have to hackishly overload socket_select
+     * @see http://ca3.php.net/manual/en/function.socket-select.php
+     * @param Iterator|array|NULL The sockets listed in the read array will be watched to see if characters become available for reading (more precisely, to see if a read will not block - in particular, a socket resource is also ready on end-of-file, in which case a socket_read() will return a zero length string).
+     * @param Iterator|array|NULL The sockets listed in the write array will be watched to see if a write will not block.
+     * @param Iterator|array|NULL The sockets listed in the except array will be watched for exceptions.
+     * @param int The tv_sec and tv_usec together form the timeout parameter. The timeout is an upper bound on the amount of time elapsed before socket_select() return. tv_sec may be zero , causing socket_select() to return immediately. This is useful for polling. If tv_sec is NULL (no timeout), socket_select() can block indefinitely.
+     * @param int
+     * @throws \InvalidArgumentException
+     * @throws Exception
+     * @todo See if this crack-pot scheme works!
+     */
+    public function select(&$read, &$write, &$except, $tv_sec, $tv_usec = 0) {
+        $read   = static::mungForSelect($read);
+        $write  = static::mungForSelect($write);
+        $except = static::mungForSelect($except);
+
+        $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
+
+        if (false === $num) {
+            throw new Exception;
+        }
+
+        return $num;
+    }
+
+    /**
+     * @see http://ca3.php.net/manual/en/function.socket-recv.php
+     * @param string
+     * @param int
+     * @param int
+     * @return int
+     */
+    public function recv(&$buf, $len, $flags) {
+        return socket_recv($this->_resource, $buf, $len, $flags);
+    }
+
+    /**
      * @param Ratchet\Protocol\ProtocolInterface
-     * @return Ratchet\Socket
-     * @throws Ratchet\Exception
+     * @return Socket
+     * @throws Exception
      */
     public static function createFromConfig(ProtocolInterface $protocol) {
         $config = $protocol::getDefaultConfig();
@@ -76,7 +117,7 @@ class Socket {
      * @param int Specifies the protocol family to be used by the socket.
      * @param int The type of communication to be used by the socket
      * @param int Sets the specific protocol within the specified domain to be used when communicating on the returned socket
-     * @return Array
+     * @return array
      */
     protected static function getConfig($domain = null, $type = null, $protocol = null) {
         foreach (static::$_defaults as $key => $val) {
@@ -89,42 +130,9 @@ class Socket {
     }
 
     /**
-     * Since PHP is retarded and their golden hammer, the array, doesn't implement any interfaces I have to hackishly overload socket_select
-     * @param Iterator|Array|NULL The sockets listed in the read array will be watched to see if characters become available for reading (more precisely, to see if a read will not block - in particular, a socket resource is also ready on end-of-file, in which case a socket_read() will return a zero length string).
-     * @param Iterator|Array|NULL The sockets listed in the write array will be watched to see if a write will not block.
-     * @param Iterator|Array|NULL The sockets listed in the except array will be watched for exceptions.
-     * @param int The tv_sec and tv_usec together form the timeout parameter. The timeout is an upper bound on the amount of time elapsed before socket_select() return. tv_sec may be zero , causing socket_select() to return immediately. This is useful for polling. If tv_sec is NULL (no timeout), socket_select() can block indefinitely.
-     * @param int
-     * @throws \InvalidArgumentException
-     * @todo See if this crack-pot scheme works!
-     */
-    public function select(&$read, &$write, &$except, $tv_sec, $tv_usec = 0) {
-        $read   = static::mungForSelect($read);
-        $write  = static::mungForSelect($write);
-        $except = static::mungForSelect($except);
-
-        $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
-
-        if (false === $num) {
-            throw new Exception;
-        }
-
-        return $num;
-    }
-
-    /**
-     * @param string
-     * @param int
-     * @param int
-     * @return int
-     */
-    public function recv(&$buf, $len, $flags) {
-        return socket_recv($this->_resource, $buf, $len, $flags);
-    }
-
-    /**
-     * @param Iterator|Array|NULL
-     * @return Array|NULL
+     * @internal
+     * @param Iterator|array|NULL
+     * @return array|NULL
      * @throws \InvalidArgumentException
      */
     protected static function mungForSelect($collection) {
@@ -145,7 +153,8 @@ class Socket {
     }
 
     /**
-     * @internal
+     * Call all the socket_ functions (without passing the resource) through this
+     * @see http://ca3.php.net/manual/en/ref.sockets.php
      * @param string
      * @param Array
      * @return mixed
@@ -154,12 +163,16 @@ class Socket {
      */
     public function __call($method, $arguments) {
         if (function_exists('socket_' . $method)) {
+            // onBeforeMethod
+
             array_unshift($arguments, $this->_resource);
             $result = @call_user_func_array('socket_' . $method, $arguments);
 
             if (false === $result) {
                 throw new Exception;
             }
+
+            // onAfterMethod
 
             return $result;
         }
