@@ -7,7 +7,7 @@ use Ratchet\Protocol\ProtocolInterface;
  * @author Chris Boden <shout at chrisboden dot ca>
  * @todo Needs to be observable, Server needs to know when an applicaiton closes a connection
  */
-class Socket {
+class Socket implements SocketInterface {
     /**
      * @type resource
      */
@@ -78,6 +78,14 @@ class Socket {
         }
 
         return $num;
+    }
+
+    public function write($buffer, $length = 0) {
+        return $this->__call('write', array($buffer, $length));
+    }
+
+    public function close() {
+        return $this->__call('close', array());
     }
 
     /**

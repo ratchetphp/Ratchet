@@ -5,7 +5,11 @@ use Ratchet\Protocol\ProtocolInterface;
 use Ratchet\Logging\LoggerInterface;
 use Ratchet\Logging\NullLogger;
 
-class Server implements ServerInterface {
+/**
+ * @todo Consider using _connections as master reference and passing iterator_to_array(_connections) to socket_select
+ * @todo Move SocketObserver methods to separate class, create, wrap class in __construct
+ */
+class Server implements SocketObserver {
     /**
      * The master socket, receives all connections
      * @type Socket
@@ -33,12 +37,14 @@ class Server implements ServerInterface {
      */
     protected $_log;
 
+    protected $_app = null;
+
     /**
      * @param Ratchet\Socket
      * @param boolean True, enables debug mode and the server doesn't infiniate loop
      * @param Logging\LoggerInterface
      */
-    public function __construct(Socket $host, LoggerInterface $logger = null) {
+    public function __construct(SocketInterface $host, ReceiverInterface $application, LoggerInterface $logger = null) {
         $this->_master = $host;
         $socket = $host->getResource();
         $this->_resources[] = $socket;
@@ -49,6 +55,9 @@ class Server implements ServerInterface {
         $this->_log = $logger;
 
         $this->_connections = new \ArrayIterator(array());
+
+        $this->_app = $application;
+        $this->_app->setUp($this);
     }
 
     /**
@@ -67,6 +76,8 @@ class Server implements ServerInterface {
     /**
      * @param ReceiverInterface
      * @return Server
+     * @deprecated
+     * @todo Consider making server chain of responsibility, currently 1-1 relation w/ receivers
      */
     public function attatchReceiver(ReceiverInterface $receiver) {
         $receiver->setUp($this);
@@ -76,7 +87,7 @@ class Server implements ServerInterface {
     }
 
     /**
-     * @return Socket
+     * @return SocketInterface
      */
     public function getMaster() {
         return $this->_master;
@@ -101,9 +112,11 @@ class Server implements ServerInterface {
      * @todo Should I make handling open/close/msg an application?
      */
     public function run($address = '127.0.0.1', $port = 1025) {
+/*
         if (count($this->_receivers) == 0) {
             throw new \RuntimeException("No receiver has been attached to the server");
         }
+*/
 
         set_time_limit(0);
         ob_implicit_flush();
@@ -125,7 +138,7 @@ class Server implements ServerInterface {
 
     			foreach($changed as $resource) {
                     if ($this->_master->getResource() === $resource) {
-                        $this->onConnect($this->_master);
+                        $this->onOpen($this->_master);
                     } else {
                         $conn  = $this->_connections[$resource];
                         $data  = null;
@@ -134,7 +147,7 @@ class Server implements ServerInterface {
                         if ($bytes == 0) {
                             $this->onClose($conn);
                         } else {
-                            $this->onMessage($data, $conn);
+                            $this->onRecv($conn, $data);
 
                         // new Message
                         // $this->_receivers->handleMessage($msg, $conn);
@@ -143,6 +156,8 @@ class Server implements ServerInterface {
                 }
             } catch (Exception $e) {
                 $this->_log->error($e->getMessage());
+            } catch (\Exception $fuck) {
+                $this->_log->error('Big uh oh: ' . $e->getMessage());
             }
         } while (true);
 
@@ -150,26 +165,31 @@ class Server implements ServerInterface {
 //        declare(ticks = 1); 
     }
 
-    protected function onConnect(Socket $master) {
-        $new_connection     = clone $master;
+    public function onOpen(SocketInterface $conn) {
+        $new_connection     = clone $conn;
         $this->_resources[] = $new_connection->getResource();
         $this->_connections[$new_connection->getResource()] = $new_connection;
 
         $this->_log->note('New connection, ' . count($this->_connections) . ' total');
 
+        $this->_app->onOpen($new_connection)->execute();
         // /here $this->_receivers->handleConnection($new_connection);
-        $this->tmpRIterator('handleConnect', $new_connection);
+//        $this->tmpRIterator('handleConnect', $new_connection);
     }
 
-    protected function onMessage($msg, Socket $from) {
+    public function onRecv(SocketInterface $from, $msg) {
         $this->_log->note('New message "' . $msg . '"');
-        $this->tmpRIterator('handleMessage', $msg, $from);
+
+        $this->_app->onRecv($from, $msg)->execute();
+//        $this->tmpRIterator('handleMessage', $msg, $from);
     }
 
-    protected function onClose(Socket $conn) {
+    public function onClose(SocketInterface $conn) {
         $resource = $conn->getResource();
-        $this->tmpRIterator('handleClose', $conn);
+//        $this->tmpRIterator('handleClose', $conn);
         // $this->_receivers->handleDisconnect($conn);
+
+        $this->_app->onClose($conn)->execute();
 
         unset($this->_connections[$resource]);
         unset($this->_resources[array_search($resource, $this->_resources)]);

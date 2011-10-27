@@ -3,8 +3,8 @@ namespace Ratchet\Protocol;
 use Ratchet\Server;
 use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\Version;
-use Ratchet\Server\Message;
-use Ratchet\Socket;
+use Ratchet\SocketInterface;
+use Ratchet\SocketObserver;
 
 /**
  * @link http://ca.php.net/manual/en/ref.http.php
@@ -20,8 +20,13 @@ class WebSocket implements ProtocolInterface {
      */
     protected $_lookup;
 
-    public function __construct() {
+    /**
+     */
+    protected $_app;
+
+    public function __construct(SocketObserver $application) {
         $this->_lookup = new \SplObjectStorage;
+        $this->_app    = $application;
     }
 
     /**
@@ -47,24 +52,40 @@ class WebSocket implements ProtocolInterface {
 
     public function setUp(Server $server) {
         $this->_server = $server;
+        $this->_app->setUp($server);
     }
 
-    public function handleConnect(Socket $client) {
-        $this->_lookup[$client] = new Client;
+    public function onOpen(SocketInterface $conn) {
+        $this->_lookup[$conn] = new Client;
+        return $this->_app->onOpen($conn);
     }
 
-    public function handleMessage($message, Socket $from) {
-        $headers = $this->getHeaders($message);
+    public function onRecv(SocketInterface $from, $msg) {
         $client  = $this->_lookup[$from];
         if (true !== $client->isHandshakeComplete()) {
+            $headers = $this->getHeaders($msg);
             $header = $client->doHandshake($this->getVersion($headers));
 
-            $from->write($header, strlen($header));
+//            $from->write($header, strlen($header));
+            $to  = new \Ratchet\SocketCollection;
+            $to->enqueue($from);
+            $cmd = new \Ratchet\Server\Command\SendMessage($to);
+            $cmd->setMessage($header);
+
+            // call my decorated onRecv()
+
+$this->_server->log('Returning handshake: ' . $header);
+
+            return $cmd;
         }
+
+        return $this->_app->onRecv($from, $msg);
     }
 
-    public function handleClose(Socket $client) {
-        unset($this->_lookup[$client]);
+    public function onClose(SocketInterface $conn) {
+        $cmd = $this->_app->onClose($conn);
+        unset($this->_lookup[$conn]);
+        return $cmd;
     }
 
     /**
