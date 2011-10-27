@@ -1,7 +1,8 @@
 <?php
 namespace Ratchet\Protocol;
 use Ratchet\Server;
-use Ratchet\Server\Client;
+use Ratchet\Protocol\WebSocket\Client;
+use Ratchet\Protocol\WebSocket\Version;
 use Ratchet\Server\Message;
 use Ratchet\Socket;
 
@@ -15,22 +16,24 @@ class WebSocket implements ProtocolInterface {
     protected $_server;
 
     /**
-     * @type Ratchet\Protocol\WebSocket\Version\VersionInterface
+     * @type SplObjectStorage
      */
-    protected $_version = null;
+    protected $_lookup;
 
-    protected $_shook_hands = false;
+    public function __construct() {
+        $this->_lookup = new \SplObjectStorage;
+    }
 
     /**
      * @return Array
      */
     public static function getDefaultConfig() {
-        return Array(
+        return array(
             'domain'   => AF_INET
           , 'type'     => SOCK_STREAM
           , 'protocol' => SOL_TCP
-          , 'options'  => Array(
-                SOL_SOCKET => Array(SO_REUSEADDR => 1)
+          , 'options'  => array(
+                SOL_SOCKET => array(SO_REUSEADDR => 1)
             )
         );
     }
@@ -38,7 +41,7 @@ class WebSocket implements ProtocolInterface {
     /**
      * @return string
      */
-    function getName() {
+    public function getName() {
         return 'WebSocket';
     }
 
@@ -46,12 +49,49 @@ class WebSocket implements ProtocolInterface {
         $this->_server = $server;
     }
 
-    function handleConnect(Socket $client) {
+    public function handleConnect(Socket $client) {
+        $this->_lookup[$client] = new Client;
     }
 
-    function handleMessage($message, Socket $from) {
+    public function handleMessage($message, Socket $from) {
+        $headers = $this->getHeaders($message);
+        $client  = $this->_lookup[$from];
+        if (true !== $client->isHandshakeComplete()) {
+            $header = $client->doHandshake($this->getVersion($headers));
+
+            $from->write($header, strlen($header));
+        }
     }
 
-    function handleClose(Socket $client) {
+    public function handleClose(Socket $client) {
+        unset($this->_lookup[$client]);
+    }
+
+    /**
+     * @param string
+     */
+    public function setSubProtocol($name) {
+    }
+
+    /**
+     * @param string
+     * @return array
+     */
+    protected function getHeaders($http_message) {
+        return http_parse_headers($http_message);
+    }
+
+    /**
+     * @return Version\VersionInterface
+     */
+    protected function getVersion(array $headers) {
+        if (isset($headers['Sec-Websocket-Version'])) { // HyBi
+            if ($headers['Sec-Websocket-Version'] == '8') {
+                return new Version\Hybi10($headers);
+            }
+        } elseif (isset($headers['Sec-Websocket-Key2'])) { // Hixie
+        }
+
+        throw new \UnexpectedValueException('Could not identify WebSocket protocol');
     }
 }

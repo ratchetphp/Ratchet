@@ -89,6 +89,10 @@ class Server implements ServerInterface {
         return $this->_connections;
     }
 
+    public function log($msg, $type = 'note') {
+        call_user_func(array($this->_log, $type), $msg);
+    }
+
     /*
      * @param mixed
      * @param int
@@ -111,6 +115,8 @@ class Server implements ServerInterface {
         if (false === ($this->_master->listen())) {
             throw new Exception;
         }
+
+        $this->_master->set_nonblock();
 
         do {
             try {
@@ -156,7 +162,7 @@ class Server implements ServerInterface {
     }
 
     protected function onMessage($msg, Socket $from) {
-        $this->_log->note('New message "' . trim($msg) . '"');
+        $this->_log->note('New message "' . $msg . '"');
         $this->tmpRIterator('handleMessage', $msg, $from);
     }
 
