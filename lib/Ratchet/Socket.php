@@ -5,7 +5,6 @@ use Ratchet\Protocol\ProtocolInterface;
 /**
  * A wrapper for the PHP socket_ functions
  * @author Chris Boden <shout at chrisboden dot ca>
- * @todo Needs to be observable, Server needs to know when an applicaiton closes a connection
  */
 class Socket implements SocketInterface {
     /**

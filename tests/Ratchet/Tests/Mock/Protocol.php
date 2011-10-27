@@ -1,10 +1,14 @@
 <?php
 namespace Ratchet\Tests\Mock;
+use Ratchet\ReceiverInterface;
 use Ratchet\Protocol\ProtocolInterface;
 use Ratchet\Server;
-use Ratchet\Socket;
+use Ratchet\SocketInterface;
 
 class Protocol implements ProtocolInterface {
+    public function __construct(ReceiverInterface $application) {
+    }
+
     public static function getDefaultConfig() {
         return Array(
             'domain'   => AF_INET
@@ -23,12 +27,12 @@ class Protocol implements ProtocolInterface {
     public function setUp(Server $server) {
     }
 
-    public function handleConnect(Socket $client) {
+    public function onOpen(SocketInterface $conn) {
     }
 
-    public function handleMessage($msg, Socket $client) {
+    public function onRecv(SocketInterface $from, $msg) {
     }
 
-    public function handleClose(Socket $client) {
+    public function onClose(SocketInterface $conn) {
     }
 }

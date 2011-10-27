@@ -3,7 +3,7 @@ namespace Ratchet\Tests\Mock;
 use Ratchet\ReceiverInterface;
 use Ratchet\Server;
 use Ratchet\Tests\Mock\Socket as MockSocket;
-use Ratchet\Socket;
+use Ratchet\SocketInterface;
 
 class Application implements ReceiverInterface {
     public function getName() {
@@ -13,12 +13,12 @@ class Application implements ReceiverInterface {
     public function setUp(Server $server) {
     }
 
-    public function handleConnect(Socket $client) {
+    public function onOpen(SocketInterface $conn) {
     }
 
-    public function handleMessage($msg, Socket $from) {
+    public function onRecv(SocketInterface $from, $msg) {
     }
 
-    public function handleClose(Socket $client) {
+    public function onClose(SocketInterface $conn) {
     }
 }

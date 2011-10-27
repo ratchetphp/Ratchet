@@ -26,7 +26,7 @@ class FakeSocket extends RealSocket {
     public function listen($backlog = 0) {
     }
 
-    public function recv($buf, $len, $flags) {
+    public function recv(&$buf, $len, $flags) {
     }
 
     public function set_option($level, $optname, $optval) {

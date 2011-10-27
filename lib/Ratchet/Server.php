@@ -8,6 +8,7 @@ use Ratchet\Logging\NullLogger;
 /**
  * @todo Consider using _connections as master reference and passing iterator_to_array(_connections) to socket_select
  * @todo Move SocketObserver methods to separate class, create, wrap class in __construct
+ * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
  */
 class Server implements SocketObserver {
     /**
@@ -19,6 +20,7 @@ class Server implements SocketObserver {
     /**
      * @todo This needs to implement the composite pattern
      * @var array of ReceiverInterface
+     * @deprecated maybe?
      */
     protected $_receivers   = array();
 
@@ -37,10 +39,15 @@ class Server implements SocketObserver {
      */
     protected $_log;
 
-    protected $_app = null;
+    /**
+     * @var ReceiverInterface
+     * Maybe temporary?
+     */
+    protected $_app;
 
     /**
      * @param Ratchet\Socket
+     * @param ReceiverInterface
      * @param boolean True, enables debug mode and the server doesn't infiniate loop
      * @param Logging\LoggerInterface
      */
@@ -58,6 +65,18 @@ class Server implements SocketObserver {
 
         $this->_app = $application;
         $this->_app->setUp($this);
+    }
+
+    /**
+     * @todo Test this method
+     */
+    public function newCommand($cmd, SocketCollection $sockets) {
+        $class = __NAMESPACE__ . '\\Server\\Command\\' . $cmd;
+        if (!class_exists($class)) {
+            throw new \UnexpectedValueException("Command {$cmd} not found");
+        }
+
+        return new $cmd($sockets);
     }
 
     /**
@@ -94,12 +113,16 @@ class Server implements SocketObserver {
     }
 
     /**
-     * @return ArrayIterator of Sockets
+     * @return ArrayIterator of SocketInterfaces
      */
     public function getIterator() {
         return $this->_connections;
     }
 
+    /**
+     * @param string
+     * @param string (note|warning|error)
+     */
     public function log($msg, $type = 'note') {
         call_user_func(array($this->_log, $type), $msg);
     }
@@ -112,11 +135,11 @@ class Server implements SocketObserver {
      * @todo Should I make handling open/close/msg an application?
      */
     public function run($address = '127.0.0.1', $port = 1025) {
-/*
+        /* Put this back if I change the server back to Chain of Responsibility
         if (count($this->_receivers) == 0) {
             throw new \RuntimeException("No receiver has been attached to the server");
         }
-*/
+        */
 
         set_time_limit(0);
         ob_implicit_flush();
@@ -148,16 +171,13 @@ class Server implements SocketObserver {
                             $this->onClose($conn);
                         } else {
                             $this->onRecv($conn, $data);
-
-                        // new Message
-                        // $this->_receivers->handleMessage($msg, $conn);
                         }
                     }
                 }
             } catch (Exception $e) {
                 $this->_log->error($e->getMessage());
             } catch (\Exception $fuck) {
-                $this->_log->error('Big uh oh: ' . $e->getMessage());
+                $this->_log->error('Big uh oh: ' . $fuck->getMessage());
             }
         } while (true);
 
@@ -173,21 +193,16 @@ class Server implements SocketObserver {
         $this->_log->note('New connection, ' . count($this->_connections) . ' total');
 
         $this->_app->onOpen($new_connection)->execute();
-        // /here $this->_receivers->handleConnection($new_connection);
-//        $this->tmpRIterator('handleConnect', $new_connection);
     }
 
     public function onRecv(SocketInterface $from, $msg) {
         $this->_log->note('New message "' . $msg . '"');
 
         $this->_app->onRecv($from, $msg)->execute();
-//        $this->tmpRIterator('handleMessage', $msg, $from);
     }
 
     public function onClose(SocketInterface $conn) {
         $resource = $conn->getResource();
-//        $this->tmpRIterator('handleClose', $conn);
-        // $this->_receivers->handleDisconnect($conn);
 
         $this->_app->onClose($conn)->execute();
 
@@ -195,16 +210,5 @@ class Server implements SocketObserver {
         unset($this->_resources[array_search($resource, $this->_resources)]);
 
         $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain (' . count($this->_resources) . ')');
-    }
-
-    /**
-     * @todo Remove this method, make the receivers container implement the composite pattern
-     */
-    protected function tmpRIterator() {
-        $args = func_get_args();
-        $fn   = array_shift($args);
-        foreach ($this->_receivers as $app) {
-            call_user_func_array(array($app, $fn), $args);
-        }
     }
 }

@@ -14,7 +14,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->_catalyst = new Socket;
-        $this->_server   = new Server($this->_catalyst);
+        $this->_server   = new Server($this->_catalyst, new TestApp);
     }
 
     protected function getPrivateProperty($class, $name) {
@@ -26,7 +26,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testServerHasServerInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\ServerInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\SocketObserver');
         $this->assertThat($this->_server, $constraint);
     }
 
@@ -56,7 +56,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\\Iterator', $this->_server->getIterator());
     }
 
-    public function testServerCanNotRunWithoutApplication() {
+    public function SKIPtestServerCanNotRunWithoutApplication() {
         $this->setExpectedException('\\RuntimeException');
         $this->_server->run();
     }

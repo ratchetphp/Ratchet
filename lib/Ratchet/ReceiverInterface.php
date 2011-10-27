@@ -9,5 +9,8 @@ interface ReceiverInterface extends SocketObserver {
      */
     function getName();
 
+    /**
+     * @param Ratchet\Server
+     */
     function setUp(Server $server);
 }

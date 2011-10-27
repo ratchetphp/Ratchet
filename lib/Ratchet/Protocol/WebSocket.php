@@ -4,7 +4,7 @@ use Ratchet\Server;
 use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\Version;
 use Ratchet\SocketInterface;
-use Ratchet\SocketObserver;
+use Ratchet\ReceiverInterface;
 
 /**
  * @link http://ca.php.net/manual/en/ref.http.php
@@ -21,10 +21,11 @@ class WebSocket implements ProtocolInterface {
     protected $_lookup;
 
     /**
+     * @type Ratchet\ReceiverInterface
      */
     protected $_app;
 
-    public function __construct(SocketObserver $application) {
+    public function __construct(ReceiverInterface $application) {
         $this->_lookup = new \SplObjectStorage;
         $this->_app    = $application;
     }
