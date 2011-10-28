@@ -14,27 +14,31 @@ Ratchet (so far) includes an "application" (in development) to handle the WebSoc
 
     <?php
         namespace Me;
+        use Ratchet\Socket;
+        use Ratchet\SocketInterface as Sock;
+        use Ratchet\Server;
+        use Ratchet\Protocol\WebSocket;
 
         class MyApp implements \Ratchet\ReceiverInterface {
+            protected $_server;
+
             public function getName() {
                 return 'my_app';
             }
 
-            public function handleConnect() {
+            public function setUp(Server $server) {
+                $this->_server = $server;
             }
 
-            public function handleMessage() {
+            public function onOpen(Sock $conn) {
             }
 
-            public function handleClose() {
+            public function onRecv(Sock $from, $msg) {
+            }
+
+            public function onClose(Sock $conn) {
             }
         }
 
-            $protocol    = new \Ratchet\Protocol\WebSocket();
-            $application = new MyApp();
-            $server      = new \Ratchet\Server(\Ratchet\Socket::createFromConfig($protocol));
-
-            $server->attatchReceiver($protocol);
-            $server->attatchReceiver($application);
-
-            $server->run();
+        $server = new Server(new Socket, new WebSocket(new MyApp));
+        $server->run('0.0.0.0', 80);
