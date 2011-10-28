@@ -11,10 +11,12 @@ use Ratchet\Tests\Mock\ArrayLogger;
 class ServerTest extends \PHPUnit_Framework_TestCase {
     protected $_catalyst;
     protected $_server;
+    protected $_app;
 
     public function setUp() {
         $this->_catalyst = new Socket;
-        $this->_server   = new Server($this->_catalyst, new TestApp);
+        $this->_app      = new TestApp;
+        $this->_server   = new Server($this->_catalyst, $this->_app);
     }
 
     protected function getPrivateProperty($class, $name) {
@@ -36,7 +38,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
 
     public function testPassedLoggerIsSetInConstruct() {
         $logger = new ArrayLogger;
-        $server = new Server(new Socket(), $logger);
+        $server = new Server(new Socket(), $this->_app, $logger);
 
         $this->assertSame($logger, $this->getPrivateProperty($server, '_log'));
     }
@@ -70,8 +72,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBindToInvalidAddress() {
-        $this->markTestIncomplete();
-        return;
+        return $this->markTestIncomplete();
 
         $app = new TestApp();
 

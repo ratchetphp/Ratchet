@@ -10,7 +10,7 @@ use Ratchet\Logging\NullLogger;
  * @todo Move SocketObserver methods to separate class, create, wrap class in __construct
  * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
  */
-class Server implements SocketObserver {
+class Server implements SocketObserver, \IteratorAggregate {
     /**
      * The master socket, receives all connections
      * @type Socket

@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Server\Command;
+namespace Ratchet\Command;
 use Ratchet\SocketCollection;
 
 class CloseConnection implements CommandInterface {

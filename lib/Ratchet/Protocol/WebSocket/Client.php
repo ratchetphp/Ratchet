@@ -13,13 +13,30 @@ class Client {
      */
     protected $_hands_shook = false;
 
-    public function doHandshake(VersionInterface $version) {
-        $key = $version->sign();
-//        $tosend['Sec-WebSocket-Accept'] = $key;
+    /**
+     * @param VersionInterface
+     * @return Client
+     */
+    public function setVersion(VersionInterface $version) {
+        $this->_version = $version;
+        return $this;
+    }
 
+    /**
+     * @return VersionInterface
+     */
+    public function getVersion() {
+        return $this->_version;
+    }
+
+    /**
+     * @param array
+     * @return array
+     */
+    public function doHandshake(array $headers) {
         $this->_hands_shook = true;
 
-        return "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: {$key}\r\nSec-WebSocket-Protocol: test\r\n\r\n";
+        return $this->_version->handshake($headers);
     }
 
     /**

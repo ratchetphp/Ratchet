@@ -2,15 +2,16 @@
 namespace Ratchet\Tests\Protocol;
 use Ratchet\Protocol\WebSocket;
 use Ratchet\Tests\Mock\Socket;
+use Ratchet\Tests\Mock\Application;
 
 /**
  * @covers Ratchet\Protocol\WebSocket
  */
-class ServerTest extends \PHPUnit_Framework_TestCase {
+class WebSocketTest extends \PHPUnit_Framework_TestCase {
     protected $_ws;
 
     public function setUp() {
-        $this->_ws = new WebSocket();
+        $this->_ws = new WebSocket(new Application);
     }
 
     public function testServerImplementsServerInterface() {

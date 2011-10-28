@@ -3,6 +3,7 @@ namespace Ratchet\Tests;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Socket as RealSocket;
 use Ratchet\Tests\Mock\Protocol;
+use Ratchet\Tests\Mock\Application as TestApp;
 
 /**
  * @covers Ratchet\Socket
@@ -51,14 +52,14 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testConstructionFromProtocolInterfaceConfig() {
-        $protocol = new Protocol();
+        $protocol = new Protocol(new TestApp);
         $socket   = Socket::createFromConfig($protocol);
 
         $this->assertInstanceOf('\\Ratchet\\Socket', $socket);
     }
 
     public function testCreationFromConfigOutputMatchesInput() {
-        $protocol = new Protocol();
+        $protocol = new Protocol(new TestApp);
         $socket   = Socket::createFromConfig($protocol);
         $config   = $protocol::getDefaultConfig();
 
