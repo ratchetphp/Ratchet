@@ -1,6 +1,10 @@
 <?php
 namespace Ratchet\Protocol\WebSocket\Version;
 
+/**
+ * Despite the version iterations of WebInterface the actions they go through are similar
+ * This standardizes how the server handles communication with each protocol version
+ */
 interface VersionInterface {
     /**
      * Perform the handshake and return the response headers

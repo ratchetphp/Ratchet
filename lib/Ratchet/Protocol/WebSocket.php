@@ -7,6 +7,8 @@ use Ratchet\SocketInterface;
 use Ratchet\ReceiverInterface;
 
 /**
+ * The adapter to handle WebSocket requests/responses
+ * This is a mediator between the Server and your application to handle real-time messaging through a web browser
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Clean up Client/Version stuff.  This should be a factory making single instances of Version classes, implement chain of reponsibility for version - client should implement an interface?

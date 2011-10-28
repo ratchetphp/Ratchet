@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Protocol\Websocket;
+namespace Ratchet\Protocol\WebSocket;
 use Ratchet\ReceiverInterface;
 
 /**

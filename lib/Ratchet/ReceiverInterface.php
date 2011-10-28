@@ -4,6 +4,7 @@ use Ratchet\Server;
 use Ratchet\SocketObserver;
 
 /**
+ * Decorator interface for internal protocols
  * @todo Should probably move this into \Ratchet\Server namespace
  */
 interface ReceiverInterface extends SocketObserver {

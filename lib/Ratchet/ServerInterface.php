@@ -1,6 +1,9 @@
 <?php
 namespace Ratchet;
 
+/**
+ * @deprecated
+ */
 interface ServerInterface extends \IteratorAggregate {
     function attatchReceiver(ReceiverInterface $receiver);
 

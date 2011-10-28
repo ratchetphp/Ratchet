@@ -1,6 +1,9 @@
 <?php
 namespace Ratchet;
 
+/**
+ * Uses internal php methods to fill an Exception class (no parameters required)
+ */
 class Exception extends \Exception {
     public function __construct() {
         $int = socket_last_error();

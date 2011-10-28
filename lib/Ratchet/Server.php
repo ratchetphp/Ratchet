@@ -6,6 +6,7 @@ use Ratchet\Logging\LoggerInterface;
 use Ratchet\Logging\NullLogger;
 
 /**
+ * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
  * @todo Consider using _connections as master reference and passing iterator_to_array(_connections) to socket_select
  * @todo Move SocketObserver methods to separate class, create, wrap class in __construct
  * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
@@ -48,7 +49,6 @@ class Server implements SocketObserver, \IteratorAggregate {
     /**
      * @param Ratchet\Socket
      * @param ReceiverInterface
-     * @param boolean True, enables debug mode and the server doesn't infiniate loop
      * @param Logging\LoggerInterface
      */
     public function __construct(SocketInterface $host, ReceiverInterface $application, LoggerInterface $logger = null) {
@@ -128,8 +128,8 @@ class Server implements SocketObserver, \IteratorAggregate {
     }
 
     /*
-     * @param mixed
-     * @param int
+     * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
+     * @param int The port to listen to connections on
      * @throws Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
      * @todo Should I make handling open/close/msg an application?

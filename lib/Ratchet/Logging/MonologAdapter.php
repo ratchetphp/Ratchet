@@ -2,6 +2,9 @@
 namespace Ratchet\Logging;
 use Monolog\Logger;
 
+/**
+ * Adapt the awesome Monolog Logger into the lowly Ratchet Logger
+ */
 class MonologAdapter extends Logger implements LoggerInterface {
     /**
      * Maps to Monolog\Logger::addInfo

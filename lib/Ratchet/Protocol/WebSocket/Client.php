@@ -2,19 +2,22 @@
 namespace Ratchet\Protocol\WebSocket;
 use Ratchet\Protocol\WebSocket\Version\VersionInterface;
 
+/**
+ * A representation of a Socket connection of the user on the other end of the socket
+ */
 class Client {
     /**
-     * @type Ratchet\Protocol\WebSocket\Version\VersionInterface
+     * @var Ratchet\Protocol\WebSocket\Version\VersionInterface
      */
     protected $_version = null;
 
     /**
-     * @type bool
+     * @var bool
      */
     protected $_hands_shook = false;
 
     /**
-     * @param VersionInterface
+     * @param Version\VersionInterface
      * @return Client
      */
     public function setVersion(VersionInterface $version) {
@@ -23,7 +26,7 @@ class Client {
     }
 
     /**
-     * @return VersionInterface
+     * @return Version\VersionInterface
      */
     public function getVersion() {
         return $this->_version;
