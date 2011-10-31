@@ -196,7 +196,7 @@ class Server implements SocketObserver, \IteratorAggregate {
     }
 
     public function onRecv(SocketInterface $from, $msg) {
-        $this->_log->note('New message "' . $msg . '"');
+        $this->_log->note('New message "' . trim($msg) . '"');
 
         $this->_app->onRecv($from, $msg)->execute();
     }

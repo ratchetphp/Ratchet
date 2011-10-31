@@ -5,6 +5,7 @@ use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\Version;
 use Ratchet\SocketInterface;
 use Ratchet\ReceiverInterface;
+use Ratchet\Command\SendMessage;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -74,8 +75,6 @@ class WebSocket implements ProtocolInterface {
         $client = $this->_lookup[$from];
         if (true !== $client->isHandshakeComplete()) {
 
-// remove client, get protocol, do handshake, return, etc
-
             $headers  = $this->getHeaders($msg);
             $response = $client->setVersion($this->getVersion($headers))->doHandshake($headers);
 
@@ -88,17 +87,11 @@ class WebSocket implements ProtocolInterface {
                 $header .= "{$val}\r\n";
             }
             $header .= "\r\n";
-//            $header   = implode("\r\n", $response) . "\r\n";
 
-//            $from->write($header, strlen($header));
             $to  = new \Ratchet\SocketCollection;
             $to->enqueue($from);
             $cmd = new \Ratchet\Command\SendMessage($to);
             $cmd->setMessage($header);
-
-            // call my decorated onRecv()
-
-$this->_server->log('Returning handshake: ' . $header);
 
             return $cmd;
         }
@@ -108,7 +101,6 @@ $this->_server->log('Returning handshake: ' . $header);
             if (is_array($msg)) { // temporary
                 $msg = $msg['payload'];
             }
-
         } catch (\UnexpectedValueException $e) {
             $to  = new \Ratchet\SocketCollection;
             $to->enqueue($from);
@@ -117,7 +109,12 @@ $this->_server->log('Returning handshake: ' . $header);
             return $cmd;
         }
 
-        return $this->_app->onRecv($from, $msg);
+        $cmd = $this->_app->onRecv($from, $msg);
+        if ($cmd instanceof SendMessage) {
+            $cmd->setMessage($client->getVersion()->frame($cmd->getMessage()));
+        }
+
+        return $cmd;
     }
 
     public function onClose(SocketInterface $conn) {
