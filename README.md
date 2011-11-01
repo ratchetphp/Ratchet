@@ -1,12 +1,15 @@
 #Ratchet
 
 A PHP 5.3 (PSR-0 compliant) application for serving and consuming sockets.
+Build up your application (like Lego!) through simple interfaces using the decorator pattern.
+Re-use your application without changing any of its code just by wrapping it in a different protocol.
 
 ---
 
-##WebSocket
+##WebSockets
 
-Ratchet (so far) includes an "application" (in development) to handle the WebSocket protocol.
+* Supports the HyBi-10 and Hixie76 protocol versions
+* Tested on Chrome 14, Firefox 7, Safari 5, iOS 4.2
 
 ---
 
