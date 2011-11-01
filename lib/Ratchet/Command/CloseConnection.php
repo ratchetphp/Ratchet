@@ -1,23 +1,21 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 /**
  * Close the connection to the sockets passed in the constructor
  */
 class CloseConnection implements CommandInterface {
     /**
-     * @var SocketCollection
+     * @var SocketInterface
      */
-    protected $_sockets;
+    protected $_socket;
 
-    public function __construct(SocketCollection $sockets) {
-        $this->_sockets = $sockets;
+    public function __construct(SocketInterface $sockets) {
+        $this->_socket = $sockets;
     }
 
     function execute() {
-        foreach ($this->_sockets as $socket) {
-            $socket->close();
-        }
+        $this->_socket->close();
     }
 }

@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 /**
  * @todo Move this command to the WebSocket protocol namespace
  */
 class Ping implements CommandInterface {
-    public function __construct(SocketCollection $sockets) {
+    public function __construct(SocketInterface $socket) {
     }
 
     public function execute() {

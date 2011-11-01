@@ -1,20 +1,20 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 class Runtime implements CommandInterface {
     /**
-     * @var SocketCollection
+     * @var SocketInterface
      */
-    protected $_sockets;
+    protected $_socket;
 
     /**
      * @var Closure
      */
     protected $_command = null;
 
-    public function __construct(SocketCollection $sockets) {
-        $this->_socket = $sockets;
+    public function __construct(SocketInterface $socket) {
+        $this->_socket = $socket;
     }
 
     /**
@@ -26,8 +26,6 @@ class Runtime implements CommandInterface {
     }
 
     public function execute() {
-        foreach ($this->_sockets as $socket) {
-            return call_user_func($this->_command, $socket);
-        }
+        return call_user_func($this->_command, $socket);
     }
 }

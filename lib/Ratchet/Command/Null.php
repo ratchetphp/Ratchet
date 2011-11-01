@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 /**
  * Null pattern - execution does nothing, something needs to be passed back though
  */
 class Null implements CommandInterface {
-    public function __construct(SocketCollection $sockets) {
+    public function __construct(SocketInterface $socket) {
     }
 
     public function execute() {

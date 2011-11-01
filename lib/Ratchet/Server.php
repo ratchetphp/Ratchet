@@ -4,7 +4,7 @@ use Ratchet\Server\Aggregator;
 use Ratchet\Protocol\ProtocolInterface;
 use Ratchet\Logging\LoggerInterface;
 use Ratchet\Logging\NullLogger;
-use Ratchet\Command\CommandInterface;
+use Ratchet\Command\Composite;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
@@ -108,7 +108,7 @@ class Server implements SocketObserver, \IteratorAggregate {
                         }
                     }
 
-                    if ($res instanceof CommandInterface) {
+                    if ($res instanceof Composite) {
                         $res->execute();
                     }
                 }

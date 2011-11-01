@@ -8,6 +8,7 @@ use Ratchet\SocketInterface;
 use Ratchet\SocketObserver;
 use Ratchet\Command\CommandInterface;
 use Ratchet\Command\SendMessage;
+use Ratchet\Command\Composite;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -16,7 +17,6 @@ use Ratchet\Command\SendMessage;
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Clean up Client/Version stuff.  This should be a factory making single instances of Version classes, implement chain of reponsibility for version - client should implement an interface?
  * @todo Make sure all SendMessage Commands are framed, not just ones received from onRecv
- * @todo Logic is flawed with Command/SocketCollection and framing - framing is done based on the protocol version of the received, not individual receivers...
  */
 class WebSocket implements ProtocolInterface {
     /**
@@ -77,12 +77,12 @@ class WebSocket implements ProtocolInterface {
                 $header = $response;
             }
 
-            $to  = new \Ratchet\SocketCollection;
-            $to->enqueue($from);
-            $cmd = new \Ratchet\Command\SendMessage($to);
-            $cmd->setMessage($header);
+            $cmds = new Composite;
+            $mess = new SendMessage($from);
+            $mess->setMessage($header);
+            $cmds->enqueue($mess);
 
-            return $cmd;
+            return $cmds;
         }
 
         try {
@@ -91,19 +91,26 @@ class WebSocket implements ProtocolInterface {
                 $msg = $msg['payload'];
             }
         } catch (\UnexpectedValueException $e) {
-            $to  = new \Ratchet\SocketCollection;
-            $to->enqueue($from);
-            $cmd = new \Ratchet\Command\Close($to);
+            $cmd = new Composite;
+            $close = new \Ratchet\Command\Close($from);
+            $cmd->enqueue($close);
 
             return $cmd;
         }
 
-        $cmd = $this->_app->onRecv($from, $msg);
-        if ($cmd instanceof SendMessage) {
-            $cmd->setMessage($client->getVersion()->frame($cmd->getMessage()));
+        $cmds = $this->_app->onRecv($from, $msg);
+        if ($cmds instanceof Composite) {
+            foreach ($cmds as $cmd) {
+                if ($cmd instanceof SendMessage) {
+                    $sock = $cmd->_socket;
+                    $clnt = $this->_clients[$sock];
+
+                    $cmd->setMessage($clnt->getVersion()->frame($cmd->getMessage()));
+                }
+            }
         }
  
-        return $cmd;
+        return $cmds;
     }
 
     /**

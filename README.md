@@ -13,46 +13,47 @@ Re-use your application without changing any of its code just by wrapping it in 
 
 ---
 
-###A Quick server example
+###A quick server example
 
 ```php
 <?php
-    namespace Me;
-    use Ratchet\SocketObserver, Ratchet\SocketInterface;
-    use Ratchet\Socket, Ratchet\Server, Ratchet\Protocol\WebSocket;
-    use Ratchet\SocketCollection, Ratchet\Command\SendMessage;
+namespace Me;
+use Ratchet\SocketObserver, Ratchet\SocketInterface;
+use Ratchet\Socket, Ratchet\Server, Ratchet\Protocol\WebSocket;
+use Ratchet\Command\Composite, Ratchet\Command\SendMessage;
 
-    /**
-     * Send any incoming messages to all connected clients (except sender)
-     */
-    class Chat implements SocketObserver {
-        protected $_clients;
+/**
+ * Send any incoming messages to all connected clients (except sender)
+ */
+class Chat implements SocketObserver {
+    protected $_clients;
 
-        public function __construct() {
-            $this->_clients = new \SplObjectStorage;
-        }
-
-        public function onOpen(SocketInterface $conn) {
-            $this->_clients->attach($conn);
-        }
-
-        public function onRecv(SocketInterface $from, $msg) {
-            $stack = new SocketCollection;
-            foreach ($this->_clients as $client) {
-                if ($from != $client) {
-                    $stack->enqueue($client);
-                }
-            }
-
-            $command = new SendMessage($stack);
-            $command->setMessage($msg);
-            return $command;
-        }
-
-        public function onClose(SocketInterface $conn) {
-            $this->_clients->detach($conn);
-        }
+    public function __construct() {
+        $this->_clients = new \SplObjectStorage;
     }
+
+    public function onOpen(SocketInterface $conn) {
+        $this->_clients->attach($conn);
+    }
+
+    public function onRecv(SocketInterface $from, $msg) {
+        $stack = new Composite;
+        foreach ($this->_clients as $client) {
+            if ($from != $client) {
+                $message = new SendMessage($client);
+                $message->setMessage($msg);
+
+                $stack->enqueue($message);
+            }
+        }
+
+        return $stack;
+    }
+
+    public function onClose(SocketInterface $conn) {
+        $this->_clients->detach($conn);
+    }
+}
 
     // Run the server application through the WebSocket protocol
     $server = new Server(new Socket, new WebSocket(new Chat));

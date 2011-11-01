@@ -1,17 +1,16 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 /**
  * Socket implementation of the Command Pattern
  * User created applications are to return a Command to the server for execution
- * @todo Bad format - very limited
  */
 interface CommandInterface {
     /**
      * Pass the Sockets to execute the command on
      */
-    function __construct(SocketCollection $sockets);
+    function __construct(SocketInterface $socket);
 
     /**
      * The Server class will call the execution

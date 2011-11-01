@@ -1,23 +1,23 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketCollection;
+use Ratchet\SocketInterface;
 
 /**
  * Send text back to the client end of the socket(s)
  */
 class SendMessage implements CommandInterface {
     /**
-     * @var SocketCollection
+     * @var SocketInterface
      */
-    protected $_sockets;
+    public $_socket;
 
     /**
      * @var string
      */
     protected $_message = '';
 
-    public function __construct(SocketCollection $sockets) {
-        $this->_sockets = $sockets;
+    public function __construct(SocketInterface $socket) {
+        $this->_socket = $socket;
     }
 
     /**
@@ -45,8 +45,6 @@ class SendMessage implements CommandInterface {
             throw new \UnexpectedValueException("Message is empty");
         }
 
-        foreach ($this->_sockets as $current) {
-            $current->write($this->_message, strlen($this->_message));
-        }
+        $this->_socket->write($this->_message, strlen($this->_message));
     }
 }
