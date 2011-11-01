@@ -8,10 +8,10 @@ namespace Ratchet\Protocol\WebSocket\Version;
 interface VersionInterface {
     /**
      * Perform the handshake and return the response headers
-     * @param array
-     * @return array
+     * @param string
+     * @return array|string
      */
-    function handshake(array $headers);
+    function handshake($message);
 
     /**
      * Get a framed message as per the protocol and return the decoded message
@@ -26,12 +26,4 @@ interface VersionInterface {
      * @return string
      */
     function frame($message);
-
-    /**
-     * Used when doing the handshake to encode the key, verifying client/server are speaking the same language
-     * @param string
-     * @return string
-     * @internal
-     */
-    function sign($key);
 }

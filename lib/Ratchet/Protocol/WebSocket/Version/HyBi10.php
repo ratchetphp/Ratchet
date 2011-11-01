@@ -8,8 +8,13 @@ namespace Ratchet\Protocol\WebSocket\Version;
 class HyBi10 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
-    public function handshake(array $headers) {
-        $key = $this->sign($headers['Sec-Websocket-Key']);
+    /**
+     * @return array
+     * @todo Use the WebSocket::http_parse_headers wrapper instead of native function (how to get to method is question)
+     */
+    public function handshake($message) {
+        $headers = http_parse_headers($message);
+        $key     = $this->sign($headers['Sec-Websocket-Key']);
 
         return array(
             ''                     => 'HTTP/1.1 101 Switching Protocols'
@@ -178,6 +183,12 @@ class HyBi10 implements VersionInterface {
 		return $frame;
     }
 
+    /**
+     * Used when doing the handshake to encode the key, verifying client/server are speaking the same language
+     * @param string
+     * @return string
+     * @internal
+     */
     public function sign($key) {
         return base64_encode(sha1($key . static::GUID, 1));
     }

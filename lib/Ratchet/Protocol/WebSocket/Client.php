@@ -33,10 +33,10 @@ class Client {
     }
 
     /**
-     * @param array
-     * @return array
+     * @param string
+     * @return array|string
      */
-    public function doHandshake(array $headers) {
+    public function doHandshake($headers) {
         $this->_hands_shook = true;
 
         return $this->_version->handshake($headers);

@@ -61,19 +61,21 @@ class WebSocket implements ProtocolInterface {
     public function onRecv(SocketInterface $from, $msg) {
         $client = $this->_clients[$from];
         if (true !== $client->isHandshakeComplete()) {
+            $response = $client->setVersion($this->getVersion($msg))->doHandshake($msg);
 
-            $headers  = $this->getHeaders($msg);
-            $response = $client->setVersion($this->getVersion($headers))->doHandshake($headers);
+            if (is_array($response)) {
+                $header = '';
+                foreach ($response as $key => $val) {
+                    if (!empty($key)) {
+                        $header .= "{$key}: ";
+                    }
 
-            $header = '';
-            foreach ($response as $key => $val) {
-                if (!empty($key)) {
-                    $header .= "{$key}: ";
+                    $header .= "{$val}\r\n";
                 }
-
-                $header .= "{$val}\r\n";
+                $header .= "\r\n";
+            } else {
+                $header = $response;
             }
-            $header .= "\r\n";
 
             $to  = new \Ratchet\SocketCollection;
             $to->enqueue($from);
@@ -133,30 +135,66 @@ class WebSocket implements ProtocolInterface {
     }
 
     /**
-     * @param string
-     * @return array
-     * @todo Consider strtolower all the header keys...right now PHP Changes Sec-WebSocket-X to Sec-Websocket-X...this could change
-     * @todo Put in fallback code if http_parse_headers is not a function
+     * @param array of HTTP headers
+     * @return Version\VersionInterface
      */
-    protected function getHeaders($http_message) {
-        return http_parse_headers($http_message);
+    protected function getVersion($message) {
+        $headers = $this->getHeaders($message);
+
+        if (isset($headers['Sec-Websocket-Version'])) { // HyBi
+            if ($headers['Sec-Websocket-Version'] == '8') {
+                return $this->versionFactory('HyBi10');
+            }
+        } elseif (isset($headers['Sec-Websocket-Key2'])) { // Hixie
+            return $this->versionFactory('Hixie76');
+        }
+
+        throw new \UnexpectedValueException('Could not identify WebSocket protocol');
     }
 
     /**
      * @return Version\VersionInterface
      */
-    protected function getVersion(array $headers) {
-        if (isset($headers['Sec-Websocket-Version'])) { // HyBi
-            if ($headers['Sec-Websocket-Version'] == '8') {
-                if (null === $this->_versions['HyBi10']) {
-                    $this->_versions['HyBi10'] = new Version\HyBi10;
-                }
-
-                return $this->_versions['HyBi10'];
-            }
-        } elseif (isset($headers['Sec-Websocket-Key2'])) { // Hixie
+    protected function versionFactory($version) {
+        if (null === $this->_versions[$version]) {
+            $ns = __CLASS__ . "\\Version\\{$version}";
+            $this->_version[$version] = new $ns;
         }
 
-        throw new \UnexpectedValueException('Could not identify WebSocket protocol');
+        return $this->_version[$version];
+    }
+
+    /**
+     * @param string
+     * @return array
+     * @todo Consider strtolower all the header keys...right now PHP Changes Sec-WebSocket-X to Sec-Websocket-X...this could change
+      */
+    protected function getHeaders($http_message) {
+        return function_exists('http_parse_headers') ? http_parse_headers($http_message) : $this->http_parse_headers($http_message);
+    }
+
+    /**
+     * This is a fallback method for http_parse_headers as not all php installs have the HTTP module present
+     * @internal
+     */
+    protected function http_parse_headers($http_message) {
+        $retVal = array();
+        $fields = explode("br", preg_replace("%(<|/\>|>)%", "", nl2br($header)));
+
+        foreach ($fields as $field) {
+            if (preg_match('%^(GET|POST|PUT|DELETE|PATCH)(\s)(.*)%', $field, $matchReq)) {
+                $retVal["Request Method"] = $matchReq[1];
+                $retVal["Request Url"]    = $matchReq[3];
+            } elseif (preg_match('/([^:]+): (.+)/m', $field, $match) ) {
+                $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
+                if (isset($retVal[$match[1]])) {
+                    $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+                } else {
+                    $retVal[$match[1]] = trim($match[2]);
+                }
+            }
+        }
+
+        return $retVal;
     }
 }
