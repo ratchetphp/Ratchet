@@ -5,6 +5,7 @@ use Ratchet\SocketCollection;
 /**
  * Socket implementation of the Command Pattern
  * User created applications are to return a Command to the server for execution
+ * @todo Bad format - very limited
  */
 interface CommandInterface {
     /**

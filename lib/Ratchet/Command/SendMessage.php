@@ -26,6 +26,7 @@ class SendMessage implements CommandInterface {
      */
     public function setMessage($msg) {
         $this->_message = (string)$msg;
+        return $this;
     }
 
     /**

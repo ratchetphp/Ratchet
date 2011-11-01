@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Protocol;
-use Ratchet\ReceiverInterface;
+use Ratchet\SocketObserver;
 
-interface ProtocolInterface extends ReceiverInterface {
+interface ProtocolInterface extends SocketObserver {
     /**
-     * @param Ratchet\ReceiverInterface
+     * @param Ratchet\SocketObserver Application to wrap in protocol
      */
-    function __construct(ReceiverInterface $application);
+    function __construct(SocketObserver $application);
 
     /**
      * @return Array

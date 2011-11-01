@@ -3,8 +3,10 @@ namespace Ratchet\Protocol;
 use Ratchet\Server;
 use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\Version;
+use Ratchet\Protocol\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
-use Ratchet\ReceiverInterface;
+use Ratchet\SocketObserver;
+use Ratchet\Command\CommandInterface;
 use Ratchet\Command\SendMessage;
 
 /**
@@ -13,20 +15,17 @@ use Ratchet\Command\SendMessage;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Clean up Client/Version stuff.  This should be a factory making single instances of Version classes, implement chain of reponsibility for version - client should implement an interface?
+ * @todo Make sure all SendMessage Commands are framed, not just ones received from onRecv
+ * @todo Logic is flawed with Command/SocketCollection and framing - framing is done based on the protocol version of the received, not individual receivers...
  */
 class WebSocket implements ProtocolInterface {
     /**
-     * @type Ratchet\Server
-     */
-    protected $_server;
-
-    /**
      * @type SplObjectStorage
      */
-    protected $_lookup;
+    protected $_clients;
 
     /**
-     * @type Ratchet\ReceiverInterface
+     * @type Ratchet\SocketObserver
      */
     protected $_app;
 
@@ -35,8 +34,8 @@ class WebSocket implements ProtocolInterface {
       , 'Hixie76' => null
     );
 
-    public function __construct(ReceiverInterface $application) {
-        $this->_lookup = new \SplObjectStorage;
+    public function __construct(SocketObserver $application) {
+        $this->_clients = new \SplObjectStorage;
         $this->_app    = $application;
     }
 
@@ -54,25 +53,13 @@ class WebSocket implements ProtocolInterface {
         );
     }
 
-    /**
-     * @return string
-     */
-    public function getName() {
-        return 'WebSocket';
-    }
-
-    public function setUp(Server $server) {
-        $this->_server = $server;
-        $this->_app->setUp($server);
-    }
-
     public function onOpen(SocketInterface $conn) {
-        $this->_lookup[$conn] = new Client;
+        $this->_clients[$conn] = new Client;
         return $this->_app->onOpen($conn);
     }
 
     public function onRecv(SocketInterface $from, $msg) {
-        $client = $this->_lookup[$from];
+        $client = $this->_clients[$from];
         if (true !== $client->isHandshakeComplete()) {
 
             $headers  = $this->getHeaders($msg);
@@ -113,13 +100,16 @@ class WebSocket implements ProtocolInterface {
         if ($cmd instanceof SendMessage) {
             $cmd->setMessage($client->getVersion()->frame($cmd->getMessage()));
         }
-
+ 
         return $cmd;
     }
 
+    /**
+     * @todo Wrap any SendMessage commands
+     */
     public function onClose(SocketInterface $conn) {
         $cmd = $this->_app->onClose($conn);
-        unset($this->_lookup[$conn]);
+        unset($this->_clients[$conn]);
         return $cmd;
     }
 
@@ -130,9 +120,23 @@ class WebSocket implements ProtocolInterface {
     }
 
     /**
+     * @param \Ratchet\Command\CommandInterface
+     * @param Version\VersionInterface
+     * @return \Ratchet\Command\CommandInterface
+     */
+    protected function prepareCommand(CommandInterface $cmd, VersionInterface $version) {
+        if ($cmd instanceof SendMessage) {
+            $cmd->setMessage($version->frame($cmd->getMessage()));
+        }
+
+        return $cmd;
+    }
+
+    /**
      * @param string
      * @return array
      * @todo Consider strtolower all the header keys...right now PHP Changes Sec-WebSocket-X to Sec-Websocket-X...this could change
+     * @todo Put in fallback code if http_parse_headers is not a function
      */
     protected function getHeaders($http_message) {
         return http_parse_headers($http_message);
@@ -145,7 +149,7 @@ class WebSocket implements ProtocolInterface {
         if (isset($headers['Sec-Websocket-Version'])) { // HyBi
             if ($headers['Sec-Websocket-Version'] == '8') {
                 if (null === $this->_versions['HyBi10']) {
-                    $this->_versions['HyBi10'] = new Version\Hybi10;
+                    $this->_versions['HyBi10'] = new Version\HyBi10;
                 }
 
                 return $this->_versions['HyBi10'];

@@ -5,7 +5,7 @@ namespace Ratchet\Protocol\WebSocket\Version;
  * The HyBi-10 version, identified in the headers as version 8, is currently implemented by the latest Chrome and Firefix version
  * @link http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
  */
-class Hybi10 implements VersionInterface {
+class HyBi10 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
     public function handshake(array $headers) {

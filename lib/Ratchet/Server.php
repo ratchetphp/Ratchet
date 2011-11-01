@@ -19,13 +19,6 @@ class Server implements SocketObserver, \IteratorAggregate {
     protected $_master = null;
 
     /**
-     * @todo This needs to implement the composite pattern
-     * @var array of ReceiverInterface
-     * @deprecated maybe?
-     */
-    protected $_receivers   = array();
-
-    /**
      * @var array of Socket Resources
      */
     protected $_resources   = array();
@@ -41,17 +34,17 @@ class Server implements SocketObserver, \IteratorAggregate {
     protected $_log;
 
     /**
-     * @var ReceiverInterface
+     * @var SocketObserver
      * Maybe temporary?
      */
     protected $_app;
 
     /**
      * @param Ratchet\Socket
-     * @param ReceiverInterface
+     * @param SocketObserver
      * @param Logging\LoggerInterface
      */
-    public function __construct(SocketInterface $host, ReceiverInterface $application, LoggerInterface $logger = null) {
+    public function __construct(SocketInterface $host, SocketObserver $application, LoggerInterface $logger = null) {
         $this->_master = $host;
         $socket = $host->getResource();
         $this->_resources[] = $socket;
@@ -64,7 +57,6 @@ class Server implements SocketObserver, \IteratorAggregate {
         $this->_connections = new \ArrayIterator(array());
 
         $this->_app = $application;
-        $this->_app->setUp($this);
     }
 
     /**
@@ -87,44 +79,10 @@ class Server implements SocketObserver, \IteratorAggregate {
     }
 
     /**
-     * @todo Receive an interface that creates clients based on interface, decorator pattern for Socket
-     */
-    public function setClientFactory($s) {
-    }
-
-    /**
-     * @param ReceiverInterface
-     * @return Server
-     * @deprecated
-     * @todo Consider making server chain of responsibility, currently 1-1 relation w/ receivers
-     */
-    public function attatchReceiver(ReceiverInterface $receiver) {
-        $receiver->setUp($this);
-        $this->_receivers[spl_object_hash($receiver)] = $receiver;
-
-        return $this;
-    }
-
-    /**
-     * @return SocketInterface
-     */
-    public function getMaster() {
-        return $this->_master;
-    }
-
-    /**
      * @return ArrayIterator of SocketInterfaces
      */
     public function getIterator() {
         return $this->_connections;
-    }
-
-    /**
-     * @param string
-     * @param string (note|warning|error)
-     */
-    public function log($msg, $type = 'note') {
-        call_user_func(array($this->_log, $type), $msg);
     }
 
     /*

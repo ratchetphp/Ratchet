@@ -50,9 +50,11 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($logger, $this->getPrivateProperty($this->_server, '_log'));
     }
 
+/*
     public function testGetMasterReturnsCatalyst() {
         $this->assertSame($this->_catalyst, $this->_server->getMaster());
     }
+*/
 
     public function testIteration() {
         $this->assertInstanceOf('\\Iterator', $this->_server->getIterator());
@@ -63,6 +65,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->_server->run();
     }
 
+/*
     public function testAttatchedReceiverIsSet() {
         $app = new TestApp();
 
@@ -71,6 +74,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertAttributeEquals(Array(spl_object_hash($app) => $app), '_receivers', $this->_server);
     }
 
+/**/
     public function testBindToInvalidAddress() {
         return $this->markTestIncomplete();
 

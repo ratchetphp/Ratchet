@@ -15,7 +15,7 @@ class WebSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testServerImplementsServerInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\ReceiverInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\SocketObserver');
         $this->assertThat($this->_ws, $constraint);
     }
 
