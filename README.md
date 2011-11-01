@@ -14,31 +14,42 @@ Ratchet (so far) includes an "application" (in development) to handle the WebSoc
 
     <?php
         namespace Me;
-        use Ratchet\Socket;
-        use Ratchet\SocketInterface as Sock;
-        use Ratchet\Server;
-        use Ratchet\Protocol\WebSocket;
+        use Ratchet\SocketObserver, Ratchet\SocketInterface;
+        use Ratchet\Socket, Ratchet\Server, Ratchet\Protocol\WebSocket;
+        use Ratchet\SocketCollection, Ratchet\Command\SendMessage;
 
-        class MyApp implements \Ratchet\ReceiverInterface {
-            protected $_server;
+        /**
+         * Send any incoming messages to all connected clients (except sender)
+         */
+        class Chat implements SocketObserver {
+            protected $_clients;
 
-            public function getName() {
-                return 'my_app';
+            public function __construct() {
+                $this->_clients = new \SplObjectStorage;
             }
 
-            public function setUp(Server $server) {
-                $this->_server = $server;
+            public function onOpen(SocketInterface $conn) {
+                $this->_clients->attach($conn);
             }
 
-            public function onOpen(Sock $conn) {
+            public function onRecv(SocketInterface $from, $msg) {
+                $stack = new SocketCollection;
+                foreach ($this->_clients as $client) {
+                    if ($from != $client) {
+                        $stack->enqueue($client);
+                    }
+                }
+
+                $command = new SendMessage($stack);
+                $command->setMessage($msg);
+                return $command;
             }
 
-            public function onRecv(Sock $from, $msg) {
-            }
-
-            public function onClose(Sock $conn) {
+            public function onClose(SocketInterface $conn) {
+                $this->_clients->detach($conn);
             }
         }
 
-        $server = new Server(new Socket, new WebSocket(new MyApp));
+        // Run the server application through the WebSocket protocol
+        $server = new Server(new Socket, new WebSocket(new Chat));
         $server->run('0.0.0.0', 80);
