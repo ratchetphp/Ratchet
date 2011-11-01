@@ -4,6 +4,7 @@ use Ratchet\Server\Aggregator;
 use Ratchet\Protocol\ProtocolInterface;
 use Ratchet\Logging\LoggerInterface;
 use Ratchet\Logging\NullLogger;
+use Ratchet\Command\CommandInterface;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
@@ -74,12 +75,6 @@ class Server implements SocketObserver, \IteratorAggregate {
      * @todo Should I make handling open/close/msg an application?
      */
     public function run($address = '127.0.0.1', $port = 1025) {
-        /* Put this back if I change the server back to Chain of Responsibility
-        if (count($this->_receivers) == 0) {
-            throw new \RuntimeException("No receiver has been attached to the server");
-        }
-        */
-
         set_time_limit(0);
         ob_implicit_flush();
 
@@ -100,23 +95,27 @@ class Server implements SocketObserver, \IteratorAggregate {
 
     			foreach($changed as $resource) {
                     if ($this->_master->getResource() === $resource) {
-                        $this->onOpen($this->_master);
+                        $res = $this->onOpen($this->_master);
                     } else {
                         $conn  = $this->_connections[$resource];
                         $data  = null;
                         $bytes = $conn->recv($data, 4096, 0);
 
                         if ($bytes == 0) {
-                            $this->onClose($conn);
+                            $res = $this->onClose($conn);
                         } else {
-                            $this->onRecv($conn, $data);
+                            $res = $this->onRecv($conn, $data);
                         }
                     }
+
+                    if ($res instanceof CommandInterface) {
+                        $res->execute();
+                    }
                 }
-            } catch (Exception $e) {
-                $this->_log->error($e->getMessage());
-            } catch (\Exception $fuck) {
-                $this->_log->error('Big uh oh: ' . $fuck->getMessage());
+            } catch (Exception $se) {
+                $this->_log->error($se->getMessage());
+            } catch (\Exception $e) {
+                $this->_log->error('Big uh oh: ' . $e->getMessage());
             }
         } while (true);
 
@@ -131,23 +130,28 @@ class Server implements SocketObserver, \IteratorAggregate {
 
         $this->_log->note('New connection, ' . count($this->_connections) . ' total');
 
-        $this->_app->onOpen($new_connection)->execute();
+        return $this->_app->onOpen($new_connection);
     }
 
     public function onRecv(SocketInterface $from, $msg) {
         $this->_log->note('New message "' . trim($msg) . '"');
 
-        $this->_app->onRecv($from, $msg)->execute();
+        return $this->_app->onRecv($from, $msg);
     }
 
+    /**
+     * @todo Make sure it's OK to executre the command after resources have been free'd
+     */
     public function onClose(SocketInterface $conn) {
         $resource = $conn->getResource();
 
-        $this->_app->onClose($conn)->execute();
+        $cmd = $this->_app->onClose($conn);
 
         unset($this->_connections[$resource]);
         unset($this->_resources[array_search($resource, $this->_resources)]);
 
-        $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain (' . count($this->_resources) . ')');
+        $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain');
+
+        return $cmd;
     }
 }
