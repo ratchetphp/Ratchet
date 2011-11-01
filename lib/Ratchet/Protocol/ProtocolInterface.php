@@ -9,7 +9,7 @@ interface ProtocolInterface extends SocketObserver {
     function __construct(SocketObserver $application);
 
     /**
-     * @return Array
+     * @return array
      */
     static function getDefaultConfig();
 }

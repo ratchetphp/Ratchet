@@ -10,12 +10,12 @@ class Protocol implements ProtocolInterface {
     }
 
     public static function getDefaultConfig() {
-        return Array(
+        return array(
             'domain'   => AF_INET
           , 'type'     => SOCK_STREAM
           , 'protocol' => SOL_TCP
-          , 'options'  => Array(
-                SOL_SOCKET => Array(SO_REUSEADDR => 1)
+          , 'options'  => array(
+                SOL_SOCKET => array(SO_REUSEADDR => 1)
             )
         );
     }

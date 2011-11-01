@@ -31,7 +31,7 @@ class FakeSocket extends RealSocket {
 
     public function set_option($level, $optname, $optval) {
         if (!isset($this->_options[$level])) {
-            $this->_options[$level] = Array();
+            $this->_options[$level] = array();
         }
 
         $this->_options[$level][$optname] = $optval;

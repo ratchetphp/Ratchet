@@ -29,11 +29,9 @@ class HyBi10 implements VersionInterface {
      * @throws UnexpectedValueException
      */
     public function unframe($message) {
-        $data            = $message;
-		$payloadLength   = '';
-		$mask            = '';
-		$unmaskedPayload = '';
-		$decodedData     = array();
+        $data        = $message;
+		$mask        = $payloadLength = $unmaskedPayload = '';
+		$decodedData = array();
 
 		// estimate frame type:
 		$firstByteBinary  = sprintf('%08b', ord($data[0]));		
@@ -93,9 +91,6 @@ class HyBi10 implements VersionInterface {
 				$unmaskedPayload .= $data[$i] ^ $mask[$j % 4];
 			}
 			$decodedData['payload'] = $unmaskedPayload;
-		} else {
-			$payloadOffset = $payloadOffset - 4;
-			$decodedData['payload'] = substr($data, $payloadOffset);
 		}
 
 		return $decodedData;

@@ -70,10 +70,10 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function asArrayProvider() {
-        return Array(
-            Array(Array('hello' => 'world'), Array('hello' => 'world'))
-          , Array(null, null)
-          , Array(Array('hello' => 'world'), new \ArrayObject(Array('hello' => 'world')))
+        return array(
+            array(array('hello' => 'world'), array('hello' => 'world'))
+          , array(null, null)
+          , array(array('hello' => 'world'), new \ArrayObject(array('hello' => 'world')))
         );
     }
 
@@ -82,7 +82,7 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
      */
     public function testMethodMungforselectReturnsExpectedValues($output, $input) {
         $method = static::getMethod('mungForSelect');
-        $return = $method->invokeArgs($this->_socket, Array($input));
+        $return = $method->invokeArgs($this->_socket, array($input));
 
         $this->assertEquals($return, $output);
     }
@@ -90,6 +90,6 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     public function testMethodMungforselectRejectsNonTraversable() {
         $this->setExpectedException('\\InvalidArgumentException');
         $method = static::getMethod('mungForSelect');
-        $method->invokeArgs($this->_socket, Array('I am upset with PHP ATM'));
+        $method->invokeArgs($this->_socket, array('I am upset with PHP ATM'));
     }
 }

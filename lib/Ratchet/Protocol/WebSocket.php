@@ -40,7 +40,7 @@ class WebSocket implements ProtocolInterface {
     }
 
     /**
-     * @return Array
+     * @return array
      */
     public static function getDefaultConfig() {
         return array(

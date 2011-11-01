@@ -25,9 +25,9 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
     }
 
     public static function HandshakeProvider() {
-        return Array(
-            Array('', '')
-          , Array('', '')
+        return array(
+            array('', '')
+          , array('', '')
         );
     }
 }

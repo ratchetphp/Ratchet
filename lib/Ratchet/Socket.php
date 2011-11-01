@@ -12,7 +12,7 @@ class Socket implements SocketInterface {
      */
     protected $_resource;
 
-    public static $_defaults = Array(
+    public static $_defaults = array(
         'domain'   => AF_INET
       , 'type'     => SOCK_STREAM
       , 'protocol' => SOL_TCP
@@ -164,7 +164,7 @@ class Socket implements SocketInterface {
      * Call all the socket_ functions (without passing the resource) through this
      * @see http://ca3.php.net/manual/en/ref.sockets.php
      * @param string
-     * @param Array
+     * @param array
      * @return mixed
      * @throws Exception
      * @throws \BadMethodCallException
