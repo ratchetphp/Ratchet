@@ -60,25 +60,6 @@ class Server implements SocketObserver, \IteratorAggregate {
     }
 
     /**
-     * @todo Test this method
-     */
-    public function newCommand($cmd, SocketCollection $sockets) {
-        $class = __NAMESPACE__ . '\\Server\\Command\\' . $cmd;
-        if (!class_exists($class)) {
-            throw new \UnexpectedValueException("Command {$cmd} not found");
-        }
-
-        return new $cmd($sockets);
-    }
-
-    /**
-     * @param Logging\LoggerInterface
-     */
-    public function setLogger(LoggerInterface $logger) {
-        $this->_log = $logger;
-    }
-
-    /**
      * @return ArrayIterator of SocketInterfaces
      */
     public function getIterator() {

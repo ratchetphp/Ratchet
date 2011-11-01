@@ -43,12 +43,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($logger, $this->getPrivateProperty($server, '_log'));
     }
 
+/*
     public function testLoggerIsSetInMethod() {
         $logger = new ArrayLogger;
         $this->_server->setLogger($logger);
 
         $this->assertSame($logger, $this->getPrivateProperty($this->_server, '_log'));
     }
+*/
 
 /*
     public function testGetMasterReturnsCatalyst() {
