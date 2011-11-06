@@ -7,7 +7,7 @@ use Ratchet\Protocol\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
 use Ratchet\SocketObserver;
 use Ratchet\Command\CommandInterface;
-use Ratchet\Command\SendMessage;
+use Ratchet\Command\Action\SendMessage;
 use Ratchet\Command\Composite;
 
 /**

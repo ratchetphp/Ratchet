@@ -8,7 +8,7 @@ class Composite extends \SplQueue {
      * @param Ratchet\SocketInterface
      * @return CommandInterface
      */
-    public function create($name, SocketInterface $socket) {
+    public function NOPEcreate($name, SocketInterface $socket) {
         $class = __NAMESPACE__ . "\\{$name}\\";
         if (!class_exists($class)) {
             throw new \UnexpectedValueException("Command {$name} not found");

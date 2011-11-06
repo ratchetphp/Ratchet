@@ -1,5 +1,6 @@
 <?php
-namespace Ratchet\Command;
+namespace Ratchet\Command\Action;
+use Ratchet\Command\CommandInterface;
 use Ratchet\SocketInterface;
 
 /**
