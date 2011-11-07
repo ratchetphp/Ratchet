@@ -186,7 +186,7 @@ class WebSocket implements ProtocolInterface {
      */
     protected function http_parse_headers($http_message) {
         $retVal = array();
-        $fields = explode("br", preg_replace("%(<|/\>|>)%", "", nl2br($header)));
+        $fields = explode("br", preg_replace("%(<|/\>|>)%", "", nl2br($http_message)));
 
         foreach ($fields as $field) {
             if (preg_match('%^(GET|POST|PUT|DELETE|PATCH)(\s)(.*)%', $field, $matchReq)) {
