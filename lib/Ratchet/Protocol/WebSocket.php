@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Protocol;
 use Ratchet\Protocol\WebSocket\Client;
-use Ratchet\Protocol\WebSocket\Version;
 use Ratchet\Protocol\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
 use Ratchet\SocketObserver;
@@ -19,15 +18,20 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  */
 class WebSocket implements ProtocolInterface {
     /**
+     * Lookup for connected clients
      * @type SplObjectStorage
      */
     protected $_clients;
 
     /**
+     * Decorated application
      * @type Ratchet\SocketObserver
      */
     protected $_app;
 
+    /**
+     * @internal
+     */
     protected $_versions = array(
         'HyBi10'  => null
       , 'Hixie76' => null

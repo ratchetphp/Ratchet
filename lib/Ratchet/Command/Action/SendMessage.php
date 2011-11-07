@@ -24,6 +24,7 @@ class SendMessage implements CommandInterface {
     /**
      * The message to send to the socket(s)
      * @param string
+     * @return SendMessage Fluid interface
      */
     public function setMessage($msg) {
         $this->_message = (string)$msg;

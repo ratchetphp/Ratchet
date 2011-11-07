@@ -8,6 +8,7 @@ namespace Ratchet\Protocol\WebSocket\Version;
  */
 class Hixie76 implements VersionInterface {
     /**
+     * @param string
      * @return string
      */
     public function handshake($message) {

@@ -9,6 +9,7 @@ use Ratchet\SocketInterface;
 interface CommandInterface {
     /**
      * Pass the Sockets to execute the command on
+     * @param Ratchet\SocketInterface
      */
     function __construct(SocketInterface $socket);
 

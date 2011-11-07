@@ -8,7 +8,7 @@ Re-use your application without changing any of its code just by wrapping it in 
 
 ##WebSockets
 
-* Supports the HyBi-10 and Hixie76 protocol versions
+* Supports the HyBi-10 and Hixie76 protocol versions (at the same time)
 * Tested on Chrome 14, Firefox 7, Safari 5, iOS 4.2
 
 ---
@@ -17,18 +17,20 @@ Re-use your application without changing any of its code just by wrapping it in 
 
 ```php
 <?php
-namespace Me;
+namespace MyApps;
 use Ratchet\SocketObserver, Ratchet\SocketInterface;
 use Ratchet\Socket, Ratchet\Server, Ratchet\Protocol\WebSocket;
-use Ratchet\Command\Composite, Ratchet\Command\SendMessage;
+use Ratchet\Command\Factory;
 
 /**
  * Send any incoming messages to all connected clients (except sender)
  */
 class Chat implements SocketObserver {
+    protected $_factory;
     protected $_clients;
 
     public function __construct() {
+        $this->_factory = new Factory;
         $this->_clients = new \SplObjectStorage;
     }
 
@@ -37,13 +39,11 @@ class Chat implements SocketObserver {
     }
 
     public function onRecv(SocketInterface $from, $msg) {
-        $stack = new Composite;
+        $stack = $this->_factory->newComposite();
+
         foreach ($this->_clients as $client) {
             if ($from != $client) {
-                $message = new SendMessage($client);
-                $message->setMessage($msg);
-
-                $stack->enqueue($message);
+                $stack->enqueue($this->_factory->newCommand('SendMessage', $client)->setMessage($msg));
             }
         }
 

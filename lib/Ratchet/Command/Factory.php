@@ -9,10 +9,17 @@ class Factory {
         $this->addActionPath(__NAMESPACE__ . '\\Action');
     }
 
+    /**
+     * Add a new namespace of which CommandInterfaces reside under to autoload with $this->newCommand()
+     * @param string
+     */
     public function addActionPath($namespace) {
         $this->_paths[] = $this->slashIt($namespace);
     }
 
+    /**
+     * @return Composite
+     */
     public function newComposite() {
         return new Composite;
     }
@@ -38,6 +45,10 @@ class Factory {
         return new $cmd($conn);
     }
 
+    /**
+     * @param string
+     * @return string
+     */
     protected function slashIt($ns) {
         return (substr($ns, -1) == '\\' ? $ns : $ns . '\\');
     }

@@ -1,6 +1,9 @@
 <?php
 namespace Ratchet\Protocol\WebSocket\Util;
 
+/**
+ * A helper class for handling HTTP requests
+ */
 class HTTP {
     /**
      * @param string
