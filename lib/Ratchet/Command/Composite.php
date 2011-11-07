@@ -1,17 +1,35 @@
 <?php
 namespace Ratchet\Command;
-use Ratchet\SocketInterface;
+use Ratchet\SocketObserver;
 
-class Composite extends \SplQueue {
+class Composite extends \SplQueue implements CommandInterface {
     public function enqueue(CommandInterface $command) {
-        return parent::enqueue($command);
+        if ($command instanceof Composite) {
+            foreach ($command as $cmd) {
+                $this->enqueue($cmd);
+            }
+
+            return;
+        }
+
+        parent::enqueue($command);
     }
 
-    public function execute() {
+    public function execute(SocketObserver $scope = null) {
         $this->setIteratorMode(static::IT_MODE_DELETE);
 
+        $recursive = new self;
+
         foreach ($this as $command) {
-            $command->execute();
+            $ret = $command->execute($scope);
+
+            if ($ret instanceof CommandInterface) {
+                $recursive->enqueue($ret);
+            }
+        }
+
+        if (count($recursive) > 0) {
+            return $recursive;
         }
     }
 }

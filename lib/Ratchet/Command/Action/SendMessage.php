@@ -1,12 +1,13 @@
 <?php
 namespace Ratchet\Command\Action;
-use Ratchet\Command\CommandInterface;
+use Ratchet\Command\ActionInterface;
 use Ratchet\SocketInterface;
+use Ratchet\SocketObserver;
 
 /**
  * Send text back to the client end of the socket(s)
  */
-class SendMessage implements CommandInterface {
+class SendMessage implements ActionInterface {
     /**
      * @var SocketInterface
      */
@@ -42,7 +43,7 @@ class SendMessage implements CommandInterface {
     /**
      * @throws \UnexpectedValueException if a message was not set with setMessage()
      */
-    public function execute() {
+    public function execute(SocketObserver $scope = null) {
         if (empty($this->_message)) {
             throw new \UnexpectedValueException("Message is empty");
         }

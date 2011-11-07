@@ -1,9 +1,10 @@
 <?php
 namespace Ratchet\Command\Action;
-use Ratchet\Command\CommandInterface;
+use Ratchet\Command\ActionInterface;
 use Ratchet\SocketInterface;
+use Ratchet\SocketObserver;
 
-class Runtime implements CommandInterface {
+class Runtime implements ActionInterface {
     /**
      * @var SocketInterface
      */
@@ -26,7 +27,7 @@ class Runtime implements CommandInterface {
         $this->_command = $callback;
     }
 
-    public function execute() {
+    public function execute(SocketObserver $scope = null) {
         return call_user_func($this->_command, $socket);
     }
 }

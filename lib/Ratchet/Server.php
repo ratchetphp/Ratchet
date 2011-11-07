@@ -4,7 +4,7 @@ use Ratchet\Server\Aggregator;
 use Ratchet\Protocol\ProtocolInterface;
 use Ratchet\Logging\LoggerInterface;
 use Ratchet\Logging\NullLogger;
-use Ratchet\Command\Composite;
+use Ratchet\Command\CommandInterface;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
@@ -72,6 +72,7 @@ class Server implements SocketObserver, \IteratorAggregate {
      * @throws Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
      * @todo Should I make handling open/close/msg an application?
+     * @todo Consider making the 4kb listener changable
      */
     public function run($address = '127.0.0.1', $port = 1025) {
         set_time_limit(0);
@@ -107,8 +108,8 @@ class Server implements SocketObserver, \IteratorAggregate {
                         }
                     }
 
-                    if ($res instanceof Composite) {
-                        $res->execute();
+                    while ($res instanceof CommandInterface) {
+                        $res = $res->execute($this);
                     }
                 }
             } catch (Exception $se) {

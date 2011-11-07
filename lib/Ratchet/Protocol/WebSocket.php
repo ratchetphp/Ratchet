@@ -98,7 +98,7 @@ class WebSocket implements ProtocolInterface {
             }
         } catch (\UnexpectedValueException $e) {
             $cmd = new Composite;
-            $close = new \Ratchet\Command\Close($from);
+            $close = new \Ratchet\Command\Action\CloseConnection($from); // This is to change to Disconnect (proper protocol close)
             $cmd->enqueue($close);
 
             return $cmd;
