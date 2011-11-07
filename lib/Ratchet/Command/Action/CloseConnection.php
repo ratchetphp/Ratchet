@@ -12,8 +12,8 @@ class CloseConnection implements CommandInterface {
      */
     protected $_socket;
 
-    public function __construct(SocketInterface $sockets) {
-        $this->_socket = $sockets;
+    public function __construct(SocketInterface $socket) {
+        $this->_socket = $socket;
     }
 
     function execute() {

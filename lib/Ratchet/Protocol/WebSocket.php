@@ -15,7 +15,6 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
- * @todo Clean up Client/Version stuff.  This should be a factory making single instances of Version classes, implement chain of reponsibility for version - client should implement an interface?
  * @todo Make sure all SendMessage Commands are framed, not just ones received from onRecv
  */
 class WebSocket implements ProtocolInterface {
@@ -36,7 +35,7 @@ class WebSocket implements ProtocolInterface {
 
     public function __construct(SocketObserver $application) {
         $this->_clients = new \SplObjectStorage;
-        $this->_app    = $application;
+        $this->_app     = $application;
     }
 
     /**
@@ -58,6 +57,9 @@ class WebSocket implements ProtocolInterface {
         return $this->_app->onOpen($conn);
     }
 
+    /**
+     * @todo Cleanup spaghetti code
+     */
     public function onRecv(SocketInterface $from, $msg) {
         $client = $this->_clients[$from];
         if (true !== $client->isHandshakeComplete()) {
@@ -102,7 +104,7 @@ class WebSocket implements ProtocolInterface {
         if ($cmds instanceof Composite) {
             foreach ($cmds as $cmd) {
                 if ($cmd instanceof SendMessage) {
-                    $sock = $cmd->_socket;
+                    $sock = $cmd->_socket; // bad
                     $clnt = $this->_clients[$sock];
 
                     $cmd->setMessage($clnt->getVersion()->frame($cmd->getMessage()));

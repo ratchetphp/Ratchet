@@ -30,8 +30,9 @@ class HyBi10 implements VersionInterface {
      * Thanks to @lemmingzshadow for the code on decoding a HyBi-10 frame
      * @link https://github.com/lemmingzshadow/php-websocket
      * @param string
-     * @return string
+     * @return array
      * @throws UnexpectedValueException
+     * @todo return a common interface instead of array
      */
     public function unframe($message) {
         $data        = $message;

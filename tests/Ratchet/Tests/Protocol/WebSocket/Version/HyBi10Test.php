@@ -47,4 +47,12 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
           , array("The quick brown fox jumps over the lazy dog.  All work and no play makes Chris a dull boy.  I'm trying to get past 128 characters for a unit test here...", 'gf4Amahb14P8M7Kj2S6+4MN7tfHHLLmjzjSvo8IuuvPbe7j1zSn398A+9+/JIa6jzDSwrYh7lu/Ee6Ds2jD34sY/9+3He6fvySL37skwsvCIGL/xwSj34og/ou/Ee7Xs0XX3o+F8uqPcKa7qxjz398d7sObce6fi2y/3sppj9+DAOqXiyy+y8dt7sezae7aj3TW+94gvsvDce7/m2j75rYY=')
         );
     }
+
+    public function testUnframeMatchesPreFraming() {
+        $string   = 'Hello World!';
+        $framed   = $this->_version->frame($string);
+        $unframed = $this->_version->unframe($framed);
+
+        $this->assertEquals($string, $unframed['payload']);
+    }
 }
