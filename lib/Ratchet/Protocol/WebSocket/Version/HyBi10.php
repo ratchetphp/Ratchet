@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Protocol\WebSocket\Version;
+use Ratchet\Protocol\WebSocket\Util\HTTP;
 
 /**
  * The HyBi-10 version, identified in the headers as version 8, is currently implemented by the latest Chrome and Firefix version
@@ -10,10 +11,9 @@ class HyBi10 implements VersionInterface {
 
     /**
      * @return array
-     * @todo Use the WebSocket::http_parse_headers wrapper instead of native function (how to get to method is question)
      */
     public function handshake($message) {
-        $headers = http_parse_headers($message);
+        $headers = HTTP::getHeaders($message);
         $key     = $this->sign($headers['Sec-Websocket-Key']);
 
         return array(

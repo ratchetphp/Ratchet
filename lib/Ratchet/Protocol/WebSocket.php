@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Protocol;
-use Ratchet\Server;
 use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\Version;
 use Ratchet\Protocol\WebSocket\VersionInterface;
@@ -9,6 +8,7 @@ use Ratchet\SocketObserver;
 use Ratchet\Command\CommandInterface;
 use Ratchet\Command\Action\SendMessage;
 use Ratchet\Command\Composite;
+use Ratchet\Protocol\WebSocket\Util\HTTP;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -146,7 +146,7 @@ class WebSocket implements ProtocolInterface {
      * @return Version\VersionInterface
      */
     protected function getVersion($message) {
-        $headers = $this->getHeaders($message);
+        $headers = HTTP::getHeaders($message);
 
         if (isset($headers['Sec-Websocket-Version'])) { // HyBi
             if ($headers['Sec-Websocket-Version'] == '8') {
@@ -169,39 +169,5 @@ class WebSocket implements ProtocolInterface {
         }
 
         return $this->_version[$version];
-    }
-
-    /**
-     * @param string
-     * @return array
-     * @todo Consider strtolower all the header keys...right now PHP Changes Sec-WebSocket-X to Sec-Websocket-X...this could change
-      */
-    protected function getHeaders($http_message) {
-        return function_exists('http_parse_headers') ? http_parse_headers($http_message) : $this->http_parse_headers($http_message);
-    }
-
-    /**
-     * This is a fallback method for http_parse_headers as not all php installs have the HTTP module present
-     * @internal
-     */
-    protected function http_parse_headers($http_message) {
-        $retVal = array();
-        $fields = explode("br", preg_replace("%(<|/\>|>)%", "", nl2br($http_message)));
-
-        foreach ($fields as $field) {
-            if (preg_match('%^(GET|POST|PUT|DELETE|PATCH)(\s)(.*)%', $field, $matchReq)) {
-                $retVal["Request Method"] = $matchReq[1];
-                $retVal["Request Url"]    = $matchReq[3];
-            } elseif (preg_match('/([^:]+): (.+)/m', $field, $match) ) {
-                $match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
-                if (isset($retVal[$match[1]])) {
-                    $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
-                } else {
-                    $retVal[$match[1]] = trim($match[2]);
-                }
-            }
-        }
-
-        return $retVal;
     }
 }
