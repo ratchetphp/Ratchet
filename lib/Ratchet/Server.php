@@ -71,7 +71,6 @@ class Server implements SocketObserver, \IteratorAggregate {
      * @param int The port to listen to connections on
      * @throws Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
-     * @todo Should I make handling open/close/msg an application?
      * @todo Consider making the 4kb listener changable
      */
     public function run($address = '127.0.0.1', $port = 1025) {
@@ -139,9 +138,6 @@ class Server implements SocketObserver, \IteratorAggregate {
         return $this->_app->onRecv($from, $msg);
     }
 
-    /**
-     * @todo Make sure it's OK to executre the command after resources have been free'd
-     */
     public function onClose(SocketInterface $conn) {
         $resource = $conn->getResource();
 

@@ -11,6 +11,7 @@ use Ratchet\Command\Composite;
  */
 class CloseConnection extends ActionTemplate {
     function execute(SocketObserver $scope = null) {
+        // All this code allows an application to have its onClose method executed before the socket is actually closed
         $ret = $scope->onClose($this->getSocket());
 
         if ($ret instanceof CommandInterface) {
@@ -21,7 +22,6 @@ class CloseConnection extends ActionTemplate {
             $rt->setCommand(function(SocketInterface $socket, SocketObserver $scope) {
                 $socket->close();
             });
-
             $comp->enqueue($rt);
 
             return $comp;
