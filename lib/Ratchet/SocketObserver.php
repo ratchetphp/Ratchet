@@ -24,6 +24,7 @@ interface SocketObserver {
      * This is called just before the connection is closed
      * @param SocketInterface
      * @return Command\CommandInterface|NULL
+     * @todo This is triggered if the client or server terminates the connection; consider a new onDisconnect if server triggered
      */
     function onClose(SocketInterface $conn);
 }

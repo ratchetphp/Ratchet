@@ -6,7 +6,6 @@ use Ratchet\SocketObserver;
 
 /**
  * Close the connection to the sockets passed in the constructor
- * @todo The server does not seem to be notified when a resource is closed by this class...
  */
 class CloseConnection implements ActionInterface {
     /**

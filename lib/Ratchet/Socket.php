@@ -63,7 +63,6 @@ class Socket implements SocketInterface {
      * @param int
      * @throws \InvalidArgumentException
      * @throws Exception
-     * @todo See if this crack-pot scheme works!
      */
     public function select(&$read, &$write, &$except, $tv_sec, $tv_usec = 0) {
         $read   = static::mungForSelect($read);
