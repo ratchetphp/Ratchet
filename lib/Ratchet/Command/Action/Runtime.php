@@ -1,26 +1,16 @@
 <?php
 namespace Ratchet\Command\Action;
-use Ratchet\Command\ActionInterface;
-use Ratchet\SocketInterface;
+use Ratchet\Command\ActionTemplate;
 use Ratchet\SocketObserver;
 
-class Runtime implements ActionInterface {
-    /**
-     * @var SocketInterface
-     */
-    protected $_socket;
-
+class Runtime extends ActionTemplate {
     /**
      * @var Closure
      */
     protected $_command = null;
 
-    public function __construct(SocketInterface $socket) {
-        $this->_socket = $socket;
-    }
-
     /**
-     * Your closure should accept a single \Ratchet\Socket parameter
+     * Your closure should accept a single \Ratchet\SocketInterface parameter and return a CommandInterface or NULL
      * @param Closure Your closure/lambda to execute when the time comes
      */
     public function setCommand(\Closure $callback) {
@@ -28,6 +18,6 @@ class Runtime implements ActionInterface {
     }
 
     public function execute(SocketObserver $scope = null) {
-        return call_user_func($this->_command, $socket);
+        return call_user_func($this->_command, $this->getSocket());
     }
 }

@@ -3,8 +3,13 @@ namespace Ratchet\Command;
 use Ratchet\SocketObserver;
 
 class Composite extends \SplQueue implements CommandInterface {
-    public function enqueue(CommandInterface $command) {
-        if ($command instanceof Composite) {
+    /**
+     * Add another Command to the stack
+     * Unlike a true composite the enqueue flattens a composite parameter into leafs
+     * @param CommandInterface
+     */
+    public function enqueue(CommandInterface $command = null) {
+        if ($command instanceof self) {
             foreach ($command as $cmd) {
                 $this->enqueue($cmd);
             }
@@ -12,7 +17,9 @@ class Composite extends \SplQueue implements CommandInterface {
             return;
         }
 
-        parent::enqueue($command);
+        if (null !== $command) {
+            parent::enqueue($command);
+        }
     }
 
     public function execute(SocketObserver $scope = null) {
@@ -21,11 +28,7 @@ class Composite extends \SplQueue implements CommandInterface {
         $recursive = new self;
 
         foreach ($this as $command) {
-            $ret = $command->execute($scope);
-
-            if ($ret instanceof CommandInterface) {
-                $recursive->enqueue($ret);
-            }
+            $recursive->enqueue($command->execute($scope));
         }
 
         if (count($recursive) > 0) {

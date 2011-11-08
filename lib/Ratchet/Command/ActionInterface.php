@@ -8,4 +8,9 @@ interface ActionInterface extends CommandInterface {
      * @param Ratchet\SocketInterface
      */
     function __construct(SocketInterface $socket);
+
+    /**
+     * @return Ratchet\SocketInterface
+     */
+    function getSocket();
 }

@@ -9,6 +9,8 @@ use Ratchet\SocketObserver;
 interface CommandInterface {
     /**
      * The Server class will call the execution
+     * @param Ratchet\SocketObserver Scope to execute the command under
+     * @return CommandInterface|NULL
      */
     function execute(SocketObserver $scope = null);
 }
