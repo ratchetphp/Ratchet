@@ -106,9 +106,9 @@ class WebSocket implements ProtocolInterface {
     }
 
     public function onClose(SocketInterface $conn) {
-        $cmds = $this->_app->onClose($conn);
+        $cmds = $this->prepareCommand($this->_app->onClose($conn));
         unset($this->_clients[$conn]);
-        return $this->prepareCommand($cmds);
+        return $cmds;
     }
 
     /**
