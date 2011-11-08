@@ -14,26 +14,26 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
- * @todo Make sure all SendMessage Commands are framed, not just ones received from onRecv
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
+ * @todo Consider cheating the application...don't call _app::onOpen until handshake is complete - only issue is sending headers/cookies
  */
 class WebSocket implements ProtocolInterface {
     /**
-     * @var Ratchet\Command\Factory
-     */
-    protected $_factory;
-
-    /**
      * Lookup for connected clients
-     * @type SplObjectStorage
+     * @var SplObjectStorage
      */
     protected $_clients;
 
     /**
      * Decorated application
-     * @type Ratchet\SocketObserver
+     * @var Ratchet\SocketObserver
      */
     protected $_app;
+
+    /**
+     * @var Ratchet\Command\Factory
+     */
+    protected $_factory;
 
     /**
      * @internal
@@ -107,6 +107,12 @@ class WebSocket implements ProtocolInterface {
 
     public function onClose(SocketInterface $conn) {
         $cmds = $this->prepareCommand($this->_app->onClose($conn));
+
+        // $cmds = new Composite if null
+        // $cmds->enqueue($this->_factory->newCommand('SendMessage', $conn)->setMessage(
+            // WebSocket close handshake, depending on version!
+        //));
+
         unset($this->_clients[$conn]);
         return $cmds;
     }
@@ -139,7 +145,7 @@ class WebSocket implements ProtocolInterface {
 
     /**
      * @param array of HTTP headers
-     * @return Version\VersionInterface
+     * @return WebSocket\Version\VersionInterface
      */
     protected function getVersion($message) {
         $headers = HTTP::getHeaders($message);
@@ -156,7 +162,7 @@ class WebSocket implements ProtocolInterface {
     }
 
     /**
-     * @return Version\VersionInterface
+     * @return WebSocket\Version\VersionInterface
      */
     protected function versionFactory($version) {
         if (null === $this->_versions[$version]) {

@@ -10,7 +10,7 @@ class Runtime extends ActionTemplate {
     protected $_command = null;
 
     /**
-     * Your closure should accept a single \Ratchet\SocketInterface parameter and return a CommandInterface or NULL
+     * Your closure should accept two parameters (\Ratchet\SocketInterface, \Ratchet\SocketObserver) parameter and return a CommandInterface or NULL
      * @param Closure Your closure/lambda to execute when the time comes
      */
     public function setCommand(\Closure $callback) {
@@ -18,6 +18,6 @@ class Runtime extends ActionTemplate {
     }
 
     public function execute(SocketObserver $scope = null) {
-        return call_user_func($this->_command, $this->getSocket());
+        return call_user_func($this->_command, $this->getSocket(), $scope);
     }
 }

@@ -1,13 +1,9 @@
 <?php
-namespace Ratchet\Command;
-use Ratchet\SocketInterface;
-use Ratchet\Command\ActionInterface;
+namespace Ratchet\Protocol\WebSocket\Command\Action;
+use Ratchet\Command\ActionTemplate;
 use Ratchet\SocketObserver;
 
-class Pong implements ActionInterface {
-    public function __construct(SocketInterface $socket) {
-    }
-
+class Pong extends ActionTemplate {
     public function execute(SocketObserver $scope = null) {
     }
 }
