@@ -126,7 +126,6 @@ class WebSocket implements ProtocolInterface {
         if ($command instanceof SendMessage) {
             $version = $this->_clients[$command->getSocket()]->getVersion();
             return $command->setMessage($version->frame($command->getMessage()));
-<<<<<<< HEAD
         }
 
         if ($command instanceof \Traversable) {
@@ -135,16 +134,6 @@ class WebSocket implements ProtocolInterface {
             }
         }
 
-=======
-        }
-
-        if ($command instanceof \Traversable) {
-            foreach ($command as $cmd) {
-                $cmd = $this->prepareCommand($cmd);
-            }
-        }
-
->>>>>>> 1d14119bb5582cf8ebfd7c506cbb93f3368ce852
         return $command;
     }
 
