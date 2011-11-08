@@ -4,9 +4,9 @@ use Ratchet\Protocol\WebSocket\Client;
 use Ratchet\Protocol\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
 use Ratchet\SocketObserver;
+use Ratchet\Command\Factory;
 use Ratchet\Command\CommandInterface;
 use Ratchet\Command\Action\SendMessage;
-use Ratchet\Command\Composite;
 use Ratchet\Protocol\WebSocket\Util\HTTP;
 
 /**
@@ -15,8 +15,14 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Make sure all SendMessage Commands are framed, not just ones received from onRecv
+ * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  */
 class WebSocket implements ProtocolInterface {
+    /**
+     * @var Ratchet\Command\Factory
+     */
+    protected $_factory;
+
     /**
      * Lookup for connected clients
      * @type SplObjectStorage
@@ -40,6 +46,7 @@ class WebSocket implements ProtocolInterface {
     public function __construct(SocketObserver $application) {
         $this->_clients = new \SplObjectStorage;
         $this->_app     = $application;
+        $this->_factory = new Factory;
     }
 
     /**
@@ -83,12 +90,8 @@ class WebSocket implements ProtocolInterface {
                 $header = $response;
             }
 
-            $cmds = new Composite;
-            $mess = new SendMessage($from);
-            $mess->setMessage($header);
-            $cmds->enqueue($mess);
-
-            return $cmds;
+            // here, need to send headers/handshake to application, let it have the cookies, etc
+            return $this->_factory->newCommand('SendMessage', $from)->setMessage($header);
         }
 
         try {
@@ -97,26 +100,11 @@ class WebSocket implements ProtocolInterface {
                 $msg = $msg['payload'];
             }
         } catch (\UnexpectedValueException $e) {
-            $cmd = new Composite;
-            $close = new \Ratchet\Command\Action\CloseConnection($from); // This is to change to Disconnect (proper protocol close)
-            $cmd->enqueue($close);
-
-            return $cmd;
+            return $this->_factory->newCommand('CloseConnection', $from);
         }
 
         $cmds = $this->_app->onRecv($from, $msg);
-        if ($cmds instanceof Composite) {
-            foreach ($cmds as $cmd) {
-                if ($cmd instanceof SendMessage) {
-                    $sock = $cmd->_socket; // bad
-                    $clnt = $this->_clients[$sock];
-
-                    $cmd->setMessage($clnt->getVersion()->frame($cmd->getMessage()));
-                }
-            }
-        }
- 
-        return $cmds;
+        return $this->prepareCommand($cmds);
     }
 
     /**
@@ -135,16 +123,23 @@ class WebSocket implements ProtocolInterface {
     }
 
     /**
-     * @param \Ratchet\Command\CommandInterface
-     * @param Version\VersionInterface
-     * @return \Ratchet\Command\CommandInterface
+     * Checks if a return Command from your application is a message, if so encode it/them
+     * @param Ratchet\Command\CommandInterface|NULL
+     * @return Ratchet\Command\CommandInterface|NULL
      */
-    protected function prepareCommand(CommandInterface $cmd, VersionInterface $version) {
-        if ($cmd instanceof SendMessage) {
-            $cmd->setMessage($version->frame($cmd->getMessage()));
+    protected function prepareCommand(CommandInterface $command = null) {
+        if ($command instanceof SendMessage) {
+            $version = $this->_clients[$command->getSocket()]->getVersion();
+            return $command->setMessage($version->frame($command->getMessage()));
         }
 
-        return $cmd;
+        if ($command instanceof \Traversable) {
+            foreach ($command as $cmd) {
+                $cmd = $this->prepareCommand($cmd);
+            }
+        }
+
+        return $command;
     }
 
     /**

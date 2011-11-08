@@ -1,26 +1,16 @@
 <?php
 namespace Ratchet\Command\Action;
-use Ratchet\Command\ActionInterface;
-use Ratchet\SocketInterface;
+use Ratchet\Command\ActionTemplate;
 use Ratchet\SocketObserver;
 
 /**
  * Send text back to the client end of the socket(s)
  */
-class SendMessage implements ActionInterface {
-    /**
-     * @var SocketInterface
-     */
-    public $_socket;
-
+class SendMessage extends ActionTemplate {
     /**
      * @var string
      */
     protected $_message = '';
-
-    public function __construct(SocketInterface $socket) {
-        $this->_socket = $socket;
-    }
 
     /**
      * The message to send to the socket(s)
@@ -48,6 +38,6 @@ class SendMessage implements ActionInterface {
             throw new \UnexpectedValueException("Message is empty");
         }
 
-        $this->_socket->write($this->_message, strlen($this->_message));
+        $this->getSocket()->write($this->_message, strlen($this->_message));
     }
 }
