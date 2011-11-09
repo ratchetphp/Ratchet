@@ -30,7 +30,7 @@ class Socket implements SocketInterface {
         $this->_resource = @socket_create($domain, $type, $protocol);
 
         if (!is_resource($this->_resource)) {
-            throw new Exception;
+            throw new Exception($this);
         }
     }
 
@@ -49,7 +49,7 @@ class Socket implements SocketInterface {
         $this->_resource = @socket_accept($this->_resource);
 
         if (false === $this->_resource) {
-            throw new Exception;
+            throw new Exception($this);
         }
     }
 
@@ -72,7 +72,7 @@ class Socket implements SocketInterface {
         $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
 
         if (false === $num) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $num;
@@ -88,13 +88,18 @@ class Socket implements SocketInterface {
 
     /**
      * @see http://ca3.php.net/manual/en/function.socket-recv.php
-     * @param string
+     * @param string Variable to write data to
+     * @param int Number of bytes to read
      * @param int
-     * @param int
-     * @return int
+     * @return int Number of bytes received
+     * @throws Exception
      */
     public function recv(&$buf, $len, $flags) {
-        return socket_recv($this->_resource, $buf, $len, $flags);
+        if (false === ($bytes = @socket_recv($this->_resource, $buf, $len, $flags))) {
+            throw new Exception($this);
+        }
+
+        return $bytes;
     }
 
     /**
@@ -176,7 +181,7 @@ class Socket implements SocketInterface {
             $result = @call_user_func_array('socket_' . $method, $arguments);
 
             if (false === $result) {
-                throw new Exception;
+                throw new Exception($this);
             }
 
             // onAfterMethod

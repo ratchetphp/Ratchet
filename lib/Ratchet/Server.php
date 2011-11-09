@@ -78,14 +78,15 @@ class Server implements SocketObserver, \IteratorAggregate {
         ob_implicit_flush();
 
         if (false === ($this->_master->bind($address, (int)$port))) {
-            throw new Exception;
+            throw new Exception($this->_master);
         }
 
         if (false === ($this->_master->listen())) {
-            throw new Exception;
+            throw new Exception($this->_master);
         }
 
         $this->_master->set_nonblock();
+        declare(ticks = 1); 
 
         do {
             try {
@@ -112,14 +113,18 @@ class Server implements SocketObserver, \IteratorAggregate {
                     }
                 }
             } catch (Exception $se) {
-                $this->_log->error($se->getMessage());
+                // Instead of logging error, will probably add/trigger onIOError/onError or something in SocketObserver
+                $this->_log->error($se->getCode() . ' - ' . $se->getMessage());
+
+                // temporary, move to application
+                if ($se->getCode() != 35) {
+                    $close = new \Ratchet\Command\Action\CloseConnection($se->getSocket());
+                    $close->execute($this);
+                }
             } catch (\Exception $e) {
                 $this->_log->error('Big uh oh: ' . $e->getMessage());
             }
         } while (true);
-
-//        $this->_master->set_nonblock();
-//        declare(ticks = 1); 
     }
 
     public function onOpen(SocketInterface $conn) {
@@ -133,7 +138,7 @@ class Server implements SocketObserver, \IteratorAggregate {
     }
 
     public function onRecv(SocketInterface $from, $msg) {
-        $this->_log->note('New message "' . trim($msg) . '"');
+//        $this->_log->note('New message "' . trim($msg) . '"');
 
         return $this->_app->onRecv($from, $msg);
     }

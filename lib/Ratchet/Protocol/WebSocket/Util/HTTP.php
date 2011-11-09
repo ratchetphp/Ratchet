@@ -6,6 +6,7 @@ namespace Ratchet\Protocol\WebSocket\Util;
  */
 class HTTP {
     /**
+     * @todo Probably should iterate through the array, strtolower all the things, then return it
      * @param string
      * @return array
      */

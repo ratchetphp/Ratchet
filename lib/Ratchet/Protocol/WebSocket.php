@@ -66,8 +66,6 @@ class WebSocket implements ProtocolInterface {
 
     public function onOpen(SocketInterface $conn) {
         $this->_clients[$conn] = new Client;
-        $cmds = $this->_app->onOpen($conn);
-        return $this->prepareCommand($cmds);
     }
 
     public function onRecv(SocketInterface $from, $msg) {
@@ -89,8 +87,11 @@ class WebSocket implements ProtocolInterface {
                 $header = $response;
             }
 
-            // here, need to send headers/handshake to application, let it have the cookies, etc
-            return $this->_factory->newCommand('SendMessage', $from)->setMessage($header);
+            $comp = $this->_factory->newComposite();
+            $comp->enqueue($this->_factory->newCommand('SendMessage', $from)->setMessage($header));
+            $comp->enqueue($this->prepareCommand($this->_app->onOpen($from, $msg))); // Need to send headers/handshake to application, let it have the cookies, etc
+
+            return $comp;
         }
 
         try {
