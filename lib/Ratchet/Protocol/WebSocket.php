@@ -17,6 +17,7 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  * @todo Consider cheating the application...don't call _app::onOpen until handshake is complete - only issue is sending headers/cookies
  * @todo Consider chaning this class to a State Pattern.  If a SocketObserver is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
+ * @todo Change namespace to Ratchet\Protocol\WebSocket\Adapter
  */
 class WebSocket implements ProtocolInterface {
     /**

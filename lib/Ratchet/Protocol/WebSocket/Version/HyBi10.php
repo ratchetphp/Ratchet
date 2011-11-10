@@ -74,7 +74,7 @@ class HyBi10 implements VersionInterface {
 			
 			default:
 				// Close connection on unknown opcode:
-                throw new \UnexpectedValueException('Unknown opcode');
+                throw new \UnexpectedValueException("Unknown opcode ({$opcode})");
 			break;
 		}
 

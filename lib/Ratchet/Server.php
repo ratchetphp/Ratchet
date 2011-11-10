@@ -2,8 +2,6 @@
 namespace Ratchet;
 use Ratchet\Server\Aggregator;
 use Ratchet\Protocol\ProtocolInterface;
-use Ratchet\Logging\LoggerInterface;
-use Ratchet\Logging\NullLogger;
 use Ratchet\Command\CommandInterface;
 
 /**
@@ -21,17 +19,12 @@ class Server implements SocketObserver, \IteratorAggregate {
     /**
      * @var array of Socket Resources
      */
-    protected $_resources   = array();
+    protected $_resources = array();
 
     /**
      * @var ArrayIterator of Resouces (Socket type) as keys, Ratchet\Socket as values
      */
     protected $_connections;
-
-    /**
-     * @type Logging\LoggerInterface;
-     */
-    protected $_log;
 
     /**
      * @var SocketObserver
@@ -42,17 +35,11 @@ class Server implements SocketObserver, \IteratorAggregate {
     /**
      * @param Ratchet\Socket
      * @param SocketObserver
-     * @param Logging\LoggerInterface
      */
-    public function __construct(SocketInterface $host, SocketObserver $application, LoggerInterface $logger = null) {
+    public function __construct(SocketInterface $host, SocketObserver $application) {
         $this->_master = $host;
         $socket = $host->getResource();
         $this->_resources[] = $socket;
-
-        if (null === $logger) {
-            $logger = new NullLogger;
-        }
-        $this->_log = $logger;
 
         $this->_connections = new \ArrayIterator(array());
 
@@ -61,6 +48,7 @@ class Server implements SocketObserver, \IteratorAggregate {
 
     /**
      * @return ArrayIterator of SocketInterfaces
+     * @todo This interface was originally in place as Server was passed up/down chain, but isn't anymore, consider removing
      */
     public function getIterator() {
         return $this->_connections;
@@ -114,7 +102,6 @@ class Server implements SocketObserver, \IteratorAggregate {
                 }
             } catch (Exception $se) {
                 // Instead of logging error, will probably add/trigger onIOError/onError or something in SocketObserver
-                $this->_log->error($se->getCode() . ' - ' . $se->getMessage());
 
                 // temporary, move to application
                 if ($se->getCode() != 35) {
@@ -122,7 +109,8 @@ class Server implements SocketObserver, \IteratorAggregate {
                     $close->execute($this);
                 }
             } catch (\Exception $e) {
-                $this->_log->error('Big uh oh: ' . $e->getMessage());
+                // onError() - but can I determine which is/was the target Socket that threw the exception...?
+                // $conn->close() ???
             }
         } while (true);
     }
@@ -132,14 +120,10 @@ class Server implements SocketObserver, \IteratorAggregate {
         $this->_resources[] = $new_connection->getResource();
         $this->_connections[$new_connection->getResource()] = $new_connection;
 
-        $this->_log->note('New connection, ' . count($this->_connections) . ' total');
-
         return $this->_app->onOpen($new_connection);
     }
 
     public function onRecv(SocketInterface $from, $msg) {
-//        $this->_log->note('New message "' . trim($msg) . '"');
-
         return $this->_app->onRecv($from, $msg);
     }
 
@@ -150,8 +134,6 @@ class Server implements SocketObserver, \IteratorAggregate {
 
         unset($this->_connections[$resource]);
         unset($this->_resources[array_search($resource, $this->_resources)]);
-
-        $this->_log->note('Connection closed, ' . count($this->_connections) . ' connections remain');
 
         return $cmd;
     }
