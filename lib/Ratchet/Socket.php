@@ -82,6 +82,9 @@ class Socket implements SocketInterface {
         return $num;
     }
 
+    /**
+     * @todo Do loop to make sure entire buffer is sent to client
+     */
     public function write($buffer, $length = 0) {
         return $this->__call('write', array($buffer, $length));
     }

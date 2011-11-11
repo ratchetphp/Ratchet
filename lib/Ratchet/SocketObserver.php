@@ -30,5 +30,12 @@ interface SocketObserver {
      */
     function onClose(SocketInterface $conn);
 
+    /**
+     * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
+     * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
+     * @param SocketInterface
+     * @param \Exception
+     * @return Ratchet\Command\CommandInterface|null
+     */
     function onError(SocketInterface $conn, \Exception $e);
 }
