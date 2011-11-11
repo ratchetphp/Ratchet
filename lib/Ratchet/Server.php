@@ -12,11 +12,6 @@ use Ratchet\Command\CommandInterface;
  */
 class Server implements SocketObserver, \IteratorAggregate {
     /**
-     * This is probably temporary
-     */
-    const RECV_BYTES = 1024;
-
-    /**
      * The master socket, receives all connections
      * @type Socket
      */
@@ -68,6 +63,8 @@ class Server implements SocketObserver, \IteratorAggregate {
      * @todo Consider making the 4kb listener changable
      */
     public function run($address = '127.0.0.1', $port = 1025) {
+        $recv_bytes = 1024;
+
         set_time_limit(0);
         ob_implicit_flush();
 
@@ -83,27 +80,34 @@ class Server implements SocketObserver, \IteratorAggregate {
         }
 
         do {
-            try {
-                $changed     = $this->_resources;
-                $num_changed = $this->_master->select($changed, $write = null, $except = null, null);
+            $changed = $this->_resources;
 
-    			foreach($changed as $resource) {
+            try {
+                $num_changed = $this->_master->select($changed, $write = null, $except = null, null);
+            } catch (Exception $e) {
+                // master had a problem?...what to do?
+                continue;
+            }
+
+			foreach($changed as $resource) {
+                try {
                     if ($this->_master->getResource() === $resource) {
-                        $res = $this->onOpen($this->_master);
+                        $conn = $this->_master;
+                        $res  = $this->onOpen($conn);
                     } else {
                         $conn  = $this->_connections[$resource];
                         $data  = $buf = '';
 
-                        $bytes = $conn->recv($buf, static::RECV_BYTES, 0);
+                        $bytes = $conn->recv($buf, $recv_bytes, 0);
                         if ($bytes > 0) {
                             $data = $buf;
 
                             // This idea works* but...
                             // 1) A single DDOS attack will block the entire application (I think)
-                            // 2) What if the last message in the frame is equal to RECV_BYTES?  Would loop until another msg is sent
+                            // 2) What if the last message in the frame is equal to $recv_bytes?  Would loop until another msg is sent
                             // Need to 1) proc_open the recv() calls.  2) ???
-                            while ($bytes === static::RECV_BYTES) {
-                                $bytes = $conn->recv($buf, static::RECV_BYTES, 0);
+                            while ($bytes === $recv_bytes) {
+                                $bytes = $conn->recv($buf, $recv_bytes, 0);
                                 $data .= $buf;
                             }
 
@@ -112,22 +116,23 @@ class Server implements SocketObserver, \IteratorAggregate {
                             $res = $this->onClose($conn);
                         }
                     }
+                } catch (Exception $se) {
+                    $res = $this->onError($se->getSocket(), $se); // Just in case...but I don't think I need to do this
+                } catch (\Exception $e) {
+                    $res = $this->onError($conn, $e);
+                }
 
-                    while ($res instanceof CommandInterface) {
-                        $res = $res->execute($this);
+                while ($res instanceof CommandInterface) {
+                    try {
+                        $new_res = $res->execute($this);
+                    } catch (\Exception $e) {
+                        // trigger new error
+                        // $new_res = $this->onError($e->getSocket()); ???
+                        // this is dangerous territory...could get in an infinte loop...Exception might not be Ratchet\Exception...$new_res could be ActionInterface|Composite|NULL...
                     }
-                }
-            } catch (Exception $se) {
-                // Instead of logging error, will probably add/trigger onIOError/onError or something in SocketObserver
 
-                // temporary, move to application
-                if ($se->getCode() != 35) {
-                    $close = new \Ratchet\Command\Action\CloseConnection($se->getSocket());
-                    $close->execute($this);
+                    $res = $new_res;
                 }
-            } catch (\Exception $e) {
-                // onError() - but can I determine which is/was the target Socket that threw the exception...?
-                // $conn->close() ???
             }
         } while (true);
     }
@@ -153,5 +158,9 @@ class Server implements SocketObserver, \IteratorAggregate {
         unset($this->_resources[array_search($resource, $this->_resources)]);
 
         return $cmd;
+    }
+
+    public function onError(SocketInterface $conn, \Exception $e) {
+        return $this->_app->onError($conn, $e);
     }
 }

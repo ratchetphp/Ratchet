@@ -95,13 +95,9 @@ class WebSocket implements ProtocolInterface {
             return $comp;
         }
 
-        try {
-            $msg = $client->getVersion()->unframe($msg);
-            if (is_array($msg)) { // temporary
-                $msg = $msg['payload'];
-            }
-        } catch (\UnexpectedValueException $e) {
-            return $this->_factory->newCommand('CloseConnection', $from);
+        $msg = $client->getVersion()->unframe($msg);
+        if (is_array($msg)) { // temporary
+            $msg = $msg['payload'];
         }
 
         $cmds = $this->_app->onRecv($from, $msg);
@@ -118,6 +114,10 @@ class WebSocket implements ProtocolInterface {
 
         unset($this->_clients[$conn]);
         return $cmds;
+    }
+
+    public function onError(SocketInterface $conn, \Exception $e) {
+        return $this->_app->onError($conn, $e);
     }
 
     /**

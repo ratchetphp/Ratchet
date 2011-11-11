@@ -14,4 +14,7 @@ class Application implements SocketObserver {
 
     public function onClose(SocketInterface $conn) {
     }
+
+    public function onError(SocketInterface $conn, \Exception $e) {
+    }
 }

@@ -28,4 +28,7 @@ class Protocol implements ProtocolInterface {
 
     public function onClose(SocketInterface $conn) {
     }
+
+    public function onError(SocketInterface $conn, \Exception $e) {
+    }
 }

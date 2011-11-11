@@ -56,6 +56,7 @@ class HyBi10 implements VersionInterface {
         switch($opcode) {
             // continuation frame
             case 0:
+                throw new \UnexpectedValueException("Opcode CONTINUATION not accepted yet");
                 $decodedData['type'] = 'text'; // incomplete
             break;
 
@@ -66,21 +67,25 @@ class HyBi10 implements VersionInterface {
 
             // binary data frame
             case 2:
+                throw new \UnexpectedValueException("Opcode BINARY not accepted yet");
                 $decodedData['type'] = 'binary';
             break;
 
             // connection close frame:
             case 8:
+                throw new \UnexpectedValueException("Opcode CLOSE not accepted yet");
                 $decodedData['type'] = 'close';
             break;
 
             // ping frame:
             case 9:
+                throw new \UnexpectedValueException("Opcode PING not accepted yet");
                 $decodedData['type'] = 'ping';                
             break;
 
             // pong frame:
             case 10:
+                throw new \UnexpectedValueException("Opcode PONG not accepted yet");
                 $decodedData['type'] = 'pong';
             break;
 

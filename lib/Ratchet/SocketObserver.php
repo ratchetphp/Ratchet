@@ -29,4 +29,6 @@ interface SocketObserver {
      * @return Ratchet\Command\CommandInterface|null
      */
     function onClose(SocketInterface $conn);
+
+    function onError(SocketInterface $conn, \Exception $e);
 }
