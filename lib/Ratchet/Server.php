@@ -8,8 +8,14 @@ use Ratchet\Command\CommandInterface;
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
  * @todo Consider using _connections as master reference and passing iterator_to_array(_connections) to socket_select
  * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
+ * @todo With all these options for the server I should probably use a DIC
  */
 class Server implements SocketObserver, \IteratorAggregate {
+    /**
+     * This is probably temporary
+     */
+    const RECV_BYTES = 1024;
+
     /**
      * The master socket, receives all connections
      * @type Socket
@@ -65,6 +71,9 @@ class Server implements SocketObserver, \IteratorAggregate {
         set_time_limit(0);
         ob_implicit_flush();
 
+        $this->_master->set_nonblock();
+        declare(ticks = 1);
+
         if (false === ($this->_master->bind($address, (int)$port))) {
             throw new Exception($this->_master);
         }
@@ -72,9 +81,6 @@ class Server implements SocketObserver, \IteratorAggregate {
         if (false === ($this->_master->listen())) {
             throw new Exception($this->_master);
         }
-
-        $this->_master->set_nonblock();
-        declare(ticks = 1); 
 
         do {
             try {
@@ -86,13 +92,24 @@ class Server implements SocketObserver, \IteratorAggregate {
                         $res = $this->onOpen($this->_master);
                     } else {
                         $conn  = $this->_connections[$resource];
-                        $data  = null;
-                        $bytes = $conn->recv($data, 4096, 0);
+                        $data  = $buf = '';
 
-                        if ($bytes == 0) {
-                            $res = $this->onClose($conn);
-                        } else {
+                        $bytes = $conn->recv($buf, static::RECV_BYTES, 0);
+                        if ($bytes > 0) {
+                            $data = $buf;
+
+                            // This idea works* but...
+                            // 1) A single DDOS attack will block the entire application (I think)
+                            // 2) What if the last message in the frame is equal to RECV_BYTES?  Would loop until another msg is sent
+                            // Need to 1) proc_open the recv() calls.  2) ???
+                            while ($bytes === static::RECV_BYTES) {
+                                $bytes = $conn->recv($buf, static::RECV_BYTES, 0);
+                                $data .= $buf;
+                            }
+
                             $res = $this->onRecv($conn, $data);
+                        } else {
+                            $res = $this->onClose($conn);
                         }
                     }
 

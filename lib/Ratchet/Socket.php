@@ -34,6 +34,10 @@ class Socket implements SocketInterface {
         }
     }
 
+    public function __destruct() {
+        @socket_close($this->_resource);
+    }
+
     /**
      * @return resource (Socket)
      */
