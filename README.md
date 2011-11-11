@@ -53,6 +53,10 @@ class Chat implements SocketObserver {
     public function onClose(SocketInterface $conn) {
         $this->_clients->detach($conn);
     }
+
+    public function onError(SocketInterface $conn, \Exception $e) {
+        return $this->_factory->newCommand('CloseConnection', $conn);
+    }
 }
 
     // Run the server application through the WebSocket protocol

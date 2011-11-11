@@ -96,12 +96,25 @@ class HyBi10 implements VersionInterface {
         }
 
         if($payloadLength === 126) {
+           $msg_len = bindec(sprintf('%08b', ord($data[2])) . sprintf('%08b', ord($data[3])));
            $mask = substr($data, 4, 4);
            $payloadOffset = 8;
         } elseif($payloadLength === 127) {
+            $msg_len = bindec(
+                sprintf('%08b', ord($data[2])) 
+              . sprintf('%08b', ord($data[3]))
+              . sprintf('%08b', ord($data[4]))
+              . sprintf('%08b', ord($data[5]))
+              . sprintf('%08b', ord($data[6]))
+              . sprintf('%08b', ord($data[7]))
+              . sprintf('%08b', ord($data[8]))
+              . sprintf('%08b', ord($data[9]))
+            );
+
             $mask = substr($data, 10, 4);
             $payloadOffset = 14;
         } else {
+            $msg_len = $payloadLength;
             $mask = substr($data, 2, 4);    
             $payloadOffset = 6;
         }

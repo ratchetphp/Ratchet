@@ -105,11 +105,14 @@ class Server implements SocketObserver, \IteratorAggregate {
                             // This idea works* but...
                             // 1) A single DDOS attack will block the entire application (I think)
                             // 2) What if the last message in the frame is equal to $recv_bytes?  Would loop until another msg is sent
+                            // 3) This failed...an intermediary can set their buffer lower and this still propagates a fragment
                             // Need to 1) proc_open the recv() calls.  2) ???
+/*
                             while ($bytes === $recv_bytes) {
                                 $bytes = $conn->recv($buf, $recv_bytes, 0);
                                 $data .= $buf;
                             }
+*/
 
                             $res = $this->onRecv($conn, $data);
                         } else {
