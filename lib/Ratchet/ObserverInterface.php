@@ -6,6 +6,7 @@ namespace Ratchet;
  * @todo Consider an onException method.  Since server is running its own loop the app currently doesn't know when a problem is handled
  * @todo Consider an onDisconnect method for a server-side close()'ing of a connection - onClose would be client side close()
  * @todo Consider adding __construct(SocketObserver $decorator = null) - on Server move Socket as parameter to run()
+ * @todo Does this belong in \Ratchet\Server\?
  */
 interface SocketObserver {
     /**

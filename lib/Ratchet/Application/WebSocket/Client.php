@@ -4,6 +4,7 @@ use Ratchet\Protocol\WebSocket\Version\VersionInterface;
 
 /**
  * A representation of a Socket connection of the user on the other end of the socket
+ * @todo Replace this with Resource\Connection\ConnectionInterface
  */
 class Client {
     /**
