@@ -1,6 +1,6 @@
 <?php
-namespace Ratchet\Protocol\WebSocket\Version;
-use Ratchet\Protocol\WebSocket\Util\HTTP;
+namespace Ratchet\Application\WebSocket\Version;
+use Ratchet\Application\WebSocket\Util\HTTP;
 
 /**
  * The HyBi-10 version, identified in the headers as version 8, is currently implemented by the latest Chrome and Firefix version

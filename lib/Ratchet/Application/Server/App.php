@@ -1,8 +1,8 @@
 <?php
-namespace Ratchet;
-use Ratchet\Server\Aggregator;
-use Ratchet\Protocol\ProtocolInterface;
-use Ratchet\Command\CommandInterface;
+namespace Ratchet\Application\Server;
+use Ratchet\ObserverInterface;
+use Ratchet\SocketInterface;
+use Ratchet\Resource\Command\CommandInterface;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
@@ -10,10 +10,10 @@ use Ratchet\Command\CommandInterface;
  * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
  * @todo With all these options for the server I should probably use a DIC
  */
-class Server implements SocketObserver, \IteratorAggregate {
+class App implements ObserverInterface {
     /**
      * The master socket, receives all connections
-     * @type Socket
+     * @var Socket
      */
     protected $_master = null;
 
@@ -28,41 +28,35 @@ class Server implements SocketObserver, \IteratorAggregate {
     protected $_connections;
 
     /**
-     * @var SocketObserver
+     * @var Ratchet\ObserverInterface
      * Maybe temporary?
      */
     protected $_app;
 
     /**
-     * @param Ratchet\Socket
-     * @param SocketObserver
+     * @param Ratchet\ObserverInterface
      */
-    public function __construct(SocketInterface $host, SocketObserver $application) {
-        $this->_master = $host;
-        $socket = $host->getResource();
-        $this->_resources[] = $socket;
+    public function __construct(ObserverInterface $application = null) {
+        if (null === $application) {
+            throw new \UnexpectedValueException("Server requires an application to run off of");
+        }
 
+        $this->_app         = $application;
         $this->_connections = new \ArrayIterator(array());
-
-        $this->_app = $application;
-    }
-
-    /**
-     * @return ArrayIterator of SocketInterfaces
-     * @todo This interface was originally in place as Server was passed up/down chain, but isn't anymore, consider removing
-     */
-    public function getIterator() {
-        return $this->_connections;
     }
 
     /*
+     * @param Ratchet\SocketInterface
      * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
      * @param int The port to listen to connections on
-     * @throws Exception
+     * @throws Ratchet\Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
      * @todo Consider making the 4kb listener changable
      */
-    public function run($address = '127.0.0.1', $port = 1025) {
+    public function run(SocketInterface $host, $address = '127.0.0.1', $port = 1025) {
+        $this->_master      = $host;
+        $this->_resources[] = $host->getResource();
+
         $recv_bytes = 1024;
 
         set_time_limit(0);

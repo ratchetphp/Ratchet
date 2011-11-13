@@ -1,9 +1,9 @@
 <?php
-namespace Ratchet\Command;
+namespace Ratchet\Resource\Command;
 use Ratchet\SocketInterface;
 
 /**
- * A factory pattern class to easily create all the things in the Ratchet\Command interface
+ * A factory pattern class to easily create all the things in the Ratchet\Resource\Command interface
  */
 class Factory {
     protected $_paths = array();

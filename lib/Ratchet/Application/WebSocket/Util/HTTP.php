@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Protocol\WebSocket\Util;
+namespace Ratchet\Application\WebSocket\Util;
 
 /**
  * A helper class for handling HTTP requests

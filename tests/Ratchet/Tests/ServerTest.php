@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Tests;
-use Ratchet\Server;
+use Ratchet\Application\Server\App as Server;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Tests\Mock\Application as TestApp;
 
@@ -15,7 +15,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->_catalyst = new Socket;
         $this->_app      = new TestApp;
-        $this->_server   = new Server($this->_catalyst, $this->_app);
+        $this->_server   = new Server($this->_app);
     }
 
     protected function getPrivateProperty($class, $name) {
@@ -26,30 +26,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase {
         return $property->getValue($class);
     }
 
-    public function testServerHasServerInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\SocketObserver');
-        $this->assertThat($this->_server, $constraint);
-    }
-
-    public function testIteration() {
-        $this->assertInstanceOf('\\Iterator', $this->_server->getIterator());
-    }
-
-    public function SKIPtestServerCanNotRunWithoutApplication() {
-        $this->setExpectedException('\\RuntimeException');
-        $this->_server->run();
-    }
-
-/*
-    public function testAttatchedReceiverIsSet() {
-        $app = new TestApp();
-
-        $this->_server->attatchReceiver($app);
-// todo, use proper assertions...can't look them up atm, no internet
-        $this->assertAttributeEquals(Array(spl_object_hash($app) => $app), '_receivers', $this->_server);
-    }
-
-/**/
     public function testBindToInvalidAddress() {
         return $this->markTestIncomplete();
 

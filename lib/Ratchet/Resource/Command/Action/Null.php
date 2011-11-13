@@ -1,12 +1,12 @@
 <?php
-namespace Ratchet\Command\Action;
-use Ratchet\Command\ActionTemplate;
-use Ratchet\SocketObserver;
+namespace Ratchet\Resource\Command\Action;
+use Ratchet\Resource\Command\ActionTemplate;
+use Ratchet\ObserverInterface;
 
 /**
  * Null pattern - execution does nothing, something needs to be passed back though
  */
 class Null extends ActionTemplate {
-    public function execute(SocketObserver $scope = null) {
+    public function execute(ObserverInterface $scope = null) {
     }
 }

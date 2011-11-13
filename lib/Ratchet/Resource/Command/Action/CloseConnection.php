@@ -1,16 +1,16 @@
 <?php
-namespace Ratchet\Command\Action;
-use Ratchet\Command\ActionTemplate;
-use Ratchet\SocketObserver;
+namespace Ratchet\Resource\Command\Action;
+use Ratchet\Resource\Command\ActionTemplate;
+use Ratchet\ObserverInterface;
 use Ratchet\SocketInterface;
-use Ratchet\Command\CommandInterface;
-use Ratchet\Command\Composite;
+use Ratchet\Resource\Command\CommandInterface;
+use Ratchet\Resource\Command\Composite;
 
 /**
  * Close the connection to the sockets passed in the constructor
  */
 class CloseConnection extends ActionTemplate {
-    function execute(SocketObserver $scope = null) {
+    function execute(ObserverInterface $scope = null) {
         // All this code allows an application to have its onClose method executed before the socket is actually closed
         $ret = $scope->onClose($this->getSocket());
 
@@ -19,7 +19,7 @@ class CloseConnection extends ActionTemplate {
             $comp->enqueue($ret);
 
             $rt = new Runtime($this->getSocket());
-            $rt->setCommand(function(SocketInterface $socket, SocketObserver $scope) {
+            $rt->setCommand(function(SocketInterface $socket, ObserverInterface $scope) {
                 $socket->close();
             });
             $comp->enqueue($rt);

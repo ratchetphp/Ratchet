@@ -1,10 +1,11 @@
 <?php
 namespace Ratchet;
-use Ratchet\Protocol\ProtocolInterface;
+use Ratchet\Application\ProtocolInterface;
 
 /**
  * A wrapper for the PHP socket_ functions
  * @author Chris Boden <shout at chrisboden dot ca>
+ * @todo Possibly move this into Ratchet\Resource - another concrete could use streams
  */
 class Socket implements SocketInterface {
     /**
@@ -110,7 +111,7 @@ class Socket implements SocketInterface {
     }
 
     /**
-     * @param Ratchet\Protocol\ProtocolInterface
+     * @param Ratchet\Application\ProtocolInterface
      * @return Socket
      * @throws Exception
      */

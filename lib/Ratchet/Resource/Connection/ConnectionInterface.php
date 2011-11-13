@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Server;
+namespace Ratchet\Resource\Connection;
 use Ratchet\SocketInterface;
 
 interface ConnectionInterface {

@@ -1,13 +1,14 @@
 <?php
-namespace Ratchet\Protocol;
-use Ratchet\Protocol\WebSocket\Client;
-use Ratchet\Protocol\WebSocket\VersionInterface;
+namespace Ratchet\Application\WebSocket;
+use Ratchet\Application\WebSocket\Client;
+use Ratchet\Application\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
-use Ratchet\SocketObserver;
-use Ratchet\Command\Factory;
-use Ratchet\Command\CommandInterface;
-use Ratchet\Command\Action\SendMessage;
-use Ratchet\Protocol\WebSocket\Util\HTTP;
+use Ratchet\ObserverInterface;
+use Ratchet\Resource\Command\Factory;
+use Ratchet\Resource\Command\CommandInterface;
+use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Application\WebSocket\Util\HTTP;
+use Ratchet\Application\ProtocolInterface;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -16,10 +17,10 @@ use Ratchet\Protocol\WebSocket\Util\HTTP;
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  * @todo Consider cheating the application...don't call _app::onOpen until handshake is complete - only issue is sending headers/cookies
- * @todo Consider chaning this class to a State Pattern.  If a SocketObserver is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
- * @todo Change namespace to Ratchet\Protocol\WebSocket\Adapter
+ * @todo Consider chaning this class to a State Pattern.  If a ObserverInterface is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
+ * @todo Change namespace to Ratchet\Application\WebSocket\Adapter
  */
-class WebSocket implements ProtocolInterface {
+class App implements ProtocolInterface {
     /**
      * Lookup for connected clients
      * @var SplObjectStorage
@@ -28,12 +29,12 @@ class WebSocket implements ProtocolInterface {
 
     /**
      * Decorated application
-     * @var Ratchet\SocketObserver
+     * @var Ratchet\ObserverInterface
      */
     protected $_app;
 
     /**
-     * @var Ratchet\Command\Factory
+     * @var Ratchet\Resource\Command\Factory
      */
     protected $_factory;
 
@@ -45,9 +46,13 @@ class WebSocket implements ProtocolInterface {
       , 'Hixie76' => null
     );
 
-    public function __construct(SocketObserver $application) {
+    public function __construct(ObserverInterface $app = null) {
+        if (null === $app) {
+            throw new \UnexpectedValueException("WebSocket requires an application to run off of");
+        }
+
         $this->_clients = new \SplObjectStorage;
-        $this->_app     = $application;
+        $this->_app     = $app;
         $this->_factory = new Factory;
     }
 
@@ -128,8 +133,8 @@ class WebSocket implements ProtocolInterface {
 
     /**
      * Checks if a return Command from your application is a message, if so encode it/them
-     * @param Ratchet\Command\CommandInterface|NULL
-     * @return Ratchet\Command\CommandInterface|NULL
+     * @param Ratchet\Resource\Command\CommandInterface|NULL
+     * @return Ratchet\Resource\Command\CommandInterface|NULL
      */
     protected function prepareCommand(CommandInterface $command = null) {
         if ($command instanceof SendMessage) {
@@ -169,7 +174,7 @@ class WebSocket implements ProtocolInterface {
      */
     protected function versionFactory($version) {
         if (null === $this->_versions[$version]) {
-            $ns = __CLASS__ . "\\Version\\{$version}";
+            $ns = __NAMESPACE__ . "\\Version\\{$version}";
             $this->_version[$version] = new $ns;
         }
 

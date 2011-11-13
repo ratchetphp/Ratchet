@@ -1,9 +1,9 @@
 <?php
 namespace Ratchet\Tests\Protocol\WebSocket\Version;
-use Ratchet\Protocol\WebSocket\Version\Hixie76;
+use Ratchet\Application\WebSocket\Version\Hixie76;
 
 /**
- * @covers Ratchet\Protocol\WebSocket\Version\Hixie76
+ * @covers Ratchet\Application\WebSocket\Version\Hixie76
  */
 class Hixie76Test extends \PHPUnit_Framework_TestCase {
     protected $_version;
@@ -13,7 +13,7 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
     }
 
     public function testClassImplementsVersionInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\Protocol\\WebSocket\\Version\\VersionInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\Application\\WebSocket\\Version\\VersionInterface');
         $this->assertThat($this->_version, $constraint);
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Command;
+namespace Ratchet\Resource\Command;
 use Ratchet\SocketInterface;
 
 abstract class ActionTemplate implements ActionInterface {

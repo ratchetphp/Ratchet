@@ -1,6 +1,6 @@
 <?php
-namespace Ratchet\Protocol\WebSocket;
-use Ratchet\Protocol\WebSocket\Version\VersionInterface;
+namespace Ratchet\Application\WebSocket;
+use Ratchet\Application\WebSocket\Version\VersionInterface;
 
 /**
  * A representation of a Socket connection of the user on the other end of the socket
@@ -8,7 +8,7 @@ use Ratchet\Protocol\WebSocket\Version\VersionInterface;
  */
 class Client {
     /**
-     * @var Ratchet\Protocol\WebSocket\Version\VersionInterface
+     * @var Ratchet\Application\WebSocket\Version\VersionInterface
      */
     protected $_version = null;
 

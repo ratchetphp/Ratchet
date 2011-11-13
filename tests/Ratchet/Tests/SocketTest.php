@@ -23,12 +23,6 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $this->_socket = new Socket();
     }
 
-/*
-    public function testWhatGoesInConstructComesOut() {
-        $this->assertTrue(false);
-    }
-*/
-
     public function testGetDefaultConfigForConstruct() {
         $ref_conf = static::getMethod('getConfig');
         $config   = $ref_conf->invokeArgs($this->_socket, array());

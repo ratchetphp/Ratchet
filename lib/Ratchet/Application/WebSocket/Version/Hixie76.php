@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Protocol\WebSocket\Version;
+namespace Ratchet\Application\WebSocket\Version;
 
 /**
  * The Hixie76 is currently implemented by Safari

@@ -1,6 +1,6 @@
 <?php
-namespace Ratchet\Command;
-use Ratchet\SocketObserver;
+namespace Ratchet\Resource\Command;
+use Ratchet\ObserverInterface;
 
 class Composite extends \SplQueue implements CommandInterface {
     /**
@@ -22,7 +22,7 @@ class Composite extends \SplQueue implements CommandInterface {
         }
     }
 
-    public function execute(SocketObserver $scope = null) {
+    public function execute(ObserverInterface $scope = null) {
         $this->setIteratorMode(static::IT_MODE_DELETE);
 
         $recursive = new self;

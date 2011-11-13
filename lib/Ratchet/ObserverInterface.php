@@ -5,14 +5,21 @@ namespace Ratchet;
  * Observable/Observer design pattern interface for handing events on a socket
  * @todo Consider an onException method.  Since server is running its own loop the app currently doesn't know when a problem is handled
  * @todo Consider an onDisconnect method for a server-side close()'ing of a connection - onClose would be client side close()
- * @todo Consider adding __construct(SocketObserver $decorator = null) - on Server move Socket as parameter to run()
+ * @todo Consider adding __construct(ObserverInterface $decorator = null) - on Server move Socket as parameter to run()
  * @todo Does this belong in \Ratchet\Server\?
  */
-interface SocketObserver {
+interface ObserverInterface {
+    /**
+     * Decorator pattern
+     * @param ObserverInterface If nothing is passed it's the end of the line
+     * @throws UnexpectedValueException
+     */
+    public function __construct(ObserverInterface $app = null);
+
     /**
      * When a new connection is opened it will be passed to this method
      * @param SocketInterface The socket/connection that just connected to your application
-     * @return Ratchet\Command\CommandInterface|null
+     * @return Ratchet\Resource\Command\CommandInterface|null
      */
     function onOpen(SocketInterface $conn);
 
@@ -20,14 +27,14 @@ interface SocketObserver {
      * Triggered when a client sends data through the socket
      * @param SocketInterface The socket/connection that sent the message to your application
      * @param string The message received
-     * @return Ratchet\Command\CommandInterface|null
+     * @return Ratchet\Resource\Command\CommandInterface|null
      */
     function onRecv(SocketInterface $from, $msg);
 
     /**
      * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not result in an error if it has already been closed.
      * @param SocketInterface The socket/connection that is closing/closed
-     * @return Ratchet\Command\CommandInterface|null
+     * @return Ratchet\Resource\Command\CommandInterface|null
      */
     function onClose(SocketInterface $conn);
 
@@ -36,7 +43,7 @@ interface SocketObserver {
      * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
      * @param SocketInterface
      * @param \Exception
-     * @return Ratchet\Command\CommandInterface|null
+     * @return Ratchet\Resource\Command\CommandInterface|null
      */
     function onError(SocketInterface $conn, \Exception $e);
 }

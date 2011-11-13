@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\SocketObserver;
-use Ratchet\Protocol\ProtocolInterface;
+use Ratchet\ObserverInterface;
+use Ratchet\Application\ProtocolInterface;
 use Ratchet\Server;
 use Ratchet\SocketInterface;
 
 class Protocol implements ProtocolInterface {
-    public function __construct(SocketObserver $application) {
+    public function __construct(ObserverInterface $app = null) {
     }
 
     public static function getDefaultConfig() {

@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Protocol\WebSocket\Version;
+namespace Ratchet\Application\WebSocket\Version;
 
 /**
  * Despite the version iterations of WebInterface the actions they go through are similar

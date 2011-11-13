@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Tests\Protocol;
-use Ratchet\Protocol\WebSocket;
+use Ratchet\Application\WebSocket\App as WebSocket;
 use Ratchet\Tests\Mock\Socket;
 use Ratchet\Tests\Mock\Application;
 
 /**
- * @covers Ratchet\Protocol\WebSocket
+ * @covers Ratchet\Application\WebSocket
  */
 class WebSocketTest extends \PHPUnit_Framework_TestCase {
     protected $_ws;
@@ -15,12 +15,7 @@ class WebSocketTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testServerImplementsServerInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\SocketObserver');
-        $this->assertThat($this->_ws, $constraint);
-    }
-
-    public function testServerImplementsProtocolInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\Protocol\ProtocolInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\ObserverInterface');
         $this->assertThat($this->_ws, $constraint);
     }
 
