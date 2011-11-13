@@ -10,13 +10,6 @@ namespace Ratchet;
  */
 interface ObserverInterface {
     /**
-     * Decorator pattern
-     * @param ObserverInterface If nothing is passed it's the end of the line
-     * @throws UnexpectedValueException
-     */
-    public function __construct(ObserverInterface $app = null);
-
-    /**
      * When a new connection is opened it will be passed to this method
      * @param SocketInterface The socket/connection that just connected to your application
      * @return Ratchet\Resource\Command\CommandInterface|null

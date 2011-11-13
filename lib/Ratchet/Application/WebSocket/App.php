@@ -3,12 +3,12 @@ namespace Ratchet\Application\WebSocket;
 use Ratchet\Application\WebSocket\Client;
 use Ratchet\Application\WebSocket\VersionInterface;
 use Ratchet\SocketInterface;
-use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
+use Ratchet\Application\ConfiguratorInterface;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Application\WebSocket\Util\HTTP;
-use Ratchet\Application\ProtocolInterface;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -20,7 +20,7 @@ use Ratchet\Application\ProtocolInterface;
  * @todo Consider chaning this class to a State Pattern.  If a ObserverInterface is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
  * @todo Change namespace to Ratchet\Application\WebSocket\Adapter
  */
-class App implements ProtocolInterface {
+class App implements ApplicationInterface, ConfiguratorInterface {
     /**
      * Lookup for connected clients
      * @var SplObjectStorage
@@ -46,7 +46,7 @@ class App implements ProtocolInterface {
       , 'Hixie76' => null
     );
 
-    public function __construct(ObserverInterface $app = null) {
+    public function __construct(ApplicationInterface $app = null) {
         if (null === $app) {
             throw new \UnexpectedValueException("WebSocket requires an application to run off of");
         }

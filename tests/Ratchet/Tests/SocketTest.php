@@ -2,7 +2,6 @@
 namespace Ratchet\Tests;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Socket as RealSocket;
-use Ratchet\Tests\Mock\Protocol;
 use Ratchet\Tests\Mock\Application as TestApp;
 
 /**
@@ -43,24 +42,6 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     public function testInvalidSocketCall() {
         $this->setExpectedException('\\BadMethodCallException');
         $this->_socket->fake_method();
-    }
-
-    public function testConstructionFromProtocolInterfaceConfig() {
-        $protocol = new Protocol(new TestApp);
-        $socket   = Socket::createFromConfig($protocol);
-
-        $this->assertInstanceOf('\\Ratchet\\Socket', $socket);
-    }
-
-    public function testCreationFromConfigOutputMatchesInput() {
-        $protocol = new Protocol(new TestApp);
-        $socket   = Socket::createFromConfig($protocol);
-        $config   = $protocol::getDefaultConfig();
-
-        // change this to array_filter late
-        unset($config['options']);
-
-        $this->assertAttributeEquals($config, '_arguments', $socket);
     }
 
     public function asArrayProvider() {

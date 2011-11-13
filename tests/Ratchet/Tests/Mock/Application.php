@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
 use Ratchet\Tests\Mock\Socket as MockSocket;
 use Ratchet\SocketInterface;
 
-class Application implements ObserverInterface {
-    public function __construct(ObserverInterface $app = null) {
+class Application implements ApplicationInterface {
+    public function __construct(ApplicationInterface $app = null) {
     }
 
     public function onOpen(SocketInterface $conn) {

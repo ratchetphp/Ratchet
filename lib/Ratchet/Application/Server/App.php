@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Application\Server;
-use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
 use Ratchet\SocketInterface;
 use Ratchet\Resource\Command\CommandInterface;
 
@@ -10,7 +10,7 @@ use Ratchet\Resource\Command\CommandInterface;
  * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
  * @todo With all these options for the server I should probably use a DIC
  */
-class App implements ObserverInterface {
+class App implements ApplicationInterface {
     /**
      * The master socket, receives all connections
      * @var Socket
@@ -36,7 +36,7 @@ class App implements ObserverInterface {
     /**
      * @param Ratchet\ObserverInterface
      */
-    public function __construct(ObserverInterface $application = null) {
+    public function __construct(ApplicationInterface $application = null) {
         if (null === $application) {
             throw new \UnexpectedValueException("Server requires an application to run off of");
         }
