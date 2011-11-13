@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Tests\Protocol\WebSocket\Version;
+namespace Ratchet\Tests\Application\WebSocket\Version;
 use Ratchet\Application\WebSocket\Version\HyBi10;
 
 /**

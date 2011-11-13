@@ -1,17 +1,17 @@
 <?php
-namespace Ratchet\Tests\Protocol;
-use Ratchet\Application\WebSocket\App as WebSocket;
+namespace Ratchet\Tests\Application\WebSocket;
+use Ratchet\Application\WebSocket\App as RealApp;
 use Ratchet\Tests\Mock\Socket;
 use Ratchet\Tests\Mock\Application;
 
 /**
- * @covers Ratchet\Application\WebSocket
+ * @covers Ratchet\Application\WebSocket\App
  */
-class WebSocketTest extends \PHPUnit_Framework_TestCase {
+class AppTest extends \PHPUnit_Framework_TestCase {
     protected $_ws;
 
     public function setUp() {
-        $this->_ws = new WebSocket(new Application);
+        $this->_ws = new RealApp(new Application);
     }
 
     public function testGetConfigReturnsArray() {

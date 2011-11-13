@@ -5,9 +5,9 @@ use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Tests\Mock\Application as TestApp;
 
 /**
- * @covers Ratchet\Server
+ * @covers Ratchet\Server\App
  */
-class ServerTest extends \PHPUnit_Framework_TestCase {
+class AppTest extends \PHPUnit_Framework_TestCase {
     protected $_catalyst;
     protected $_server;
     protected $_app;
