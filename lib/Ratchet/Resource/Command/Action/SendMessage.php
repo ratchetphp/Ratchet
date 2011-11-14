@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Resource\Command\Action;
 use Ratchet\Resource\Command\ActionTemplate;
-//use Ratchet\ObserverInterface;
 use Ratchet\Application\ApplicationInterface;
 
 /**

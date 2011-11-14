@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Resource\Command;
-//use Ratchet\ObserverInterface;
 use Ratchet\Application\ApplicationInterface;
 
 class Composite extends \SplQueue implements CommandInterface {

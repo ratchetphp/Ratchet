@@ -5,6 +5,7 @@ namespace Ratchet;
  * Observable/Observer design pattern interface for handing events on a socket
  * @todo Consider an onDisconnect method for a server-side close()'ing of a connection - onClose would be client side close()
  * @todo Is this interface needed anymore?
+ * @deprecated
  */
 interface ObserverInterface {
     /**

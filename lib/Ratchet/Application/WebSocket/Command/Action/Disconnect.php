@@ -1,8 +1,7 @@
 <?php
 namespace Ratchet\Application\WebSocket\Command\Action;
-use Ratchet\SocketInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
 
 class Disconnect extends SendMessage {
     protected $_code = 1000;
@@ -13,7 +12,7 @@ class Disconnect extends SendMessage {
         // re-do message based on code
     }
 
-    public function execute(ObserverInterface $scope = null) {
+    public function execute(ApplicationInterface $scope = null) {
         parent::execute();
         $this->_socket->close();
     }

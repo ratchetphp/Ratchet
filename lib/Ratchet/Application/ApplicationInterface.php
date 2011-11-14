@@ -1,9 +1,8 @@
 <?php
 namespace Ratchet\Application;
-//use Ratchet\ObserverInterface;
 use Ratchet\Resource\Connection;
 
-interface ApplicationInterface /*extends ObserverInterface*/ {
+interface ApplicationInterface {
     /**
      * Decorator pattern
      * @param Ratchet\ObserverInterface Application to wrap in protocol

@@ -15,7 +15,7 @@ use Ratchet\Application\WebSocket\Util\HTTP;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
- * @todo Consider chaning this class to a State Pattern.  If a ObserverInterface is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
+ * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
     /**

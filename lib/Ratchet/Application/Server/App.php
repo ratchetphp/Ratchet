@@ -27,7 +27,7 @@ class App implements ApplicationInterface {
     protected $_app;
 
     /**
-     * @param Ratchet\ObserverInterface
+     * @param Ratchet\Application\ApplicationInterface
      */
     public function __construct(ApplicationInterface $application = null) {
         if (null === $application) {

@@ -1,9 +1,9 @@
 <?php
 namespace Ratchet\Application\WebSocket\Command\Action;
 use Ratchet\Resource\Command\ActionTemplate;
-use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
 
 class Ping extends ActionTemplate {
-    public function execute(ObserverInterface $scope = null) {
+    public function execute(ApplicationInterface $scope = null) {
     }
 }
