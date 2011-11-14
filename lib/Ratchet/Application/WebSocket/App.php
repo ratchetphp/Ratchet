@@ -2,9 +2,9 @@
 namespace Ratchet\Application\WebSocket;
 use Ratchet\Application\WebSocket\Client;
 use Ratchet\Application\WebSocket\VersionInterface;
-use Ratchet\SocketInterface;
 use Ratchet\Application\ApplicationInterface;
 use Ratchet\Application\ConfiguratorInterface;
+use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
@@ -70,11 +70,11 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         );
     }
 
-    public function onOpen(SocketInterface $conn) {
+    public function onOpen(Connection $conn) {
         $this->_clients[$conn] = new Client;
     }
 
-    public function onRecv(SocketInterface $from, $msg) {
+    public function onRecv(Connection $from, $msg) {
         $client = $this->_clients[$from];
         if (true !== $client->isHandshakeComplete()) {
             $response = $client->setVersion($this->getVersion($msg))->doHandshake($msg);
@@ -109,7 +109,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         return $this->prepareCommand($cmds);
     }
 
-    public function onClose(SocketInterface $conn) {
+    public function onClose(Connection $conn) {
         $cmds = $this->prepareCommand($this->_app->onClose($conn));
 
         // $cmds = new Composite if null
@@ -121,7 +121,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         return $cmds;
     }
 
-    public function onError(SocketInterface $conn, \Exception $e) {
+    public function onError(Connection $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
     }
 
@@ -138,7 +138,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      */
     protected function prepareCommand(CommandInterface $command = null) {
         if ($command instanceof SendMessage) {
-            $version = $this->_clients[$command->getSocket()]->getVersion();
+            $version = $this->_clients[$command->getConnection()]->getVersion();
             return $command->setMessage($version->frame($command->getMessage()));
         }
 

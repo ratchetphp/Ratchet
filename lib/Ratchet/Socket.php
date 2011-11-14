@@ -39,6 +39,11 @@ class Socket implements SocketInterface {
         @socket_close($this->_resource);
     }
 
+    public function __toString() {
+        $id = (string)$this->getResource();
+        return (string)substr($id, strrpos($id, '#') + 1);
+    }
+
     /**
      * @return resource (Socket)
      */

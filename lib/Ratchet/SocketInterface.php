@@ -8,7 +8,7 @@ interface SocketInterface {
     /**
      * @return resource
      */
-    public function getResource();
+    function getResource();
 
     /**
      * Send text to the client on the other end of the socket
@@ -31,4 +31,9 @@ interface SocketInterface {
      * Close the open connection to the client/socket
      */
     function close();
+
+    /**
+     * Return the unique ID of this socket instance
+     */
+    function __toString();
 }

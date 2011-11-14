@@ -1,18 +1,18 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\SocketInterface;
+use Ratchet\Resource\Connection;
 
 abstract class ActionTemplate implements ActionInterface {
     /**
-     * @var Ratchet\SocketInterface
+     * @var Ratchet\Resource\Connection
      */
-    protected $_socket;
+    protected $_conn;
 
-    public function __construct(SocketInterface $socket) {
-        $this->_socket = $socket;
+    public function __construct(Connection $conn) {
+        $this->_conn = $conn;
     }
 
-    public function getSocket() {
-        return $this->_socket;
+    public function getConnection() {
+        return $this->_conn;
     }
 }

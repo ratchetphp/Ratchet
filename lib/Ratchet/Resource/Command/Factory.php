@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\SocketInterface;
+use Ratchet\Resource\Connection;
 
 /**
  * A factory pattern class to easily create all the things in the Ratchet\Resource\Command interface
@@ -32,7 +32,7 @@ class Factory {
      * @return CommandInterface
      * @throws UnexpectedValueException
      */
-    public function newCommand($name, SocketInterface $conn) {
+    public function newCommand($name, Connection $conn) {
         $cmd = null;
         foreach ($this->_paths as $path) {
             if (class_exists($path . $name)) {

@@ -2,6 +2,7 @@
 namespace Ratchet\Application\Server;
 use Ratchet\Application\ApplicationInterface;
 use Ratchet\SocketInterface;
+use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\CommandInterface;
 
 /**
@@ -12,23 +13,17 @@ use Ratchet\Resource\Command\CommandInterface;
  */
 class App implements ApplicationInterface {
     /**
-     * The master socket, receives all connections
-     * @var Socket
-     */
-    protected $_master = null;
-
-    /**
      * @var array of Socket Resources
      */
     protected $_resources = array();
 
     /**
-     * @var ArrayIterator of Resouces (Socket type) as keys, Ratchet\Socket as values
+     * @var array of resources/Connections
      */
-    protected $_connections;
+    protected $_connections = array();
 
     /**
-     * @var Ratchet\ObserverInterface
+     * @var Ratchet\Application\ApplicationInterface
      * Maybe temporary?
      */
     protected $_app;
@@ -41,8 +36,7 @@ class App implements ApplicationInterface {
             throw new \UnexpectedValueException("Server requires an application to run off of");
         }
 
-        $this->_app         = $application;
-        $this->_connections = new \ArrayIterator(array());
+        $this->_app = $application;
     }
 
     /*
@@ -54,7 +48,7 @@ class App implements ApplicationInterface {
      * @todo Consider making the 4kb listener changable
      */
     public function run(SocketInterface $host, $address = '127.0.0.1', $port = 1025) {
-        $this->_master      = $host;
+        $this->_connections[$host->getResource()] = new Connection($host);
         $this->_resources[] = $host->getResource();
 
         $recv_bytes = 1024;
@@ -62,22 +56,22 @@ class App implements ApplicationInterface {
         set_time_limit(0);
         ob_implicit_flush();
 
-        $this->_master->set_nonblock();
+        $host->set_nonblock();
         declare(ticks = 1);
 
-        if (false === ($this->_master->bind($address, (int)$port))) {
-            throw new Exception($this->_master);
+        if (false === ($host->bind($address, (int)$port))) {
+            throw new Exception($host);
         }
 
-        if (false === ($this->_master->listen())) {
-            throw new Exception($this->_master);
+        if (false === ($host->listen())) {
+            throw new Exception($host);
         }
 
         do {
             $changed = $this->_resources;
 
             try {
-                $num_changed = $this->_master->select($changed, $write = null, $except = null, null);
+                $num_changed = $host->select($changed, $write = null, $except = null, null);
             } catch (Exception $e) {
                 // master had a problem?...what to do?
                 continue;
@@ -85,14 +79,13 @@ class App implements ApplicationInterface {
 
 			foreach($changed as $resource) {
                 try {
-                    if ($this->_master->getResource() === $resource) {
-                        $conn = $this->_master;
-                        $res  = $this->onOpen($conn);
-                    } else {
-                        $conn  = $this->_connections[$resource];
-                        $data  = $buf = '';
+                    $conn = $this->_connections[$resource];
 
-                        $bytes = $conn->recv($buf, $recv_bytes, 0);
+                    if ($host->getResource() === $resource) {
+                        $res = $this->onOpen($conn);
+                    } else {
+                        $data  = $buf = '';
+                        $bytes = $conn->getSocket()->recv($buf, $recv_bytes, 0);
                         if ($bytes > 0) {
                             $data = $buf;
 
@@ -134,30 +127,31 @@ class App implements ApplicationInterface {
         } while (true);
     }
 
-    public function onOpen(SocketInterface $conn) {
-        $new_connection     = clone $conn;
-        $this->_resources[] = $new_connection->getResource();
-        $this->_connections[$new_connection->getResource()] = $new_connection;
+    public function onOpen(Connection $conn) {
+        $new_socket     = clone $conn->getSocket();
+        $new_connection = new Connection($new_socket);
+
+        $this->_resources[] = $new_connection->getSocket()->getResource();
+        $this->_connections[$new_connection->getSocket()->getResource()] = $new_connection;
 
         return $this->_app->onOpen($new_connection);
     }
 
-    public function onRecv(SocketInterface $from, $msg) {
+    public function onRecv(Connection $from, $msg) {
         return $this->_app->onRecv($from, $msg);
     }
 
-    public function onClose(SocketInterface $conn) {
-        $resource = $conn->getResource();
+    public function onClose(Connection $conn) {
+        $resource = $conn->getSocket()->getResource();
 
         $cmd = $this->_app->onClose($conn);
 
-        unset($this->_connections[$resource]);
-        unset($this->_resources[array_search($resource, $this->_resources)]);
+        unset($this->_connections[$resource], $this->_resources[array_search($resource, $this->_resources)]);
 
         return $cmd;
     }
 
-    public function onError(SocketInterface $conn, \Exception $e) {
+    public function onError(Connection $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
     }
 }

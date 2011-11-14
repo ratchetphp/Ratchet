@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\ObserverInterface;
+//use Ratchet\ObserverInterface;
+use Ratchet\Application\ApplicationInterface;
 
 /**
  * Socket implementation of the Command Pattern
@@ -12,5 +13,5 @@ interface CommandInterface {
      * @param Ratchet\ObserverInterface Scope to execute the command under
      * @return CommandInterface|NULL
      */
-    function execute(ObserverInterface $scope = null);
+    function execute(ApplicationInterface $scope = null);
 }

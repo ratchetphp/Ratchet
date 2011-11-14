@@ -10,6 +10,10 @@ class FakeSocket extends RealSocket {
         list($this->_arguments['domain'], $this->_arguments['type'], $this->_arguments['protocol']) = static::getConfig($domain, $type, $protocol);
     }
 
+    public function __toString() {
+        return '1';
+    }
+
     public function accept() {
     }
 
