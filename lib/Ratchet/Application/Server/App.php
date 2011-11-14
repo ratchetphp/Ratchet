@@ -57,13 +57,8 @@ class App implements ApplicationInterface {
         $host->set_nonblock();
         declare(ticks = 1);
 
-        if (false === ($host->bind($address, (int)$port))) {
-            throw new Exception($host);
-        }
-
-        if (false === ($host->listen())) {
-            throw new Exception($host);
-        }
+        $host->bind($address, (int)$port);
+        $host->listen();
 
         do {
             $changed = $this->_resources;
@@ -104,8 +99,6 @@ class App implements ApplicationInterface {
                             $res = $this->onClose($conn);
                         }
                     }
-                } catch (Exception $se) {
-                    $res = $this->onError($se->getSocket(), $se); // Just in case...but I don't think I need to do this
                 } catch (\Exception $e) {
                     $res = $this->onError($conn, $e);
                 }
@@ -114,6 +107,7 @@ class App implements ApplicationInterface {
                     try {
                         $new_res = $res->execute($this);
                     } catch (\Exception $e) {
+                        break;
                         // trigger new error
                         // $new_res = $this->onError($e->getSocket()); ???
                         // this is dangerous territory...could get in an infinte loop...Exception might not be Ratchet\Exception...$new_res could be ActionInterface|Composite|NULL...
