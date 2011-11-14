@@ -11,7 +11,6 @@ use Ratchet\Application\WebSocket\Util\HTTP;
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
- * Sets 2 parameters on a Connection: handhsake_complete (bool) and websocket_version (Version\VersionInterface)
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
@@ -40,7 +39,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     public function __construct(ApplicationInterface $app = null) {
         if (null === $app) {
-            throw new \UnexpectedValueException("WebSocket requires an application to run off of");
+            throw new \UnexpectedValueException("WebSocket requires an application to run");
         }
 
         $this->_app     = $app;
@@ -62,17 +61,18 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     public function onOpen(Connection $conn) {
-        $conn->handshake_complete = false;
+        $conn->WebSocket = new \stdClass;
+        $conn->WebSocket->handshake = false;
     }
 
     public function onRecv(Connection $from, $msg) {
-        if (true !== $from->handshake_complete) {
+        if (true !== $from->WebSocket->handshake) {
 
             // need buffer checks in here
 
-            $from->websocket_version = $this->getVersion($msg);
-            $response = $from->websocket_version->handshake($msg);
-            $from->handshake_complete = true;
+            $from->WebSocket->version = $this->getVersion($msg);
+            $response = $from->WebSocket->version->handshake($msg);
+            $from->WebSocket->handshake = true;
 
             if (is_array($response)) {
                 $header = '';
@@ -97,7 +97,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
         // buffer!
 
-        $msg = $from->websocket_version->unframe($msg);
+        $msg = $from->WebSocket->version->unframe($msg);
         if (is_array($msg)) { // temporary
             $msg = $msg['payload'];
         }
@@ -126,7 +126,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      */
     protected function prepareCommand(CommandInterface $command = null) {
         if ($command instanceof SendMessage) {
-            $version = $command->getConnection()->websocket_version;
+            $version = $command->getConnection()->WebSocket->version;
             return $command->setMessage($version->frame($command->getMessage()));
         }
 

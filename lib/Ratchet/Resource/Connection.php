@@ -49,7 +49,7 @@ class Connection {
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function __get($name) {
+    public function &__get($name) {
         if (!isset($this->_data[$name])) {
             throw new \InvalidArgumentException("Attribute '{$name}' not found in Connection {$this->getID()}");
         }
