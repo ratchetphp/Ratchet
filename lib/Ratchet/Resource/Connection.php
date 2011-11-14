@@ -29,6 +29,7 @@ class Connection {
      * Anyway, if you're here, it's not recommended you use this/directly interact with the socket in your App...
      * The command pattern (which is fully flexible, see Runtime) is the safest, desired way to interact with the socket(s).
      * @return Ratchet\SocketInterface
+     * @todo Figure out a better way to match Socket/Connection in Application and Commands
      */
     public function getSocket() {
         return $this->_socket;

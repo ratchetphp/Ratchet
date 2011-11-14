@@ -7,8 +7,6 @@ use Ratchet\Resource\Command\CommandInterface;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
- * @todo Consider using _connections as master reference and passing iterator_to_array(_connections) to socket_select
- * @todo Currently passing Socket object down the decorated chain - should be sending reference to it instead; Receivers do not interact with the Socket directly, they do so through the Command pattern
  * @todo With all these options for the server I should probably use a DIC
  */
 class App implements ApplicationInterface {

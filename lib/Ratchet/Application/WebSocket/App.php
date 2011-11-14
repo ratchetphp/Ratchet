@@ -1,7 +1,5 @@
 <?php
 namespace Ratchet\Application\WebSocket;
-use Ratchet\Application\WebSocket\Client;
-use Ratchet\Application\WebSocket\VersionInterface;
 use Ratchet\Application\ApplicationInterface;
 use Ratchet\Application\ConfiguratorInterface;
 use Ratchet\Resource\Connection;
@@ -13,23 +11,16 @@ use Ratchet\Application\WebSocket\Util\HTTP;
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
+ * Sets 2 parameters on a Connection: handhsake_complete (bool) and websocket_version (Version\VersionInterface)
  * @link http://ca.php.net/manual/en/ref.http.php
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
- * @todo Consider cheating the application...don't call _app::onOpen until handshake is complete - only issue is sending headers/cookies
  * @todo Consider chaning this class to a State Pattern.  If a ObserverInterface is passed in __construct, do what is there now.  If it's an AppInterface change behaviour of socket interaction (onOpen, handshake, etc)
- * @todo Change namespace to Ratchet\Application\WebSocket\Adapter
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
     /**
-     * Lookup for connected clients
-     * @var SplObjectStorage
-     */
-    protected $_clients;
-
-    /**
      * Decorated application
-     * @var Ratchet\ObserverInterface
+     * @var Ratchet\Application\ApplicationInterface
      */
     protected $_app;
 
@@ -39,6 +30,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     protected $_factory;
 
     /**
+     * Singleton* instances of protocol version classes
      * @internal
      */
     protected $_versions = array(
@@ -51,7 +43,6 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             throw new \UnexpectedValueException("WebSocket requires an application to run off of");
         }
 
-        $this->_clients = new \SplObjectStorage;
         $this->_app     = $app;
         $this->_factory = new Factory;
     }
@@ -71,13 +62,17 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     public function onOpen(Connection $conn) {
-        $this->_clients[$conn] = new Client;
+        $conn->handshake_complete = false;
     }
 
     public function onRecv(Connection $from, $msg) {
-        $client = $this->_clients[$from];
-        if (true !== $client->isHandshakeComplete()) {
-            $response = $client->setVersion($this->getVersion($msg))->doHandshake($msg);
+        if (true !== $from->handshake_complete) {
+
+            // need buffer checks in here
+
+            $from->websocket_version = $this->getVersion($msg);
+            $response = $from->websocket_version->handshake($msg);
+            $from->handshake_complete = true;
 
             if (is_array($response)) {
                 $header = '';
@@ -100,25 +95,18 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             return $comp;
         }
 
-        $msg = $client->getVersion()->unframe($msg);
+        // buffer!
+
+        $msg = $from->websocket_version->unframe($msg);
         if (is_array($msg)) { // temporary
             $msg = $msg['payload'];
         }
 
-        $cmds = $this->_app->onRecv($from, $msg);
-        return $this->prepareCommand($cmds);
+        return $this->prepareCommand($this->_app->onRecv($from, $msg));
     }
 
     public function onClose(Connection $conn) {
-        $cmds = $this->prepareCommand($this->_app->onClose($conn));
-
-        // $cmds = new Composite if null
-        // $cmds->enqueue($this->_factory->newCommand('SendMessage', $conn)->setMessage(
-            // WebSocket close handshake, depending on version!
-        //));
-
-        unset($this->_clients[$conn]);
-        return $cmds;
+        return $this->prepareCommand($this->_app->onClose($conn));
     }
 
     public function onError(Connection $conn, \Exception $e) {
@@ -138,7 +126,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      */
     protected function prepareCommand(CommandInterface $command = null) {
         if ($command instanceof SendMessage) {
-            $version = $this->_clients[$command->getConnection()]->getVersion();
+            $version = $command->getConnection()->websocket_version;
             return $command->setMessage($version->frame($command->getMessage()));
         }
 
