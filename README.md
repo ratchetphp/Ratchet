@@ -11,13 +11,13 @@ Re-use your application without changing any of its code just by wrapping it in 
 
 ##Requirements
 
-Shell access is required and a dedicated (virtual) machine with root access is recommended.  
-To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.  
+Shell access is required and a dedicated (virtual) machine with root access is recommended.
+To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
 
-Cookies from your Apache/Nginx/IIS server will be passed to the socket server, allowing you to identify users.  
+Cookies from your Apache/Nginx/IIS server will be passed to the socket server, allowing you to identify users.
 It's recommended using a database/cache solution to store session data, so it's accessible on both servers.  
-I demonstration of this will be posted (eventually).
+A demonstration of this will be posted (eventually).
 
 See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
 
