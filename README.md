@@ -4,14 +4,10 @@ A PHP 5.3 (PSR-0 compliant) application for serving and consuming sockets.
 Build up your application (like Lego!) through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by wrapping it in a different protocol.
 
----
-
 ##WebSockets
 
 * Supports the HyBi-10 and Hixie76 protocol versions (at the same time)
 * Tested on Chrome 14, Firefox 7, Safari 5, iOS 4.2
-
----
 
 ##Requirements
 
