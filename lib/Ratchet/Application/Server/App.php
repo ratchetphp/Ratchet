@@ -49,8 +49,6 @@ class App implements ApplicationInterface {
         $this->_connections[$host->getResource()] = new Connection($host);
         $this->_resources[] = $host->getResource();
 
-        $recv_bytes = 1024;
-
         set_time_limit(0);
         ob_implicit_flush();
 
@@ -61,62 +59,67 @@ class App implements ApplicationInterface {
         $host->listen();
 
         do {
-            $changed = $this->_resources;
-
-            try {
-                $num_changed = $host->select($changed, $write = null, $except = null, null);
-            } catch (Exception $e) {
-                // master had a problem?...what to do?
-                continue;
-            }
-
-			foreach($changed as $resource) {
-                try {
-                    $conn = $this->_connections[$resource];
-
-                    if ($host->getResource() === $resource) {
-                        $res = $this->onOpen($conn);
-                    } else {
-                        $data  = $buf = '';
-                        $bytes = $conn->getSocket()->recv($buf, $recv_bytes, 0);
-                        if ($bytes > 0) {
-                            $data = $buf;
-
-                            // This idea works* but...
-                            // 1) A single DDOS attack will block the entire application (I think)
-                            // 2) What if the last message in the frame is equal to $recv_bytes?  Would loop until another msg is sent
-                            // 3) This failed...an intermediary can set their buffer lower and this still propagates a fragment
-                            // Need to 1) proc_open the recv() calls.  2) ???
-/*
-                            while ($bytes === $recv_bytes) {
-                                $bytes = $conn->recv($buf, $recv_bytes, 0);
-                                $data .= $buf;
-                            }
-*/
-
-                            $res = $this->onRecv($conn, $data);
-                        } else {
-                            $res = $this->onClose($conn);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    $res = $this->onError($conn, $e);
-                }
-
-                while ($res instanceof CommandInterface) {
-                    try {
-                        $new_res = $res->execute($this);
-                    } catch (\Exception $e) {
-                        break;
-                        // trigger new error
-                        // $new_res = $this->onError($e->getSocket()); ???
-                        // this is dangerous territory...could get in an infinte loop...Exception might not be Ratchet\Exception...$new_res could be ActionInterface|Composite|NULL...
-                    }
-
-                    $res = $new_res;
-                }
-            }
+            $this->loop($host);
         } while (true);
+    }
+
+    protected function loop(SocketInterface $host, $recv_bytes = 1024) {
+        $changed = $this->_resources;
+
+        try {
+            $num_changed = $host->select($changed, $write = null, $except = null, null);
+        } catch (Exception $e) {
+            // master had a problem?...what to do?
+            return;
+        }
+
+        foreach($changed as $resource) {
+            try {
+                $conn = $this->_connections[$resource];
+
+                if ($host->getResource() === $resource) {
+                    $res = $this->onOpen($conn);
+                } else {
+                    $data  = $buf = '';
+                    $bytes = $conn->getSocket()->recv($buf, $recv_bytes, 0);
+                    if ($bytes > 0) {
+                        $data = $buf;
+
+                        // This idea works* but...
+                        // 1) A single DDOS attack will block the entire application (I think)
+                        // 2) What if the last message in the frame is equal to $recv_bytes?  Would loop until another msg is sent
+                        // 3) This failed...an intermediary can set their buffer lower and this still propagates a fragment
+                        // Need to 1) proc_open the recv() calls.  2) ???
+
+                        /*
+                        while ($bytes === $recv_bytes) {
+                            $bytes = $conn->recv($buf, $recv_bytes, 0);
+                            $data .= $buf;
+                        }
+                        */
+
+                        $res = $this->onRecv($conn, $data);
+                    } else {
+                        $res = $this->onClose($conn);
+                    }
+                }
+            } catch (\Exception $e) {
+                $res = $this->onError($conn, $e);
+            }
+
+            while ($res instanceof CommandInterface) {
+                try {
+                    $new_res = $res->execute($this);
+                } catch (\Exception $e) {
+                    break;
+                    // trigger new error
+                    // $new_res = $this->onError($e->getSocket()); ???
+                    // this is dangerous territory...could get in an infinte loop...Exception might not be Ratchet\Exception...$new_res could be ActionInterface|Composite|NULL...
+                }
+
+                $res = $new_res;
+            }
+        }
     }
 
     public function onOpen(Connection $conn) {

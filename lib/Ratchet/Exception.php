@@ -5,6 +5,9 @@ namespace Ratchet;
  * Uses internal php methods to fill an Exception class (no parameters required)
  */
 class Exception extends \Exception {
+    /**
+     * @var SocketInterface
+     */
     protected $_socket;
 
     public function __construct(SocketInterface $socket) {

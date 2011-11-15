@@ -50,7 +50,7 @@ class Connection {
      * @throws \InvalidArgumentException
      */
     public function &__get($name) {
-        if (!isset($this->_data[$name])) {
+        if (!$this->__isset($name)) {
             throw new \InvalidArgumentException("Attribute '{$name}' not found in Connection {$this->getID()}");
         }
 
@@ -59,5 +59,20 @@ class Connection {
         } else {
             return $this->_data[$name];
         }
+    }
+
+    /**
+     * @param mixed
+     * @return bool
+     */
+    public function __isset($name) {
+        return isset($this->_data[$name]);
+    }
+
+    /**
+     * @param mixed
+     */
+    public function __unset($name) {
+        unset($this->_data[$name]);
     }
 }

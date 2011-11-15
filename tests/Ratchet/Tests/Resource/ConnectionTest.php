@@ -7,16 +7,28 @@ use Ratchet\Tests\Mock\FakeSocket;
  * @covers Ratchet\Resource\Connection
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase {
+    protected $_fs;
     protected $_c;
 
     public function setUp() {
-        $this->_c = new Connection(new FakeSocket);
+        $this->_fs = new FakeSocket;
+        $this->_c  = new Connection($this->_fs);
     }
 
-    public function testCanGetWhatIsSet() {
-        $key = 'hello';
-        $val = 'world';
+    public static function keyAndValProvider() {
+        return array(
+            array('hello', 'world')
+        );
+    }
 
+    public function testGetSocketReturnsWhatIsSetInConstruct() {
+        $this->assertSame($this->_fs, $this->_c->getSocket());
+    }
+
+    /**
+     * @dataProvider keyAndValProvider
+     */
+    public function testCanGetWhatIsSet($key, $val) {
         $this->_c->{$key} = $val;
         $this->assertEquals($val, $this->_c->{$key});
     }
@@ -28,5 +40,22 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
 
     public function testLambdaReturnValueOnGet() {
         $this->markTestIncomplete();
+    }
+
+    /**
+     * @dataProvider keyAndValProvider
+     */
+    public function testIssetWorksOnOverloadedVariables($key, $val) {
+        $this->_c->{$key} = $val;
+        $this->assertTrue(isset($this->_c->{$key}));
+    }
+
+    /**
+     * @dataProvider keyAndValProvider
+     */
+    public function testUnsetMakesIssetReturnFalse($key, $val) {
+        $this->_c->{$key} = $val;
+        unset($this->_c->{$key});
+        $this->assertFalse(isset($this->_c->{$key}));
     }
 }
