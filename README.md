@@ -1,7 +1,7 @@
 #Ratchet
 
 A PHP 5.3 (PSR-0 compliant) application for serving and consuming sockets.
-Build up your application (like Lego!) through simple interfaces using the decorator pattern.
+Build up your application (like Lego!) through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by wrapping it in a different protocol.
 
 ---
@@ -13,32 +13,49 @@ Re-use your application without changing any of its code just by wrapping it in 
 
 ---
 
+##Requirements
+
+Shell access is required and a dedicated (virtual) machine with root access is recommended.  
+To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.  
+Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
+
+Cookies from your Apache/Nginx/IIS server will be passed to the socket server, allowing you to identify users.  
+It's recommended using a database/cache solution to store session data, so it's accessible on both servers.  
+I demonstration of this will be posted (eventually).
+
+See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
+
+---
+
 ###A quick server example
 
 ```php
 <?php
 namespace MyApps;
-use Ratchet\SocketObserver, Ratchet\SocketInterface;
-use Ratchet\Socket, Ratchet\Server, Ratchet\Protocol\WebSocket;
-use Ratchet\Command\Factory;
+use Ratchet\Application\ApplicationInterface;
+use Ratchet\Resource\Connection;
+use Ratchet\Socket;
+use Ratchet\Application\Server\App as Server;
+use Ratchet\Application\WebSocket\App as WebSocket;
+use Ratchet\Resource\Command\Factory;
 
 /**
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements SocketObserver {
+class Chat implements ApplicationInterface {
     protected $_factory;
     protected $_clients;
 
-    public function __construct() {
+    public function __construct(ApplicationInterface $app = null) {
         $this->_factory = new Factory;
         $this->_clients = new \SplObjectStorage;
     }
 
-    public function onOpen(SocketInterface $conn) {
+    public function onOpen(Connection $conn) {
         $this->_clients->attach($conn);
     }
 
-    public function onRecv(SocketInterface $from, $msg) {
+    public function onRecv(Connection $from, $msg) {
         $stack = $this->_factory->newComposite();
 
         foreach ($this->_clients as $client) {
@@ -50,16 +67,15 @@ class Chat implements SocketObserver {
         return $stack;
     }
 
-    public function onClose(SocketInterface $conn) {
+    public function onClose(Connection $conn) {
         $this->_clients->detach($conn);
     }
 
-    public function onError(SocketInterface $conn, \Exception $e) {
+    public function onError(Connection $conn, \Exception $e) {
         return $this->_factory->newCommand('CloseConnection', $conn);
     }
 }
-
     // Run the server application through the WebSocket protocol
-    $server = new Server(new Socket, new WebSocket(new Chat));
-    $server->run('0.0.0.0', 80);
+    $server = new Server(new WebSocket(new Chat));
+    $server->run(new Socket, '0.0.0.0', 80);
 ```
