@@ -21,6 +21,13 @@ A demonstration of this will be posted (eventually).
 
 See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
 
+###Future considerations
+
+Ideally, soon, web servers will start supporting WebSockets to some capacity and PHP will no longer need to run its self from the command line.
+In theory, the server (Apache/Nginx/ISS) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
+configured PHP file. When this happens, in theory, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
+WebSocket Application wrapper if the servers recognize the protocol message framing. 
+
 ---
 
 ###A quick server example

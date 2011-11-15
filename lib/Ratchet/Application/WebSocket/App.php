@@ -141,7 +141,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     /**
      * @param array of HTTP headers
-     * @return WebSocket\Version\VersionInterface
+     * @return Version\VersionInterface
      */
     protected function getVersion($message) {
         $headers = HTTP::getHeaders($message);
@@ -158,7 +158,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     /**
-     * @return WebSocket\Version\VersionInterface
+     * @return Version\VersionInterface
      */
     protected function versionFactory($version) {
         if (null === $this->_versions[$version]) {
