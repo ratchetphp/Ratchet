@@ -63,15 +63,21 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     public function onOpen(Connection $conn) {
         $conn->WebSocket = new \stdClass;
         $conn->WebSocket->handshake = false;
+        $conn->WebSocket->headers   = '';
     }
 
     public function onRecv(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
+            if (!isset($from->WebSocket->version)) {
+                try {
+                    $from->WebSocket->headers .= $msg;
+                    $from->WebSocket->version  = $this->getVersion($from->WebSocket->headers);
+                } catch (\UnderflowException $e) {
+                    return;
+                }
+            }
 
-            // need buffer checks in here
-
-            $from->WebSocket->version = $this->getVersion($msg);
-            $response = $from->WebSocket->version->handshake($msg);
+            $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
             $from->WebSocket->handshake = true;
 
             if (is_array($response)) {
@@ -142,19 +148,26 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     /**
      * @param array of HTTP headers
      * @return Version\VersionInterface
+     * @throws UnderFlowException If we think the entire header message hasn't been buffered yet
+     * @throws InvalidArgumentException If we can't understand protocol version request
+     * @todo Can/will add more versions later, but perhaps a chain of responsibility, ask each version if they want to handle the request
      */
     protected function getVersion($message) {
+        if (false === strstr($message, "\r\n\r\n")) { // This _could_ fail with Hixie
+            throw new \UnderflowException;
+        }
+
         $headers = HTTP::getHeaders($message);
 
         if (isset($headers['Sec-Websocket-Version'])) { // HyBi
-            if ($headers['Sec-Websocket-Version'] == '8') {
+            if ((int)$headers['Sec-Websocket-Version'] >= 6) {
                 return $this->versionFactory('HyBi10');
             }
         } elseif (isset($headers['Sec-Websocket-Key2'])) { // Hixie
             return $this->versionFactory('Hixie76');
         }
 
-        throw new \UnexpectedValueException('Could not identify WebSocket protocol');
+        throw new \InvalidArgumentException('Could not identify WebSocket protocol');
     }
 
     /**
