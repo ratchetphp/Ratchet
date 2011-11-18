@@ -1,7 +1,18 @@
 <?php
-namespace Ratchet\Protocol\WebSocket;
+namespace Ratchet\Application\WebSocket\Version;
 
 interface FrameInterface {
+    /**
+     * @alias getPayload
+     */
+    function __toString();
+
+    /**
+     * Dunno if I'll use this
+     * Thinking could be used if a control frame?
+     */
+//    function __invoke();
+
     /**
      * @return bool
      */
@@ -9,18 +20,19 @@ interface FrameInterface {
 
     /**
      * @param string
+     * @todo Theoretically, there won't be a buffer overflow (end of frame + start of new frame) - but test later, return a string with overflow here
      */
     function addBuffer($buf);
 
     /**
      * @return bool
      */
-    function isFragment();
+//    function isFragment();
 
     /**
      * @return bool
      */
-    function isFinial();
+    function isFinal();
 
     /**
      * @return bool
@@ -40,7 +52,7 @@ interface FrameInterface {
     /**
      * @return int
      */
-    function getReceivedPayloadLength();
+//    function getReceivedPayloadLength();
 
     /**
      * 32-big string

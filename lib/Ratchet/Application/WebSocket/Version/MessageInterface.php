@@ -1,10 +1,15 @@
 <?php
-namespace Ratchet\Protocol\WebSocket;
+namespace Ratchet\Application\WebSocket\Version;
 
 /**
  * @todo Consider making parent interface/composite for Message/Frame with (isCoalesced, getOpcdoe, getPayloadLength, getPayload)
  */
 interface MessageInterface {
+    /**
+     * @alias getPayload
+     */
+    function __toString();
+
     /**
      * @return bool
      */
@@ -13,7 +18,7 @@ interface MessageInterface {
     /**
      * @param FragmentInterface
      */
-    function addFragment(FragmentInterface $fragment);
+    function addFrame(FrameInterface $fragment);
 
     /**
      * @return int

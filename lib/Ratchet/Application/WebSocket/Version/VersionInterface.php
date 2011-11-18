@@ -14,10 +14,21 @@ interface VersionInterface {
     function handshake($message);
 
     /**
+     * @return MessageInterface
+     */
+    function newMessage();
+
+    /**
+     * @return FrameInterface
+     */
+    function newFrame();
+
+    /**
      * Get a framed message as per the protocol and return the decoded message
      * @param string
      * @return string
      * @todo Return a frame object with message, type, masked?
+     * @deprecated
      */
     function unframe($message);
 

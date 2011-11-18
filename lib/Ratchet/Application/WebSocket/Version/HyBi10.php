@@ -5,12 +5,14 @@ use Ratchet\Application\WebSocket\Util\HTTP;
 /**
  * The HyBi-10 version, identified in the headers as version 8, is currently implemented by the latest Chrome and Firefix version
  * @link http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
+ * @todo Naming...I'm not fond of this naming convention...
  */
 class HyBi10 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
     /**
      * @return array
+     * I kept this as an array and combined in App for future considerations...easier to add a subprotol as a key value than edit a string
      */
     public function handshake($message) {
         $headers = HTTP::getHeaders($message);
@@ -24,6 +26,20 @@ class HyBi10 implements VersionInterface {
 //          , 'Sec-WebSocket-Protocol' => ''
         );
    }
+
+    /**
+     * @return HyBi10\Message
+     */
+    public function newMessage() {
+        return new HyBi10\Message;
+    }
+
+    /**
+     * @return HyBi10\Frame
+     */
+    public function newFrame() {
+        return new HyBi10\Frame;
+    }
 
     /**
      * Unframe a message received from the client
