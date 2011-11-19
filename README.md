@@ -40,17 +40,17 @@ use Ratchet\Resource\Connection;
 use Ratchet\Socket;
 use Ratchet\Application\Server\App as Server;
 use Ratchet\Application\WebSocket\App as WebSocket;
-use Ratchet\Resource\Command\Factory;
+use Ratchet\Resource\Command\Composite as Cmds;
+use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Resource\Command\Action\CloseConnection;
 
 /**
  * Send any incoming messages to all connected clients (except sender)
  */
 class Chat implements ApplicationInterface {
-    protected $_factory;
     protected $_clients;
 
     public function __construct(ApplicationInterface $app = null) {
-        $this->_factory = new Factory;
         $this->_clients = new \SplObjectStorage;
     }
 
@@ -59,15 +59,18 @@ class Chat implements ApplicationInterface {
     }
 
     public function onRecv(Connection $from, $msg) {
-        $stack = $this->_factory->newComposite();
+        $commands = new Cmds;
 
         foreach ($this->_clients as $client) {
             if ($from != $client) {
-                $stack->enqueue($this->_factory->newCommand('SendMessage', $client)->setMessage($msg));
+                $msg_cmd = new SendMessage($client);
+                $msg_cmd->setMessage($msg);
+
+                $commands->enqueue($msg_cmd);
             }
         }
 
-        return $stack;
+        return $commands;
     }
 
     public function onClose(Connection $conn) {
@@ -75,7 +78,7 @@ class Chat implements ApplicationInterface {
     }
 
     public function onError(Connection $conn, \Exception $e) {
-        return $this->_factory->newCommand('CloseConnection', $conn);
+        return new CloseConnection($conn);
     }
 }
     // Run the server application through the WebSocket protocol
