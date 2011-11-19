@@ -27,14 +27,26 @@ class App implements ApplicationInterface {
     protected $_app;
 
     /**
-     * @param Ratchet\Application\ApplicationInterface
+     * Number of bytes to read in the TCP buffer at a time
+     * Default is (currently) 4kb
+     * @var int
      */
+    protected $_buffer_size = 4096;
+
     public function __construct(ApplicationInterface $application = null) {
         if (null === $application) {
             throw new \UnexpectedValueException("Server requires an application to run off of");
         }
 
         $this->_app = $application;
+    }
+
+    public function setBufferSize($recv_bytes) {
+        if ((int)$recv_bytes < 1) {
+            throw new \InvalidArgumentException('Invalid number of bytes set, must be more than 0');
+        }
+
+        $this->_buffer_size = (int)$recv_bytes;
     }
 
     /*
@@ -63,7 +75,7 @@ class App implements ApplicationInterface {
         } while (true);
     }
 
-    protected function loop(SocketInterface $host, $recv_bytes = 1024) {
+    protected function loop(SocketInterface $host) {
         $changed = $this->_resources;
 
         try {
@@ -81,7 +93,7 @@ class App implements ApplicationInterface {
                     $res = $this->onOpen($conn);
                 } else {
                     $data  = $buf = '';
-                    $bytes = $conn->getSocket()->recv($buf, $recv_bytes, 0);
+                    $bytes = $conn->getSocket()->recv($buf, $this->_buffer_size, 0);
                     if ($bytes > 0) {
                         $data = $buf;
 

@@ -4,6 +4,8 @@ namespace Ratchet\Application\WebSocket\Version;
 /**
  * Despite the version iterations of WebInterface the actions they go through are similar
  * This standardizes how the server handles communication with each protocol version
+ * @todo Need better naming conventions...newMessage and newFrame are for reading incoming framed messages (action is unframing)
+ *       The current method names suggest you could create a new message/frame to send, which they can not do
  */
 interface VersionInterface {
     /**
@@ -22,15 +24,6 @@ interface VersionInterface {
      * @return FrameInterface
      */
     function newFrame();
-
-    /**
-     * Get a framed message as per the protocol and return the decoded message
-     * @param string
-     * @return string
-     * @todo Return a frame object with message, type, masked?
-     * @deprecated
-     */
-    function unframe($message);
 
     /**
      * @param string

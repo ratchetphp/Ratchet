@@ -49,10 +49,6 @@ class Hixie76 implements VersionInterface {
         return new Hixie76\Frame;
     }
 
-    public function unframe($message) {
-        return substr($message, 1, strlen($message) - 2);
-    }
-
     public function frame($message) {
         return chr(0) . $message . chr(255);
     }
