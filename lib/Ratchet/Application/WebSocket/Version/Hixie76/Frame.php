@@ -12,10 +12,6 @@ class Frame implements FrameInterface {
      */
     protected $_data = '';
 
-    public function __toString() {
-        return $this->getPayload();
-    }
-
     public function isCoalesced() {
         return (boolean)($this->_data[0] == chr(0) && substr($this->_data, -1) == chr(255));
     }

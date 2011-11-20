@@ -110,7 +110,7 @@ class App implements ApplicationInterface {
                         }
                         */
 
-                        $res = $this->onRecv($conn, $data);
+                        $res = $this->onMessage($conn, $data);
                     } else {
                         $res = $this->onClose($conn);
                     }
@@ -144,8 +144,8 @@ class App implements ApplicationInterface {
         return $this->_app->onOpen($new_connection);
     }
 
-    public function onRecv(Connection $from, $msg) {
-        return $this->_app->onRecv($from, $msg);
+    public function onMessage(Connection $from, $msg) {
+        return $this->_app->onMessage($from, $msg);
     }
 
     public function onClose(Connection $conn) {

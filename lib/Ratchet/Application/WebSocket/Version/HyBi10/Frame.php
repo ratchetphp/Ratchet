@@ -27,10 +27,6 @@ class Frame implements FrameInterface {
      */
     protected $_pay_check = -1;
 
-    public function __toString() {
-        return (string)$this->getPayload();
-    }
-
     public function isCoalesced() {
         try {
             $payload_length = $this->getPayloadLength();

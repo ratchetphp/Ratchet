@@ -58,7 +58,7 @@ class Chat implements ApplicationInterface {
         $this->_clients->attach($conn);
     }
 
-    public function onRecv(Connection $from, $msg) {
+    public function onMessage(Connection $from, $msg) {
         $commands = new Cmds;
 
         foreach ($this->_clients as $client) {

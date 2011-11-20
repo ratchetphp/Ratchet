@@ -66,7 +66,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         $conn->WebSocket->headers   = '';
     }
 
-    public function onRecv(Connection $from, $msg) {
+    public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
             if (!isset($from->WebSocket->version)) {
                 try {
@@ -125,7 +125,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         if ($from->WebSocket->message->isCoalesced()) {
-            $cmds = $this->prepareCommand($this->_app->onRecv($from, (string)$from->WebSocket->message));
+            $cmds = $this->prepareCommand($this->_app->onMessage($from, (string)$from->WebSocket->message));
             unset($from->WebSocket->message);
 
             return $cmds;

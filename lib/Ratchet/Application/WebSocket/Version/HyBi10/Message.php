@@ -55,7 +55,7 @@ class Message implements MessageInterface {
         $buffer = '';
 
         foreach ($this->_frames as $frame) {
-            $buffer .= (string)$frame;
+            $buffer .= $frame->getPayload();
         }
 
         return $buffer;

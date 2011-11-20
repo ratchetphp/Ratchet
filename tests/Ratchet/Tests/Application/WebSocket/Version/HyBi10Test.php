@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version;
 use Ratchet\Application\WebSocket\Version\HyBi10;
+use Ratchet\Application\WebSocket\Version\HyBi10\Frame;
 
 /**
  * @covers Ratchet\Application\WebSocket\Version\Hybi10
@@ -38,8 +39,11 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
      * @dataProvider UnframeMessageProvider
      */
     public function testUnframeMessage($message, $framed) {
-        $decoded = $this->_version->unframe(base64_decode($framed));
-        $this->assertEquals($message, $decoded['payload']);
+//        $decoded = $this->_version->unframe(base64_decode($framed));
+        $frame = new Frame;
+        $frame->addBuffer(base64_decode($framed));
+
+        $this->assertEquals($message, $frame->getPayload());
     }
 
     public static function UnframeMessageProvider() {
@@ -54,8 +58,10 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
     public function testUnframeMatchesPreFraming() {
         $string   = 'Hello World!';
         $framed   = $this->_version->frame($string);
-        $unframed = $this->_version->unframe($framed);
 
-        $this->assertEquals($string, $unframed['payload']);
+        $frame = new Frame;
+        $frame->addBuffer($framed);
+
+        $this->assertEquals($string, $frame->getPayload());
     }
 }

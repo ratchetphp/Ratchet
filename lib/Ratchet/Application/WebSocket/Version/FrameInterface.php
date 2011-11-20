@@ -3,11 +3,6 @@ namespace Ratchet\Application\WebSocket\Version;
 
 interface FrameInterface {
     /**
-     * @alias getPayload
-     */
-    function __toString();
-
-    /**
      * Dunno if I'll use this
      * Thinking could be used if a control frame?
      */

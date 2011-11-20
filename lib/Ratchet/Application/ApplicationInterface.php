@@ -23,7 +23,7 @@ interface ApplicationInterface {
      * @param string The message received
      * @return Ratchet\Resource\Command\CommandInterface|null
      */
-    function onRecv(Connection $from, $msg);
+    function onMessage(Connection $from, $msg);
 
     /**
      * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not result in an error if it has already been closed.

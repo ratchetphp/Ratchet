@@ -26,7 +26,7 @@ class Application implements ApplicationInterface {
         $this->_conn_open = $conn;
     }
 
-    public function onRecv(Connection $from, $msg) {
+    public function onMessage(Connection $from, $msg) {
         $this->_conn_recv = $from;
         $this->_msg_recv  = $msg;
     }
