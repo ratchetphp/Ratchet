@@ -55,6 +55,13 @@ interface SocketInterface {
     function connect($address, $port = 0);
 
     /**
+     * Get the address the socket connected from
+     * @return string
+     * @throws Exception
+     */
+    function getRemoteAddress();
+
+    /**
      * @param int
      * @param int
      * @return mixed

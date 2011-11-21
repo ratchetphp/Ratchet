@@ -91,6 +91,15 @@ class Socket implements SocketInterface {
         return $this;
     }
 
+    public function getRemoteAddress() {
+        $address = $port = '';
+        if (false === @socket_getpeername($this->getResource(), $address, $port)) {
+            throw new Exception;
+        }
+
+        return $address;
+    }
+
     public function get_option($level, $optname) {
         if (false === ($res = @socket_get_option($this->getResource(), $level, $optname))) {
             throw new Exception;

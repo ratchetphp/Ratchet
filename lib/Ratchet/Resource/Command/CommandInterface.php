@@ -9,7 +9,7 @@ use Ratchet\Application\ApplicationInterface;
 interface CommandInterface {
     /**
      * The Server class will call the execution
-     * @param Ratchet\ObserverInterface Scope to execute the command under
+     * @param Ratchet\ApplicationInterface Scope to execute the command under
      * @return CommandInterface|NULL
      */
     function execute(ApplicationInterface $scope = null);

@@ -5,7 +5,7 @@ use Ratchet\Resource\Connection;
 interface ApplicationInterface {
     /**
      * Decorator pattern
-     * @param Ratchet\ObserverInterface Application to wrap in protocol
+     * @param Ratchet\ApplicationInterface Application to wrap in protocol
      * @throws UnexpectedValueException
      */
     public function __construct(ApplicationInterface $app = null);
