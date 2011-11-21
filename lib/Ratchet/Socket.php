@@ -72,7 +72,7 @@ class Socket implements SocketInterface {
 
     public function bind($address, $port = 0) {
         if (false === @socket_bind($this->getResource(), $address, $port)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -85,7 +85,7 @@ class Socket implements SocketInterface {
 
     public function connect($address, $port = 0) {
         if (false === @socket_connect($this->getResource(), $address, $port)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -94,7 +94,7 @@ class Socket implements SocketInterface {
     public function getRemoteAddress() {
         $address = $port = '';
         if (false === @socket_getpeername($this->getResource(), $address, $port)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $address;
@@ -102,7 +102,7 @@ class Socket implements SocketInterface {
 
     public function get_option($level, $optname) {
         if (false === ($res = @socket_get_option($this->getResource(), $level, $optname))) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $res;
@@ -110,7 +110,7 @@ class Socket implements SocketInterface {
 
     public function listen($backlog = 0) {
         if (false === @socket_listen($this->getResource(), $backlog)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -159,7 +159,7 @@ class Socket implements SocketInterface {
 
     public function set_block() {
         if (false === @socket_set_block($this->getResource())) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -167,7 +167,7 @@ class Socket implements SocketInterface {
 
     public function set_nonblock() {
         if (false === @socket_set_nonblock($this->getResource())) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -175,7 +175,7 @@ class Socket implements SocketInterface {
 
     public function set_option($level, $optname, $optval) {
         if (false === @socket_set_option($this->getResource(), $level, $optname, $optval)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -183,7 +183,7 @@ class Socket implements SocketInterface {
 
     public function shutdown($how = 2) {
         if (false === @socket_shutdown($this->getResource(), $how)) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $this;
@@ -191,7 +191,7 @@ class Socket implements SocketInterface {
 
     public function write($buffer, $length = 0) {
         if (false === ($res = @socket_write($this->getResource(), $buffer, $length))) {
-            throw new Exception;
+            throw new Exception($this);
         }
 
         return $res;
