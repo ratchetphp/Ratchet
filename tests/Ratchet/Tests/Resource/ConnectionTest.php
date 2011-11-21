@@ -39,7 +39,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testLambdaReturnValueOnGet() {
-        $this->markTestIncomplete();
+        $this->_c->lambda = function() { return 'Hello World!'; };
+        $this->assertEquals('Hello World!', $this->_c->lambda);
     }
 
     /**
