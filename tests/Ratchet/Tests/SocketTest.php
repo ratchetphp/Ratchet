@@ -39,11 +39,6 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
         $socket->close();
     }
 
-    public function testInvalidSocketCall() {
-        $this->setExpectedException('\\BadMethodCallException');
-        $this->_socket->fake_method();
-    }
-
     public function asArrayProvider() {
         return array(
             array(array('hello' => 'world'), array('hello' => 'world'))

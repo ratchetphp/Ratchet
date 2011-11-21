@@ -14,10 +14,7 @@ class FakeSocket extends RealSocket {
         return '1';
     }
 
-    public function accept() {
-    }
-
-    public function bind($address, $port) {
+    public function bind($address, $port = 0) {
     }
 
     public function close() {

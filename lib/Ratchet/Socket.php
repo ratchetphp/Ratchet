@@ -5,6 +5,7 @@ use Ratchet\Application\ProtocolInterface;
 /**
  * A wrapper for the PHP socket_ functions
  * @author Chris Boden <shout at chrisboden dot ca>
+ * @link http://ca2.php.net/manual/en/book.sockets.php
  * @todo Possibly move this into Ratchet\Resource - another concrete could use streams
  */
 class Socket implements SocketInterface {
@@ -51,16 +52,75 @@ class Socket implements SocketInterface {
         return $this->_resource;
     }
 
-    /**
-     * Calls socket_accept, duplicating its self
-     * @throws Exception
-     */
     public function __clone() {
         $this->_resource = @socket_accept($this->_resource);
 
         if (false === $this->_resource) {
             throw new Exception($this);
         }
+    }
+
+    public function deliver($message) {
+        $len = strlen($message);
+
+        do {
+            $sent    = $this->write($message, 4);
+            $len    -= $sent;
+            $message = substr($message, $sent);
+        } while ($len > 0);
+    }
+
+    public function bind($address, $port = 0) {
+        if (false === @socket_bind($this->getResource(), $address, $port)) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    public function close() {
+        @socket_close($this->getResource());
+        unset($this->_resource);
+    }
+
+    public function connect($address, $port = 0) {
+        if (false === @socket_connect($this->getResource(), $address, $port)) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    public function get_option($level, $optname) {
+        if (false === ($res = @socket_get_option($this->getResource(), $level, $optname))) {
+            throw new Exception;
+        }
+
+        return $res;
+    }
+
+    public function listen($backlog = 0) {
+        if (false === @socket_listen($this->getResource(), $backlog)) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @see http://ca3.php.net/manual/en/function.socket-recv.php
+     * @param string Variable to write data to
+     * @param int Number of bytes to read
+     * @param int
+     * @return int Number of bytes received
+     * @throws Exception
+     */
+    public function recv(&$buf, $len, $flags) {
+        if (false === ($bytes = @socket_recv($this->_resource, $buf, $len, $flags))) {
+            throw new Exception($this);
+        }
+
+        return $bytes;
     }
 
     /**
@@ -88,31 +148,44 @@ class Socket implements SocketInterface {
         return $num;
     }
 
-    /**
-     * @todo Do loop to make sure entire buffer is sent to client
-     */
-    public function write($buffer, $length = 0) {
-        return $this->__call('write', array($buffer, $length));
-    }
-
-    public function close() {
-        return $this->__call('close', array());
-    }
-
-    /**
-     * @see http://ca3.php.net/manual/en/function.socket-recv.php
-     * @param string Variable to write data to
-     * @param int Number of bytes to read
-     * @param int
-     * @return int Number of bytes received
-     * @throws Exception
-     */
-    public function recv(&$buf, $len, $flags) {
-        if (false === ($bytes = @socket_recv($this->_resource, $buf, $len, $flags))) {
-            throw new Exception($this);
+    public function set_block() {
+        if (false === @socket_set_block($this->getResource())) {
+            throw new Exception;
         }
 
-        return $bytes;
+        return $this;
+    }
+
+    public function set_nonblock() {
+        if (false === @socket_set_nonblock($this->getResource())) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    public function set_option($level, $optname, $optval) {
+        if (false === @socket_set_option($this->getResource(), $level, $optname, $optval)) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    public function shutdown($how = 2) {
+        if (false === @socket_shutdown($this->getResource(), $how)) {
+            throw new Exception;
+        }
+
+        return $this;
+    }
+
+    public function write($buffer, $length = 0) {
+        if (false === ($res = @socket_write($this->getResource(), $buffer, $length))) {
+            throw new Exception;
+        }
+
+        return $res;
     }
 
     /**
@@ -175,33 +248,5 @@ class Socket implements SocketInterface {
         }
 
         return $return;
-    }
-
-    /**
-     * Call all the socket_ functions (without passing the resource) through this
-     * @see http://ca3.php.net/manual/en/ref.sockets.php
-     * @param string
-     * @param array
-     * @return mixed
-     * @throws Exception
-     * @throws \BadMethodCallException
-     */
-    public function __call($method, $arguments) {
-        if (function_exists('socket_' . $method)) {
-            // onBeforeMethod
-
-            array_unshift($arguments, $this->_resource);
-            $result = @call_user_func_array('socket_' . $method, $arguments);
-
-            if (false === $result) {
-                throw new Exception($this);
-            }
-
-            // onAfterMethod
-
-            return $result;
-        }
-
-        throw new \BadMethodCallException("{$method} is not a valid socket function");
     }
 }

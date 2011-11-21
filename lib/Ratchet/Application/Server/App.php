@@ -64,11 +64,9 @@ class App implements ApplicationInterface {
         set_time_limit(0);
         ob_implicit_flush();
 
-        $host->set_nonblock();
         declare(ticks = 1);
 
-        $host->bind($address, (int)$port);
-        $host->listen();
+        $host->set_nonblock()->bind($address, (int)$port)->listen();
 
         do {
             $this->loop($host);

@@ -38,6 +38,6 @@ class SendMessage extends ActionTemplate {
             throw new \UnexpectedValueException("Message is empty");
         }
 
-        $this->getConnection()->getSocket()->write($this->_message, strlen($this->_message));
+        $this->getConnection()->getSocket()->deliver($this->_message);
     }
 }
