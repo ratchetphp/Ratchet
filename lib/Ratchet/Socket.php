@@ -116,6 +116,14 @@ class Socket implements SocketInterface {
         return $this;
     }
 
+    public function read($length, $type = PHP_BINARY_READ) {
+        if (false === ($res = @socket_read($this->getResource(), $length, $type))) {
+            throw new Exception($this);
+        }
+
+        return $res;
+    }
+
     /**
      * @see http://ca3.php.net/manual/en/function.socket-recv.php
      * @param string Variable to write data to

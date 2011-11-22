@@ -3,6 +3,9 @@ namespace Ratchet\Application\WebSocket\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Application\ApplicationInterface;
 
+/**
+ * Not yet implemented/completed
+ */
 class Disconnect extends SendMessage {
     protected $_code = 1000;
 

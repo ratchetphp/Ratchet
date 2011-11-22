@@ -9,6 +9,7 @@ use Ratchet\Application\ApplicationInterface;
  */
 interface WebSocketAppInterface extends ApplicationInterface {
     /**
+     * Currently instead of this, I'm setting header in the Connection object passed around...not sure which I like more
      * @param string
      */
     function setHeaders($headers);

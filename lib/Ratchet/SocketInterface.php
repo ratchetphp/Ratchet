@@ -34,6 +34,7 @@ interface SocketInterface {
 //    function accept();
 
     /**
+     * Bind the socket instance to an address/port
      * @param string
      * @param int
      * @return SocketInterface
@@ -47,6 +48,7 @@ interface SocketInterface {
     function close();
 
     /**
+     * Initiates a connection to a socket
      * @param string
      * @param int
      * @return SocketInterface
@@ -70,11 +72,21 @@ interface SocketInterface {
     function get_option($level, $optname);
 
     /**
+     * Listen for incoming connections on this socket
      * @param int
      * @return SocketInterface
      * @throws Exception
      */
     function listen($backlog = 0);
+
+    /**
+     * Read a maximum of length bytes from a socket
+     * @param int Number of bytes to read
+     * @param int Flags
+     * @return string Data read from the socket
+     * @throws Exception
+     */
+    function read($length, $type = PHP_BINARY_READ);
 
     /**
      * Called when the client sends data to the server through the socket
@@ -91,12 +103,15 @@ interface SocketInterface {
 //    function select(array &$read, array &$write, array &$except, $tv_sec, $tv_usec = 0);
 
     /**
+     * Sets the blocking mode on the socket resource
+     * Wen an operation (receive, send, connect, accept, etc) is performed after set_block() the script will pause execution until the operation is completed
      * @return SocketInterface
      * @throws Exception
      */
     function set_block();
 
     /**
+     * Sets nonblocking mode for socket resource
      * @return SocketInterface
      * @throws Exception
      */

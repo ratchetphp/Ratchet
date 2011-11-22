@@ -15,6 +15,7 @@ use Ratchet\Application\WebSocket\Util\HTTP;
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
+ * @todo I think I need to overhaul the architecture of this...more onus should be on the VersionInterfaces in case of changes...let them handle more decisions, not just parsing
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
     /**
@@ -24,6 +25,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     protected $_app;
 
     /**
+     * Creates commands/composites instead of calling several classes manually
      * @var Ratchet\Resource\Command\Factory
      */
     protected $_factory;
@@ -47,6 +49,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     /**
+     * Return the desired socket configuration if hosting a WebSocket server
+     * This method may be removed
      * @return array
      */
     public static function getDefaultConfig() {
@@ -66,6 +70,10 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         $conn->WebSocket->headers   = '';
     }
 
+    /**
+     * Do handshake, frame/unframe messages coming/going in stack
+     * @todo This needs some major refactoring
+     */
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
             if (!isset($from->WebSocket->version)) {
@@ -136,12 +144,17 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         return $this->prepareCommand($this->_app->onClose($conn));
     }
 
+    /**
+     * @todo Shouldn't I be using prepareCommand() on the return? look into this
+     */
     public function onError(Connection $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
     }
 
     /**
+     * Incomplete, WebSocket protocol allows client to ask to use a sub-protocol, I'm thinking/wanting to somehow implement this in an application decorated class
      * @param string
+     * @todo Implement or delete...
      */
     public function setSubProtocol($name) {
     }
@@ -153,6 +166,10 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      */
     protected function prepareCommand(CommandInterface $command = null) {
         if ($command instanceof SendMessage) {
+            if (!isset($command->getConnection()->WebSocket->version)) { // Client could close connection before handshake complete or invalid handshake
+                return $command;
+            }
+
             $version = $command->getConnection()->WebSocket->version;
             return $command->setMessage($version->frame($command->getMessage()));
         }
@@ -167,6 +184,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     /**
+     * Detect the WebSocket protocol version a client is using based on the HTTP header request
      * @param array of HTTP headers
      * @return Version\VersionInterface
      * @throws UnderFlowException If we think the entire header message hasn't been buffered yet
@@ -192,6 +210,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     /**
+     * Create and return the instance of a version class
      * @return Version\VersionInterface
      */
     protected function versionFactory($version) {

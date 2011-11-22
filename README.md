@@ -7,7 +7,7 @@ Re-use your application without changing any of its code just by wrapping it in 
 ##WebSockets
 
 * Supports the HyBi-10 and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 14, Firefox 7, Safari 5, iOS 4.2
+* Tested on Chrome 13 - 15, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 
