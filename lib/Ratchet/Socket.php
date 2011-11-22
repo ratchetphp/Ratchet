@@ -64,7 +64,7 @@ class Socket implements SocketInterface {
         $len = strlen($message);
 
         do {
-            $sent    = $this->write($message, 4);
+            $sent    = $this->write($message, $len);
             $len    -= $sent;
             $message = substr($message, $sent);
         } while ($len > 0);
