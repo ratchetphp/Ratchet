@@ -143,6 +143,7 @@ class App implements ApplicationInterface {
 
     public function onOpen(Connection $conn) {
         $new_socket     = clone $conn->getSocket();
+        $new_socket->set_nonblock();
         $new_connection = new Connection($new_socket);
 
         $this->_resources[] = $new_connection->getSocket()->getResource();
