@@ -7,7 +7,7 @@ namespace Ratchet\Application\WebSocket\Version;
  *  1) The handshake is done in HTTP, which includes a key for signing in the body...
  *     BUT there is no Length defined in the header (as per HTTP spec) so the TCP buffer can't tell when the message is done!
  *  2) By nature it's insecure.  Google did a test study where they were able to do a
- *     man-in-the-middle attack on 10%-15% of the people who saw their add who had a browser (currently only Safari) supporting the Hixie76 protocol.
+ *     man-in-the-middle attack on 10%-15% of the people who saw their ad who had a browser (currently only Safari) supporting the Hixie76 protocol.
  *     This was exploited by taking advantage of proxy servers in front of the user who ignored some HTTP headers in the handshake
  * The Hixie76 is currently implemented by Safari
  * Handshake from Andrea Giammarchi (http://webreflection.blogspot.com/2010/06/websocket-handshake-76-simplified.html)
