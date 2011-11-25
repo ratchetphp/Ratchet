@@ -39,6 +39,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
       , 'Hixie76' => null
     );
 
+    protected $_mask_payload = false;
+
     public function __construct(ApplicationInterface $app = null) {
         if (null === $app) {
             throw new \UnexpectedValueException("WebSocket requires an application to run");
@@ -171,7 +173,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             }
 
             $version = $command->getConnection()->WebSocket->version;
-            return $command->setMessage($version->frame($command->getMessage()));
+            return $command->setMessage($version->frame($command->getMessage(), $this->_mask_payload));
         }
 
         if ($command instanceof \Traversable) {
@@ -225,5 +227,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         unset($this->_versions[$name]);
+    }
+
+    /**
+     * Set the option to mask the payload upon sending to client
+     * If WebSocket is used as server, this should be false, client to true
+     * @param bool
+     * @todo User shouldn't have to know/set this, need to figure out how to do this automatically
+     */
+    public function setMaskPayload($opt) {
+        $this->_mask_payload = (boolean)$opt;
     }
 }

@@ -35,8 +35,9 @@ interface VersionInterface {
 
     /**
      * @param string
+     * @param bool
      * @return string
      * @todo Change to use other classes, this will be removed eventually
      */
-    function frame($message);
+    function frame($message, $mask = true);
 }

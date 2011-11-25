@@ -53,7 +53,7 @@ class Hixie76 implements VersionInterface {
         return new Hixie76\Frame;
     }
 
-    public function frame($message) {
+    public function frame($message, $mask = true) {
         return chr(0) . $message . chr(255);
     }
 

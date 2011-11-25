@@ -61,10 +61,10 @@ class HyBi10 implements VersionInterface {
      * @param string
      * @return string
      */
-    public function frame($message) {
+    public function frame($message, $mask = true) {
         $payload = $message;
         $type    = 'text';
-        $masked  = true;
+        $masked  = $mask;
 
         $frameHead = array();
         $frame = '';
