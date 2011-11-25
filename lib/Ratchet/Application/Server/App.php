@@ -21,8 +21,8 @@ class App implements ApplicationInterface {
     protected $_connections = array();
 
     /**
+     * The decorated application to send events to
      * @var Ratchet\Application\ApplicationInterface
-     * Maybe temporary?
      */
     protected $_app;
 
@@ -41,18 +41,27 @@ class App implements ApplicationInterface {
         $this->_app = $application;
     }
 
+    /**
+     * Set the incoming buffer size in bytes
+     * @param int
+     * @return App
+     * @throws InvalidArgumentException If the parameter is less than 1
+     */
     public function setBufferSize($recv_bytes) {
         if ((int)$recv_bytes < 1) {
             throw new \InvalidArgumentException('Invalid number of bytes set, must be more than 0');
         }
 
         $this->_buffer_size = (int)$recv_bytes;
+
+        return $this;
     }
 
     /*
+     * Run the server infinitely
      * @param Ratchet\SocketInterface
      * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
-     * @param int The port to listen to connections on
+     * @param int The port to listen to connections on (make sure to run as root if < 1000)
      * @throws Ratchet\Exception
      * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
      * @todo Consider making the 4kb listener changable
@@ -134,6 +143,7 @@ class App implements ApplicationInterface {
 
     public function onOpen(Connection $conn) {
         $new_socket     = clone $conn->getSocket();
+        $new_socket->set_nonblock();
         $new_connection = new Connection($new_socket);
 
         $this->_resources[] = $new_connection->getSocket()->getResource();

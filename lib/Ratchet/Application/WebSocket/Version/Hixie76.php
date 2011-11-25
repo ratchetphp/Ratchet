@@ -14,6 +14,10 @@ namespace Ratchet\Application\WebSocket\Version;
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
 class Hixie76 implements VersionInterface {
+    public static function isProtocol(array $headers) {
+        return isset($headers['Sec-Websocket-Key2']);
+    }
+
     /**
      * @param string
      * @return string

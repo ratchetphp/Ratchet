@@ -3,6 +3,7 @@ namespace Ratchet\Application\WebSocket\Util;
 
 /**
  * A helper class for handling HTTP requests
+ * @todo Needs re-write...http_parse_headers is a PECL extension that changes the case to unexpected values
  */
 class HTTP {
     /**

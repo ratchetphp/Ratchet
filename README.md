@@ -1,13 +1,13 @@
 #Ratchet
 
-A PHP 5.3 (PSR-0 compliant) application for serving and consuming sockets.
+A PHP 5.3 (PSR-0 compliant) component library for serving/consuming sockets and building socket based applications.
 Build up your application (like Lego!) through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by wrapping it in a different protocol.
 
 ##WebSockets
 
 * Supports the HyBi-10 and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 14, Firefox 7, Safari 5, iOS 4.2
+* Tested on Chrome 13 - 15, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 
@@ -15,8 +15,8 @@ Shell access is required and a dedicated (virtual) machine with root access is r
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
 
-Cookies from your Apache/Nginx/IIS server will be passed to the socket server, allowing you to identify users.
-It's recommended using a database/cache solution to store session data, so it's accessible on both servers.  
+Cookies from your domain will be passed to the socket server, allowing you to identify users.
+It's recommended using a database/cache solution to store session data, so it's accessible on both web and socket servers.  
 A demonstration of this will be posted (eventually).
 
 See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
