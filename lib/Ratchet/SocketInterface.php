@@ -99,8 +99,17 @@ interface SocketInterface {
      */
     function recv(&$buf, $len, $flags);
 
-    // @todo Figure out how to break this out to not do pass by reference
-//    function select(array &$read, array &$write, array &$except, $tv_sec, $tv_usec = 0);
+    /**
+     * @param array|Iterator
+     * @param array|Iterator
+     * @param array|Iterator
+     * @param int
+     * @param int
+     * @return int
+     * @throws Exception
+     * @todo Figure out how to break this out to not do pass by reference
+     */
+    function select(&$read, &$write, &$except, $tv_sec, $tv_usec = 0);
 
     /**
      * Sets the blocking mode on the socket resource

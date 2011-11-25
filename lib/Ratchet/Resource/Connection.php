@@ -4,6 +4,8 @@ use Ratchet\SocketInterface;
 
 /**
  * @todo Consider if this belongs under Application
+ * @todo Construct should have StorageInterface, currently all is memory, should be different ones
+ *       That will allow a queue system, communication between threaded connections
  */
 class Connection {
     protected $_data = array();
