@@ -16,7 +16,6 @@ use Ratchet\Application\WebSocket\Version;
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
- * @todo I think I need to overhaul the architecture of this...more onus should be on the VersionInterfaces in case of changes...let them handle more decisions, not just parsing
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
     /**
@@ -206,8 +205,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             } else {
                 $ns = __NAMESPACE__ . "\\Version\\{$name}";
                 if ($ns::isProtocol($headers)) {
-                    $this->_version[$name] = new $ns;
-                    return $this->_version[$name];
+                    $this->_versions[$name] = new $ns;
+                    return $this->_versions[$name];
                 }
             }
         }

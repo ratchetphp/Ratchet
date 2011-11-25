@@ -70,6 +70,7 @@ class App implements ApplicationInterface {
         $this->_connections[$host->getResource()] = new Connection($host);
         $this->_resources[] = $host->getResource();
 
+        gc_enable();
         set_time_limit(0);
         ob_implicit_flush();
 
