@@ -167,18 +167,36 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @return Ratchet\Resource\Command\CommandInterface|NULL
      */
     protected function prepareCommand(CommandInterface $command = null) {
+        $cache = array();
+        return $this->mungCommand($command, $cache);
+    }
+
+    /**
+     * Does the actual work of prepareCommand
+     * Separated to pass the cache array by reference, so we're not framing the same stirng over and over
+     * @param Ratchet\Resource\Command\CommandInterface|NULL
+     * @param array
+     * @return Ratchet\Resource\Command\CommandInterface|NULL
+     */
+    protected function mungCommand(CommandInterface $command = null, &$cache) {
         if ($command instanceof SendMessage) {
             if (!isset($command->getConnection()->WebSocket->version)) { // Client could close connection before handshake complete or invalid handshake
                 return $command;
             }
 
             $version = $command->getConnection()->WebSocket->version;
-            return $command->setMessage($version->frame($command->getMessage(), $this->_mask_payload));
+            $hash    = md5($command->getMessage()) . '-' . spl_object_hash($version);
+
+            if (!isset($cache[$hash])) {
+                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);    
+            }
+
+            return $command->setMessage($cache[$hash]);
         }
 
         if ($command instanceof \Traversable) {
             foreach ($command as $cmd) {
-                $cmd = $this->prepareCommand($cmd);
+                $cmd = $this->mungCommand($cmd, $cache);
             }
         }
 
