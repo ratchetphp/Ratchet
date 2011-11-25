@@ -7,6 +7,7 @@ use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Application\WebSocket\Util\HTTP;
+use Ratchet\Application\WebSocket\Version;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -185,11 +186,10 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     /**
      * Detect the WebSocket protocol version a client is using based on the HTTP header request
-     * @param array of HTTP headers
+     * @param string HTTP handshake request
      * @return Version\VersionInterface
      * @throws UnderFlowException If we think the entire header message hasn't been buffered yet
      * @throws InvalidArgumentException If we can't understand protocol version request
-     * @todo Can/will add more versions later, but perhaps a chain of responsibility, ask each version if they want to handle the request
      */
     protected function getVersion($message) {
         if (false === strstr($message, "\r\n\r\n")) { // This CAN fail with Hixie, depending on the TCP buffer in between
@@ -198,27 +198,33 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
         $headers = HTTP::getHeaders($message);
 
-        if (isset($headers['Sec-Websocket-Version'])) { // HyBi
-            if ((int)$headers['Sec-Websocket-Version'] >= 6) {
-                return $this->versionFactory('HyBi10');
+        foreach ($this->_versions as $name => $instance) {
+            if (null !== $instance) {
+                if ($instance::isProtocol($headers)) {
+                    return $instance;
+                }
+            } else {
+                $ns = __NAMESPACE__ . "\\Version\\{$name}";
+                if ($ns::isProtocol($headers)) {
+                    $this->_version[$name] = new $ns;
+                    return $this->_version[$name];
+                }
             }
-        } elseif (isset($headers['Sec-Websocket-Key2'])) { // Hixie
-            return $this->versionFactory('Hixie76');
         }
 
         throw new \InvalidArgumentException('Could not identify WebSocket protocol');
     }
 
     /**
-     * Create and return the instance of a version class
-     * @return Version\VersionInterface
+     * Disable a version of the WebSocket protocol *cough*Hixie76*cough*
+     * @param string The name of the version to disable
+     * @throws InvalidArgumentException If the given version does not exist
      */
-    protected function versionFactory($version) {
-        if (null === $this->_versions[$version]) {
-            $ns = __NAMESPACE__ . "\\Version\\{$version}";
-            $this->_version[$version] = new $ns;
+    public function disableVersion($name) {
+        if (!array_key_exists($name, $this->_versions)) {
+            throw new \InvalidArgumentException("Version {$name} not found");
         }
 
-        return $this->_version[$version];
+        unset($this->_versions[$name]);
     }
 }
