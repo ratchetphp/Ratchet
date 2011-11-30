@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version;
 use Ratchet\Application\WebSocket\Version\HyBi10;
-use Ratchet\Application\WebSocket\Version\HyBi10\Frame;
+use Ratchet\Application\WebSocket\Version\RFC6455\Frame;
 
 /**
  * @covers Ratchet\Application\WebSocket\Version\Hybi10

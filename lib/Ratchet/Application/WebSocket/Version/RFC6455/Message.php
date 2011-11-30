@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Application\WebSocket\Version\HyBi10;
+namespace Ratchet\Application\WebSocket\Version\RFC6455;
 use Ratchet\Application\WebSocket\Version\MessageInterface;
 use Ratchet\Application\WebSocket\Version\FrameInterface;
 
