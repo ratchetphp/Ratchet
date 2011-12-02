@@ -48,10 +48,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
         $ret = $this->_c->faked;
     }
 
-    // I think I'll be removing this feature from teh lib soon, so this UT will be removed when it fails
-    public function testLambdaReturnValueOnGet() {
-        $this->_c->lambda = function() { return 'Hello World!'; };
-        $this->assertEquals('Hello World!', $this->_c->lambda);
+    public static function lambdaProvider() {
+        return array(
+            array('hello', 'world')
+          , array('obj',   new \stdClass)
+          , array('arr',   array())
+        );
+    }
+
+    /**
+     * @dataProvider lambdaProvider
+     */
+    public function testLambdaReturnValueOnGet($key, $val) {
+        $fn = function() use ($val) {
+            return $val;
+        };
+
+        $this->_c->{$key} = $fn;
+        $this->assertSame($val, $this->_c->{$key});
     }
 
     /**
