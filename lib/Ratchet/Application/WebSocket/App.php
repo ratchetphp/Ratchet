@@ -16,7 +16,6 @@ use Ratchet\Application\WebSocket\Version;
  * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
  * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
  * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
- * @todo I think I need to overhaul the architecture of this...more onus should be on the VersionInterfaces in case of changes...let them handle more decisions, not just parsing
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
     /**
@@ -39,6 +38,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         'HyBi10'  => null
       , 'Hixie76' => null
     );
+
+    protected $_mask_payload = false;
 
     public function __construct(ApplicationInterface $app = null) {
         if (null === $app) {
@@ -166,18 +167,36 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @return Ratchet\Resource\Command\CommandInterface|NULL
      */
     protected function prepareCommand(CommandInterface $command = null) {
+        $cache = array();
+        return $this->mungCommand($command, $cache);
+    }
+
+    /**
+     * Does the actual work of prepareCommand
+     * Separated to pass the cache array by reference, so we're not framing the same stirng over and over
+     * @param Ratchet\Resource\Command\CommandInterface|NULL
+     * @param array
+     * @return Ratchet\Resource\Command\CommandInterface|NULL
+     */
+    protected function mungCommand(CommandInterface $command = null, &$cache) {
         if ($command instanceof SendMessage) {
             if (!isset($command->getConnection()->WebSocket->version)) { // Client could close connection before handshake complete or invalid handshake
                 return $command;
             }
 
             $version = $command->getConnection()->WebSocket->version;
-            return $command->setMessage($version->frame($command->getMessage()));
+            $hash    = md5($command->getMessage()) . '-' . spl_object_hash($version);
+
+            if (!isset($cache[$hash])) {
+                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);    
+            }
+
+            return $command->setMessage($cache[$hash]);
         }
 
         if ($command instanceof \Traversable) {
             foreach ($command as $cmd) {
-                $cmd = $this->prepareCommand($cmd);
+                $cmd = $this->mungCommand($cmd, $cache);
             }
         }
 
@@ -206,8 +225,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             } else {
                 $ns = __NAMESPACE__ . "\\Version\\{$name}";
                 if ($ns::isProtocol($headers)) {
-                    $this->_version[$name] = new $ns;
-                    return $this->_version[$name];
+                    $this->_versions[$name] = new $ns;
+                    return $this->_versions[$name];
                 }
             }
         }
@@ -226,5 +245,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         unset($this->_versions[$name]);
+    }
+
+    /**
+     * Set the option to mask the payload upon sending to client
+     * If WebSocket is used as server, this should be false, client to true
+     * @param bool
+     * @todo User shouldn't have to know/set this, need to figure out how to do this automatically
+     */
+    public function setMaskPayload($opt) {
+        $this->_mask_payload = (boolean)$opt;
     }
 }
