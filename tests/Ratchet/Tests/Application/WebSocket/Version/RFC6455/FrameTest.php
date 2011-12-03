@@ -240,17 +240,16 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider messageFragmentProvider
+     * @dataProvider UnframeMessageProvider
      */
-    public function testCheckPiecingTogetherMessage($coalesced, $first_bin, $secnd_bin, $mask, $payload1, $payload2) {
-        return $this->markTestIncomplete('Ran out of time, had to attend to something else, come finish me!');
+    public function testCheckPiecingTogetherMessage($msg, $encoded) {
+//        return $this->markTestIncomplete('Ran out of time, had to attend to something else, come finish me!');
 
-        $this->_frame->addBuffer(static::convert($first_bin));
-        $this->_frame->addBuffer(static::convert($second_bin));
-        // mask?
-//        $this->_frame->addBuffer(
-//        $this->_frame->addBuffer(
+        $framed = base64_decode($encoded);
+        for ($i = 0, $len = strlen($framed);$i < $len; $i++) {
+            $this->_frame->addBuffer(substr($framed, $i, 1));
+        }
 
-        $this->assertEquals($coalesced, $this->_frame->isCoalesced());
+        $this->assertEquals($msg, $this->_frame->getPayload());
     }
 }

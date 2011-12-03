@@ -7,7 +7,14 @@ use Ratchet\Tests\Mock\FakeSocket;
  * @covers Ratchet\Resource\Connection
  */
 class ConnectionTest extends \PHPUnit_Framework_TestCase {
+    /**
+     * @var Ratchet\Tests\Mock\FakeSocket
+     */
     protected $_fs;
+
+    /**
+     * @var Ratchet\Resource\Connection
+     */
     protected $_c;
 
     public function setUp() {
@@ -18,6 +25,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     public static function keyAndValProvider() {
         return array(
             array('hello', 'world')
+          , array('herp',  'derp')
+          , array('depth', array('hell', 'yes'))
+          , array('moar',  array('hellz' => 'yes'))
         );
     }
 
@@ -38,8 +48,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
         $ret = $this->_c->faked;
     }
 
-    public function testLambdaReturnValueOnGet() {
-        $this->markTestIncomplete();
+    public static function lambdaProvider() {
+        return array(
+            array('hello', 'world')
+          , array('obj',   new \stdClass)
+          , array('arr',   array())
+        );
+    }
+
+    /**
+     * @dataProvider lambdaProvider
+     */
+    public function testLambdaReturnValueOnGet($key, $val) {
+        $fn = function() use ($val) {
+            return $val;
+        };
+
+        $this->_c->{$key} = $fn;
+        $this->assertSame($val, $this->_c->{$key});
     }
 
     /**

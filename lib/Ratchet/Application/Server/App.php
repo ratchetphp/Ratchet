@@ -33,6 +33,14 @@ class App implements ApplicationInterface {
      */
     protected $_buffer_size = 4096;
 
+    /**
+     * After run() is called, the server will loop as long as this is true
+     * This is here for unit testing purposes
+     * @var bool
+     * @internal
+     */
+    protected $_run = true;
+
     public function __construct(ApplicationInterface $application = null) {
         if (null === $application) {
             throw new \UnexpectedValueException("Server requires an application to run off of");
@@ -80,7 +88,7 @@ class App implements ApplicationInterface {
 
         do {
             $this->loop($host);
-        } while (true);
+        } while ($this->_run);
     }
 
     protected function loop(SocketInterface $host) {
