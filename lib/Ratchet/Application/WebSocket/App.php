@@ -7,7 +7,6 @@ use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Application\WebSocket\Util\HTTP;
-use Ratchet\Application\WebSocket\Version;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -37,6 +36,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     protected $_versions = array(
         'HyBi10'  => null
       , 'Hixie76' => null
+      , 'RFC6455' => null
     );
 
     protected $_mask_payload = false;
@@ -75,6 +75,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     /**
      * Do handshake, frame/unframe messages coming/going in stack
      * @todo This needs some major refactoring
+     * @todo "Once the client's opening handshake has been sent, the client MUST wait for a response from the server before sending any further data."
      */
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
@@ -209,6 +210,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @return Version\VersionInterface
      * @throws UnderFlowException If we think the entire header message hasn't been buffered yet
      * @throws InvalidArgumentException If we can't understand protocol version request
+     * @todo Verify the first line of the HTTP header as per page 16 of RFC 6455
      */
     protected function getVersion($message) {
         if (false === strstr($message, "\r\n\r\n")) { // This CAN fail with Hixie, depending on the TCP buffer in between

@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version;
+use Ratchet\Application\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Ratchet\Application\WebSocket\Util\HTTP;
 
 /**
@@ -9,8 +10,14 @@ class RFC6455 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
     /**
-     * @todo When I support later version (that implement extension) change >= 6 to 6 through 10 (or w/e #)
+     * @var RFC6455\HandshakeVerifier
      */
+    protected $_verifier;
+
+    public function __construct() {
+        $this->_verifier = new HandshakeVerifier;
+    }
+
     public static function isProtocol(array $headers) {
         if (isset($headers['Sec-Websocket-Version'])) {
             if ((int)$headers['Sec-Websocket-Version'] == 13) {
@@ -24,10 +31,15 @@ class RFC6455 implements VersionInterface {
     /**
      * @return array
      * I kept this as an array and combined in App for future considerations...easier to add a subprotol as a key value than edit a string
+     * @todo Decide what to do on failure...currently throwing an exception and I think socket connection is closed.  Should be sending 40x error - but from where?
      */
     public function handshake($message) {
         $headers = HTTP::getHeaders($message);
         $key     = $this->sign($headers['Sec-Websocket-Key']);
+
+        if (true !== $this->_verifier->verifyAll($headers)) {
+            throw new \InvalidArgumentException('Invalid HTTP header');
+        }
 
         return array(
             ''                     => 'HTTP/1.1 101 Switching Protocols'

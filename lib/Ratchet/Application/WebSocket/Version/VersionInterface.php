@@ -20,6 +20,8 @@ interface VersionInterface {
      * Perform the handshake and return the response headers
      * @param string
      * @return array|string
+     * @throws InvalidArgumentException If the HTTP handshake is mal-formed
+     * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
      */
     function handshake($message);
 

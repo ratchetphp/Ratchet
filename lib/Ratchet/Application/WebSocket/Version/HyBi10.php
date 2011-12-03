@@ -1,6 +1,9 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version;
 
+/**
+ * @todo Note: Even though this is the "legacy" HyBi version, it's using the RFC Message and Frame classes - change if needed
+ */
 class HyBi10 extends RFC6455 {
     public static function isProtocol(array $headers) {
         if (isset($headers['Sec-Websocket-Version'])) {

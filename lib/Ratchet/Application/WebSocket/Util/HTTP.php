@@ -4,6 +4,7 @@ namespace Ratchet\Application\WebSocket\Util;
 /**
  * A helper class for handling HTTP requests
  * @todo Needs re-write...http_parse_headers is a PECL extension that changes the case to unexpected values
+ * @todo Again, RE-WRITE - I want all the expected headers to at least be set in the returned, even if not there, set as null - having to do too much work in HandshaekVerifier
  */
 class HTTP {
     /**
@@ -12,7 +13,18 @@ class HTTP {
      * @return array
      */
     public static function getHeaders($http_message) {
-        return function_exists('http_parse_headers') ? http_parse_headers($http_message) : self::http_parse_headers($http_message);
+        $header_array = function_exists('http_parse_headers') ? http_parse_headers($http_message) : self::http_parse_headers($http_message);
+
+        return $header_array + array(
+            'Host'                   => null
+          , 'Upgrade'                => null
+          , 'Connection'             => null
+          , 'Sec-Websocket-Key'      => null
+          , 'Origin'                 => null
+          , 'Sec-Websocket-Protocol' => null
+          , 'Sec-Websocket-Version'  => null
+          , 'Sec-Websocket-Origin'   => null
+        );
     }
 
     /**
