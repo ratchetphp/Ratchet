@@ -175,38 +175,23 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(strlen($msg), $this->_frame->getPayloadLength());
     }
 
+    /**
+     * @todo Use a masking key generator when one is coded later
+     */
     protected function generateMask() {
-    }
+        $mask = '';
+        for($i = 0; $i < 4; $i++) {
+            $mask .= chr(rand(0, 255));
+        }
 
-    protected function getPacker() {
-        return function($str) {
-            $packed = '';
-            for ($i = 0, $len = strlen($str); $i < $len; $i++) {
-                $packed .= pack('C', ord($str[$i]));
-//                $packed .= pack("c", ord(substr($str, $i, 1)));
-            }
-
-            return $packed;
-        };
+        return $mask;
     }
 
     public function maskingKeyProvider() {
-        $packer = $this->getPacker();
-        $mask_generator = function() use ($packer) {
-            $characters = 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890 !@#$%^&*() -=_+`~[]{}\|/,.<>';
-            $mask = '';
-
-            for ($i = 0; $i < 32; $i++) {
-                $mask .= $characters[mt_rand(0, strlen($characters) -1)];
-            }
-
-            return array($mask, $packer($mask));
-        };
-
         return array(
-            $mask_generator()
-          , $mask_generator()
-          , $mask_generator()
+            array($this->generateMask())
+          , array($this->generateMask())
+          , array($this->generateMask())
         );
     }
 
@@ -214,12 +199,10 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider maskingKeyProvider
      * @todo I I wrote the dataProvider incorrectly, skpping for now
      */
-    public function testGetMaskingKey($mask, $bin) {
-        return $this->markTestIncomplete("I'm not packing the data properly in the provider, I think");
-
+    public function testGetMaskingKey($mask) {
         $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
         $this->_frame->addBuffer(static::convert($this->_secondByteMaskedSPL));
-        $this->_frame->addBuffer($bin);
+        $this->_frame->addBuffer($mask);
 
         $this->assertEquals($mask, $this->_frame->getMaskingKey());
     }
