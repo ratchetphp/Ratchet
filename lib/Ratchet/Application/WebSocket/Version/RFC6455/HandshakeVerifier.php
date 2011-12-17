@@ -49,10 +49,18 @@ class HandshakeVerifier {
     /**
      * @param string
      * @return bool
-     * @todo Implement this functionality
+     * @todo Verify the logic here is correct
      */
     public function verifyRequestURI($val) {
-        return true;
+        if ($val[0] != '/') {
+            return false;
+        }
+
+        if (false !== strstr($val, '#')) {
+            return false;
+        }
+
+        return mb_check_encoding($val, 'ASCII');
     }
 
     /**

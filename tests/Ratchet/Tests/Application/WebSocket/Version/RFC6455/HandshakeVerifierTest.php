@@ -57,12 +57,13 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $this->_v->verifyHTTPVersion($in));
     }
 
-    /**
-     * @todo Add failing values in here
-     */
     public static function uRIProvider() {
         return array(
             array(true, '/chat')
+          , array(true, '/hello/world?key=val')
+          , array(false, '/chat#bad')
+          , array(false, 'nope')
+          , array(false, '/ ಠ_ಠ ')
         );
     }
 
@@ -70,8 +71,6 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider URIProvider
      */
     public function testRequestUri($expected, $in) {
-        return $this->markTestIncomplete('Method this test is testing is incomplete');
-
         $this->assertEquals($expected, $this->_v->verifyRequestURI($in));
     }
 
