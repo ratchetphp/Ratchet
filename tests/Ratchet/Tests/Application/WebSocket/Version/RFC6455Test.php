@@ -119,8 +119,16 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider headerHandshakeProvider
+     * @todo Can't finish this test until I rewrite headers
      */
     public function testVariousHeadersToCheckHandshakeTolerance($pass, $header) {
-        $this->markTestIncomplete();
+        return $this->markTestIncomplete();
+
+        if ($pass) {
+            $this->assertTrue(is_array($this->_version->handshake($header)));
+        } else {
+            $this->setExpectedException('InvalidArgumentException');
+            $this->_version->handshake($header);
+        }
     }
 }
