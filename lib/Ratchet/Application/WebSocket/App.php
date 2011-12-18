@@ -76,6 +76,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * Do handshake, frame/unframe messages coming/going in stack
      * @todo This needs some major refactoring
      * @todo "Once the client's opening handshake has been sent, the client MUST wait for a response from the server before sending any further data."
+     * @todo Change Header to be a class, not array|string - will make things SO much easier...right now can't do WAMP on Hixie
      */
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
@@ -92,6 +93,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             $from->WebSocket->handshake = true;
 
             if (is_array($response)) {
+                if ($this->_app instanceof WebSocketAppInterface) {
+                    // Note: this logic is wrong - we're supposed to check what the client sent
+                    // as its sub protocol and if we support any of the requested we send that back.
+                    // This is just sending what ever one wwe support
+                    // This will be changed when I rewrite how headers are handled
+                    // Also...what happens if something like a logger is put between this and the sub-protocol app?
+                    $response['Sec-WebSocket-Protocol'] = $this->_app->getSubProtocol();
+                }
+
                 $header = '';
                 foreach ($response as $key => $val) {
                     if (!empty($key)) {
