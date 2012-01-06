@@ -6,7 +6,8 @@ use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Application\WebSocket\Util\HTTP;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\RequestFactory;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -80,12 +81,14 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
             if (!isset($from->WebSocket->version)) {
-                try {
-                    $from->WebSocket->headers .= $msg;
-                    $from->WebSocket->version  = $this->getVersion($from->WebSocket->headers);
-                } catch (\UnderflowException $e) {
+                $from->WebSocket->headers .= $msg;
+                if (!$this->isMessageComplete($from->WebSocket->headers)) {
                     return;
                 }
+
+                $headers = RequestFactory::fromMessage($from->WebSocket->headers);
+                $from->WebSocket->version = $this->getVersion($headers);
+                $from->WebSocket->headers = $headers;
             }
 
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
@@ -212,12 +215,8 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @throws InvalidArgumentException If we can't understand protocol version request
      * @todo Verify the first line of the HTTP header as per page 16 of RFC 6455
      */
-    protected function getVersion($message) {
-        if (false === strstr($message, "\r\n\r\n")) { // This CAN fail with Hixie, depending on the TCP buffer in between
-            throw new \UnderflowException;
-        }
-
-        $headers = HTTP::getHeaders($message);
+    protected function getVersion(RequestInterface $request) {
+        $headers = $request->getHeaders();
 
         foreach ($this->_versions as $name => $instance) {
             if (null !== $instance) {
@@ -234,6 +233,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         throw new \InvalidArgumentException('Could not identify WebSocket protocol');
+    }
+
+    /**
+     * @param string
+     * @return bool
+     * @todo Method is flawed, this CAN result in an error with the Hixie protocol
+     */
+    protected function isMessageComplete($message) {
+        return (boolean)strstr($message, "\r\n\r\n");
     }
 
     /**

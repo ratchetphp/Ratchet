@@ -14,7 +14,7 @@ interface VersionInterface {
      * @return bool
      * @throws UnderflowException If the protocol thinks the headers are still fragmented
      */
-    static function isProtocol(array $headers);
+    static function isProtocol($headers);
 
     /**
      * Perform the handshake and return the response headers
@@ -22,6 +22,7 @@ interface VersionInterface {
      * @return array|string
      * @throws InvalidArgumentException If the HTTP handshake is mal-formed
      * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
+     * @todo Change param to accept a Guzzle RequestInterface object
      */
     function handshake($message);
 
