@@ -216,16 +216,14 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @todo Verify the first line of the HTTP header as per page 16 of RFC 6455
      */
     protected function getVersion(RequestInterface $request) {
-        $headers = $request->getHeaders();
-
         foreach ($this->_versions as $name => $instance) {
             if (null !== $instance) {
-                if ($instance::isProtocol($headers)) {
+                if ($instance::isProtocol($request)) {
                     return $instance;
                 }
             } else {
                 $ns = __NAMESPACE__ . "\\Version\\{$name}";
-                if ($ns::isProtocol($headers)) {
+                if ($ns::isProtocol($request)) {
                     $this->_versions[$name] = new $ns;
                     return $this->_versions[$name];
                 }

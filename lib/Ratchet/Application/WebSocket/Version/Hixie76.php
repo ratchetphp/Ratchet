@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version;
+use Guzzle\Http\Message\RequestInterface;
 
 /**
  * FOR THE LOVE OF BEER, PLEASE PLEASE PLEASE DON'T allow the use of this in your application!
@@ -14,15 +15,17 @@ namespace Ratchet\Application\WebSocket\Version;
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
 class Hixie76 implements VersionInterface {
-    public static function isProtocol($headers) {
-        return isset($headers['Sec-WebSocket-Key2']);
+    public static function isProtocol(RequestInterface $request) {
+        return !(null === $request->getHeader('Sec-WebSocket-Key2'));
     }
 
     /**
      * @param string
      * @return string
      */
-    public function handshake($message) {
+    public function handshake(RequestInterface $request) {
+        $message = $request->getRawHeaders() . $request->getResponse()->getBody(true);
+
         $buffer   = $message;
         $resource = $host = $origin = $key1 = $key2 = $protocol = $code = $handshake = null;
 

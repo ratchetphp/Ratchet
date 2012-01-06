@@ -21,14 +21,9 @@ class RFC6455 implements VersionInterface {
     /**
      * @todo Change the request to be a Guzzle RequestInterface
      */
-    public static function isProtocol($headers) {
-        if (isset($headers['Sec-WebSocket-Version'])) {
-            if ((int)$headers['Sec-WebSocket-Version'] == 13) {
-                return true;
-            }
-        }
-
-        return false;
+    public static function isProtocol(RequestInterface $request) {
+        $version = (int)$request->getHeader('Sec-WebSocket-Version', -1);
+        return (13 === $version);
     }
 
     /**
@@ -36,11 +31,8 @@ class RFC6455 implements VersionInterface {
      * I kept this as an array and combined in App for future considerations...easier to add a subprotol as a key value than edit a string
      * @todo Decide what to do on failure...currently throwing an exception and I think socket connection is closed.  Should be sending 40x error - but from where?
      */
-    public function handshake($message) {
-        $headers = $message->getHeaders();
-        $key     = $this->sign($headers['Sec-WebSocket-Key']);
-
-        if (true !== $this->_verifier->verifyAll($message)) {
+    public function handshake(RequestInterface $request) {
+        if (true !== $this->_verifier->verifyAll($request)) {
             throw new \InvalidArgumentException('Invalid HTTP header');
         }
 
@@ -48,7 +40,7 @@ class RFC6455 implements VersionInterface {
             ''                     => 'HTTP/1.1 101 Switching Protocols'
           , 'Upgrade'              => 'websocket'
           , 'Connection'           => 'Upgrade'
-          , 'Sec-WebSocket-Accept' => $this->sign($headers['Sec-WebSocket-Key'])
+          , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
 //          , 'Sec-WebSocket-Protocol' => ''
         );
    }
