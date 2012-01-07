@@ -24,7 +24,7 @@ class Hixie76 implements VersionInterface {
      * @return string
      */
     public function handshake(RequestInterface $request) {
-        $message = $request->getRawHeaders() . $request->getResponse()->getBody(true);
+        $message = $request->getRawHeaders() . "\r\n\r\n" . $request->getHeader('X-Body');
 
         $buffer   = $message;
         $resource = $host = $origin = $key1 = $key2 = $protocol = $code = $handshake = null;

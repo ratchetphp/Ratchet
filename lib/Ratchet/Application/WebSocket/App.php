@@ -18,6 +18,8 @@ use Guzzle\Http\Message\RequestFactory;
  * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
  */
 class App implements ApplicationInterface, ConfiguratorInterface {
+    const CRLF = "\r\n\r\n";
+
     /**
      * Decorated application
      * @var Ratchet\Application\ApplicationInterface
@@ -87,6 +89,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
                 }
 
                 $headers = RequestFactory::fromMessage($from->WebSocket->headers);
+                $headers->setHeader('X-Body', $this->getBody($from->WebSocket->headers));
                 $from->WebSocket->version = $this->getVersion($headers);
                 $from->WebSocket->headers = $headers;
             }
@@ -236,10 +239,32 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     /**
      * @param string
      * @return bool
-     * @todo Method is flawed, this CAN result in an error with the Hixie protocol
+     * @todo Abstract, some hard coding done for (stupid) Hixie protocol
      */
     protected function isMessageComplete($message) {
-        return (boolean)strstr($message, "\r\n\r\n");
+        $headers = (boolean)strstr($message, static::CRLF);
+        if (!$headers) {
+
+            return false;
+        }
+
+        if (strstr($message, 'Sec-WebSocket-Key2')) {
+            if (8 !== strlen($this->getBody($message))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string
+     * @return string
+     * @deprecated
+     * @todo Remove soon, this is a temp hack for Hixie
+     */
+    protected function getBody($message) {
+        return substr($message, strpos($message, static::CRLF) + strlen(static::CRLF));
     }
 
     /**
