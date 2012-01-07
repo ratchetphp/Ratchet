@@ -22,11 +22,10 @@ class Hixie76 implements VersionInterface {
     /**
      * @param string
      * @return string
+     * @todo Unhack this mess...or wait for Hixie to die (HURRY UP APPLE)
      */
     public function handshake(RequestInterface $request) {
-        $message = $request->getRawHeaders() . "\r\n\r\n" . $request->getHeader('X-Body');
-
-        $buffer   = $message;
+        $buffer   = $request->getRawHeaders() . "\r\n\r\n" . $request->getBody();
         $resource = $host = $origin = $key1 = $key2 = $protocol = $code = $handshake = null;
 
         preg_match('#GET (.*?) HTTP#', $buffer, $match) && $resource = $match[1];
