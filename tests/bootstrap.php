@@ -8,3 +8,4 @@
     $app->register();
 
     $app = new SplClassLoader('Guzzle', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'guzzle' . DIRECTORY_SEPARATOR . 'src');
+    $app->register();
