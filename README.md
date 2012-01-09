@@ -1,13 +1,14 @@
 #Ratchet
 
-A PHP 5.3 (PSR-0 compliant) component library for serving/consuming sockets and building socket based applications.
-Build up your application (like Lego!) through simple interfaces using the decorator and command patterns.
+A PHP 5.3 (PSR-0 compliant) component library for serving sockets and building socket based applications.
+Build up your application through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by wrapping it in a different protocol.
+Ratchet's primary intention is to be used as a WebSocket server.
 
 ##WebSockets
 
-* Supports the HyBi-10 and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 15, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
+* Supports the RFC6455, HyBi-10, and Hixie76 protocol versions (at the same time)
+* Tested on Chrome 13 - 16, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 
@@ -16,8 +17,7 @@ To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80,
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
-It's recommended using a database/cache solution to store session data, so it's accessible on both web and socket servers.  
-A demonstration of this will be posted (eventually).
+Accessing your website's session data in Ratchet is a feature in the works.
 
 See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
 
@@ -27,6 +27,9 @@ Ideally, soon, web servers will start supporting WebSockets to some capacity and
 In theory, the server (Apache/Nginx/ISS) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
 configured PHP file. When this happens, in theory, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
 WebSocket Application wrapper if the servers recognize the protocol message framing. 
+
+I'm currently looking in using Nginx as an I/O control communicating with Ratchet (instead of Ratchet managing I/O).
+I'm looking into a couple daemonized servers written in PHP to run Ratchet on top of.
 
 ---
 
@@ -45,6 +48,7 @@ use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Resource\Command\Action\CloseConnection;
 
 /**
+ * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
 class Chat implements ApplicationInterface {
@@ -85,3 +89,5 @@ class Chat implements ApplicationInterface {
     $server = new Server(new WebSocket(new Chat));
     $server->run(new Socket, '0.0.0.0', 80);
 ```
+
+    # php chat.php
