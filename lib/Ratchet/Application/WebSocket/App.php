@@ -41,11 +41,7 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     protected $_mask_payload = false;
 
-    public function __construct(ApplicationInterface $app = null) {
-        if (null === $app) {
-            throw new \UnexpectedValueException("WebSocket requires an application to run");
-        }
-
+    public function __construct(ApplicationInterface $app) {
         $this->_app     = $app;
         $this->_factory = new Factory;
     }

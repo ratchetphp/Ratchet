@@ -36,11 +36,6 @@ class AppTest extends \PHPUnit_Framework_TestCase {
         return array_pop($connections);
     }
 
-    public function testDoNotAllowStacklessServer() {
-        $this->setExpectedException('UnexpectedValueException');
-        new ServerApp;
-    }
-
     public function testOnOpenPassesClonedSocket() {
         $this->_server->run($this->_catalyst);
         $master = $this->getMasterConnection();
