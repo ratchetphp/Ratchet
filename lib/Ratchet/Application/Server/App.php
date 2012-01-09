@@ -80,6 +80,7 @@ class App implements ApplicationInterface {
 
         declare(ticks = 1);
 
+        $host->set_option(SOL_SOCKET, SO_SNDBUF, $this->_buffer_size);
         $host->set_nonblock()->bind($address, (int)$port)->listen();
 
         do {
@@ -105,7 +106,7 @@ class App implements ApplicationInterface {
                     $res = $this->onOpen($conn);
                 } else {
                     $data  = $buf = '';
-                    $bytes = $conn->getSocket()->recv($buf, $this->_buffer_size, 0);
+                    $bytes = $conn->getSocket()->recv($buf, $this->_buffer_size, MSG_DONTWAIT);
                     if ($bytes > 0) {
                         $data = $buf;
 

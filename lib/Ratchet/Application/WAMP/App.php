@@ -21,14 +21,13 @@ use Ratchet\Resource\Connection;
  * @link http://www.tavendo.de/autobahn/protocol.html
  * @todo I can't make up my mind what interface to present to the server application
  */
-class App implements ApplicationInterface, WebSocketAppInterface {
+class App implements WebSocketAppInterface {
+    protected $_app;
+
     protected static $_incoming = array(1, 2, 5, 6, 7);
 
     public function getSubProtocol() {
         return 'wamp';
-    }
-
-    public function attachHandler(ServerInterface $app) {
     }
 
     /**
@@ -72,12 +71,12 @@ class App implements ApplicationInterface, WebSocketAppInterface {
         if ($json[0] == 1) {
             $this->addPrefix($conn, $json[2], $json[1]);
         }
+
+        // Determine WAMP message type, call $_this->_app->on();
     }
 
-    public function __construct(ApplicationInterface $app = null) {
-        if (null !== $app) {
-            throw new \InvalidArgumentException('WAMP is the end of the Socket stack, apps build on this must conform to the WAMP protocol');
-        }
+    public function __construct(ServerInterface $app) {
+        $this->_app = $app;
     }
 
     public function onClose(Connection $conn) {
