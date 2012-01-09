@@ -2,6 +2,7 @@
 namespace Ratchet\Tests\Application\WebSocket\Version;
 use Ratchet\Application\WebSocket\Version\RFC6455;
 use Ratchet\Application\WebSocket\Version\RFC6455\Frame;
+use Guzzle\Http\Message\RequestFactory;
 
 /**
  * @covers Ratchet\Application\WebSocket\Version\RFC6455
@@ -103,32 +104,25 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
     public static function headerHandshakeProvider() {
         return array(
             array(false, "GET /test HTTP/1.0\r\n" . static::getAndSpliceHeader())
+          , array(true,  static::$good_rest . "\r\n" . static::getAndSpliceHeader())
+          , array(false, "POST / HTTP:/1.1\r\n" . static::getAndSpliceHeader())
+          , array(false, static::$good_rest . "\r\n" . static::getAndSpliceHeader('Upgrade', 'useless'))
+          , array(false, "GET /ಠ_ಠ HTTP/1.1\r\n" . static::getAndSpliceHeader())
+          , array(true, static::$good_rest . "\r\n" . static::getAndSpliceHeader('Connection', 'Herp, Upgrade, Derp'))
         );
     }
 
-/* RFC example of a good header
-        GET /chat HTTP/1.1
-        Host: server.example.com
-        Upgrade: websocket
-        Connection: Upgrade
-        Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-        Origin: http://example.com
-        Sec-WebSocket-Protocol: chat, superchat
-        Sec-WebSocket-Version: 13
-*/
-
     /**
      * @dataProvider headerHandshakeProvider
-     * @todo Can't finish this test until I rewrite headers
      */
     public function testVariousHeadersToCheckHandshakeTolerance($pass, $header) {
-        return $this->markTestIncomplete();
+        $request = RequestFactory::fromMessage($header);
 
         if ($pass) {
-            $this->assertTrue(is_array($this->_version->handshake($header)));
+            $this->assertTrue(is_array($this->_version->handshake($request)));
         } else {
             $this->setExpectedException('InvalidArgumentException');
-            $this->_version->handshake($header);
+            $this->_version->handshake($request);
         }
     }
 }

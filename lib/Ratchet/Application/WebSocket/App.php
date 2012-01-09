@@ -6,7 +6,8 @@ use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Application\WebSocket\Util\HTTP;
+use Guzzle\Http\Message\RequestInterface;
+use Ratchet\Application\WebSocket\Guzzle\Http\Message\RequestFactory;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -77,12 +78,14 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
             if (!isset($from->WebSocket->version)) {
-                try {
-                    $from->WebSocket->headers .= $msg;
-                    $from->WebSocket->version  = $this->getVersion($from->WebSocket->headers);
-                } catch (\UnderflowException $e) {
+                $from->WebSocket->headers .= $msg;
+                if (!$this->isMessageComplete($from->WebSocket->headers)) {
                     return;
                 }
+
+                $headers = RequestFactory::fromRequest($from->WebSocket->headers);
+                $from->WebSocket->version = $this->getVersion($headers);
+                $from->WebSocket->headers = $headers;
             }
 
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
@@ -218,21 +221,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @throws InvalidArgumentException If we can't understand protocol version request
      * @todo Verify the first line of the HTTP header as per page 16 of RFC 6455
      */
-    protected function getVersion($message) {
-        if (false === strstr($message, "\r\n\r\n")) { // This CAN fail with Hixie, depending on the TCP buffer in between
-            throw new \UnderflowException;
-        }
-
-        $headers = HTTP::getHeaders($message);
-
+    protected function getVersion(RequestInterface $request) {
         foreach ($this->_versions as $name => $instance) {
             if (null !== $instance) {
-                if ($instance::isProtocol($headers)) {
+                if ($instance::isProtocol($request)) {
                     return $instance;
                 }
             } else {
                 $ns = __NAMESPACE__ . "\\Version\\{$name}";
-                if ($ns::isProtocol($headers)) {
+                if ($ns::isProtocol($request)) {
                     $this->_versions[$name] = new $ns;
                     return $this->_versions[$name];
                 }
@@ -240,6 +237,29 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         throw new \InvalidArgumentException('Could not identify WebSocket protocol');
+    }
+
+    /**
+     * @param string
+     * @return bool
+     * @todo Abstract, some hard coding done for (stupid) Hixie protocol
+     */
+    protected function isMessageComplete($message) {
+        static $crlf = "\r\n\r\n";
+
+        $headers = (boolean)strstr($message, $crlf);
+        if (!$headers) {
+
+            return false;
+        }
+
+        if (strstr($message, 'Sec-WebSocket-Key2')) {
+            if (8 !== strlen(substr($message, strpos($message, $crlf) + strlen($crlf)))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

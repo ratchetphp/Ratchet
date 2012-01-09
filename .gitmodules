@@ -1,0 +1,3 @@
+[submodule "vendor/guzzle"]
+	path = vendor/guzzle
+	url = git://github.com/guzzle/guzzle.git

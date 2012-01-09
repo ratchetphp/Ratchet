@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version;
+use Guzzle\Http\Message\RequestInterface;
 
 /**
  * Despite the version iterations of WebInterface the actions they go through are similar
@@ -10,20 +11,21 @@ namespace Ratchet\Application\WebSocket\Version;
 interface VersionInterface {
     /**
      * Given an HTTP header, determine if this version should handle the protocol
-     * @param array
+     * @param Guzzle\Http\Message\RequestInterface
      * @return bool
      * @throws UnderflowException If the protocol thinks the headers are still fragmented
      */
-    static function isProtocol(array $headers);
+    static function isProtocol(RequestInterface $request);
 
     /**
      * Perform the handshake and return the response headers
-     * @param string
+     * @param Guzzle\Http\Message\RequestInterface
      * @return array|string
      * @throws InvalidArgumentException If the HTTP handshake is mal-formed
      * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
+     * @todo Change param to accept a Guzzle RequestInterface object
      */
-    function handshake($message);
+    function handshake(RequestInterface $request);
 
     /**
      * @return MessageInterface

@@ -20,6 +20,17 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected static function convert($in) {
+        if (strlen($in) > 8) {
+            $out = '';
+
+            while (strlen($in) > 8) {
+                $out .= static::convert(substr($in, 0, 8));
+                $in   = substr($in, 8); 
+            }
+
+            return $out;
+        }
+
         return pack('C', bindec($in));
     }
 
@@ -37,6 +48,31 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    public static function underflowProvider() {
+        return array(
+            array('isFinal', '')
+          , array('getOpcode', '')
+          , array('isMasked', '10000001')
+          , array('getPayloadLength', '10000001')
+          , array('getPayloadLength', '1000000111111110')
+          , array('getMaskingKey', '1000000110000111')
+          , array('getPayload', '100000011000000100011100101010101001100111110100')
+        );
+    }
+
+    /**
+     * @dataProvider underflowProvider
+     */
+    public function testUnderflowExceptionFromAllTheMethodsMimickingBuffering($method, $bin) {
+        $this->setExpectedException('\UnderflowException');
+
+        if (!empty($bin)) {
+            $this->_frame->addBuffer(static::convert($bin));
+        }
+
+        call_user_func(array($this->_frame, $method));
+    }
+
     /**
      * A data provider for testing the first byte of a WebSocket frame
      * @param bool Given, is the byte indicate this is the final frame
@@ -51,12 +87,6 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
           , array(true,   1, '10000001')
           , array(true,  15, '11111111')
         );
-    }
-
-    public function testUnderflowExceptionFromAllTheMethodsMimickingBuffering() {
-        return $this->markTestIncomplete();
-
-        $this->expectException('\UnderflowException');
     }
 
     /**
