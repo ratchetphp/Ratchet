@@ -42,6 +42,12 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     protected $_mask_payload = false;
 
+    /**
+     * @deprecated
+     * @temporary
+     */
+    public $accepted_subprotocols = array();
+
     public function __construct(ApplicationInterface $app) {
         $this->_app     = $app;
         $this->_factory = new Factory;
@@ -73,7 +79,6 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * Do handshake, frame/unframe messages coming/going in stack
      * @todo This needs some major refactoring
      * @todo "Once the client's opening handshake has been sent, the client MUST wait for a response from the server before sending any further data."
-     * @todo Change Header to be a class, not array|string - will make things SO much easier...right now can't do WAMP on Hixie
      */
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
@@ -92,13 +97,16 @@ class App implements ApplicationInterface, ConfiguratorInterface {
             $from->WebSocket->handshake = true;
 
             if (is_array($response)) {
-                if ($this->_app instanceof WebSocketAppInterface) {
-                    // Note: this logic is wrong - we're supposed to check what the client sent
-                    // as its sub protocol and if we support any of the requested we send that back.
-                    // This is just sending what ever one wwe support
-                    // This will be changed when I rewrite how headers are handled
-                    // Also...what happens if something like a logger is put between this and the sub-protocol app?
-                    $response['Sec-WebSocket-Protocol'] = $this->_app->getSubProtocol();
+                // This block is to be moved/changed later
+                $agreed_protocols    = array();
+                $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
+                foreach ($this->accepted_subprotocols as $sub_protocol) {
+                    if (false !== $requested_protocols->hasValue($sub_protocol)) {
+                        $agreed_protocols[] = $sub_protocol;
+                    }
+                }
+                if (count($agreed_protocols) > 0) {
+                    $response['Sec-WebSocket-Protocol'] = implode(',', $agreed_protocols);
                 }
 
                 $header = '';
@@ -161,14 +169,6 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      */
     public function onError(Connection $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
-    }
-
-    /**
-     * Incomplete, WebSocket protocol allows client to ask to use a sub-protocol, I'm thinking/wanting to somehow implement this in an application decorated class
-     * @param string
-     * @todo Implement or delete...
-     */
-    public function setSubProtocol($name) {
     }
 
     /**

@@ -4,7 +4,7 @@ use Ratchet\Application\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
- * @link http://www.rfc-editor.org/authors/rfc6455.txt
+ * @link http://tools.ietf.org/html/rfc6455
  */
 class RFC6455 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';

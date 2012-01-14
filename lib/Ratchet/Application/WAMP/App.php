@@ -19,12 +19,9 @@ use Ratchet\Resource\Connection;
  * | EVENT        | 8  | Server-to-Client |
  * +--------------+----+------------------+
  * @link http://www.tavendo.de/autobahn/protocol.html
- * @todo I can't make up my mind what interface to present to the server application
  */
 class App implements WebSocketAppInterface {
     protected $_app;
-
-    protected static $_incoming = array(1, 2, 5, 6, 7);
 
     public function getSubProtocol() {
         return 'wamp';
@@ -42,16 +39,12 @@ class App implements WebSocketAppInterface {
         $conn->prefixes[$uri] = $curie;
     }
 
-    public function sendEvent($uri, $event) {
-    }
-
-    public function onCall(Connection $conn, $id, $uri) {
-    }
-
     public function onOpen(Connection $conn) {
         $conn->WAMP                = new \StdClass;
         $conn->WAMP->prefixes      = array();
         $conn->WAMP->subscriptions = array();
+
+        return $this->_app->onOpen($conn);
     }
 
     /**
@@ -64,15 +57,35 @@ class App implements WebSocketAppInterface {
             throw new JSONException;
         }
 
-        if (!in_array($json[0], static::$_incoming)) {
-            throw new Exception('Invalid message type');
+        switch ($json[0]) {
+            case 1:
+                return $this->addPrefix($conn, $json[2], $json[1]);
+            break;
+
+            case 2:
+                $ret = $this->_app->onCall($from, $json[1], $json[2]);
+            break;
+
+            case 5:
+                $ret = $this->_app->onSubscribe($from, $json[1]);
+            break;
+
+            case 6:
+                $ret = $this->_app->onUnSubscribe($from, $json[1]);
+            break;
+
+            case 7:
+                $ret = $this->_app->onPublish($from, $json[1], $json[2]);
+            break;
+
+            default:
+                throw new Exception('Invalid message type');
         }
 
-        if ($json[0] == 1) {
-            $this->addPrefix($conn, $json[2], $json[1]);
-        }
+        // create method to loop through $ret
+        // json_encode messages, return $ret back to WebSocket
 
-        // Determine WAMP message type, call $_this->_app->on();
+        return $ret;
     }
 
     public function __construct(ServerInterface $app) {
@@ -80,9 +93,10 @@ class App implements WebSocketAppInterface {
     }
 
     public function onClose(Connection $conn) {
-        // remove all prefixes associated with connection? or will those just be destroyed w/ Connection
+        return $this->_app->onClose($conn);
     }
 
     public function onError(Connection $conn, \Exception $e) {
+        return $this->_app->onError($conn, $e);
     }
 }
