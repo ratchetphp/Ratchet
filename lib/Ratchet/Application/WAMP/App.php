@@ -6,6 +6,7 @@ use Ratchet\Resource\Connection;
 
 /**
  * WebSocket Application Messaging Protocol
+ * 
  * +--------------+----+------------------+
  * | Message Type | ID | DIRECTION        |
  * |--------------+----+------------------+
@@ -63,29 +64,24 @@ class App implements WebSocketAppInterface {
             break;
 
             case 2:
-                $ret = $this->_app->onCall($from, $json[1], $json[2]);
+                return $this->_app->onCall($from, $json[1], $json[2]);
             break;
 
             case 5:
-                $ret = $this->_app->onSubscribe($from, $json[1]);
+                return $this->_app->onSubscribe($from, $json[1]);
             break;
 
             case 6:
-                $ret = $this->_app->onUnSubscribe($from, $json[1]);
+                return $this->_app->onUnSubscribe($from, $json[1]);
             break;
 
             case 7:
-                $ret = $this->_app->onPublish($from, $json[1], $json[2]);
+                return $this->_app->onPublish($from, $json[1], $json[2]);
             break;
 
             default:
                 throw new Exception('Invalid message type');
         }
-
-        // create method to loop through $ret
-        // json_encode messages, return $ret back to WebSocket
-
-        return $ret;
     }
 
     public function __construct(ServerInterface $app) {
