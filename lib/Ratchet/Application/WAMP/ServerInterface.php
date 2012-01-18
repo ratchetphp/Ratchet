@@ -33,9 +33,10 @@ interface ServerInterface {
      * @param Ratchet\Resource\Connection
      * @param string
      * @param ...
+     * @param array Call parameters received from the client
      * @return Ratchet\Resource\Command\CommandInterface|null
      */
-    function onCall();
+    function onCall(Connection $conn, $id, $procURI, array $params);
 
     /**
      * A request to subscribe to a URI has been made

@@ -65,8 +65,14 @@ class App implements WebSocketAppInterface {
 
             case 2:
                 array_shift($json);
-                array_unshift($json, $from);
-                return call_user_func_array(array($this->_app, 'onCall'), $json);
+                $callID  = array_shift($json);
+                $procURI = array_shift($json);
+
+                if (count($json) == 1 && is_array($json[0])) {
+                    $json = $json[0];
+                }
+
+                return $this->_app->onCall($from, $callID, $procURI, $json);
             break;
 
             case 5:
@@ -93,7 +99,7 @@ class App implements WebSocketAppInterface {
      * @return string
      */
     protected function getUri(Connection $conn, $uri) {
-        $ret = (isset($conn->WAMP->prefixes[$uri]) ? $conn->WAMP->prefixes[$uri] : $uri);
+        return (isset($conn->WAMP->prefixes[$uri]) ? $conn->WAMP->prefixes[$uri] : $uri);
     }
 
     public function __construct(ServerInterface $app) {
