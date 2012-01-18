@@ -31,13 +31,13 @@ class App implements WebSocketAppInterface {
     /**
      * @todo WAMP spec does not say what to do when there is an error with PREFIX...
      */
-    public function addPrefix(Connection $conn, $uri, $curie) {
+    public function addPrefix(Connection $conn, $curie, $uri) {
         // validate uri
         // validate curie
 
         // make sure the curie is shorter than the uri
 
-        $conn->prefixes[$uri] = $curie;
+        $conn->WAMP->prefixes[$curie] = $uri;
     }
 
     public function onOpen(Connection $conn) {
@@ -60,7 +60,7 @@ class App implements WebSocketAppInterface {
 
         switch ($json[0]) {
             case 1:
-                return $this->addPrefix($conn, $json[2], $json[1]);
+                return $this->addPrefix($from, $json[1], $json[2]);
             break;
 
             case 2:
@@ -70,20 +70,30 @@ class App implements WebSocketAppInterface {
             break;
 
             case 5:
-                return $this->_app->onSubscribe($from, $json[1]);
+                return $this->_app->onSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
             case 6:
-                return $this->_app->onUnSubscribe($from, $json[1]);
+                return $this->_app->onUnSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
             case 7:
-                return $this->_app->onPublish($from, $json[1], $json[2]);
+                return $this->_app->onPublish($from, $this->getUri($from, $json[1]), $json[2]);
             break;
 
             default:
                 throw new Exception('Invalid message type');
         }
+    }
+
+    /**
+     * Get the full request URI from the connection object if a prefix has been established for it
+     * @param Ratchet\Resource\Connection
+     * @param ...
+     * @return string
+     */
+    protected function getUri(Connection $conn, $uri) {
+        $ret = (isset($conn->WAMP->prefixes[$uri]) ? $conn->WAMP->prefixes[$uri] : $uri);
     }
 
     public function __construct(ServerInterface $app) {
