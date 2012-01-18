@@ -12,6 +12,6 @@ class Event extends SendMessage {
      * @param string
      */
     public function setEvent($uri, $msg) {
-        $this->setMessage(json_encode(array(8, $uri, (string)$msg)));
+        return $this->setMessage(json_encode(array(8, $uri, (string)$msg)));
     }
 }

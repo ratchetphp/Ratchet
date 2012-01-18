@@ -64,7 +64,9 @@ class App implements WebSocketAppInterface {
             break;
 
             case 2:
-                return $this->_app->onCall($from, $json[1], $json[2]);
+                array_shift($json);
+                array_unshift($json, $from);
+                return call_user_func_array(array($this->_app, 'onCall'), $json);
             break;
 
             case 5:
