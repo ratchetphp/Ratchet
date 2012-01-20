@@ -127,6 +127,8 @@ class App implements WebSocketAppInterface {
     }
 
     /**
+     * If the developer's application as set some server-to-client prefixes to be set,
+     * this method ensures those are taxied to the next outgoing message
      * @param Ratchet\Resource\Command\CommandInterface|NULL
      * @return Ratchet\Resource\Command\Composite
      */

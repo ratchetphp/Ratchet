@@ -3,6 +3,9 @@ namespace Ratchet\Application\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
 
 /**
+ * Send a curie to uri mapping to the client
+ * Both sides will agree to send the curie, representing the uri,
+ * resulting in less data transfered
  */
 class Prefix extends SendMessage {
     protected $_curie;
