@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Application\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Application\WAMP\App as WAMP;
 
 /**
  */
@@ -13,7 +14,7 @@ class CallResult extends SendMessage {
         $this->_id   = $callId;
         $this->_data = $data;
 
-        return $this->setMessage(json_encode(array(3, $callId, $data)));
+        return $this->setMessage(json_encode(array(WAMP::MSG_CALL_RESULT, $callId, $data)));
     }
 
     public function getId() {

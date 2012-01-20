@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Application\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Application\WAMP\App as WAMP;
 
 /**
  * This is an event in the context of a topicURI
@@ -13,6 +14,6 @@ class Event extends SendMessage {
      * @return Event
      */
     public function setEvent($uri, $msg) {
-        return $this->setMessage(json_encode(array(8, $uri, (string)$msg)));
+        return $this->setMessage(json_encode(array(WAMP::MSG_EVENT, $uri, (string)$msg)));
     }
 }

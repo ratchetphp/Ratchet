@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Application\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Application\WAMP\App as WAMP;
 
 class CallError extends SendMessage {
     protected $_id;
@@ -14,7 +15,7 @@ class CallError extends SendMessage {
         $this->_uri  = $uri;
         $this->_desc = $desc;
 
-        return $this->setMessage(json_encode(array(4, $callId, $uri, $desc)));
+        return $this->setMessage(json_encode(array(WAMP::MSG_CALL_ERROR, $callId, $uri, $desc)));
     }
 
     public function getId() {

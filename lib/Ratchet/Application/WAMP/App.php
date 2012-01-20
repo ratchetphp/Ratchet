@@ -23,8 +23,19 @@ use Ratchet\Application\WAMP\Command\Action\Prefix;
  * | EVENT        | 8  | Server-to-Client |
  * +--------------+----+------------------+
  * @link http://www.tavendo.de/autobahn/protocol.html
+ * @link https://raw.github.com/oberstet/Autobahn/master/lib/javascript/autobahn.js
  */
 class App implements WebSocketAppInterface {
+    const MSG_WELCOME     = 0;
+    const MSG_PREFIX      = 1;
+    const MSG_CALL        = 2;
+    const MSG_CALL_RESULT = 3;
+    const MSG_CALL_ERROR  = 4;
+    const MSG_SUBSCRIBE   = 5;
+    const MSG_UNSUBSCRIBE = 6;
+    const MSG_PUBLISH     = 7;
+    const MSG_EVENT       = 8;
+
     protected $_app;
 
     /**
@@ -81,11 +92,11 @@ class App implements WebSocketAppInterface {
         }
 
         switch ($json[0]) {
-            case 1:
+            case static::MSG_PREFIX:
                 $ret = $this->addPrefix($from, $json[1], $json[2]);
             break;
 
-            case 2:
+            case static::MSG_CALL:
                 array_shift($json);
                 $callID  = array_shift($json);
                 $procURI = array_shift($json);
@@ -97,15 +108,15 @@ class App implements WebSocketAppInterface {
                 $ret = $this->_app->onCall($from, $callID, $procURI, $json);
             break;
 
-            case 5:
+            case static::MSG_SUBSCRIBE:
                 $ret = $this->_app->onSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
-            case 6:
+            case static::MSG_UNSUBSCRIBE:
                 $ret = $this->_app->onUnSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
-            case 7:
+            case static::MSG_PUBLISH:
                 $ret = $this->_app->onPublish($from, $this->getUri($from, $json[1]), $json[2]);
             break;
 

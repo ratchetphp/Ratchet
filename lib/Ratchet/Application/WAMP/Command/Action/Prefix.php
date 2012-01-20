@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Application\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
+use Ratchet\Application\WAMP\App as WAMP;
 
 /**
  * Send a curie to uri mapping to the client
@@ -20,7 +21,7 @@ class Prefix extends SendMessage {
         $this->_curie = $curie;
         $this->_uri   = $uri;
 
-        return $this->setMessage(json_encode(array(1, $curie, $uri)));
+        return $this->setMessage(json_encode(array(WAMP::MSG_PREFIX, $curie, $uri)));
     }
 
     /**
