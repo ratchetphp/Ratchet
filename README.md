@@ -17,15 +17,15 @@ To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80,
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
-Accessing your website's session data in Ratchet is a feature in the works.
+Accessing your website's session data in Ratchet is a [feature in the works](https://github.com/cboden/Ratchet/tree/symfony/sessions).
 
 See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
 
 ###Future considerations
 
 Ideally, soon, web servers will start supporting WebSockets to some capacity and PHP will no longer need to run its self from the command line.
-In theory, the server (Apache/Nginx/ISS) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
-configured PHP file. When this happens, in theory, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
+In theory, the server (like Nginx) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
+configured PHP file. When this happens, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
 WebSocket Application wrapper if the servers recognize the protocol message framing. 
 
 I'm currently looking in using Nginx as an I/O control communicating with Ratchet (instead of Ratchet managing I/O).
