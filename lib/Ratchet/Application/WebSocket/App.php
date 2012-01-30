@@ -6,7 +6,8 @@ use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Application\WebSocket\Util\HTTP;
+use Guzzle\Http\Message\RequestInterface;
+use Ratchet\Application\WebSocket\Guzzle\Http\Message\RequestFactory;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -41,11 +42,13 @@ class App implements ApplicationInterface, ConfiguratorInterface {
 
     protected $_mask_payload = false;
 
-    public function __construct(ApplicationInterface $app = null) {
-        if (null === $app) {
-            throw new \UnexpectedValueException("WebSocket requires an application to run");
-        }
+    /**
+     * @deprecated
+     * @temporary
+     */
+    public $accepted_subprotocols = array();
 
+    public function __construct(ApplicationInterface $app) {
         $this->_app     = $app;
         $this->_factory = new Factory;
     }
@@ -80,18 +83,32 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     public function onMessage(Connection $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
             if (!isset($from->WebSocket->version)) {
-                try {
-                    $from->WebSocket->headers .= $msg;
-                    $from->WebSocket->version  = $this->getVersion($from->WebSocket->headers);
-                } catch (\UnderflowException $e) {
+                $from->WebSocket->headers .= $msg;
+                if (!$this->isMessageComplete($from->WebSocket->headers)) {
                     return;
                 }
+
+                $headers = RequestFactory::fromRequest($from->WebSocket->headers);
+                $from->WebSocket->version = $this->getVersion($headers);
+                $from->WebSocket->headers = $headers;
             }
 
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
             $from->WebSocket->handshake = true;
 
             if (is_array($response)) {
+                // This block is to be moved/changed later
+                $agreed_protocols    = array();
+                $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
+                foreach ($this->accepted_subprotocols as $sub_protocol) {
+                    if (false !== $requested_protocols->hasValue($sub_protocol)) {
+                        $agreed_protocols[] = $sub_protocol;
+                    }
+                }
+                if (count($agreed_protocols) > 0) {
+                    $response['Sec-WebSocket-Protocol'] = implode(',', $agreed_protocols);
+                }
+
                 $header = '';
                 foreach ($response as $key => $val) {
                     if (!empty($key)) {
@@ -155,14 +172,6 @@ class App implements ApplicationInterface, ConfiguratorInterface {
     }
 
     /**
-     * Incomplete, WebSocket protocol allows client to ask to use a sub-protocol, I'm thinking/wanting to somehow implement this in an application decorated class
-     * @param string
-     * @todo Implement or delete...
-     */
-    public function setSubProtocol($name) {
-    }
-
-    /**
      * Checks if a return Command from your application is a message, if so encode it/them
      * @param Ratchet\Resource\Command\CommandInterface|NULL
      * @return Ratchet\Resource\Command\CommandInterface|NULL
@@ -212,21 +221,15 @@ class App implements ApplicationInterface, ConfiguratorInterface {
      * @throws InvalidArgumentException If we can't understand protocol version request
      * @todo Verify the first line of the HTTP header as per page 16 of RFC 6455
      */
-    protected function getVersion($message) {
-        if (false === strstr($message, "\r\n\r\n")) { // This CAN fail with Hixie, depending on the TCP buffer in between
-            throw new \UnderflowException;
-        }
-
-        $headers = HTTP::getHeaders($message);
-
+    protected function getVersion(RequestInterface $request) {
         foreach ($this->_versions as $name => $instance) {
             if (null !== $instance) {
-                if ($instance::isProtocol($headers)) {
+                if ($instance::isProtocol($request)) {
                     return $instance;
                 }
             } else {
                 $ns = __NAMESPACE__ . "\\Version\\{$name}";
-                if ($ns::isProtocol($headers)) {
+                if ($ns::isProtocol($request)) {
                     $this->_versions[$name] = new $ns;
                     return $this->_versions[$name];
                 }
@@ -234,6 +237,29 @@ class App implements ApplicationInterface, ConfiguratorInterface {
         }
 
         throw new \InvalidArgumentException('Could not identify WebSocket protocol');
+    }
+
+    /**
+     * @param string
+     * @return bool
+     * @todo Abstract, some hard coding done for (stupid) Hixie protocol
+     */
+    protected function isMessageComplete($message) {
+        static $crlf = "\r\n\r\n";
+
+        $headers = (boolean)strstr($message, $crlf);
+        if (!$headers) {
+
+            return false;
+        }
+
+        if (strstr($message, 'Sec-WebSocket-Key2')) {
+            if (8 !== strlen(substr($message, strpos($message, $crlf) + strlen($crlf)))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

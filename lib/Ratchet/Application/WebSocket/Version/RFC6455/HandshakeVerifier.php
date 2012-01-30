@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version\RFC6455;
+use Guzzle\Http\Message\RequestInterface;
 
 /**
  * These are checks to ensure the client requested handshake are valid
@@ -9,22 +10,24 @@ namespace Ratchet\Application\WebSocket\Version\RFC6455;
 class HandshakeVerifier {
     /**
      * Given an array of the headers this method will run through all verification methods
-     * @param array
+     * @param Guzzle\Http\Message\RequestInterface
      * @return bool TRUE if all headers are valid, FALSE if 1 or more were invalid
      */
-    public function verifyAll(array $headers) {
+    public function verifyAll(RequestInterface $request) {
+        $headers = $request->getHeaders();
+
         $passes = 0;
 
-        $passes += (int)$this->verifyMethod($headers['Request Method']);
-        //$passes += (int)$this->verifyHTTPVersion($headers['???']); // This isn't in the array!
-        $passes += (int)$this->verifyRequestURI($headers['Request Url']);
+        $passes += (int)$this->verifyMethod($request->getMethod());
+        $passes += (int)$this->verifyHTTPVersion($request->getProtocolVersion());
+        $passes += (int)$this->verifyRequestURI($request->getPath());
         $passes += (int)$this->verifyHost($headers['Host']);
         $passes += (int)$this->verifyUpgradeRequest($headers['Upgrade']);
         $passes += (int)$this->verifyConnection($headers['Connection']);
-        $passes += (int)$this->verifyKey($headers['Sec-Websocket-Key']);
-        //$passes += (int)$this->verifyVersion($headers['Sec-Websocket-Version']); // Temporarily breaking functionality
+        $passes += (int)$this->verifyKey($headers['Sec-WebSocket-Key']);
+        //$passes += (int)$this->verifyVersion($headers['Sec-WebSocket-Version']); // Temporarily breaking functionality
 
-        return (6 === $passes);
+        return (7 === $passes);
     }
 
     /**

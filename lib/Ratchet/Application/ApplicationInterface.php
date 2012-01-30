@@ -8,12 +8,6 @@ use Ratchet\Resource\Connection;
  */
 interface ApplicationInterface {
     /**
-     * Decorator pattern
-     * @param Ratchet\ApplicationInterface Application to wrap in protocol
-     */
-    public function __construct(ApplicationInterface $app = null);
-
-    /**
      * When a new connection is opened it will be passed to this method
      * @param Ratchet\Resource\Connection The socket/connection that just connected to your application
      * @return Ratchet\Resource\Command\CommandInterface|null

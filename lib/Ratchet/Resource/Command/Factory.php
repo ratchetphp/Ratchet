@@ -8,6 +8,8 @@ use Ratchet\Resource\Connection;
 class Factory {
     protected $_paths = array();
 
+    protected $_mapped_commands = array();
+
     public function __construct() {
         $this->addActionPath(__NAMESPACE__ . '\\Action');
     }
@@ -33,19 +35,19 @@ class Factory {
      * @throws UnexpectedValueException
      */
     public function newCommand($name, Connection $conn) {
-        $cmd = null;
+        if (isset($this->_mapped_commands[$name])) {
+            $cmd = $this->_mapped_commands[$name];
+            return new $cmd($conn);
+        }
+
         foreach ($this->_paths as $path) {
             if (class_exists($path . $name)) {
-                $cmd = $path . $name;
-                break;
+                $this->_mapped_commands[$name] = $path . $name;
+                return $this->newCommand($name, $conn);
             }
         }
 
-        if (null === $cmd) {
-            throw new \UnexepctedValueException("Command {$name} not found");
-        }
-
-        return new $cmd($conn);
+        throw new \UnexepctedValueException("Command {$name} not found");
     }
 
     /**
