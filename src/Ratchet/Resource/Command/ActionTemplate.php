@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\Resource\Connection;
+use Ratchet\Resource\ConnectionInterface;
 
 abstract class ActionTemplate implements ActionInterface {
     /**
@@ -8,7 +8,7 @@ abstract class ActionTemplate implements ActionInterface {
      */
     protected $_conn;
 
-    public function __construct(Connection $conn) {
+    public function __construct(ConnectionInterface $conn) {
         $this->_conn = $conn;
     }
 

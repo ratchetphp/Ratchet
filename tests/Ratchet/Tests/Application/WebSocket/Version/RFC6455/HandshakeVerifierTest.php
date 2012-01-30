@@ -1,13 +1,13 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version\RFC6455;
-use Ratchet\Application\WebSocket\Version\RFC6455\HandshakeVerifier;
+use Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier;
 
 /**
- * @covers Ratchet\Application\WebSocket\Version\RFC6455\HandshakeVerifier
+ * @covers Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier
  */
 class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
     /**
-     * @var Ratchet\Application\WebSocket\Version\RFC6455\HandshakeVerifier
+     * @var Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier
      */
     protected $_v;
 

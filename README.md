@@ -38,11 +38,11 @@ I'm looking into a couple daemonized servers written in PHP to run Ratchet on to
 ```php
 <?php
 namespace MyApps;
-use Ratchet\Application\ApplicationInterface;
+use Ratchet\Component\ComponentInterface;
 use Ratchet\Resource\Connection;
 use Ratchet\Socket;
-use Ratchet\Application\Server\App as Server;
-use Ratchet\Application\WebSocket\App as WebSocket;
+use Ratchet\Component\Server\App as Server;
+use Ratchet\Component\WebSocket\App as WebSocket;
 use Ratchet\Resource\Command\Composite as Cmds;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Resource\Command\Action\CloseConnection;
@@ -51,10 +51,10 @@ use Ratchet\Resource\Command\Action\CloseConnection;
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements ApplicationInterface {
+class Chat implements ComponentInterface {
     protected $_clients;
 
-    public function __construct(ApplicationInterface $app = null) {
+    public function __construct(ComponentInterface $app = null) {
         $this->_clients = new \SplObjectStorage;
     }
 

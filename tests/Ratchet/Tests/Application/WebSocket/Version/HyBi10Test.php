@@ -1,10 +1,10 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version;
-use Ratchet\Application\WebSocket\Version\HyBi10;
-use Ratchet\Application\WebSocket\Version\RFC6455\Frame;
+use Ratchet\Component\WebSocket\Version\HyBi10;
+use Ratchet\Component\WebSocket\Version\RFC6455\Frame;
 
 /**
- * @covers Ratchet\Application\WebSocket\Version\Hybi10
+ * @covers Ratchet\Component\WebSocket\Version\Hybi10
  */
 class HyBi10Test extends \PHPUnit_Framework_TestCase {
     protected $_version;
@@ -17,7 +17,7 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
      * Is this useful?
      */
     public function testClassImplementsVersionInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\Application\\WebSocket\\Version\\VersionInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\Component\\WebSocket\\Version\\VersionInterface');
         $this->assertThat($this->_version, $constraint);
     }
 

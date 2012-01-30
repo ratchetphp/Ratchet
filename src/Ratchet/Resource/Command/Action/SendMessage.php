@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Resource\Command\Action;
 use Ratchet\Resource\Command\ActionTemplate;
-use Ratchet\Application\ApplicationInterface;
+use Ratchet\Component\ComponentInterface;
 
 /**
  * Send text back to the client end of the socket(s)
@@ -33,7 +33,7 @@ class SendMessage extends ActionTemplate {
     /**
      * @throws \UnexpectedValueException if a message was not set with setMessage()
      */
-    public function execute(ApplicationInterface $scope = null) {
+    public function execute(ComponentInterface $scope = null) {
         if (empty($this->_message)) {
             throw new \UnexpectedValueException("Message is empty");
         }

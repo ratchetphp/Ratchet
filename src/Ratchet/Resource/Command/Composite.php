@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\Application\ApplicationInterface;
+use Ratchet\Component\ComponentInterface;
 
 class Composite extends \SplQueue implements CommandInterface {
     /**
@@ -22,7 +22,7 @@ class Composite extends \SplQueue implements CommandInterface {
         }
     }
 
-    public function execute(ApplicationInterface $scope = null) {
+    public function execute(ComponentInterface $scope = null) {
         $this->setIteratorMode(static::IT_MODE_DELETE);
 
         $recursive = new self;

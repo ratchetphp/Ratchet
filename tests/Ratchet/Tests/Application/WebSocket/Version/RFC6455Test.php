@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version;
-use Ratchet\Application\WebSocket\Version\RFC6455;
-use Ratchet\Application\WebSocket\Version\RFC6455\Frame;
+use Ratchet\Component\WebSocket\Version\RFC6455;
+use Ratchet\Component\WebSocket\Version\RFC6455\Frame;
 use Guzzle\Http\Message\RequestFactory;
 
 /**
- * @covers Ratchet\Application\WebSocket\Version\RFC6455
+ * @covers Ratchet\Component\WebSocket\Version\RFC6455
  */
 class RFC6455Test extends \PHPUnit_Framework_TestCase {
     protected $_version;
@@ -18,7 +18,7 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
      * Is this useful?
      */
     public function testClassImplementsVersionInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\Application\\WebSocket\\Version\\VersionInterface');
+        $constraint = $this->isInstanceOf('\\Ratchet\\Component\\WebSocket\\Version\\VersionInterface');
         $this->assertThat($this->_version, $constraint);
     }
 

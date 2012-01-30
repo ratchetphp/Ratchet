@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet;
-use Ratchet\Application\ProtocolInterface;
+use Ratchet\Component\ProtocolInterface;
 
 /**
  * A wrapper for the PHP socket_ functions
@@ -203,28 +203,6 @@ class Socket implements SocketInterface {
         }
 
         return $res;
-    }
-
-    /**
-     * @param Ratchet\Application\ProtocolInterface
-     * @return Socket
-     * @throws Exception
-     */
-    public static function createFromConfig(ProtocolInterface $protocol) {
-        $config = $protocol::getDefaultConfig();
-        $class  = get_called_class();
-
-        $socket = new $class($config['domain'] ?: null, $config['type'] ?: null, $config['protocol'] ?: null);
-
-        if (is_array($config['options'])) {
-            foreach ($config['options'] as $level => $pair) {
-                foreach ($pair as $optname => $optval) {
-                    $socket->set_option($level, $optname, $optval);
-                }
-            }
-        }
-
-        return $socket;
     }
 
     /**

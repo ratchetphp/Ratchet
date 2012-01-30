@@ -1,9 +1,9 @@
 <?php
 namespace Ratchet\Tests\Application\WebSocket\Version\RFC6455;
-use Ratchet\Application\WebSocket\Version\RFC6455\Frame;
+use Ratchet\Component\WebSocket\Version\RFC6455\Frame;
 
 /**
- * @covers Ratchet\Application\WebSocket\Version\RFC6455\Frame
+ * @covers Ratchet\Component\WebSocket\Version\RFC6455\Frame
  * @todo getMaskingKey, getPayloadStartingByte don't have tests yet
  * @todo Could use some clean up in general, I had to rush to fix a bug for a deadline, sorry.
  */

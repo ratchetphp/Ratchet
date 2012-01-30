@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Resource\Command;
-use Ratchet\Resource\Connection;
+use Ratchet\Resource\ConnectionInterface;
 
 /**
  * A factory pattern class to easily create all the things in the Ratchet\Resource\Command interface
@@ -34,7 +34,7 @@ class Factory {
      * @return CommandInterface
      * @throws UnexpectedValueException
      */
-    public function newCommand($name, Connection $conn) {
+    public function newCommand($name, ConnectionInterface $conn) {
         if (isset($this->_mapped_commands[$name])) {
             $cmd = $this->_mapped_commands[$name];
             return new $cmd($conn);

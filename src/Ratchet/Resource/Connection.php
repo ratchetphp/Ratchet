@@ -3,11 +3,10 @@ namespace Ratchet\Resource;
 use Ratchet\SocketInterface;
 
 /**
- * @todo Consider if this belongs under Application
- * @todo Construct should have StorageInterface, currently all is memory, should be different ones
- *       That will allow a queue system, communication between threaded connections
+ * A proxy object representing a connection to the application
+ * This acts as a container to storm data (in memory) about the connection
  */
-class Connection {
+class Connection implements ConnectionInterface {
     protected $_data = array();
 
     /**
@@ -38,18 +37,14 @@ class Connection {
     }
 
     /**
-     * Set an attribute to the connection
-     * @param mixed
-     * @param mixed
+     * @{inheritdoc}
      */
     public function __set($name, $value) {
         $this->_data[$name] = $value;
     }
 
     /**
-     * Get a previously set attribute bound to the connection
-     * @return mixed
-     * @throws \InvalidArgumentException
+     * @{inheritdoc}
      */
     public function __get($name) {
         if (!$this->__isset($name)) {
@@ -64,15 +59,14 @@ class Connection {
     }
 
     /**
-     * @param mixed
-     * @return bool
+     * @{inheritdoc}
      */
     public function __isset($name) {
         return isset($this->_data[$name]);
     }
 
     /**
-     * @param mixed
+     * @{inheritdoc}
      */
     public function __unset($name) {
         unset($this->_data[$name]);

@@ -1,12 +1,12 @@
 <?php
-namespace Ratchet\Resource\Command\Action;
+namespace Ratchet\Component\WebSocket\Command\Action;
 use Ratchet\Resource\Command\ActionTemplate;
 use Ratchet\Component\ComponentInterface;
 
 /**
- * Null pattern - execution does nothing, something needs to be passed back though
+ * Not yet implemented/completed
  */
-class Null extends ActionTemplate {
+class Ping extends ActionTemplate {
     public function execute(ComponentInterface $scope = null) {
     }
 }
