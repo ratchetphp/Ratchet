@@ -1,0 +1,23 @@
+{
+    "name": "cboden/Ratchet"
+  , "type": "library"
+  , "description": "PHP WebSocket server component library"
+  , "keywords": ["WebSocket"]
+  , "license": "MIT"
+  , "authors": [
+        {
+            "name": "Chris Boden"
+          , "email": "cboden@gmail.com"
+          , "homepage": "http://socketo.me"
+        }
+    ]
+  , "autoload": {
+        "psr-0": {
+            "Ratchet": "src/"
+        }
+    }
+  , "require": {
+        "php": ">=5.3.2"
+      , "guzzle/guzzle": ">=2.0.5"
+    }
+}
