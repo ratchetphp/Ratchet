@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Component\Server;
-use Ratchet\Component\ComponentInterface;
+use Ratchet\Component\MessageComponentInterface;
 use Ratchet\SocketInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Connection;
@@ -8,9 +8,8 @@ use Ratchet\Resource\Command\CommandInterface;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
- * @todo With all these options for the server I should probably use a DIC
  */
-class App implements ComponentInterface {
+class App implements MessageComponentInterface {
     /**
      * @var array of Socket Resources
      */
@@ -25,7 +24,7 @@ class App implements ComponentInterface {
      * The decorated application to send events to
      * @var Ratchet\Component\ComponentInterface
      */
-    protected $_app;
+    protected $_decorating;
 
     /**
      * Number of bytes to read in the TCP buffer at a time
@@ -42,8 +41,8 @@ class App implements ComponentInterface {
      */
     protected $_run = true;
 
-    public function __construct(ComponentInterface $application) {
-        $this->_app = $application;
+    public function __construct(MessageComponentInterface $component) {
+        $this->_decorating = $component;
     }
 
     /**
@@ -68,8 +67,6 @@ class App implements ComponentInterface {
      * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
      * @param int The port to listen to connections on (make sure to run as root if < 1000)
      * @throws Ratchet\Exception
-     * @todo Validate address.  Use socket_get_option, if AF_INET must be IP, if AF_UNIX must be path
-     * @todo Consider making the 4kb listener changable
      */
     public function run(SocketInterface $host, $address = '127.0.0.1', $port = 1025) {
         $this->_connections[$host->getResource()] = new Connection($host);
@@ -156,17 +153,17 @@ class App implements ComponentInterface {
         $this->_resources[] = $new_connection->getSocket()->getResource();
         $this->_connections[$new_connection->getSocket()->getResource()] = $new_connection;
 
-        return $this->_app->onOpen($new_connection);
+        return $this->_decorating->onOpen($new_connection);
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        return $this->_app->onMessage($from, $msg);
+        return $this->_decorating->onMessage($from, $msg);
     }
 
     public function onClose(ConnectionInterface $conn) {
         $resource = $conn->getSocket()->getResource();
 
-        $cmd = $this->_app->onClose($conn);
+        $cmd = $this->_decorating->onClose($conn);
 
         unset($this->_connections[$resource], $this->_resources[array_search($resource, $this->_resources)]);
 
@@ -174,6 +171,6 @@ class App implements ComponentInterface {
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return $this->_app->onError($conn, $e);
+        return $this->_decorating->onError($conn, $e);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Resource\Command\Action;
-use Ratchet\Resource\Command\ActionTemplate;
 use Ratchet\Component\ComponentInterface;
 
 /**
@@ -31,6 +30,7 @@ class SendMessage extends ActionTemplate {
     }
 
     /**
+     * @{inheritdoc}
      * @throws \UnexpectedValueException if a message was not set with setMessage()
      */
     public function execute(ComponentInterface $scope = null) {

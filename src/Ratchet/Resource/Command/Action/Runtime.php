@@ -1,10 +1,13 @@
 <?php
 namespace Ratchet\Resource\Command\Action;
-use Ratchet\Resource\Command\ActionTemplate;
 use Ratchet\Component\ComponentInterface;
 
+/**
+ * This allows you to create a run-time command by using a closure
+ */
 class Runtime extends ActionTemplate {
     /**
+     * The stored closure command to execude
      * @var Closure
      */
     protected $_command = null;
@@ -17,7 +20,12 @@ class Runtime extends ActionTemplate {
         $this->_command = $callback;
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function execute(ComponentInterface $scope = null) {
-        return call_user_func($this->_command, $this->getConnection(), $scope);
+        $cmd = $this->_command;
+
+        return $cmd($this->getConnection(), $scope);
     }
 }

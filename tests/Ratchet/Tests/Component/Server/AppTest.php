@@ -2,7 +2,7 @@
 namespace Ratchet\Tests\Application\Server;
 use Ratchet\Component\Server\App as ServerApp;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
-use Ratchet\Tests\Mock\Application as TestApp;
+use Ratchet\Tests\Mock\Component as TestApp;
 
 /**
  * @covers Ratchet\Component\Server\App
@@ -17,7 +17,7 @@ class AppTest extends \PHPUnit_Framework_TestCase {
         $this->_app      = new TestApp;
         $this->_server   = new ServerApp($this->_app);
 
-        $ref  = new \ReflectionClass('\Ratchet\Component\Server\App');
+        $ref  = new \ReflectionClass('\\Ratchet\\Component\\Server\\App');
         $prop = $ref->getProperty('_run');
         $prop->setAccessible(true);
         $prop->setValue($this->_server, false);

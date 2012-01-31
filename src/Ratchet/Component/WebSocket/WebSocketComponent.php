@@ -12,16 +12,14 @@ use Ratchet\Component\WebSocket\Guzzle\Http\Message\RequestFactory;
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
  * @link http://ca.php.net/manual/en/ref.http.php
- * @todo Make sure this works both ways (client/server) as stack needs to exist on client for framing
- * @todo Learn about closing the socket.  A message has to be sent prior to closing - does the message get sent onClose event or CloseConnection command?
- * @todo Consider chaning this class to a State Pattern.  If a WS App interface is passed use different state for additional methods used
+ * @link http://dev.w3.org/html5/websockets/
  */
-class App implements ComponentInterface {
+class WebSocketComponent implements ComponentInterface {
     /**
-     * Decorated application
+     * Decorated component
      * @var Ratchet\Component\ComponentInterface
      */
-    protected $_app;
+    protected $_decorating;
 
     /**
      * Creates commands/composites instead of calling several classes manually
@@ -42,16 +40,20 @@ class App implements ComponentInterface {
     protected $_mask_payload = false;
 
     /**
+     * For now, array_push accepted subprotocols to this array
      * @deprecated
      * @temporary
      */
     public $accepted_subprotocols = array();
 
-    public function __construct(ComponentInterface $app) {
-        $this->_app     = $app;
-        $this->_factory = new Factory;
+    public function __construct(ComponentInterface $component) {
+        $this->_decorating = $component;
+        $this->_factory    = new Factory;
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function onOpen(ConnectionInterface $conn) {
         $conn->WebSocket = new \stdClass;
         $conn->WebSocket->handshake = false;
@@ -60,8 +62,6 @@ class App implements ComponentInterface {
 
     /**
      * Do handshake, frame/unframe messages coming/going in stack
-     * @todo This needs some major refactoring
-     * @todo "Once the client's opening handshake has been sent, the client MUST wait for a response from the server before sending any further data."
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
@@ -107,7 +107,7 @@ class App implements ComponentInterface {
 
             $comp = $this->_factory->newComposite();
             $comp->enqueue($this->_factory->newCommand('SendMessage', $from)->setMessage($header));
-            $comp->enqueue($this->prepareCommand($this->_app->onOpen($from, $msg))); // Need to send headers/handshake to application, let it have the cookies, etc
+            $comp->enqueue($this->prepareCommand($this->_decorating->onOpen($from, $msg))); // Need to send headers/handshake to application, let it have the cookies, etc
 
             return $comp;
         }
@@ -136,7 +136,7 @@ class App implements ComponentInterface {
         }
 
         if ($from->WebSocket->message->isCoalesced()) {
-            $cmds = $this->prepareCommand($this->_app->onMessage($from, (string)$from->WebSocket->message));
+            $cmds = $this->prepareCommand($this->_decorating->onMessage($from, (string)$from->WebSocket->message));
             unset($from->WebSocket->message);
 
             return $cmds;
@@ -144,14 +144,14 @@ class App implements ComponentInterface {
     }
 
     public function onClose(ConnectionInterface $conn) {
-        return $this->prepareCommand($this->_app->onClose($conn));
+        return $this->prepareCommand($this->_decorating->onClose($conn));
     }
 
     /**
      * @todo Shouldn't I be using prepareCommand() on the return? look into this
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return $this->_app->onError($conn, $e);
+        return $this->_decorating->onError($conn, $e);
     }
 
     /**

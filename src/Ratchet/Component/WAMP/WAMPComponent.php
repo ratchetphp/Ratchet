@@ -25,7 +25,7 @@ use Ratchet\Component\WAMP\Command\Action\Prefix;
  * @link http://www.tavendo.de/autobahn/protocol.html
  * @link https://raw.github.com/oberstet/Autobahn/master/lib/javascript/autobahn.js
  */
-class App implements WebSocketAppInterface {
+class WAMPComponent implements WebSocketAppInterface {
     const MSG_WELCOME     = 0;
     const MSG_PREFIX      = 1;
     const MSG_CALL        = 2;
@@ -36,7 +36,7 @@ class App implements WebSocketAppInterface {
     const MSG_PUBLISH     = 7;
     const MSG_EVENT       = 8;
 
-    protected $_app;
+    protected $_decorating;
 
     /**
      * Any server to client prefixes are stored here
@@ -78,7 +78,7 @@ class App implements WebSocketAppInterface {
             $wamp->addPrefix($conn, $curie, $uri, true);
         };
 
-        return $this->_app->onOpen($conn);
+        return $this->_decorating->onOpen($conn);
     }
 
     /**
@@ -105,19 +105,19 @@ class App implements WebSocketAppInterface {
                     $json = $json[0];
                 }
 
-                $ret = $this->_app->onCall($from, $callID, $procURI, $json);
+                $ret = $this->_decorating->onCall($from, $callID, $procURI, $json);
             break;
 
             case static::MSG_SUBSCRIBE:
-                $ret = $this->_app->onSubscribe($from, $this->getUri($from, $json[1]));
+                $ret = $this->_decorating->onSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
             case static::MSG_UNSUBSCRIBE:
-                $ret = $this->_app->onUnSubscribe($from, $this->getUri($from, $json[1]));
+                $ret = $this->_decorating->onUnSubscribe($from, $this->getUri($from, $json[1]));
             break;
 
             case static::MSG_PUBLISH:
-                $ret = $this->_app->onPublish($from, $this->getUri($from, $json[1]), $json[2]);
+                $ret = $this->_decorating->onPublish($from, $this->getUri($from, $json[1]), $json[2]);
             break;
 
             default:
@@ -152,16 +152,16 @@ class App implements WebSocketAppInterface {
         return $stack;
     }
 
-    public function __construct(ServerInterface $app) {
-        $this->_app        = $app;
+    public function __construct(WAMPServerComponentInterface $server_component) {
+        $this->_decorating = $server_component;
         $this->_msg_buffer = new Composite;
     }
 
     public function onClose(ConnectionInterface $conn) {
-        return $this->_app->onClose($conn);
+        return $this->_decorating->onClose($conn);
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return $this->_app->onError($conn, $e);
+        return $this->_decorating->onError($conn, $e);
     }
 }

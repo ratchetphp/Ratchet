@@ -7,7 +7,7 @@ use Ratchet\Component\ComponentInterface;
  * @todo WebSocket checks if instanceof AppInterface, if so uses getSubProtocol() when doing handshake
  * @todo Pick a better name for this...
  */
-interface WebSocketAppInterface extends ComponentInterface {
+interface WebSocketComponentInterface extends ComponentInterface {
     /**
      * Currently instead of this, I'm setting header in the Connection object passed around...not sure which I like more
      * @param string

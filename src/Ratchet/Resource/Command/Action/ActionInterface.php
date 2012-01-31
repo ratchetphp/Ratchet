@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Resource\Command;
+namespace Ratchet\Resource\Command\Action;
 use Ratchet\Resource\ConnectionInterface;
 
 /**
