@@ -3,17 +3,21 @@
   , "type": "library"
   , "description": "PHP WebSocket server component library"
   , "keywords": ["WebSocket"]
+  , "homepage": "http://socketo.me"
+  , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
+  , "version": "0.1"
   , "authors": [
         {
             "name": "Chris Boden"
           , "email": "cboden@gmail.com"
-          , "homepage": "http://socketo.me"
+          , "homepage": "http://res.im"
         }
     ]
   , "autoload": {
         "psr-0": {
-            "Ratchet": "src/"
+            "Ratchet\\Tests": "tests"
+          , "Ratchet": "lib"
         }
     }
   , "require": {

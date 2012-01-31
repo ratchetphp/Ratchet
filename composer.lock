@@ -1,0 +1,21 @@
+{
+    "hash": "f237c18d57c8cda8acb08f4d1e917930",
+    "packages": [
+        {
+            "package": "doctrine\/common",
+            "version": "master-dev"
+        },
+        {
+            "package": "symfony\/validator",
+            "version": "2.1.0-dev"
+        },
+        {
+            "package": "symfony\/event-dispatcher",
+            "version": "2.1.0-dev"
+        },
+        {
+            "package": "guzzle\/guzzle",
+            "version": "master-dev"
+        }
+    ]
+}
