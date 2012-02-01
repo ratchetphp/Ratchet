@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Application\WebSocket\Version;
 use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 
 /**
  * FOR THE LOVE OF BEER, PLEASE PLEASE PLEASE DON'T allow the use of this in your application!
@@ -25,26 +26,22 @@ class Hixie76 implements VersionInterface {
      * @todo Unhack this mess...or wait for Hixie to die (HURRY UP APPLE)
      */
     public function handshake(RequestInterface $request) {
-        $buffer   = $request->getRawHeaders() . "\r\n\r\n" . $request->getBody();
-        $resource = $host = $origin = $key1 = $key2 = $protocol = $code = $handshake = null;
-
-        preg_match('#GET (.*?) HTTP#', $buffer, $match) && $resource = $match[1];
-        preg_match("#Host: (.*?)\r\n#", $buffer, $match) && $host = $match[1];
-        preg_match("#Sec-WebSocket-Key1: (.*?)\r\n#", $buffer, $match) && $key1 = $match[1];
-        preg_match("#Sec-WebSocket-Key2: (.*?)\r\n#", $buffer, $match) && $key2 = $match[1];
-        preg_match("#Sec-WebSocket-Protocol: (.*?)\r\n#", $buffer, $match) && $protocol = $match[1];
-        preg_match("#Origin: (.*?)\r\n#", $buffer, $match) && $origin = $match[1];
-        preg_match("#\r\n(.*?)\$#", $buffer, $match) && $code = $match[1];
-
-        return "HTTP/1.1 101 WebSocket Protocol Handshake\r\n".
-            "Upgrade: WebSocket\r\n"
-          . "Connection: Upgrade\r\n"
-          . "Sec-WebSocket-Origin: {$origin}\r\n"
-          . "Sec-WebSocket-Location: ws://{$host}{$resource}\r\n"
-          . ($protocol ? "Sec-WebSocket-Protocol: {$protocol}\r\n" : "")
-          . "\r\n"
-          . $this->_createHandshakeThingy($key1, $key2, $code)
-        ;
+        $body = $this->sign($request->getHeader('Sec-WebSocket-Key1'), $request->getHeader('Sec-WebSocket-Key2'), $request->getBody());
+        
+        $headers = array(
+            'Upgrade'                => 'WebSocket'
+          , 'Connection'             => 'Upgrade'
+          , 'Sec-WebSocket-Origin'   => $request->getHeader('Origin')
+          , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host') . $request->getPath()
+        );
+        if ($request->getHeader('Sec-WebSocket-Protocol')) {
+            $headers['Sec-WebSocket-Protocol'] = $request->getHeader('Sec-WebSocket-Protocol');
+        }
+        
+        $response = new \Guzzle\Http\Message\Response(101, $headers, $body);        
+        return $response;
+        
+        
     }
 
     public function newMessage() {
@@ -59,17 +56,19 @@ class Hixie76 implements VersionInterface {
         return chr(0) . $message . chr(255);
     }
 
-    protected function _doStuffToObtainAnInt32($key) {
-        return preg_match_all('#[0-9]#', $key, $number) && preg_match_all('# #', $key, $space) ?
-            implode('', $number[0]) / count($space[0]) :
-            ''
-        ;
+    protected function generateKeyNumber($key) {
+        
+        $int = preg_replace('[\D]', '', $key) / substr_count($key, ' ');
+        return (is_int($int) && substr_count($key, ' ') > 0) ? $int : '';
+        
+        
     }
 
-    protected function _createHandshakeThingy($key1, $key2, $code) {
+    protected function sign($key1, $key2, $code) {
+ 
         return md5(
-            pack('N', $this->_doStuffToObtainAnInt32($key1))
-          . pack('N', $this->_doStuffToObtainAnInt32($key2))
+            pack('N', $this->generateKeyNumber($key1))
+          . pack('N', $this->generateKeyNumber($key2))
           . $code
         , true);
     }
