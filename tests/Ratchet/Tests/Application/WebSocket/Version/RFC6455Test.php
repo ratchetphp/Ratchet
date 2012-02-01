@@ -119,7 +119,7 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
         $request = RequestFactory::fromMessage($header);
 
         if ($pass) {
-            $this->assertTrue(is_array($this->_version->handshake($request)));
+            $this->assertInstanceOf('\\Guzzle\\Http\\Message\\Response', $this->_version->handshake($request));
         } else {
             $this->setExpectedException('InvalidArgumentException');
             $this->_version->handshake($request);
