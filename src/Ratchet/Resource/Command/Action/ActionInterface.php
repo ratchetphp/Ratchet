@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Resource\Command\Action;
 use Ratchet\Resource\ConnectionInterface;
+use Ratchet\Resource\Command\CommandInterface;
 
 /**
  * A single command tied to 1 socket connection

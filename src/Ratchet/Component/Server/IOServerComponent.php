@@ -9,7 +9,7 @@ use Ratchet\Resource\Command\CommandInterface;
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
  */
-class App implements MessageComponentInterface {
+class IOServerComponent implements MessageComponentInterface {
     /**
      * @var array of Socket Resources
      */
@@ -145,6 +145,9 @@ class App implements MessageComponentInterface {
         }
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function onOpen(ConnectionInterface $conn) {
         $new_socket     = clone $conn->getSocket();
         $new_socket->set_nonblock();
@@ -156,10 +159,16 @@ class App implements MessageComponentInterface {
         return $this->_decorating->onOpen($new_connection);
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function onMessage(ConnectionInterface $from, $msg) {
         return $this->_decorating->onMessage($from, $msg);
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function onClose(ConnectionInterface $conn) {
         $resource = $conn->getSocket()->getResource();
 
@@ -170,6 +179,9 @@ class App implements MessageComponentInterface {
         return $cmd;
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_decorating->onError($conn, $e);
     }

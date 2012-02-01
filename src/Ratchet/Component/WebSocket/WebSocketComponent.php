@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Component\WebSocket;
-use Ratchet\Component\ComponentInterface;
+use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Command\Factory;
 use Ratchet\Resource\Command\CommandInterface;
@@ -14,10 +14,10 @@ use Ratchet\Component\WebSocket\Guzzle\Http\Message\RequestFactory;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
-class WebSocketComponent implements ComponentInterface {
+class WebSocketComponent implements MessageComponentInterface {
     /**
      * Decorated component
-     * @var Ratchet\Component\ComponentInterface
+     * @var Ratchet\Component\MessageComponentInterface
      */
     protected $_decorating;
 
@@ -46,7 +46,7 @@ class WebSocketComponent implements ComponentInterface {
      */
     public $accepted_subprotocols = array();
 
-    public function __construct(ComponentInterface $component) {
+    public function __construct(MessageComponentInterface $component) {
         $this->_decorating = $component;
         $this->_factory    = new Factory;
     }

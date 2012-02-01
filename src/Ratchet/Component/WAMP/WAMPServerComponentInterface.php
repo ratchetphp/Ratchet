@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Component\WAMP;
+use Ratchet\Component\ComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 
 /**
@@ -7,7 +8,7 @@ use Ratchet\Resource\ConnectionInterface;
  * onMessage is replaced by various types of messages for this protocol (pub/sub or rpc)
  * @todo Thought: URI as class.  Class has short and long version stored (if as prefix)
  */
-interface WAMPServerComponentInterface {
+interface WAMPServerComponentInterface extends ComponentInterface {
     /**
      * When a new connection is opened it will be passed to this method
      * @param Ratchet\Resource\Connection

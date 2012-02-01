@@ -25,7 +25,7 @@ use Ratchet\Component\WAMP\Command\Action\Prefix;
  * @link http://www.tavendo.de/autobahn/protocol.html
  * @link https://raw.github.com/oberstet/Autobahn/master/lib/javascript/autobahn.js
  */
-class WAMPComponent implements WebSocketAppInterface {
+class WAMPServerComponent implements WebSocketAppInterface {
     const MSG_WELCOME     = 0;
     const MSG_PREFIX      = 1;
     const MSG_CALL        = 2;
