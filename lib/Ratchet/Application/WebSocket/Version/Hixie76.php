@@ -38,10 +38,8 @@ class Hixie76 implements VersionInterface {
             $headers['Sec-WebSocket-Protocol'] = $request->getHeader('Sec-WebSocket-Protocol');
         }
         
-        $response = new \Guzzle\Http\Message\Response(101, $headers, $body);        
+        $response = new \Guzzle\Http\Message\Response('HTTP/1.1 101 WebSocket Protocol Handshake', $headers, $body);        
         return $response;
-        
-        
     }
 
     public function newMessage() {
@@ -56,10 +54,13 @@ class Hixie76 implements VersionInterface {
         return chr(0) . $message . chr(255);
     }
 
-    protected function generateKeyNumber($key) {
+    public function generateKeyNumber($key) {
         
+        if (substr_count($key, ' ') == 0) {
+            return '';
+        }
         $int = preg_replace('[\D]', '', $key) / substr_count($key, ' ');
-        return (is_int($int) && substr_count($key, ' ') > 0) ? $int : '';
+        return (is_int($int)) ? $int : '';
         
         
     }
