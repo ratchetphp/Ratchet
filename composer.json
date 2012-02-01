@@ -1,0 +1,46 @@
+{
+    "name": "cboden/Ratchet"
+  , "type": "library"
+  , "description": "PHP WebSocket server component library"
+  , "keywords": ["WebSocket"]
+  , "homepage": "http://socketo.me"
+  , "repository": "https://github.com/cboden/Ratchet"
+  , "license": "MIT"
+  , "version": "0.1"
+  , "authors": [
+        {
+            "name": "Chris Boden"
+          , "email": "cboden@gmail.com"
+          , "homepage": "http://res.im"
+        }
+    ]
+  , "autoload": {
+        "psr-0": {
+            "Ratchet\\Tests": "tests"
+          , "Ratchet": "lib"
+        }
+    }
+  , "repositories": {
+        "guzzle": {
+            "package": {
+                "name": "guzzle"
+              , "type": "library"
+              , "version": "2.0.2"
+              , "autoload": {
+                    "psr-0": {
+                        "Guzzle": "src"
+                    }
+                }
+              , "source": {
+                    "url": "https://github.com/guzzle/guzzle.git"
+                  , "type": "git"
+                  , "reference": "ac64abc2c05b921efc4623379c1674a282475ae5"
+                }
+            }
+        }
+    }
+  , "require": {
+        "php": ">=5.3.2"
+      , "guzzle": "2.0.2"
+    }
+}

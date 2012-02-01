@@ -2,3 +2,4 @@ phpunit.xml
 coverage
 docs
 sandbox
+vendor

@@ -1,0 +1,9 @@
+{
+    "hash": "75f85f47f6365abbeeabb065601c6ec2",
+    "packages": [
+        {
+            "package": "guzzle",
+            "version": "2.0.2"
+        }
+    ]
+}
