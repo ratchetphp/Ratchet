@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Component\WAMP;
 use Ratchet\Component\ComponentInterface;
-use Ratchet\Component\WebSocket\WebSocketAppInterface;
+use Ratchet\Component\WebSocket\WebSocketComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Command\Composite;
 use Ratchet\Resource\Command\CommandInterface;
@@ -25,7 +25,7 @@ use Ratchet\Component\WAMP\Command\Action\Prefix;
  * @link http://www.tavendo.de/autobahn/protocol.html
  * @link https://raw.github.com/oberstet/Autobahn/master/lib/javascript/autobahn.js
  */
-class WAMPServerComponent implements WebSocketAppInterface {
+class WAMPServerComponent implements WebSocketComponentInterface {
     const MSG_WELCOME     = 0;
     const MSG_PREFIX      = 1;
     const MSG_CALL        = 2;

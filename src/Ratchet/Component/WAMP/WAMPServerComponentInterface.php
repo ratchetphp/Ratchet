@@ -10,26 +10,6 @@ use Ratchet\Resource\ConnectionInterface;
  */
 interface WAMPServerComponentInterface extends ComponentInterface {
     /**
-     * When a new connection is opened it will be passed to this method
-     * @param Ratchet\Resource\Connection
-     */
-    function onOpen(ConnectionInterface $conn);
-
-    /**
-     * The user closed their connection
-     * @param Ratchet\Resource\Connection
-     * @return Ratchet\Resource\Command\CommandInterface|null
-     */
-    function onClose(ConnectionInterface $conn);
-
-    /**
-     * @param Ratchet\Resource\Connection
-     * @param \Exception
-     * @return Ratchet\Resource\Command\CommandInterface|null
-     */
-    function onError(ConnectionInterface $conn, \Exception $e);
-
-    /**
      * An RPC call has been received
      * @param Ratchet\Resource\Connection
      * @param string
