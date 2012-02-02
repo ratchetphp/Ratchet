@@ -6,7 +6,6 @@ use Ratchet\Component\ProtocolInterface;
  * A wrapper for the PHP socket_ functions
  * @author Chris Boden <shout at chrisboden dot ca>
  * @link http://ca2.php.net/manual/en/book.sockets.php
- * @todo Possibly move this into Ratchet\Resource - another concrete could use streams
  */
 class Socket implements SocketInterface {
     /**

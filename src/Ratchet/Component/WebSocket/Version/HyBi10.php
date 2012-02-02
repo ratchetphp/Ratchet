@@ -2,9 +2,6 @@
 namespace Ratchet\Component\WebSocket\Version;
 use Guzzle\Http\Message\RequestInterface;
 
-/**
- * @todo Note: Even though this is the "legacy" HyBi version, it's using the RFC Message and Frame classes - change if needed
- */
 class HyBi10 extends RFC6455 {
     public static function isProtocol(RequestInterface $request) {
         $version = (int)$request->getHeader('Sec-WebSocket-Version', -1);

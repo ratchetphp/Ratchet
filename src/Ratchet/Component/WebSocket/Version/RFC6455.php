@@ -18,9 +18,6 @@ class RFC6455 implements VersionInterface {
         $this->_verifier = new HandshakeVerifier;
     }
 
-    /**
-     * @todo Change the request to be a Guzzle RequestInterface
-     */
     public static function isProtocol(RequestInterface $request) {
         $version = (int)$request->getHeader('Sec-WebSocket-Version', -1);
         return (13 === $version);
