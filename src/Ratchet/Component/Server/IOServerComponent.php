@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Component\Server;
 use Ratchet\Component\MessageComponentInterface;
-use Ratchet\SocketInterface;
+use Ratchet\Resource\Socket\SocketInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\CommandInterface;
@@ -63,7 +63,7 @@ class IOServerComponent implements MessageComponentInterface {
 
     /*
      * Run the server infinitely
-     * @param Ratchet\SocketInterface
+     * @param Ratchet\Resource\Socket\SocketInterface
      * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
      * @param int The port to listen to connections on (make sure to run as root if < 1000)
      * @throws Ratchet\Exception

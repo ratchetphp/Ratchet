@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Resource;
-use Ratchet\SocketInterface;
+use Ratchet\Resource\Socket\SocketInterface;
 
 /**
  * A proxy object representing a connection to the application
@@ -10,7 +10,7 @@ class Connection implements ConnectionInterface {
     protected $_data = array();
 
     /**
-     * @var Ratchet\SocketInterface
+     * @var Ratchet\Resource\Socket\SocketInterface
      */
     protected $_socket;
 

@@ -1,16 +1,16 @@
 <?php
-namespace Ratchet;
+namespace Ratchet\Resource\Socket;
 
 /**
  * Uses internal php methods to fill an Exception class (no parameters required)
  */
-class Exception extends \Exception {
+class BSDSocketException extends \Exception {
     /**
-     * @var SocketInterface
+     * @var BSDSocket
      */
     protected $_socket;
 
-    public function __construct(SocketInterface $socket) {
+    public function __construct(BSDSocket $socket) {
         $int = socket_last_error();
         $msg = socket_strerror($int);
 

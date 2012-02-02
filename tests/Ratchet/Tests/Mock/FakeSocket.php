@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\SocketInterface;
-use Ratchet\Socket as RealSocket;
+use Ratchet\Resource\Socket\SocketInterface;
+use Ratchet\Resource\Socket\BSDSocket as RealSocket;
 
 class FakeSocket implements SocketInterface {
     public $_arguments = array();

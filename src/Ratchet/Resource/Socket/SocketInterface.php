@@ -1,8 +1,9 @@
 <?php
-namespace Ratchet;
+namespace Ratchet\Resource\Socket;
 
 /**
  * An object-oriented container for a single socket connection
+ * @todo Major refactor when socket streams are implemented against this interface
  */
 interface SocketInterface {
     /**

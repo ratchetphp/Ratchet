@@ -3,7 +3,7 @@
 A PHP 5.3 (PSR-0 compliant) component library for serving sockets and building socket based applications.
 Build up your application through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by wrapping it in a different protocol.
-Ratchet's primary intention is to be used as a WebSocket server.
+Ratchet's primary intention is to be used as a WebSocket server (and a client in 0.6).
 
 ##WebSockets
 
@@ -38,11 +38,11 @@ I'm looking into a couple daemonized servers written in PHP to run Ratchet on to
 ```php
 <?php
 namespace MyApps;
-use Ratchet\Component\ComponentInterface;
-use Ratchet\Resource\Connection;
-use Ratchet\Socket;
-use Ratchet\Component\Server\App as Server;
-use Ratchet\Component\WebSocket\App as WebSocket;
+use Ratchet\Component\MessageComponentInterface;
+use Ratchet\Resource\ConnectionInterface;
+use Ratchet\Resource\BSDSocket as Socket;
+use Ratchet\Component\Server\IOServerComponent as Server;
+use Ratchet\Component\WebSocket\WebSocketComponent as WebSocket;
 use Ratchet\Resource\Command\Composite as Cmds;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Resource\Command\Action\CloseConnection;
@@ -51,18 +51,18 @@ use Ratchet\Resource\Command\Action\CloseConnection;
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements ComponentInterface {
+class Chat implements MessageComponentInterface {
     protected $_clients;
 
-    public function __construct(ComponentInterface $app = null) {
+    public function __construct(MessageComponentInterface $app = null) {
         $this->_clients = new \SplObjectStorage;
     }
 
-    public function onOpen(Connection $conn) {
+    public function onOpen(ConnectionInterface $conn) {
         $this->_clients->attach($conn);
     }
 
-    public function onMessage(Connection $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg) {
         $commands = new Cmds;
 
         foreach ($this->_clients as $client) {
@@ -77,11 +77,11 @@ class Chat implements ComponentInterface {
         return $commands;
     }
 
-    public function onClose(Connection $conn) {
+    public function onClose(ConnectionInterface $conn) {
         $this->_clients->detach($conn);
     }
 
-    public function onError(Connection $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e) {
         return new CloseConnection($conn);
     }
 }

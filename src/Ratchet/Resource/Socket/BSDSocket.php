@@ -1,13 +1,12 @@
 <?php
-namespace Ratchet;
-use Ratchet\Component\ProtocolInterface;
+namespace Ratchet\Resource\Socket;
 
 /**
  * A wrapper for the PHP socket_ functions
  * @author Chris Boden <shout at chrisboden dot ca>
  * @link http://ca2.php.net/manual/en/book.sockets.php
  */
-class Socket implements SocketInterface {
+class BSDSocket implements SocketInterface {
     /**
      * @type resource
      */
@@ -23,7 +22,7 @@ class Socket implements SocketInterface {
      * @param int Specifies the protocol family to be used by the socket.
      * @param int The type of communication to be used by the socket
      * @param int Sets the specific protocol within the specified domain to be used when communicating on the returned socket
-     * @throws Ratchet\Exception
+     * @throws BSDSocketException
      */
     public function __construct($domain = null, $type = null, $protocol = null) {
         list($domain, $type, $protocol) = static::getConfig($domain, $type, $protocol);
@@ -31,7 +30,7 @@ class Socket implements SocketInterface {
         $this->_resource = @socket_create($domain, $type, $protocol);
 
         if (!is_resource($this->_resource)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
     }
 
@@ -55,7 +54,7 @@ class Socket implements SocketInterface {
         $this->_resource = @socket_accept($this->_resource);
 
         if (false === $this->_resource) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
     }
 
@@ -71,7 +70,7 @@ class Socket implements SocketInterface {
 
     public function bind($address, $port = 0) {
         if (false === @socket_bind($this->getResource(), $address, $port)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -84,7 +83,7 @@ class Socket implements SocketInterface {
 
     public function connect($address, $port = 0) {
         if (false === @socket_connect($this->getResource(), $address, $port)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -93,7 +92,7 @@ class Socket implements SocketInterface {
     public function getRemoteAddress() {
         $address = $port = '';
         if (false === @socket_getpeername($this->getResource(), $address, $port)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $address;
@@ -101,7 +100,7 @@ class Socket implements SocketInterface {
 
     public function get_option($level, $optname) {
         if (false === ($res = @socket_get_option($this->getResource(), $level, $optname))) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $res;
@@ -109,7 +108,7 @@ class Socket implements SocketInterface {
 
     public function listen($backlog = 0) {
         if (false === @socket_listen($this->getResource(), $backlog)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -117,7 +116,7 @@ class Socket implements SocketInterface {
 
     public function read($length, $type = PHP_BINARY_READ) {
         if (false === ($res = @socket_read($this->getResource(), $length, $type))) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $res;
@@ -129,11 +128,11 @@ class Socket implements SocketInterface {
      * @param int Number of bytes to read
      * @param int
      * @return int Number of bytes received
-     * @throws Exception
+     * @throws BSDSocketException
      */
     public function recv(&$buf, $len, $flags) {
         if (false === ($bytes = @socket_recv($this->_resource, $buf, $len, $flags))) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $bytes;
@@ -148,7 +147,7 @@ class Socket implements SocketInterface {
      * @param int The tv_sec and tv_usec together form the timeout parameter. The timeout is an upper bound on the amount of time elapsed before socket_select() return. tv_sec may be zero , causing socket_select() to return immediately. This is useful for polling. If tv_sec is NULL (no timeout), socket_select() can block indefinitely.
      * @param int
      * @throws \InvalidArgumentException
-     * @throws Exception
+     * @throws BSDSocketException
      */
     public function select(&$read, &$write, &$except, $tv_sec, $tv_usec = 0) {
         $read   = static::mungForSelect($read);
@@ -158,7 +157,7 @@ class Socket implements SocketInterface {
         $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
 
         if (false === $num) {
-            throw new Exception($this);
+            throw new BSDException($this);
         }
 
         return $num;
@@ -166,7 +165,7 @@ class Socket implements SocketInterface {
 
     public function set_block() {
         if (false === @socket_set_block($this->getResource())) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -174,7 +173,7 @@ class Socket implements SocketInterface {
 
     public function set_nonblock() {
         if (false === @socket_set_nonblock($this->getResource())) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -182,7 +181,7 @@ class Socket implements SocketInterface {
 
     public function set_option($level, $optname, $optval) {
         if (false === @socket_set_option($this->getResource(), $level, $optname, $optval)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -190,7 +189,7 @@ class Socket implements SocketInterface {
 
     public function shutdown($how = 2) {
         if (false === @socket_shutdown($this->getResource(), $how)) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $this;
@@ -198,7 +197,7 @@ class Socket implements SocketInterface {
 
     public function write($buffer, $length = 0) {
         if (false === ($res = @socket_write($this->getResource(), $buffer, $length))) {
-            throw new Exception($this);
+            throw new BSDSocketException($this);
         }
 
         return $res;
@@ -238,7 +237,8 @@ class Socket implements SocketInterface {
 
         $return = array();
         foreach ($collection as $key => $socket) {
-            $return[$key] = ($socket instanceof \Ratchet\Socket ? $socket->getResource() : $socket);
+die("Checking if sock is instance of this: " . (int)($socket instanceof $this) . "\n");
+            $return[$key] = ($socket instanceof $this ? $socket->getResource() : $socket);
         }
 
         return $return;

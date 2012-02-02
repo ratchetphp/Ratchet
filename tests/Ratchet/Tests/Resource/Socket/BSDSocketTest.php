@@ -1,12 +1,12 @@
 <?php
-namespace Ratchet\Tests;
+namespace Ratchet\Tests\Resource\Socket;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
-use Ratchet\Socket as RealSocket;
+use Ratchet\Resource\Socket\BSDSocket as RealSocket;
 
 /**
- * @covers Ratchet\Socket
+ * @covers Ratchet\Resource\Socket\BSDSocket
  */
-class SocketTest extends \PHPUnit_Framework_TestCase {
+class BSDSocketTest extends \PHPUnit_Framework_TestCase {
     protected $_socket;
 
     protected static function getMethod($name) {
@@ -31,7 +31,7 @@ class SocketTest extends \PHPUnit_Framework_TestCase {
     /**/
 
     public function testInvalidConstructorArguments() {
-        $this->setExpectedException('\\Ratchet\\Exception');
+        $this->setExpectedException('\\Ratchet\\Resource\\Socket\\BSDSocketException');
         $socket = new RealSocket('invalid', 'param', 'derp');
     }
 
