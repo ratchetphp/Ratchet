@@ -38,7 +38,7 @@ class Hixie76 implements VersionInterface {
             $headers['Sec-WebSocket-Protocol'] = $request->getHeader('Sec-WebSocket-Protocol');
         }
         
-        $response = new \Guzzle\Http\Message\Response('HTTP/1.1 101 WebSocket Protocol Handshake', $headers, $body);        
+        $response = new \Guzzle\Http\Message\Response('101', $headers, $body);        
         return $response;
     }
 
