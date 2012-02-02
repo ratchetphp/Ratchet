@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Component\WebSocket\Command\Action;
-use Ratchet\Resource\Command\ActionTemplate;
+use Ratchet\Resource\Command\Action\ActionTemplate;
 use Ratchet\Component\ComponentInterface;
 
 /**

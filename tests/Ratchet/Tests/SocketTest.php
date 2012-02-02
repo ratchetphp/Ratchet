@@ -2,7 +2,6 @@
 namespace Ratchet\Tests;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Socket as RealSocket;
-use Ratchet\Tests\Mock\Application as TestApp;
 
 /**
  * @covers Ratchet\Socket

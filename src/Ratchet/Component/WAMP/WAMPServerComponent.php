@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Component\WAMP;
-use Ratchet\Component\ComponentInterface;
 use Ratchet\Component\WebSocket\WebSocketComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Command\Composite;

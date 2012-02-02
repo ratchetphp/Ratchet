@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Component\WAMP\Command\Action;
 use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Component\WAMP\App as WAMP;
+use Ratchet\Component\WAMP\WAMPServerComponent as WAMP;
 
 /**
  */
