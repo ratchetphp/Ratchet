@@ -90,7 +90,9 @@ class IOServerComponent implements MessageComponentInterface {
         $changed = $this->_resources;
 
         try {
-            $num_changed = $host->select($changed, $write = null, $except = null, null);
+            $write = $except = null;
+
+            $num_changed = $host->select($changed, $write, $except, null);
         } catch (Exception $e) {
             // master had a problem?...what to do?
             return;
