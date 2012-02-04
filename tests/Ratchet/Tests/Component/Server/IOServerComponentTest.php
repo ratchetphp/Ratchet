@@ -13,9 +13,9 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
     protected $_decorated;
 
     public function setUp() {
-        $this->_catalyst = new Socket;
-        $this->_decorated      = new TestApp;
-        $this->_server   = new IOServerComponent($this->_decorated);
+        $this->_catalyst  = new Socket;
+        $this->_decorated = new TestApp;
+        $this->_server    = new IOServerComponent($this->_decorated);
 
         $ref  = new \ReflectionClass('\\Ratchet\\Component\\Server\\IOServerComponent');
         $prop = $ref->getProperty('_run');
@@ -37,7 +37,8 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnOpenPassesClonedSocket() {
-        $this->_server->run($this->_catalyst);
+        $master = $this->_catalyst;
+        $this->_server->run($master);
         $master = $this->getMasterConnection();
 
         $this->_server->onOpen($master);
@@ -47,7 +48,8 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnMessageSendsToApp() {
-        $this->_server->run($this->_catalyst);
+        $master = $this->_catalyst;
+        $this->_server->run($master);
         $master = $this->getMasterConnection();
 
         // todo, make FakeSocket better, set data in select, recv to pass data when called, then do this check
