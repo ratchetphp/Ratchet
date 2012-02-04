@@ -2,7 +2,7 @@
 
 A PHP 5.3 (PSR-0 compliant) component library for serving sockets and building socket based applications.
 Build up your application through simple interfaces using the decorator and command patterns.
-Re-use your application without changing any of its code just by wrapping it in a different protocol.
+Re-use your application without changing any of its code just by combining different components. 
 Ratchet's primary intention is to be used as a WebSocket server (and a client in 0.6).
 
 ##WebSockets
@@ -14,7 +14,7 @@ Ratchet's primary intention is to be used as a WebSocket server (and a client in
 
 Shell access is required and a dedicated (virtual) machine with root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
-Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine.
+Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine (for now).
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
 Accessing your website's session data in Ratchet is a [feature in the works](https://github.com/cboden/Ratchet/tree/symfony/sessions).
@@ -40,7 +40,7 @@ I'm looking into a couple daemonized servers written in PHP to run Ratchet on to
 namespace MyApps;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Resource\BSDSocket as Socket;
+use Ratchet\Resource\Socket\BSDSocket as Socket;
 use Ratchet\Component\Server\IOServerComponent as Server;
 use Ratchet\Component\WebSocket\WebSocketComponent as WebSocket;
 use Ratchet\Resource\Command\Composite as Cmds;
