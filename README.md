@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png)](http://travis-ci.org/cboden/Ratchet)
+
 #Ratchet
 
 A PHP 5.3 (PSR-0 compliant) component library for serving sockets and building socket based applications.
