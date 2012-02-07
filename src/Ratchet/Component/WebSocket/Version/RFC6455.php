@@ -2,6 +2,8 @@
 namespace Ratchet\Component\WebSocket\Version;
 use Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
+
 
 /**
  * @link http://tools.ietf.org/html/rfc6455
@@ -33,13 +35,17 @@ class RFC6455 implements VersionInterface {
             throw new \InvalidArgumentException('Invalid HTTP header');
         }
 
-        return array(
-            ''                     => 'HTTP/1.1 101 Switching Protocols'
-          , 'Upgrade'              => 'websocket'
+        $headers = array(
+            'Upgrade'              => 'websocket'
           , 'Connection'           => 'Upgrade'
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
-//          , 'Sec-WebSocket-Protocol' => ''
         );
+        
+        
+        $response = new \Guzzle\Http\Message\Response(101, $headers);        
+        return $response;
+        
+        
    }
 
     /**
