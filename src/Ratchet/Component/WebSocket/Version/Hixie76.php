@@ -23,23 +23,18 @@ class Hixie76 implements VersionInterface {
     /**
      * @param string
      * @return string
-     * @todo Unhack this mess...or wait for Hixie to die (HURRY UP APPLE)
      */
     public function handshake(RequestInterface $request) {
         $body = $this->sign($request->getHeader('Sec-WebSocket-Key1'), $request->getHeader('Sec-WebSocket-Key2'), $request->getBody());
-        
+
         $headers = array(
             'Upgrade'                => 'WebSocket'
           , 'Connection'             => 'Upgrade'
           , 'Sec-WebSocket-Origin'   => $request->getHeader('Origin')
           , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host') . $request->getPath()
         );
-        if ($request->getHeader('Sec-WebSocket-Protocol')) {
-            $headers['Sec-WebSocket-Protocol'] = $request->getHeader('Sec-WebSocket-Protocol');
-        }
-        
-        $response = new \Guzzle\Http\Message\Response('101', $headers, $body);        
-        return $response;
+
+        return new \Guzzle\Http\Message\Response('101', $headers, $body);
     }
 
     public function newMessage() {
@@ -55,18 +50,18 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-        
+
         if (substr_count($key, ' ') == 0) {
             return '';
         }
         $int = preg_replace('[\D]', '', $key) / substr_count($key, ' ');
         return (is_int($int)) ? $int : '';
-        
-        
+
+
     }
 
     protected function sign($key1, $key2, $code) {
- 
+
         return md5(
             pack('N', $this->generateKeyNumber($key1))
           . pack('N', $this->generateKeyNumber($key2))
