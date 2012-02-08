@@ -2,6 +2,8 @@
 namespace Ratchet\Component\WebSocket\Version;
 use Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
+
 
 /**
  * @link http://tools.ietf.org/html/rfc6455
@@ -33,14 +35,14 @@ class RFC6455 implements VersionInterface {
             throw new \InvalidArgumentException('Invalid HTTP header');
         }
 
-        return array(
-            ''                     => 'HTTP/1.1 101 Switching Protocols'
-          , 'Upgrade'              => 'websocket'
+        $headers = array(
+            'Upgrade'              => 'websocket'
           , 'Connection'           => 'Upgrade'
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
-//          , 'Sec-WebSocket-Protocol' => ''
         );
-   }
+
+        return new Response('101', $headers);
+    }
 
     /**
      * @return RFC6455\Message
@@ -75,8 +77,8 @@ class RFC6455 implements VersionInterface {
         switch($type) {
             case 'text':
                 // first byte indicates FIN, Text-Frame (10000001):
-                $frameHead[0] = 129;                
-            break;            
+                $frameHead[0] = 129;
+            break;
 
             case 'close':
                 // first byte indicates FIN, Close Frame(10001000):
@@ -94,7 +96,7 @@ class RFC6455 implements VersionInterface {
             break;
         }
 
-        // set mask and payload length (using 1, 3 or 9 bytes) 
+        // set mask and payload length (using 1, 3 or 9 bytes)
         if($payloadLength > 65535) {
             $payloadLengthBin = str_split(sprintf('%064b', $payloadLength), 8);
             $frameHead[1] = ($masked === true) ? 255 : 127;
@@ -125,13 +127,13 @@ class RFC6455 implements VersionInterface {
                 $mask[$i] = chr(rand(0, 255));
             }
 
-            $frameHead = array_merge($frameHead, $mask);            
-        }                        
+            $frameHead = array_merge($frameHead, $mask);
+        }
         $frame = implode('', $frameHead);
 
         // append payload to frame:
         $framePayload = array();
-        for($i = 0; $i < $payloadLength; $i++) {        
+        for($i = 0; $i < $payloadLength; $i++) {
             $frame .= ($masked === true) ? $payload[$i] ^ $mask[$i % 4] : $payload[$i];
         }
 

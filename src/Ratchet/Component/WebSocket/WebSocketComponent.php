@@ -79,31 +79,20 @@ class WebSocketComponent implements MessageComponentInterface {
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
             $from->WebSocket->handshake = true;
 
-            if (is_array($response)) {
-                // This block is to be moved/changed later
-                $agreed_protocols    = array();
-                $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
+            // This block is to be moved/changed later
+            $agreed_protocols    = array();
+            $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
+            if (null !== $requested_protocols) {
                 foreach ($this->accepted_subprotocols as $sub_protocol) {
                     if (false !== $requested_protocols->hasValue($sub_protocol)) {
                         $agreed_protocols[] = $sub_protocol;
                     }
                 }
-                if (count($agreed_protocols) > 0) {
-                    $response['Sec-WebSocket-Protocol'] = implode(',', $agreed_protocols);
-                }
-
-                $header = '';
-                foreach ($response as $key => $val) {
-                    if (!empty($key)) {
-                        $header .= "{$key}: ";
-                    }
-
-                    $header .= "{$val}\r\n";
-                }
-                $header .= "\r\n";
-            } else {
-                $header = $response;
             }
+            if (count($agreed_protocols) > 0) {
+                $response->setHeader('Sec-WebSocket-Protocol', implode(',', $agreed_protocols));
+            }
+            $header = (string)$response;
 
             $comp = $this->_factory->newComposite();
             $comp->enqueue($this->_factory->newCommand('SendMessage', $from)->setMessage($header));
@@ -181,7 +170,7 @@ class WebSocketComponent implements MessageComponentInterface {
             $hash    = md5($command->getMessage()) . '-' . spl_object_hash($version);
 
             if (!isset($cache[$hash])) {
-                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);    
+                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);
             }
 
             return $command->setMessage($cache[$hash]);
