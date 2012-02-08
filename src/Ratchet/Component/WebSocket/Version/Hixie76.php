@@ -53,11 +53,11 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-        if (0 === mb_substr_count($key, ' ')) {
+        if (0 === substr_count($key, ' ')) {
             return '';
         }
 
-        $int = preg_replace('[\D]', '', $key) / mb_substr_count($key, ' ');
+        $int = (int)preg_replace('[\D]', '', $key) / substr_count($key, ' ');
 
         return (is_int($int)) ? $int : '';
     }
