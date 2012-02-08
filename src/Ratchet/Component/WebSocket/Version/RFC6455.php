@@ -41,7 +41,7 @@ class RFC6455 implements VersionInterface {
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
         );
 
-        return new \Guzzle\Http\Message\Response('101', $headers);
+        return new Response('101', $headers);
     }
 
     /**

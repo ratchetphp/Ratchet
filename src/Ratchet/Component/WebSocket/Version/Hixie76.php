@@ -34,7 +34,7 @@ class Hixie76 implements VersionInterface {
           , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host') . $request->getPath()
         );
 
-        $response = new \Guzzle\Http\Message\Response('101', $headers, $body);
+        $response = new Response('101', $headers, $body);
         $response->setStatus('101', 'WebSocket Protocol Handshake');
 
         return $response;

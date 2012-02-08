@@ -82,13 +82,13 @@ class WebSocketComponent implements MessageComponentInterface {
             // This block is to be moved/changed later
             $agreed_protocols    = array();
             $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
-        
-            foreach ($this->accepted_subprotocols as $sub_protocol) {
-                if (null !== $requested_protocols && false !== $requested_protocols->hasValue($sub_protocol)) {
-                    $agreed_protocols[] = $sub_protocol;
+            if (null !== $requested_protocols) {
+                foreach ($this->accepted_subprotocols as $sub_protocol) {
+                    if (false !== $requested_protocols->hasValue($sub_protocol)) {
+                        $agreed_protocols[] = $sub_protocol;
+                    }
                 }
             }
-
             if (count($agreed_protocols) > 0) {
                 $response->setHeader('Sec-WebSocket-Protocol', implode(',', $agreed_protocols));
             }
