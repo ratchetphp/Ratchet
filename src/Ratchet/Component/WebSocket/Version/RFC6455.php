@@ -40,13 +40,9 @@ class RFC6455 implements VersionInterface {
           , 'Connection'           => 'Upgrade'
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
         );
-        
-        
-        $response = new \Guzzle\Http\Message\Response(101, $headers);        
-        return $response;
-        
-        
-   }
+
+        return new \Guzzle\Http\Message\Response('101', $headers);
+    }
 
     /**
      * @return RFC6455\Message
@@ -81,8 +77,8 @@ class RFC6455 implements VersionInterface {
         switch($type) {
             case 'text':
                 // first byte indicates FIN, Text-Frame (10000001):
-                $frameHead[0] = 129;                
-            break;            
+                $frameHead[0] = 129;
+            break;
 
             case 'close':
                 // first byte indicates FIN, Close Frame(10001000):
@@ -100,7 +96,7 @@ class RFC6455 implements VersionInterface {
             break;
         }
 
-        // set mask and payload length (using 1, 3 or 9 bytes) 
+        // set mask and payload length (using 1, 3 or 9 bytes)
         if($payloadLength > 65535) {
             $payloadLengthBin = str_split(sprintf('%064b', $payloadLength), 8);
             $frameHead[1] = ($masked === true) ? 255 : 127;
@@ -131,13 +127,13 @@ class RFC6455 implements VersionInterface {
                 $mask[$i] = chr(rand(0, 255));
             }
 
-            $frameHead = array_merge($frameHead, $mask);            
-        }                        
+            $frameHead = array_merge($frameHead, $mask);
+        }
         $frame = implode('', $frameHead);
 
         // append payload to frame:
         $framePayload = array();
-        for($i = 0; $i < $payloadLength; $i++) {        
+        for($i = 0; $i < $payloadLength; $i++) {
             $frame .= ($masked === true) ? $payload[$i] ^ $mask[$i % 4] : $payload[$i];
         }
 

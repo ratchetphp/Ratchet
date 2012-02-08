@@ -78,28 +78,22 @@ class WebSocketComponent implements MessageComponentInterface {
 
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
             $from->WebSocket->handshake = true;
-            
-            
-  	
-           // This block is to be moved/changed later
-  	
+
+            // This block is to be moved/changed later
             $agreed_protocols    = array();
-            
             $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
-            
-            foreach ($this->accepted_subprotocols as $sub_protocol) {  	
-                if (false !== $requested_protocols->hasValue($sub_protocol)) {  	
+        
+            foreach ($this->accepted_subprotocols as $sub_protocol) {
+                if (null !== $requested_protocols && false !== $requested_protocols->hasValue($sub_protocol)) {
                     $agreed_protocols[] = $sub_protocol;
                 }
             }
-            
+
             if (count($agreed_protocols) > 0) {
-            
-                // $response['Sec-WebSocket-Protocol'] = implode(',', $agreed_protocols);
                 $response->setHeader('Sec-WebSocket-Protocol', implode(',', $agreed_protocols));
             }
             $header = (string)$response;
-            
+
             $comp = $this->_factory->newComposite();
             $comp->enqueue($this->_factory->newCommand('SendMessage', $from)->setMessage($header));
             $comp->enqueue($this->prepareCommand($this->_decorating->onOpen($from, $msg))); // Need to send headers/handshake to application, let it have the cookies, etc
@@ -176,7 +170,7 @@ class WebSocketComponent implements MessageComponentInterface {
             $hash    = md5($command->getMessage()) . '-' . spl_object_hash($version);
 
             if (!isset($cache[$hash])) {
-                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);    
+                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);
             }
 
             return $command->setMessage($cache[$hash]);
