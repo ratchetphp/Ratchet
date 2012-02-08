@@ -53,18 +53,16 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-
-        if (substr_count($key, ' ') == 0) {
+        if (0 === mb_substr_count($key, ' ')) {
             return '';
         }
-        $int = preg_replace('[\D]', '', $key) / substr_count($key, ' ');
+
+        $int = preg_replace('[\D]', '', $key) / mb_substr_count($key, ' ');
+
         return (is_int($int)) ? $int : '';
-
-
     }
 
     protected function sign($key1, $key2, $code) {
-
         return md5(
             pack('N', $this->generateKeyNumber($key1))
           . pack('N', $this->generateKeyNumber($key2))
