@@ -12,6 +12,7 @@ use Ratchet\Component\WAMP\Command\Action\Prefix;
  * +--------------+----+------------------+
  * | Message Type | ID | DIRECTION        |
  * |--------------+----+------------------+
+ * | WELCOME      | 0  | Server-to-Client |
  * | PREFIX       | 1  | Bi-Directional   |
  * | CALL         | 2  | Client-to-Server |
  * | CALL RESULT  | 3  | Server-to-Client |
@@ -21,8 +22,8 @@ use Ratchet\Component\WAMP\Command\Action\Prefix;
  * | PUBLISH      | 7  | Client-to-Server |
  * | EVENT        | 8  | Server-to-Client |
  * +--------------+----+------------------+
- * @link http://www.tavendo.de/autobahn/protocol.html
- * @link https://raw.github.com/oberstet/Autobahn/master/lib/javascript/autobahn.js
+ * @link http://wamp.ws/spec
+ * @link https://github.com/oberstet/AutobahnJS
  */
 class WAMPServerComponent implements WebSocketComponentInterface {
     const MSG_WELCOME     = 0;
