@@ -3,17 +3,23 @@ namespace Ratchet\Component\Session\Storage\Proxy;
 use Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy;
 
 class VirtualProxy extends SessionHandlerProxy {
+    /**
+     * @var string
+     */
     protected $_sessionId;
+
+    /**
+     * @var string
+     */
     protected $_sessionName;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId) {
+    public function __construct(\SessionHandlerInterface $handler) {
         parent::__construct($handler);
 
         $this->saveHandlerName = 'user';
-        $this->_sessionId      = $sessionId;
         $this->_sessionName    = ini_get('session.name');
     }
 
@@ -24,8 +30,11 @@ class VirtualProxy extends SessionHandlerProxy {
         return $this->_sessionId;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setId($id) {
-        throw new \RuntimeException("Can not change session id in VirtualProxy");
+        $this->_sessionId = $id;
     }
 
     /**

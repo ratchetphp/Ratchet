@@ -3,6 +3,7 @@ namespace Ratchet\Component\Session;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Component\Session\Storage\VirtualSessionStorage;
+use Ratchet\Component\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
@@ -13,7 +14,9 @@ class SessionComponent implements MessageComponentInterface {
     protected $_handler;
     protected $_null;
 
-    public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array()) {
+    protected $_serializer;
+
+    public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;
         $this->_handler = $handler;
         $this->_options = array();
@@ -24,6 +27,17 @@ class SessionComponent implements MessageComponentInterface {
         ini_set('session.use_cookies', 0);
 
         $options = $this->setOptions($options);
+
+        if (null === $serializer) {
+            $serialClass = __NAMESPACE__ . '\\Serialize\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', ini_get('session.serialize_handler')))) . 'Handler'; // awesome/terrible hack, eh?
+            if (!class_exists($serialClass)) {
+                throw new \RuntimeExcpetion('Unable to parse session serialize handler');
+            }
+
+            $serializer = new $serialClass;
+        }
+
+        $this->_serializer = $serializer;
     }
 
     /**
@@ -31,13 +45,13 @@ class SessionComponent implements MessageComponentInterface {
      */
     function onOpen(ConnectionInterface $conn) {
         if (null === ($id = $conn->WebSocket->headers->getCookie($this->_options['name']))) {
-            $saveHandler = new NullSessionHandler;
+            $saveHandler = $this->_null;
             $id = '';
         } else {
             $saveHandler = $this->_handler;
         }
 
-        $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id));
+        $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id, $this->_serializer));
 
         return $this->_app->onOpen($conn);
     }

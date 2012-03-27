@@ -2,13 +2,21 @@
 namespace Ratchet\Component\Session\Storage;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Component\Session\Storage\Proxy\VirtualProxy;
+use Ratchet\Component\Session\Serialize\HandlerInterface;
 
 class VirtualSessionStorage extends NativeSessionStorage {
     /**
+     * @var Ratchet\Component\Session\Serialize\HandlerInterface
+     */
+    protected $_serializer;
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct(\SessionHandlerInterface $handler, $id) {
-        $this->setSaveHandler($handler, $id);
+    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
+        $this->setSaveHandler($handler);
+        $this->saveHandler->setId($sessionId);
+        $this->_serializer = $serializer;
     }
 
     /**
@@ -19,8 +27,10 @@ class VirtualSessionStorage extends NativeSessionStorage {
             return true;
         }
 
-        $ignore = array();
-        $this->loadSession($ignore);
+        $rawData     = $this->saveHandler->read($this->saveHandler->getId());
+        $sessionData = $this->_serializer->unserialize($rawData);
+
+        $this->loadSession($sessionData);
 
         if (!$this->saveHandler->isWrapper() && !$this->saveHandler->isSessionHandlerInterface()) {
             $this->saveHandler->setActive(false);
@@ -40,6 +50,9 @@ class VirtualSessionStorage extends NativeSessionStorage {
      * {@inheritdoc}
      */
     public function save() {
+        // get the data from the bags?
+        // serialize the data
+        // save the data using the saveHandler
 //        $this->saveHandler->write($this->saveHandler->getId(), 
 
         if (!$this->saveHandler->isWrapper() && !$this->getSaveHandler()->isSessionHandlerInterface()) {
@@ -52,9 +65,13 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function setSaveHandler(\SessionHandlerInterface $saveHandler, $id) {
+    public function setSaveHandler($saveHandler = null) {
+        if (!($saveHandler instanceof \SessionHandlerInterface)) {
+            throw new \InvalidArgumentException('Handler must be instance of SessionHandlerInterface');
+        }
+
         if (!($saveHandler instanceof \VirtualProxy)) {
-            $saveHandler = new VirtualProxy($saveHandler, $id);
+            $saveHandler = new VirtualProxy($saveHandler);
         }
 
         $this->saveHandler = $saveHandler;
