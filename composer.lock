@@ -1,9 +1,15 @@
 {
-    "hash": "e898a89b9f66807dae53937fe3b089d3",
+    "hash": "ad8d05f50ba77c0700a2019656894cc6",
     "packages": [
         {
             "package": "guzzle",
             "version": "2.0.2"
+        },
+        {
+            "package": "symfony/http-foundation",
+            "version": "dev-master",
+            "source-reference": "ec8ce75d0ec64dfe6de235a7c92282bae066532d"
         }
-    ]
+    ],
+    "aliases": []
 }
