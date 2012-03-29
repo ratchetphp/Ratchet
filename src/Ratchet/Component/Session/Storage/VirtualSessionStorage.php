@@ -11,7 +11,9 @@ class VirtualSessionStorage extends NativeSessionStorage {
     protected $_serializer;
 
     /**
-     * {@inheritdoc}
+     * @param SessionHandlerInterface
+     * @param string The ID of the session to retreive
+     * @param Ratchet\Component\Session\Serialize\HandlerInterface
      */
     public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
         $this->setSaveHandler($handler);

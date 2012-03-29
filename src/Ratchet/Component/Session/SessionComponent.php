@@ -7,29 +7,55 @@ use Ratchet\Component\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
+/**
+ * This component will allow access to session data from your website for each user connected
+ * Symfony HttpFoundation is required for this component to work
+ * Your website must also use Symfony HttpFoundation Sessions to read your sites session data
+ * If your are not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer)
+ */
 class SessionComponent implements MessageComponentInterface {
+    /**
+     * @var Ratchet\Component\MessageComponentInterface
+     */
     protected $_app;
 
-    protected $_options;
+    /**
+     * Selected handler storage assigned by the developer
+     * @var SessionHandlerInterface
+     */
     protected $_handler;
+
+    /**
+     * Null storage handler if no previous session was found
+     * @var SessionHandlerInterface
+     */
     protected $_null;
 
+    /**
+     * @var Ratchet\Component\Session\Serialize\HandlerInterface
+     */
     protected $_serializer;
 
+    /**
+     * @param Ratchet\Component\MessageComponentInterface
+     * @param SessionHandlerInterface
+     * @param array
+     * @param Ratchet\Component\Session\Serialize\HandlerInterface
+     * @throws RuntimeException If unable to match serialization methods
+     */
     public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;
         $this->_handler = $handler;
-        $this->_options = array();
         $this->_null    = new NullSessionHandler;
 
         ini_set('session.auto_start', 0);
         ini_set('session.cache_limiter', '');
         ini_set('session.use_cookies', 0);
 
-        $options = $this->setOptions($options);
+        $this->setOptions($options);
 
         if (null === $serializer) {
-            $serialClass = __NAMESPACE__ . '\\Serialize\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', ini_get('session.serialize_handler')))) . 'Handler'; // awesome/terrible hack, eh?
+            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
             if (!class_exists($serialClass)) {
                 throw new \RuntimeExcpetion('Unable to parse session serialize handler');
             }
@@ -44,7 +70,7 @@ class SessionComponent implements MessageComponentInterface {
      * {@inheritdoc}
      */
     function onOpen(ConnectionInterface $conn) {
-        if (null === ($id = $conn->WebSocket->headers->getCookie($this->_options['name']))) {
+        if (null === ($id = $conn->WebSocket->headers->getCookie(ini_get('session.name')))) {
             $saveHandler = $this->_null;
             $id = '';
         } else {
@@ -52,6 +78,10 @@ class SessionComponent implements MessageComponentInterface {
         }
 
         $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id, $this->_serializer));
+
+        if (ini_get('session.auto_start')) {
+            $conn->Session->start();
+        }
 
         return $this->_app->onOpen($conn);
     }
@@ -79,6 +109,12 @@ class SessionComponent implements MessageComponentInterface {
         return $this->_app->onError($conn, $e);
     }
 
+    /**
+     * Set all the php session. ini options
+     * © Symfony
+     * @param array
+     * @return array
+     */
     protected function setOptions(array $options) {
         $all = array(
             'auto_start', 'cache_limiter', 'cookie_domain', 'cookie_httponly',
@@ -101,5 +137,13 @@ class SessionComponent implements MessageComponentInterface {
         }
 
         return $options;
+    }
+
+    /**
+     * @param string Input to convert
+     * @return string
+     */
+    protected function toClassCase($langDef) {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $langDef)));
     }
 }
