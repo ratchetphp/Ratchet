@@ -30,9 +30,6 @@ In theory, the server (like Nginx) would recognize the HTTP handshake request to
 configured PHP file. When this happens, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
 WebSocket Application wrapper if the servers recognize the protocol message framing. 
 
-I'm currently looking in using Nginx as an I/O control communicating with Ratchet (instead of Ratchet managing I/O).
-I'm looking into a couple daemonized servers written in PHP to run Ratchet on top of.
-
 ---
 
 ###A quick server example
