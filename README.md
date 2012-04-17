@@ -10,7 +10,7 @@ Ratchet's primary intention is to be used as a WebSocket server (and a client in
 ##WebSockets
 
 * Supports the RFC6455, HyBi-10, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 16, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
+* Tested on Chrome 18 - 16, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 
@@ -29,9 +29,6 @@ Ideally, soon, web servers will start supporting WebSockets to some capacity and
 In theory, the server (like Nginx) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
 configured PHP file. When this happens, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
 WebSocket Application wrapper if the servers recognize the protocol message framing. 
-
-I'm currently looking in using Nginx as an I/O control communicating with Ratchet (instead of Ratchet managing I/O).
-I'm looking into a couple daemonized servers written in PHP to run Ratchet on top of.
 
 ---
 

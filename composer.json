@@ -20,7 +20,8 @@
     }
   , "repositories": {
         "guzzle": {
-            "package": {
+            "type": "package"
+          , "package": {
                 "name": "guzzle"
               , "type": "library"
               , "version": "2.0.2"
