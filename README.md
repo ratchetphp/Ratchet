@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png)](http://travis-ci.org/cboden/Ratchet)
+[![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png?branch=master)](http://travis-ci.org/cboden/Ratchet)
 
 #Ratchet
 
@@ -21,13 +21,13 @@ Note that you can not run two applications (Apache and Ratchet) on the same port
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
 Accessing your website's session data in Ratchet is a [feature in the works](https://github.com/cboden/Ratchet/tree/symfony/sessions).
 
-See https://github.com/cboden/socket-demos for some out-of-the-box working demos using Ratchet.
+See https://github.com/cboden/Ratchet-examples for some out-of-the-box working demos using Ratchet.
 
 ###Future considerations
 
 Ideally, soon, web servers will start supporting WebSockets to some capacity and PHP will no longer need to run its self from the command line.
 In theory, the server (like Nginx) would recognize the HTTP handshake request to upgrade the protocol to WebSockets and run/pass data through to a user 
-configured PHP file. When this happens, you can keep your script the same, just remove the Server Application wrapper and maybe eventually the 
+configured PHP file. When this happens, you can keep your script the same, just remove the IOServerComponent wrapper and maybe eventually the 
 WebSocket Application wrapper if the servers recognize the protocol message framing. 
 
 ---

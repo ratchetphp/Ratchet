@@ -18,13 +18,20 @@
           , "Ratchet": "src"
         }
     }
-  , "repositories": {
-        "guzzle": {
+  , "require": {
+        "php": ">=5.3.2"
+      , "guzzle/guzzle": "v2.0.2"
+    }
+  , "replace": {
+        "guzzle/guzzle": "v2.0.2"
+    }
+  , "repositories": [
+        {
             "type": "package"
           , "package": {
-                "name": "guzzle"
+                "name": "guzzle/guzzle"
               , "type": "library"
-              , "version": "2.0.2"
+              , "version": "v2.0.2"
               , "autoload": {
                     "psr-0": {
                         "Guzzle": "src"
@@ -37,9 +44,5 @@
                 }
             }
         }
-    }
-  , "require": {
-        "php": ">=5.3.2"
-      , "guzzle": "2.0.2"
-    }
+    ]
 }
