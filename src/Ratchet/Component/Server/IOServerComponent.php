@@ -2,6 +2,7 @@
 namespace Ratchet\Component\Server;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\Socket\SocketInterface;
+use Ratchet\Resource\Socket\BSDSocket;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\CommandInterface;
@@ -63,12 +64,17 @@ class IOServerComponent implements MessageComponentInterface {
 
     /*
      * Run the server infinitely
-     * @param Ratchet\Resource\Socket\SocketInterface
-     * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
      * @param int The port to listen to connections on (make sure to run as root if < 1000)
+     * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
+     * @param Ratchet\Resource\Socket\SocketInterface
      * @throws Ratchet\Exception
      */
-    public function run(SocketInterface $host, $address = '127.0.0.1', $port = 1025) {
+    public function run($port, $address = '0.0.0.0', SocketInterface $host = null) {
+        if (null === $host) {
+            $host = new BSDSocket;
+            $host->set_option(SOL_SOCKET, SO_REUSEADDR, 1);
+        }
+
         $this->_connections[$host->getResource()] = new Connection($host);
         $this->_resources[] = $host->getResource();
 
