@@ -1,5 +1,5 @@
 {
-    "hash": "2e386d1cab16a0caaed00960707929ce",
+    "hash": "bd52a853cdf4e34ae75e805f32ed97ae",
     "packages": [
         {
             "package": "doctrine/common",
@@ -13,12 +13,12 @@
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "07e1d0174f3a0ec36bbe04b3850270df7a86271d"
+            "source-reference": "b98d68d3b8513c62d35504570f09e9d3dc33d083"
         },
         {
             "package": "symfony/validator",
             "version": "dev-master",
-            "source-reference": "ce994a5616b20f6ebf37d66a1a89bdd3af6b4ea2"
+            "source-reference": "53ec97264f909d29ae01665e8345f8fb763b94f3"
         }
     ],
     "packages-dev": null,

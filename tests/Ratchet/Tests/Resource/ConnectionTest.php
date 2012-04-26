@@ -43,31 +43,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($val, $this->_c->{$key});
     }
 
-    public function testExceptionThrownOnInvalidGet() {
-        $this->setExpectedException('InvalidArgumentException');
-        $ret = $this->_c->faked;
-    }
-
-    public static function lambdaProvider() {
-        return array(
-            array('hello', 'world')
-          , array('obj',   new \stdClass)
-          , array('arr',   array())
-        );
-    }
-
-    /**
-     * @dataProvider lambdaProvider
-     */
-    public function testLambdaReturnValueOnGet($key, $val) {
-        $fn = function() use ($val) {
-            return $val;
-        };
-
-        $this->_c->{$key} = $fn;
-        $this->assertSame($val, $this->_c->{$key});
-    }
-
     /**
      * @dataProvider keyAndValProvider
      */

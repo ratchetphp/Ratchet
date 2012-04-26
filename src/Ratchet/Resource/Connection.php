@@ -7,8 +7,6 @@ use Ratchet\Resource\Socket\SocketInterface;
  * This acts as a container to storm data (in memory) about the connection
  */
 class Connection implements ConnectionInterface {
-    protected $_data = array();
-
     /**
      * @var Ratchet\Resource\Socket\SocketInterface
      */
@@ -34,41 +32,5 @@ class Connection implements ConnectionInterface {
      */
     public function getSocket() {
         return $this->_socket;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __set($name, $value) {
-        $this->_data[$name] = $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __get($name) {
-        if (!$this->__isset($name)) {
-            throw new \InvalidArgumentException("Attribute '{$name}' not found in Connection {$this->getID()}");
-        }
-
-        if (is_callable($this->_data[$name])) {
-            return $this->_data[$name]($this);
-        } else {
-            return $this->_data[$name];
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __isset($name) {
-        return isset($this->_data[$name]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __unset($name) {
-        unset($this->_data[$name]);
     }
 }
