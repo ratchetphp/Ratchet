@@ -5,6 +5,7 @@ use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Command\Composite;
 use Ratchet\Resource\Command\CommandInterface;
 use Ratchet\Component\WAMP\Command\Action\Prefix;
+use Ratchet\Component\WAMP\Command\Action\Welcome;
 
 /**
  * WebSocket Application Messaging Protocol
@@ -45,6 +46,9 @@ class WAMPServerComponent implements WebSocketComponentInterface {
      */
     protected $_msg_buffer = null;
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSubProtocol() {
         return 'wamp';
     }
@@ -68,6 +72,9 @@ class WAMPServerComponent implements WebSocketComponentInterface {
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function onOpen(ConnectionInterface $conn) {
         $conn->WAMP                = new \StdClass;
         $conn->WAMP->prefixes      = array();
@@ -78,11 +85,15 @@ class WAMPServerComponent implements WebSocketComponentInterface {
             $wamp->addPrefix($conn, $curie, $uri, true);
         };
 
-        return $this->_decorating->onOpen($conn);
+        $welcome = new Welcome($conn);
+        $welcome->setWelcome(uniqid(), 'Ratchet/0.1');
+        $this->_msg_buffer->enqueue($welcome);
+
+        return $this->attachStack($this->_decorating->onOpen($conn));
     }
 
     /**
-     * @{inherit}
+     * @{inheritdoc}
      * @throws Exception
      * @throws JSONException
      */
@@ -152,15 +163,24 @@ class WAMPServerComponent implements WebSocketComponentInterface {
         return $stack;
     }
 
+    /**
+     * @param WAMPServerComponentInterface An class to propagate calls through
+     */
     public function __construct(WAMPServerComponentInterface $server_component) {
         $this->_decorating = $server_component;
         $this->_msg_buffer = new Composite;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function onClose(ConnectionInterface $conn) {
         return $this->_decorating->onClose($conn);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_decorating->onError($conn, $e);
     }
