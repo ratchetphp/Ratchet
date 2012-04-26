@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Tests\Application\Server;
+namespace Ratchet\Tests\Component\Server;
 use Ratchet\Component\Server\IOServerComponent;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Tests\Mock\Component as TestApp;

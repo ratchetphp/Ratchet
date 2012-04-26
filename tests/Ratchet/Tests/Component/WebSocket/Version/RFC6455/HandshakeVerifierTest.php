@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Tests\Application\WebSocket\Version\RFC6455;
+namespace Ratchet\Tests\Component\WebSocket\Version\RFC6455;
 use Ratchet\Component\WebSocket\Version\RFC6455\HandshakeVerifier;
 
 /**

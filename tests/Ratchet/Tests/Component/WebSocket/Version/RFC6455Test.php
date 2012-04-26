@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Tests\Application\WebSocket\Version;
+namespace Ratchet\Tests\Component\WebSocket\Version;
 use Ratchet\Component\WebSocket\Version\RFC6455;
 use Ratchet\Component\WebSocket\Version\RFC6455\Frame;
 use Guzzle\Http\Message\RequestFactory;
