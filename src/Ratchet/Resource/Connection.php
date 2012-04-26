@@ -37,14 +37,14 @@ class Connection implements ConnectionInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function __set($name, $value) {
         $this->_data[$name] = $value;
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function __get($name) {
         if (!$this->__isset($name)) {
@@ -59,14 +59,14 @@ class Connection implements ConnectionInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function __isset($name) {
         return isset($this->_data[$name]);
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function __unset($name) {
         unset($this->_data[$name]);

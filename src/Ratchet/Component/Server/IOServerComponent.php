@@ -154,7 +154,7 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
         $new_socket     = clone $conn->getSocket();
@@ -168,14 +168,14 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         return $this->_decorating->onMessage($from, $msg);
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
         $resource = $conn->getSocket()->getResource();
@@ -188,7 +188,7 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_decorating->onError($conn, $e);
