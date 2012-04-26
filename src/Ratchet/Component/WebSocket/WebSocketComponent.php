@@ -52,7 +52,7 @@ class WebSocketComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
         $conn->WebSocket = new \stdClass;

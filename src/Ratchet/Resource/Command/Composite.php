@@ -23,7 +23,7 @@ class Composite extends \SplQueue implements CommandInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function execute(ComponentInterface $scope = null) {
         $this->setIteratorMode(static::IT_MODE_DELETE);

@@ -30,7 +30,7 @@ class SendMessage extends ActionTemplate {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      * @throws \UnexpectedValueException if a message was not set with setMessage()
      */
     public function execute(ComponentInterface $scope = null) {

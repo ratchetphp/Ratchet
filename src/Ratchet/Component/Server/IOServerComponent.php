@@ -2,6 +2,7 @@
 namespace Ratchet\Component\Server;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\Socket\SocketInterface;
+use Ratchet\Resource\Socket\BSDSocket;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Connection;
 use Ratchet\Resource\Command\CommandInterface;
@@ -63,12 +64,17 @@ class IOServerComponent implements MessageComponentInterface {
 
     /*
      * Run the server infinitely
-     * @param Ratchet\Resource\Socket\SocketInterface
-     * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
      * @param int The port to listen to connections on (make sure to run as root if < 1000)
+     * @param mixed The address to listen for incoming connections on.  "0.0.0.0" to listen from anywhere
+     * @param Ratchet\Resource\Socket\SocketInterface
      * @throws Ratchet\Exception
      */
-    public function run(SocketInterface $host, $address = '127.0.0.1', $port = 1025) {
+    public function run($port, $address = '0.0.0.0', SocketInterface $host = null) {
+        if (null === $host) {
+            $host = new BSDSocket;
+            $host->set_option(SOL_SOCKET, SO_REUSEADDR, 1);
+        }
+
         $this->_connections[$host->getResource()] = new Connection($host);
         $this->_resources[] = $host->getResource();
 
@@ -148,12 +154,15 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
         $new_socket     = clone $conn->getSocket();
         $new_socket->set_nonblock();
         $new_connection = new Connection($new_socket);
+
+        $new_connection->remoteAddress = $new_socket->getRemoteAddress();
+        $new_connection->resourceId    = (int)substr((string)$new_socket->getResource(), strrpos((string)$new_socket->getResource(), '#') + 1);
 
         $this->_resources[] = $new_connection->getSocket()->getResource();
         $this->_connections[$new_connection->getSocket()->getResource()] = $new_connection;
@@ -162,14 +171,14 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         return $this->_decorating->onMessage($from, $msg);
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
         $resource = $conn->getSocket()->getResource();
@@ -182,7 +191,7 @@ class IOServerComponent implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_decorating->onError($conn, $e);

@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\Tests\Application\Server;
+namespace Ratchet\Tests\Component\Server;
 use Ratchet\Component\Server\IOServerComponent;
 use Ratchet\Tests\Mock\FakeSocket as Socket;
 use Ratchet\Tests\Mock\Component as TestApp;
@@ -37,17 +37,17 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnOpenPassesClonedSocket() {
-        $this->_server->run($this->_catalyst);
+        $this->_server->run(1025, '127.0.0.1', $this->_catalyst);
         $master = $this->getMasterConnection();
 
         $this->_server->onOpen($master);
         $clone = $this->_decorated->_conn_open;
 
-        $this->assertEquals($master->getID() + 1, $clone->getID());
+        $this->assertEquals($master->resourceId + 1, $clone->resourceId);
     }
 
     public function testOnMessageSendsToApp() {
-        $this->_server->run($this->_catalyst);
+        $this->_server->run(1025, '127.0.0.1', $this->_catalyst);
         $master = $this->getMasterConnection();
 
         // todo, make FakeSocket better, set data in select, recv to pass data when called, then do this check

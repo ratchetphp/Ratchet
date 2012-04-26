@@ -21,7 +21,7 @@ class Runtime extends ActionTemplate {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function execute(ComponentInterface $scope = null) {
         $cmd = $this->_command;

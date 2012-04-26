@@ -1,14 +1,24 @@
 {
-    "hash": "be8f67a3964cca0e4ffe4b98a7527daa",
+    "hash": "bd52a853cdf4e34ae75e805f32ed97ae",
     "packages": [
         {
-            "package": "guzzle",
-            "version": "2.0.2"
+            "package": "doctrine/common",
+            "version": "2.2.x-dev",
+            "source-reference": "1e0aa60d109c630d19543d999f12e2852ef8f932"
         },
         {
-            "package": "symfony/http-foundation",
+            "package": "guzzle/guzzle",
+            "version": "v2.0.2"
+        },
+        {
+            "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "b9aceabb83f3d03fe451cdd867d987e863e7a25e"
+            "source-reference": "b98d68d3b8513c62d35504570f09e9d3dc33d083"
+        },
+        {
+            "package": "symfony/validator",
+            "version": "dev-master",
+            "source-reference": "53ec97264f909d29ae01665e8345f8fb763b94f3"
         }
     ],
     "packages-dev": null,

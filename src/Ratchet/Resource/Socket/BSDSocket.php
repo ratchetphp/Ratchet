@@ -237,7 +237,6 @@ class BSDSocket implements SocketInterface {
 
         $return = array();
         foreach ($collection as $key => $socket) {
-die("Checking if sock is instance of this: " . (int)($socket instanceof $this) . "\n");
             $return[$key] = ($socket instanceof $this ? $socket->getResource() : $socket);
         }
 
