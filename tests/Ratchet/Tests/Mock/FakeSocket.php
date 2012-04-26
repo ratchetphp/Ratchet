@@ -12,7 +12,7 @@ class FakeSocket implements SocketInterface {
     public $_last = array();
 
     public function getResource() {
-        return null;
+        return "#{$this->_id}";
     }
 
     public function __toString() {

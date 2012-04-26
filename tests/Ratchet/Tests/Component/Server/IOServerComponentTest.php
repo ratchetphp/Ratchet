@@ -43,7 +43,7 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
         $this->_server->onOpen($master);
         $clone = $this->_decorated->_conn_open;
 
-        $this->assertEquals($master->getID() + 1, $clone->getID());
+        $this->assertEquals($master->resourceId + 1, $clone->resourceId);
     }
 
     public function testOnMessageSendsToApp() {

@@ -17,13 +17,6 @@ class Connection implements ConnectionInterface {
     }
 
     /**
-     * @return int
-     */
-    public function getID() {
-        return (int)(string)$this->_socket;
-    }
-
-    /**
      * This is here because I couldn't figure out a better/easier way to tie a connection and socket together for the server and commands
      * Anyway, if you're here, it's not recommended you use this/directly interact with the socket in your App...
      * The command pattern (which is fully flexible, see Runtime) is the safest, desired way to interact with the socket(s).
