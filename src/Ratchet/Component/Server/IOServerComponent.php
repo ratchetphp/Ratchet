@@ -161,6 +161,8 @@ class IOServerComponent implements MessageComponentInterface {
         $new_socket->set_nonblock();
         $new_connection = new Connection($new_socket);
 
+        $new_connection->remoteAddress = $new_socket->getRemoteAddress();
+
         $this->_resources[] = $new_connection->getSocket()->getResource();
         $this->_connections[$new_connection->getSocket()->getResource()] = $new_connection;
 
