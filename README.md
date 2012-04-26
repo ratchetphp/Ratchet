@@ -39,9 +39,8 @@ WebSocketComponent wrapper if the servers recognize the protocol message framing
 namespace MyApps;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Resource\Socket\BSDSocket as Socket;
-use Ratchet\Component\Server\IOServerComponent as Server;
-use Ratchet\Component\WebSocket\WebSocketComponent as WebSocket;
+use Ratchet\Component\Server\IOServerComponent;
+use Ratchet\Component\WebSocket\WebSocketComponent;
 use Ratchet\Resource\Command\Composite as Cmds;
 use Ratchet\Resource\Command\Action\SendMessage;
 use Ratchet\Resource\Command\Action\CloseConnection;
@@ -84,8 +83,9 @@ class Chat implements MessageComponentInterface {
         return new CloseConnection($conn);
     }
 }
+
     // Run the server application through the WebSocket protocol
-    $server = new Server(new WebSocket(new Chat));
+    $server = new IOServerComponent(new WebSocketComponent(new Chat));
     $server->run(80);
 ```
 

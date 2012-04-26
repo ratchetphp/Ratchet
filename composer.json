@@ -2,7 +2,8 @@
     "name": "cboden/Ratchet"
   , "type": "library"
   , "description": "PHP WebSocket server component library"
-  , "keywords": ["WebSocket", "Server"]
+  , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
+  , "website": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
   , "authors": [
