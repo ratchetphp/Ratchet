@@ -24,7 +24,7 @@
             "type": "package"
           , "package": {
                 "name": "standalone/guzzle"
-              , "version": "2.0.2"
+              , "version": "v2.0.2"
               , "autoload": {
                     "psr-0": {
                         "Guzzle": "src"

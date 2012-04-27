@@ -1,9 +1,9 @@
 {
-    "hash": "e49ad235e6dea4a09a5ae5c0da11d7ba",
+    "hash": "6fdfd713372e0a0f697146e8d0e841fb",
     "packages": [
         {
             "package": "standalone/guzzle",
-            "version": "2.0.2"
+            "version": "v2.0.2"
         },
         {
             "package": "symfony/http-foundation",
