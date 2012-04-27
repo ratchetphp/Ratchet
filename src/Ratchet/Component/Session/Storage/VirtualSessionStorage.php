@@ -19,6 +19,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);
         $this->_serializer = $serializer;
+        $this->setMetadataBag(null);
     }
 
     /**
@@ -44,7 +45,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false) {
+    public function regenerate($destroy = false, $lifetime = null) {
         // .. ?
     }
 
