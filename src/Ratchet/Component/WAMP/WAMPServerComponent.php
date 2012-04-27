@@ -87,7 +87,7 @@ class WAMPServerComponent implements WebSocketComponentInterface {
         };
 
         $welcome = new Welcome($conn);
-        $welcome->setWelcome($conn->WAMP->sessionId, 'Ratchet/0.1');
+        $welcome->setWelcome($conn->WAMP->sessionId, \Ratchet\Resource\VERSION);
         $this->_msg_buffer->enqueue($welcome);
 
         return $this->attachStack($this->_decorating->onOpen($conn));

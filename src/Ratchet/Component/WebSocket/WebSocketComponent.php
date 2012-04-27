@@ -62,6 +62,7 @@ class WebSocketComponent implements MessageComponentInterface {
 
     /**
      * Do handshake, frame/unframe messages coming/going in stack
+     * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->WebSocket->handshake) {
@@ -92,6 +93,7 @@ class WebSocketComponent implements MessageComponentInterface {
             if (count($agreed_protocols) > 0) {
                 $response->setHeader('Sec-WebSocket-Protocol', implode(',', $agreed_protocols));
             }
+            $response->setHeader('X-Powered-By', \Ratchet\Resource\VERSION);
             $header = (string)$response;
 
             $comp = $this->_factory->newComposite();
