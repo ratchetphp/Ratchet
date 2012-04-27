@@ -77,6 +77,7 @@ class WAMPServerComponent implements WebSocketComponentInterface {
      */
     public function onOpen(ConnectionInterface $conn) {
         $conn->WAMP                = new \StdClass;
+        $conn->WAMP->sessionId     = uniqid();
         $conn->WAMP->prefixes      = array();
         $conn->WAMP->subscriptions = array();
 
@@ -86,7 +87,7 @@ class WAMPServerComponent implements WebSocketComponentInterface {
         };
 
         $welcome = new Welcome($conn);
-        $welcome->setWelcome(uniqid(), 'Ratchet/0.1');
+        $welcome->setWelcome($conn->WAMP->sessionId, 'Ratchet/0.1');
         $this->_msg_buffer->enqueue($welcome);
 
         return $this->attachStack($this->_decorating->onOpen($conn));
