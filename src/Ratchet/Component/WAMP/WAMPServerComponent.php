@@ -4,6 +4,7 @@ use Ratchet\Component\WebSocket\WebSocketComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
 use Ratchet\Resource\Command\Composite;
 use Ratchet\Resource\Command\CommandInterface;
+use Ratchet\Resource\Command\Factory as CmdFactory;
 use Ratchet\Component\WAMP\Command\Action\Prefix;
 use Ratchet\Component\WAMP\Command\Action\Welcome;
 
@@ -168,6 +169,8 @@ class WAMPServerComponent implements WebSocketComponentInterface {
      * @param WAMPServerComponentInterface An class to propagate calls through
      */
     public function __construct(WAMPServerComponentInterface $server_component) {
+        CmdFactory::registerActionPath(__NAMESPACE__ . '\\Command\\Action');
+
         $this->_decorating = $server_component;
         $this->_msg_buffer = new Composite;
     }
