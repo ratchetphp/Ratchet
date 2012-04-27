@@ -11,6 +11,9 @@ use Ratchet\Component\WAMP\Command\Action\Welcome;
 /**
  * WebSocket Application Messaging Protocol
  * 
+ * @link http://wamp.ws/spec
+ * @link https://github.com/oberstet/AutobahnJS
+ *
  * +--------------+----+------------------+
  * | Message Type | ID | DIRECTION        |
  * |--------------+----+------------------+
@@ -24,8 +27,6 @@ use Ratchet\Component\WAMP\Command\Action\Welcome;
  * | PUBLISH      | 7  | Client-to-Server |
  * | EVENT        | 8  | Server-to-Client |
  * +--------------+----+------------------+
- * @link http://wamp.ws/spec
- * @link https://github.com/oberstet/AutobahnJS
  */
 class WAMPServerComponent implements WebSocketComponentInterface {
     const MSG_WELCOME     = 0;
@@ -38,6 +39,9 @@ class WAMPServerComponent implements WebSocketComponentInterface {
     const MSG_PUBLISH     = 7;
     const MSG_EVENT       = 8;
 
+    /**
+     * @var WAMPServerComponentInterface
+     */
     protected $_decorating;
 
     /**

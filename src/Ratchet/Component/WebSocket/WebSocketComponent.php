@@ -28,7 +28,7 @@ class WebSocketComponent implements MessageComponentInterface {
     protected $_factory;
 
     /**
-     * Singleton* instances of protocol version classes
+     * Re-entrant instances of protocol version classes
      * @internal
      */
     protected $_versions = array(
@@ -134,11 +134,15 @@ class WebSocketComponent implements MessageComponentInterface {
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function onClose(ConnectionInterface $conn) {
         return $this->prepareCommand($this->_decorating->onClose($conn));
     }
 
     /**
+     * {@inheritdoc}
      * @todo Shouldn't I be using prepareCommand() on the return? look into this
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
