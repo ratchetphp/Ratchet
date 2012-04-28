@@ -6,9 +6,17 @@ class Composite extends \SplQueue implements CommandInterface {
     /**
      * Add another Command to the stack
      * Unlike a true composite the enqueue flattens a composite parameter into leafs
-     * @param CommandInterface
+     * @param CommandInterface|null
      */
-    public function enqueue(CommandInterface $command = null) {
+    public function enqueue($command) {
+        if (null === $command) {
+            return;
+        }
+
+        if (!($command instanceof CommandInterface)) {
+            throw new \InvalidArgumentException("Parameter MUST implement Ratchet.Component.CommandInterface");
+        }
+
         if ($command instanceof self) {
             foreach ($command as $cmd) {
                 $this->enqueue($cmd);
@@ -17,9 +25,7 @@ class Composite extends \SplQueue implements CommandInterface {
             return;
         }
 
-        if (null !== $command) {
-            parent::enqueue($command);
-        }
+        parent::enqueue($command);
     }
 
     /**
