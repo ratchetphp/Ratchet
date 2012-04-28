@@ -84,7 +84,6 @@ class WAMPServerComponent implements WebSocketComponentInterface {
         $conn->WAMP                = new \StdClass;
         $conn->WAMP->sessionId     = uniqid();
         $conn->WAMP->prefixes      = array();
-        $conn->WAMP->subscriptions = array();
 
         $wamp = $this;
         $conn->WAMP->addPrefix = function($curie, $uri) use ($wamp, $conn) {

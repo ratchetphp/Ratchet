@@ -14,6 +14,6 @@ class Event extends SendMessage {
      * @return Event
      */
     public function setEvent($uri, $msg) {
-        return $this->setMessage(json_encode(array(WAMP::MSG_EVENT, $uri, (string)$msg)));
+        return $this->setMessage(json_encode(array(WAMP::MSG_EVENT, $uri, $msg)));
     }
 }
