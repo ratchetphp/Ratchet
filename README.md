@@ -84,9 +84,9 @@ class Chat implements MessageComponentInterface {
     }
 }
 
-    // Run the server application through the WebSocket protocol
-    $server = new IOServerComponent(new WebSocketComponent(new Chat));
-    $server->run(80);
+// Run the server application through the WebSocket protocol
+$server = new IOServerComponent(new WebSocketComponent(new Chat));
+$server->run(8000);
 ```
 
     # php chat.php
