@@ -124,53 +124,6 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
         
     }
 
-    /**
-     * @covers Ratchet\Component\WAMP\Command\Action\CallResult
-     */
-    public function testCallResponse() {
-        $result = new CallResult($this->newConn());
-
-        $callId = uniqid();
-        $data   = array('hello' => 'world', 'herp' => 'derp');
-
-        $result->setResult($callId, $data);
-        $resultString = $result->getMessage();
-
-        $this->assertEquals(array(3, $callId, $data), json_decode($resultString, true));
-    }
-
-    /**
-     * @covers Ratchet\Component\WAMP\Command\Action\CallError
-     */
-    public function testCallError() {
-        $error = new CallError($this->newConn());
-
-        $callId = uniqid();
-        $uri    = 'http://example.com/end/point';
-
-        $error->setError($callId, $uri);
-        $resultString = $error->getMessage();
-
-        $this->assertEquals(array(4, $callId, $uri, ''), json_decode($resultString, true));
-    }
-
-    /**
-     * @covers Ratchet\Component\WAMP\Command\Action\CallError
-     */
-    public function testDetailedCallError() {
-        $error = new CallError($this->newConn());
-
-        $callId = uniqid();
-        $uri    = 'http://example.com/end/point';
-        $desc   = 'beep boop beep';
-        $detail = 'Error: Too much awesome';
-
-        $error->setError($callId, $uri, $desc, $detail);
-        $resultString = $error->getMessage();
-
-        $this->assertEquals(array(4, $callId, $uri, $desc, $detail), json_decode($resultString, true));
-    }
-
     public function eventProvider() {
         return array(
             array('http://example.com', array('one', 'two'))

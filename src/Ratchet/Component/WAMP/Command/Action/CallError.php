@@ -43,6 +43,7 @@ class CallError extends SendMessage {
 
         if (null !== $details) {
             $data[] = $details;
+            $this->_details = $details;
         }
 
         return $this->setMessage(json_encode($data));
