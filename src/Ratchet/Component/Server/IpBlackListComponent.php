@@ -34,7 +34,9 @@ class IpBlackListComponent implements MessageComponentInterface {
      * @return IpBlackList
      */
     public function unblockAddress($ip) {
-        unset($this->_blacklist[$this->filterAddress($ip)]);
+        if (isset($this->_blacklist[$this->filterAddress($ip)])) {
+            unset($this->_blacklist[$this->filterAddress($ip)]);
+        }
 
         return $this;
     }

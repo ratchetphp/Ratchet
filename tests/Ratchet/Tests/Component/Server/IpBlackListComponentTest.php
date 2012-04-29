@@ -84,4 +84,8 @@ class IpBlackListComponentTest extends \PHPUnit_Framework_TestCase {
     public function testFilterAddress($expected, $input) {
         $this->assertEquals($expected, $this->_comp->filterAddress($input));
     }
+
+    public function testUnblockingSilentlyFails() {
+        $this->assertInstanceOf('\\Ratchet\\Component\\Server\\IpBlackListComponent', $this->_comp->unblockAddress('localhost'));
+    }
 }
