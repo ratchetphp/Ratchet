@@ -9,8 +9,8 @@ use Ratchet\Component\WAMP\WAMPServerComponent as WAMP;
  */
 class Event extends SendMessage {
     /**
-     * @param ...
-     * @param string
+     * @param string The URI or CURIE to broadcast to
+     * @param mixed Data to send with the event.  Anything that is json'able
      * @return Event
      */
     public function setEvent($uri, $msg) {
