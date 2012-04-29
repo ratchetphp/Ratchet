@@ -27,6 +27,9 @@ class Frame implements FrameInterface {
      */
     protected $_pay_check = -1;
 
+    /**
+     * {@inheritdoc}
+     */
     public function isCoalesced() {
         try {
             $payload_length = $this->getPayloadLength();
@@ -38,6 +41,9 @@ class Frame implements FrameInterface {
         return $payload_length + $payload_start === $this->_bytes_rec;        
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addBuffer($buf) {
         $buf = (string)$buf;
 
@@ -45,6 +51,9 @@ class Frame implements FrameInterface {
         $this->_bytes_rec += strlen($buf);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isFinal() {
         if ($this->_bytes_rec < 1) {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
@@ -54,6 +63,9 @@ class Frame implements FrameInterface {
         return (boolean)(int)$fbb[0];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isMasked() {
         if ($this->_bytes_rec < 2) {
             throw new \UnderflowException("Not enough bytes received ({$this->_bytes_rec}) to determine if mask is set");
@@ -62,6 +74,9 @@ class Frame implements FrameInterface {
         return (boolean)bindec(substr(sprintf('%08b', ord($this->_data[1])), 0, 1));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getOpcode() {
         if ($this->_bytes_rec < 1) {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
@@ -125,6 +140,9 @@ class Frame implements FrameInterface {
         return (1 + $this->getNumPayloadBits()) / 8;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getPayloadLength() {
         if ($this->_pay_len_def !== -1) {
             return $this->_pay_len_def;
@@ -151,6 +169,9 @@ class Frame implements FrameInterface {
         return $this->getPayloadLength();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getMaskingKey() {
         if (!$this->isMasked()) {
             return '';
@@ -166,10 +187,16 @@ class Frame implements FrameInterface {
         return substr($this->_data, $start, $length);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getPayloadStartingByte() {
         return 1 + $this->getNumPayloadBytes() + strlen($this->getMaskingKey());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getPayload() {
         if (!$this->isCoalesced()) {
             throw new \UnderflowException('Can not return partial message');

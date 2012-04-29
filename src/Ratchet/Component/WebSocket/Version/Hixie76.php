@@ -16,6 +16,9 @@ use Guzzle\Http\Message\Response;
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
 class Hixie76 implements VersionInterface {
+    /**
+     * {@inheritdoc}
+     */
     public static function isProtocol(RequestInterface $request) {
         return !(null === $request->getHeader('Sec-WebSocket-Key2'));
     }
@@ -40,14 +43,23 @@ class Hixie76 implements VersionInterface {
         return $response;
     }
 
+    /**
+     * @return Hixie76\Message
+     */
     public function newMessage() {
         return new Hixie76\Message;
     }
 
+    /**
+     * @return Hixie76\Frame
+     */
     public function newFrame() {
         return new Hixie76\Frame;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function frame($message, $mask = true) {
         return chr(0) . $message . chr(255);
     }

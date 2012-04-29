@@ -20,14 +20,16 @@ class RFC6455 implements VersionInterface {
         $this->_verifier = new HandshakeVerifier;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function isProtocol(RequestInterface $request) {
         $version = (int)$request->getHeader('Sec-WebSocket-Version', -1);
         return (13 === $version);
     }
 
     /**
-     * @return array
-     * I kept this as an array and combined in App for future considerations...easier to add a subprotol as a key value than edit a string
+     * {@inheritdoc}
      * @todo Decide what to do on failure...currently throwing an exception and I think socket connection is closed.  Should be sending 40x error - but from where?
      */
     public function handshake(RequestInterface $request) {
@@ -62,6 +64,7 @@ class RFC6455 implements VersionInterface {
      * Thanks to @lemmingzshadow for the code on decoding a HyBi-10 frame
      * @link https://github.com/lemmingzshadow/php-websocket
      * @todo look into what happens when false is returned here
+     * @todo This is needed when a client is created - needs re-write as missing parts of protocol
      * @param string
      * @return string
      */
