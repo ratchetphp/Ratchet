@@ -68,4 +68,20 @@ class IpBlackListComponentTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($conn2, $this->_mock->last['onError'][0]);
         $this->assertEquals($e, $this->_mock->last['onError'][1]);
     }
+
+    public function addressProvider() {
+        return array(
+            array('127.0.0.1', '127.0.0.1')
+          , array('localhost', 'localhost')
+          , array('fe80::1%lo0', 'fe80::1%lo0')
+          , array('127.0.0.1', '127.0.0.1:6392')
+        );
+    }
+
+    /**
+     * @dataProvider addressProvider
+     */
+    public function testFilterAddress($expected, $input) {
+        $this->assertEquals($expected, $this->_comp->filterAddress($input));
+    }
 }
