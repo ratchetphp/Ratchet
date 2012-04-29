@@ -5,38 +5,25 @@ use Ratchet\Tests\Mock\Socket as MockSocket;
 use Ratchet\Resource\ConnectionInterface;
 
 class Component implements MessageComponentInterface {
-    public $_app;
-
-    public $_conn_open;
-
-    public $_conn_recv;
-    public $_msg_recv;
-
-    public $_conn_close;
-
-    public $_conn_error;
-    public $_excep_error;
+    public $last = array();
 
     public function __construct(ComponentInterface $app = null) {
-        // probably should make this null app
-        $this->_app = $app;
+        $this->last[__FUNCTION__] = func_get_args();
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        $this->_conn_open = $conn;
+        $this->last[__FUNCTION__] = func_get_args();
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        $this->_conn_recv = $from;
-        $this->_msg_recv  = $msg;
+        $this->last[__FUNCTION__] = func_get_args();
     }
 
     public function onClose(ConnectionInterface $conn) {
-        $this->_conn_close = $conn;
+        $this->last[__FUNCTION__] = func_get_args();
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        $this->_conn_error  = $conn;
-        $this->_excep_error = $e;
+        $this->last[__FUNCTION__] = func_get_args();
     }
 }

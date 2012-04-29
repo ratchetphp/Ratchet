@@ -41,7 +41,7 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
         $master = $this->getMasterConnection();
 
         $this->_server->onOpen($master);
-        $clone = $this->_decorated->_conn_open;
+        $clone = $this->_decorated->last['onOpen'][0];
 
         $this->assertEquals($master->resourceId + 1, $clone->resourceId);
     }
@@ -54,12 +54,12 @@ class IOServerComponentTest extends \PHPUnit_Framework_TestCase {
         // that way can mimic the TCP fragmentation/buffer situation
 
         $this->_server->onOpen($master);
-        $clone = $this->_decorated->_conn_open;
+        $clone = $this->_decorated->last['onOpen'][0];
 
         // $this->_server->run($this->_catalyst);
         $msg = 'Hello World!';
         $this->_server->onMessage($clone, $msg);
 
-        $this->assertEquals($msg, $this->_decorated->_msg_recv);
+        $this->assertEquals($msg, $this->_decorated->last['onMessage'][1]);
     }
 }
