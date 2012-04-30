@@ -4,6 +4,9 @@ use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Tests\Mock\Socket as MockSocket;
 use Ratchet\Resource\ConnectionInterface;
 
+/**
+ * @todo Rename to MessageComponent
+ */
 class Component implements MessageComponentInterface {
     public $last = array();
 

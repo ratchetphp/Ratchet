@@ -193,4 +193,10 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(1, $shortOut, $longOut), json_decode($command->getMessage()));
     }
+
+    public function testMessageMustBeJson() {
+        $this->setExpectedException('\\Ratchet\\Component\\WAMP\\JsonException');
+
+        $this->_comp->onMessage($this->newConn(), 'Hello World!');
+    }
 }
