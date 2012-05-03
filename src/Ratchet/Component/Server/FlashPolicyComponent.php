@@ -16,15 +16,12 @@ use Ratchet\Resource\Command\CommandInterface;
  */
 class FlashPolicyComponent implements MessageComponentInterface {
 
-    protected $_policy = '<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy></cross-domain-policy>';
-
-
-    protected $_access = array();
-    protected $_headers = array();
+    protected $_policy      = '<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy></cross-domain-policy>';
+    protected $_access      = array();
+    protected $_headers     = array();
     protected $_siteControl = '';
 
-    protected $_cache = '';
-
+    protected $_cache      = '';
     protected $_cacheValid = false;
 
     /**
@@ -70,26 +67,39 @@ class FlashPolicyComponent implements MessageComponentInterface {
     }
 
 
+    /**
+     * setSiteControl function.
+     * 
+     * @access public
+     * @param string $permittedCrossDomainPolicies (default: 'all')
+     * @return void
+     */
     public function setSiteControl($permittedCrossDomainPolicies = 'all') {
         if (!$this->validateSiteControl($permittedCrossDomainPolicies)) {
             throw new \UnexpectedValueException('Invalid site control set');
         }
         $this->_siteControl = $permittedCrossDomainPolicies;
     }
-    
+
+    /**
+     * renderPolicy function.
+     * 
+     * @access public
+     * @return void
+     */
     public function renderPolicy() {
 
-        $policy = new \SimpleXMLElement($this->_policy); 
+        $policy = new \SimpleXMLElement($this->_policy);
 
 
-        $siteControl = $policy->addChild('site-control');       
-        
+        $siteControl = $policy->addChild('site-control');
+
         if ($this->_siteControl == '') {
             throw new \UnexpectedValueException('Where\'s my site control?');
         }
         $siteControl->addAttribute('permitted-cross-domain-policies', $this->_siteControl);
-        
-        
+
+
         if (empty($this->_access)) {
             throw new \UnexpectedValueException('Missing site access');
         }
@@ -108,27 +118,45 @@ class FlashPolicyComponent implements MessageComponentInterface {
             $tmp->addAttribute('headers', $access[1]);
             $tmp->addAttribute('secure', ($access[2] == true) ? 'true' : 'false');
         }
-        
+
         return $policy;
-        
+
     }
-    
+
+    /**
+     * addAllowedAccess function.
+     * 
+     * @access public
+     * @param mixed $domain
+     * @param string $ports (default: '*')
+     * @param bool $secure (default: false)
+     * @return void
+     */
     public function addAllowedAccess($domain, $ports = '*', $secure = false) {
-        
+
         if (!$this->validateDomain($domain)) {
            throw new \UnexpectedValueException('Invalid domain');
         }
         if (!$this->validatePorts($ports)) {
            throw new \UnexpectedValueException('Invalid Port');
         }
-        
-        
+
+
         $this->_access[]   = array($domain, $ports, $secure);
         $this->_cacheValid = false;
     }
 
+    /**
+     * addAllowedHTTPRequestHeaders function.
+     * 
+     * @access public
+     * @param mixed $domain
+     * @param mixed $headers
+     * @param bool $secure (default: true)
+     * @return void
+     */
     public function addAllowedHTTPRequestHeaders($domain, $headers, $secure = true) {
-        
+
         if (!$this->validateDomain($domain)) {
            throw new \UnexpectedValueException('Invalid domain');
         }
@@ -138,13 +166,26 @@ class FlashPolicyComponent implements MessageComponentInterface {
         $this->_headers[]   = array($domain, $headers, (string)$secure);
         $this->_cacheValid = false;
     }
-    
-    
+
+    /**
+     * validateSiteControl function.
+     * 
+     * @access public
+     * @param mixed $permittedCrossDomainPolicies
+     * @return void
+     */
     public function validateSiteControl($permittedCrossDomainPolicies) {
-    
-        return (bool)in_array($permittedCrossDomainPolicies, array('none', 'master-only', 'by-content-type', 'all'));    
+
+        return (bool)in_array($permittedCrossDomainPolicies, array('none', 'master-only', 'by-content-type', 'all'));
     }
-    
+
+    /**
+     * validateDomain function.
+     * 
+     * @access public
+     * @param mixed $domain
+     * @return void
+     */
     public function validateDomain($domain) {
 
         if ($domain == '*') {
@@ -154,7 +195,6 @@ class FlashPolicyComponent implements MessageComponentInterface {
         if (filter_var($domain, FILTER_VALIDATE_IP)) {
             return true;
         }
-
 
         $d = parse_url($domain);
         if (!isset($d['scheme']) || empty($d['scheme'])) {
@@ -176,9 +216,16 @@ class FlashPolicyComponent implements MessageComponentInterface {
 
         return (bool)filter_var(str_replace(array('*.', '.*'), '123', $domain), FILTER_VALIDATE_URL);
     }
-
+    
+    /**
+     * validatePorts function.
+     * 
+     * @access public
+     * @param mixed $port
+     * @return void
+     */
     public function validatePorts($port) {
-        
+
         if ($port == '*') {
             return true;
         }
@@ -208,6 +255,13 @@ class FlashPolicyComponent implements MessageComponentInterface {
         return true;
     }
 
+    /**
+     * validateHeaders function.
+     * 
+     * @access public
+     * @param mixed $headers
+     * @return void
+     */
     public function validateHeaders($headers) {
 
         if ($headers == '*') {
@@ -229,6 +283,13 @@ class FlashPolicyComponent implements MessageComponentInterface {
         return true;
     }
 
+    /**
+     * validateSecure function.
+     * 
+     * @access public
+     * @param mixed $secure
+     * @return void
+     */
     public function validateSecure($secure) {
 
         return is_bool($secure);
