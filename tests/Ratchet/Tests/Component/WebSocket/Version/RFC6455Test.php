@@ -116,7 +116,7 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
      * @dataProvider headerHandshakeProvider
      */
     public function testVariousHeadersToCheckHandshakeTolerance($pass, $header) {
-        $request = RequestFactory::fromMessage($header);
+        $request = RequestFactory::getInstance()->fromMessage($header);
 
         if ($pass) {
             $this->assertInstanceOf('\\Guzzle\\Http\\Message\\Response', $this->_version->handshake($request));

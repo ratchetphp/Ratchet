@@ -14,17 +14,15 @@ class HandshakeVerifier {
      * @return bool TRUE if all headers are valid, FALSE if 1 or more were invalid
      */
     public function verifyAll(RequestInterface $request) {
-        $headers = $request->getHeaders();
-
         $passes = 0;
 
         $passes += (int)$this->verifyMethod($request->getMethod());
         $passes += (int)$this->verifyHTTPVersion($request->getProtocolVersion());
         $passes += (int)$this->verifyRequestURI($request->getPath());
-        $passes += (int)$this->verifyHost($headers['Host']);
-        $passes += (int)$this->verifyUpgradeRequest($headers['Upgrade']);
-        $passes += (int)$this->verifyConnection($headers['Connection']);
-        $passes += (int)$this->verifyKey($headers['Sec-WebSocket-Key']);
+        $passes += (int)$this->verifyHost($request->getHeader('Host', true));
+        $passes += (int)$this->verifyUpgradeRequest($request->getHeader('Upgrade', true));
+        $passes += (int)$this->verifyConnection($request->getHeader('Connection', true));
+        $passes += (int)$this->verifyKey($request->getHeader('Sec-WebSocket-Key', true));
         //$passes += (int)$this->verifyVersion($headers['Sec-WebSocket-Version']); // Temporarily breaking functionality
 
         return (7 === $passes);
