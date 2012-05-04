@@ -18,7 +18,6 @@ class FlashPolicyComponent implements MessageComponentInterface {
 
     protected $_policy      = '<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy></cross-domain-policy>';
     protected $_access      = array();
-    protected $_headers     = array();
     protected $_siteControl = '';
 
     protected $_cache      = '';
@@ -37,7 +36,7 @@ class FlashPolicyComponent implements MessageComponentInterface {
     public function onMessage(ConnectionInterface $from, $msg) {
 
         if (!$this->_cacheValid) {
-            $this->_cache = $this->renderPolicy()->asXML();
+            $this->_cache      = $this->renderPolicy()->asXML();
             $this->_cacheValid = true;
         }
 
@@ -66,26 +65,27 @@ class FlashPolicyComponent implements MessageComponentInterface {
         return new CloseConnection($conn);
     }
 
-
     /**
      * setSiteControl function.
-     * 
+     *
      * @access public
      * @param string $permittedCrossDomainPolicies (default: 'all')
-     * @return void
+     * @return bool
      */
     public function setSiteControl($permittedCrossDomainPolicies = 'all') {
         if (!$this->validateSiteControl($permittedCrossDomainPolicies)) {
             throw new \UnexpectedValueException('Invalid site control set');
+            return false;
         }
         $this->_siteControl = $permittedCrossDomainPolicies;
+        return true;
     }
 
     /**
      * renderPolicy function.
-     * 
+     *
      * @access public
-     * @return void
+     * @return SimpleXMLElement
      */
     public function renderPolicy() {
 
@@ -111,184 +111,80 @@ class FlashPolicyComponent implements MessageComponentInterface {
             $tmp->addAttribute('secure', ($access[2] == true) ? 'true' : 'false');
         }
 
-        foreach ($this->_headers as $header) {
-
-            $tmp = $policy->addChild('allow-http-request-headers-from');
-            $tmp->addAttribute('domain', $access[0]);
-            $tmp->addAttribute('headers', $access[1]);
-            $tmp->addAttribute('secure', ($access[2] == true) ? 'true' : 'false');
-        }
-
         return $policy;
 
     }
 
     /**
      * addAllowedAccess function.
-     * 
+     *
      * @access public
-     * @param mixed $domain
+     * @param string $domain
      * @param string $ports (default: '*')
      * @param bool $secure (default: false)
-     * @return void
+     * @return bool
      */
     public function addAllowedAccess($domain, $ports = '*', $secure = false) {
 
         if (!$this->validateDomain($domain)) {
            throw new \UnexpectedValueException('Invalid domain');
+           return false;
         }
         if (!$this->validatePorts($ports)) {
            throw new \UnexpectedValueException('Invalid Port');
+           return false;
         }
 
 
         $this->_access[]   = array($domain, $ports, $secure);
         $this->_cacheValid = false;
-    }
 
-    /**
-     * addAllowedHTTPRequestHeaders function.
-     * 
-     * @access public
-     * @param mixed $domain
-     * @param mixed $headers
-     * @param bool $secure (default: true)
-     * @return void
-     */
-    public function addAllowedHTTPRequestHeaders($domain, $headers, $secure = true) {
-
-        if (!$this->validateDomain($domain)) {
-           throw new \UnexpectedValueException('Invalid domain');
-        }
-        if (!$this->validateHeaders($headers)) {
-           throw new \UnexpectedValueException('Invalid Header');
-        }
-        $this->_headers[]   = array($domain, $headers, (string)$secure);
-        $this->_cacheValid = false;
+        return true;
     }
 
     /**
      * validateSiteControl function.
-     * 
+     *
      * @access public
      * @param mixed $permittedCrossDomainPolicies
      * @return void
      */
     public function validateSiteControl($permittedCrossDomainPolicies) {
 
-        return (bool)in_array($permittedCrossDomainPolicies, array('none', 'master-only', 'by-content-type', 'all'));
+        //'by-content-type' and 'by-ftp-filename' not available for sockets
+        return (bool)in_array($permittedCrossDomainPolicies, array('none', 'master-only', 'all'));
     }
 
     /**
      * validateDomain function.
-     * 
+     *
      * @access public
-     * @param mixed $domain
-     * @return void
+     * @param string $domain
+     * @return bool
      */
     public function validateDomain($domain) {
 
-        if ($domain == '*') {
-            return true;
-        }
-
-        if (filter_var($domain, FILTER_VALIDATE_IP)) {
-            return true;
-        }
-
-        $d = parse_url($domain);
-        if (!isset($d['scheme']) || empty($d['scheme'])) {
-            $domain = 'http://' . $domain;
-        }
-
-        if (substr($domain, -1) == '*') {
-            return false;
-        }
-
-        $d = parse_url($domain);
-
-        $parts = explode('.', $d['host']);
-        $tld   = array_pop($parts);
-
-        if (($pos = strpos($tld, '*')) !== false) {
-            return false;
-        }
-
-        return (bool)filter_var(str_replace(array('*.', '.*'), '123', $domain), FILTER_VALIDATE_URL);
+        return (bool)preg_match("/^((http(s)?:\/\/)?([a-z0-9-_]+\.|\*\.)*([a-z0-9-_\.]+)|\*)$/i", $domain);
     }
-    
+
     /**
      * validatePorts function.
-     * 
+     *
      * @access public
-     * @param mixed $port
-     * @return void
+     * @param string $port
+     * @return bool
      */
     public function validatePorts($port) {
 
-        if ($port == '*') {
-            return true;
-        }
-
-        $ports = explode(',', $port);
-
-        foreach ($ports as $port) {
-            $range = substr_count($port, '-');
-
-            if ($range > 1) {
-                return false;
-            } else if ($range == 1) {
-                $ranges = explode('-', $port);
-
-                if (!is_numeric($ranges[0]) || !is_numeric($ranges[1]) || $ranges[0] > $ranges[1]) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            if (!is_numeric($port) || $port == '') {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * validateHeaders function.
-     * 
-     * @access public
-     * @param mixed $headers
-     * @return void
-     */
-    public function validateHeaders($headers) {
-
-        if ($headers == '*') {
-            return true;
-        }
-        $headers = explode(',', $headers);
-
-        foreach ($headers as $header) {
-
-            if ((bool)preg_match('/.*\*+.+/is', $header)) {
-                return false;
-            }
-
-            if(!ctype_alnum(str_replace(array('-', '_', '*' ), '', $header))) {
-                return false;
-            }
-        }
-
-        return true;
+        return (bool)preg_match('/^(\*|(\d+[,-]?)*\d+)$/', $port);
     }
 
     /**
      * validateSecure function.
-     * 
+     *
      * @access public
-     * @param mixed $secure
-     * @return void
+     * @param bool $secure
+     * @return bool
      */
     public function validateSecure($secure) {
 

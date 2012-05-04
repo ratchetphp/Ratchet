@@ -18,19 +18,16 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('example.com', '*');
         $this->_policy->addAllowedAccess('dev.example.com', '*');
-        $this->_policy->addAllowedHTTPRequestHeaders('*', '*');
         $this->assertInstanceOf('SimpleXMLElement', $this->_policy->renderPolicy());
     }
 
     public function testInvalidPolicyReader() {
         $this->setExpectedException('UnexpectedValueException');
-        $this->_policy->addAllowedHTTPRequestHeaders('*', '*');
         $this->_policy->renderPolicy();
     }
     
     public function testAnotherInvalidPolicyReader() {
         $this->setExpectedException('UnexpectedValueException');
-        $this->_policy->addAllowedHTTPRequestHeaders('*', '*');
         $this->_policy->addAllowedAccess('dev.example.com', '*');
         $this->_policy->renderPolicy();
     }
@@ -38,7 +35,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
     public function testInvalidDomainPolicyReader() {
         $this->setExpectedException('UnexpectedValueException');
         $this->_policy->setSiteControl('all');
-        $this->_policy->addAllowedHTTPRequestHeaders('*', '*');
         $this->_policy->addAllowedAccess('dev.example.*', '*');
         $this->_policy->renderPolicy();
     }
@@ -56,7 +52,7 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
             array(true, 'all')
           , array(true, 'none')
           , array(true, 'master-only')
-          , array(true, 'by-content-type')
+          , array(false, 'by-content-type')
           , array(false, 'by-ftp-filename')
           , array(false, '')
           , array(false, 'all ')
@@ -79,18 +75,20 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
             array(true, '*')
           , array(true, 'example.com')
           , array(true, 'exam-ple.com')
+          , array(true, '*.exmple.com')
           , array(true, 'www.example.com')
+          , array(true, 'dev.dev.example.com')
           , array(true, 'http://example.com')
+          , array(true, 'https://example.com')
           , array(true, 'http://*.example.com')
           , array(false, 'exam*ple.com')
-          , array(true, '127.0.0.1')
+          , array(true, '127.0.255.1')
           , array(true, 'localhost')
           , array(false, 'www.example.*')
           , array(false, 'www.exa*le.com')
           , array(false, 'www.example.*com')
           , array(false, '*.example.*')
           , array(false, 'gasldf*$#a0sdf0a8sdf')
-          , array(false, 'http://example.*')
         );
     }
 
@@ -108,38 +106,16 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
           , array(true, '80')
           , array(true, '80,443')
           , array(true, '507,516-523')
-          , array(false, '233-11')
           , array(true, '507,516-523,333')
           , array(true, '507,516-523,507,516-523')
-          , array(true, '516-523')
+          , array(false, '516-')
           , array(true, '516-523,11')
+          , array(false, '516,-523,11')
           , array(false, 'example')
           , array(false, 'asdf,123')
           , array(false, '--')
           , array(false, ',,,')
           , array(false, '838*')
-        );
-    }
-
-    /**
-     * @dataProvider headers
-     */
-    public function testHeaderValidation($accept, $headers) {
-        $this->assertEquals($accept, $this->_policy->validateHeaders($headers));
-    }
-
-    public static function headers() {
-        return array(
-            array(true, '*')
-          , array(true, 'X-Foo')
-          , array(true, 'X-Foo*,hello')
-          , array(false, 'X-Fo*o,hello')
-          , array(false, '*ooo,hello')
-          , array(false, 'X Foo')
-          , array(false, false)
-          , array(true, 'X-001')
-          , array(false, '--')
-          , array(false, '-')
         );
     }
 
