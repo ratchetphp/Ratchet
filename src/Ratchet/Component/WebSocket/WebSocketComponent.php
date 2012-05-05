@@ -72,7 +72,7 @@ class WebSocketComponent implements MessageComponentInterface {
                     return;
                 }
 
-                $headers = RequestFactory::fromRequest($from->WebSocket->headers);
+                $headers = RequestFactory::getInstance()->fromMessage($from->WebSocket->headers);
                 $from->WebSocket->version = $this->getVersion($headers);
                 $from->WebSocket->headers = $headers;
             }

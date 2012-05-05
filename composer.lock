@@ -7,18 +7,8 @@
             "source-reference": "1e0aa60d109c630d19543d999f12e2852ef8f932"
         },
         {
-            "package": "evenement/evenement",
-            "version": "dev-master",
-            "source-reference": "808e3aaea8d4f908e455b0e047cc1acc46b38d44"
-        },
-        {
             "package": "guzzle/guzzle",
             "version": "v2.4.1"
-        },
-        {
-            "package": "igorw/socket-server",
-            "version": "dev-master",
-            "source-reference": "e813968da434ed45219718bc2db29a01174045b6"
         },
         {
             "package": "symfony/event-dispatcher",
