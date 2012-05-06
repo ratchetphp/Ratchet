@@ -22,14 +22,7 @@ abstract class AbstractConnectionDecorator implements ConnectionInterface {
         $this->wrappedConn->$name = $value;
     }
  
-    /**
-     * @todo trigger_error() instead - Have it the same as if called from a POPO
-     */
     public function __get($name) {
-        if (!$this->__isset($name)) {
-            throw new \InvalidArgumentException("Attribute '{$name}' not found in Connection {$this->getID()}");
-        }
- 
         return $this->wrappedConn->$name;
     }
  

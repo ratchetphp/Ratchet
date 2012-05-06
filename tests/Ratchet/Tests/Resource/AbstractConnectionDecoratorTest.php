@@ -103,7 +103,45 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($this->l1, $conn);
     }
 
+    public function testWrapperCanStoreSelfInDecorator() {
+        $this->mock->decorator = $this->l1;
+
+        $this->assertSame($this->l1, $this->l2->decorator);
+    }
+
+    public function testDecoratorRecursion() {
+        $this->mock->decorator = new \stdClass;
+        $this->mock->decorator->conn = $this->l1;
+
+        $this->assertSame($this->l1, $this->mock->decorator->conn);
+        $this->assertSame($this->l1, $this->l1->decorator->conn);
+        $this->assertSame($this->l1, $this->l2->decorator->conn);
+    }
+
+    public function testDecoratorRecursionLevel2() {
+        $this->mock->decorator = new \stdClass;
+        $this->mock->decorator->conn = $this->l2;
+
+        $this->assertSame($this->l2, $this->mock->decorator->conn);
+        $this->assertSame($this->l2, $this->l1->decorator->conn);
+        $this->assertSame($this->l2, $this->l2->decorator->conn);
+
+        // just for fun
+        $this->assertSame($this->l2, $this->l2->decorator->conn->decorator->conn->decorator->conn);
+    }
+
     public function testWarningGettingNothing() {
-        $this->markTestSkipped('Functionality not in class yet');
+        $this->setExpectedException('PHPUnit_Framework_Error');
+        $var = $this->mock->nonExistant;
+    }
+
+    public function testWarningGettingNothingLevel1() {
+        $this->setExpectedException('PHPUnit_Framework_Error');
+        $var = $this->l1->nonExistant;
+    }
+
+    public function testWarningGettingNothingLevel2() {
+        $this->setExpectedException('PHPUnit_Framework_Error');
+        $var = $this->l2->nonExistant;
     }
 }
