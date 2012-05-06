@@ -1,20 +1,22 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\Resource\ConnectionInterface;
+use Ratchet\Resource\AbstractConnectionDecorator;
 
-class Connection implements ConnectionInterface {
+class ConnectionDecorator extends AbstractConnectionDecorator {
     public $last = array(
         'write' => ''
       , 'end'   => false
     );
 
-    public $remoteAddress = '127.0.0.1';
-
     public function write($data) {
         $this->last[__FUNCTION__] = $data;
+
+        $this->getConnection()->write($data);
     }
 
     public function end() {
         $this->last[__FUNCTION__] = true;
+
+        $this->getConnection()->end();
     }
 }

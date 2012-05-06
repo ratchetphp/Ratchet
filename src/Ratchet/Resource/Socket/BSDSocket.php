@@ -157,7 +157,7 @@ class BSDSocket implements SocketInterface {
         $num = socket_select($read, $write, $except, $tv_sec, $tv_usec);
 
         if (false === $num) {
-            throw new BSDException($this);
+            throw new BSDSocketException($this);
         }
 
         return $num;

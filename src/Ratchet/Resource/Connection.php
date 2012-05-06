@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Resource;
 use Ratchet\Resource\Socket\SocketInterface;
+use Ratchet\Resource\Socket\BSDSocketException;
 
 /**
  * A proxy object representing a connection to the application
@@ -14,6 +15,25 @@ class Connection implements ConnectionInterface {
 
     public function __construct(SocketInterface $socket) {
         $this->_socket = $socket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write($data) {
+        return $this->_socket->deliver($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function end() {
+        try {
+            $this->_socket->shutdown();
+        } catch (BSDSocketException $e) {
+        }
+
+        $this->_socket->close();
     }
 
     /**
