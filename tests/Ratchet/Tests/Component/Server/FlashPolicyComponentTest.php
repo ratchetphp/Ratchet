@@ -13,7 +13,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
         $this->_policy = new FlashPolicyComponent();
     }
 
-
     public function testPolicyRender() {
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('example.com', '*');
@@ -25,12 +24,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('UnexpectedValueException');
         $this->_policy->renderPolicy();
     }
-    
-    public function testAnotherInvalidPolicyReader() {
-        $this->setExpectedException('UnexpectedValueException');
-        $this->_policy->addAllowedAccess('dev.example.com', '*');
-        $this->_policy->renderPolicy();
-    }
 
     public function testInvalidDomainPolicyReader() {
         $this->setExpectedException('UnexpectedValueException');
@@ -38,8 +31,7 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
         $this->_policy->addAllowedAccess('dev.example.*', '*');
         $this->_policy->renderPolicy();
     }
-    
-    
+
     /**
      * @dataProvider siteControl
      */
@@ -61,7 +53,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
           , array(false, '*')
         );
     }
-
 
     /**
      * @dataProvider URI
@@ -92,7 +83,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
-
     /**
      * @dataProvider ports
      */
@@ -116,27 +106,6 @@ class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
           , array(false, '--')
           , array(false, ',,,')
           , array(false, '838*')
-        );
-    }
-
-    /**
-     * @dataProvider bools
-     */
-    public function testSecureValidation($accept, $bool) {
-        $this->assertEquals($accept, $this->_policy->validateSecure($bool));
-    }
-
-    public static function bools() {
-        return array(
-            array(true, true)
-          , array(true, false)
-          , array(false, 1)
-          , array(false, 0)
-          , array(false, 'false')
-          , array(false, 'on')
-          , array(false, 'yes')
-          , array(false, '--')
-          , array(false, '!')
         );
     }
 }
