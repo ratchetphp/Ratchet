@@ -11,10 +11,6 @@
             "version": "2.0.2"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.0.2"
-        },
-        {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
             "source-reference": "0c1ae4898196f5e96b79028d8d2f35de4b584659"
@@ -28,7 +24,7 @@
         {
             "package": "symfony/validator",
             "version": "dev-master",
-            "source-reference": "dac248b43b62d30023dd9b73ad7e5b7bc1128e5e"
+            "source-reference": "704f655d060b14475d7bd2a0b6d653c70f88218a"
         }
     ],
     "packages-dev": null,
