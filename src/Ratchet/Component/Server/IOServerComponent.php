@@ -11,9 +11,10 @@ use React\Socket\Server as Reactor;
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
  */
 class IOServerComponent {
-    protected $loop;
-
-    protected $connections;
+    /**
+     * @var React\EventLoop\LoopInterface
+     */
+    public $loop;
 
     public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop) {
         $this->loop = $loop;
