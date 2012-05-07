@@ -8,10 +8,10 @@ interface ConnectionInterface {
      * Send data to the connection
      * @param string
      */
-    function write($data);
+    function send($data);
 
     /**
-     * End the connection
+     * Close the connection
      */
-    function end();
+    function close();
 }

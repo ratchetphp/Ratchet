@@ -2,7 +2,7 @@
 
 #Ratchet
 
-A PHP 5.3 (PSR-0 compliant) component library for serving sockets and building socket based applications.
+A PHP 5.3 (PSR-0) component library for serving sockets and building socket based applications.
 Build up your application through simple interfaces using the decorator and command patterns.
 Re-use your application without changing any of its code just by combining different components. 
 
@@ -32,57 +32,46 @@ See https://github.com/cboden/Ratchet-examples for some out-of-the-box working d
 
 ```php
 <?php
-namespace MyApps;
-use Ratchet\Component\MessageComponentInterface;
-use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Component\Server\IOServerComponent;
-use Ratchet\Component\WebSocket\WebSocketComponent;
-use Ratchet\Resource\Command\Composite as Cmds;
-use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Resource\Command\Action\CloseConnection;
+use Ratchet\MessageInterface;
+use Ratchet\ConnectionInterface;
+use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 
 /**
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements MessageComponentInterface {
-    protected $_clients;
+class Chat implements MessageInterface {
+    protected $clients;
 
-    public function __construct(MessageComponentInterface $app = null) {
-        $this->_clients = new \SplObjectStorage;
+    public function __construct() {
+        $this->clients = new \SplObjectStorage;
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        $this->_clients->attach($conn);
+        $this->clients->attach($conn);
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        $commands = new Cmds;
-
-        foreach ($this->_clients as $client) {
+        foreach ($this->clients as $client) {
             if ($from != $client) {
-                $msg_cmd = new SendMessage($client);
-                $msg_cmd->setMessage($msg);
-
-                $commands->enqueue($msg_cmd);
+                $client->send($msg);
             }
         }
-
-        return $commands;
     }
 
     public function onClose(ConnectionInterface $conn) {
-        $this->_clients->detach($conn);
+        $this->clients->detach($conn);
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return new CloseConnection($conn);
+        $conn->close();
     }
 }
 
-// Run the server application through the WebSocket protocol
-$server = new IOServerComponent(new WebSocketComponent(new Chat));
-$server->run(8000);
+    // Run the server application through the WebSocket protocol
+    $server = new IoServer(new WsServer(new Chat));
+    $server->run(8000);
 ```
 
     # php chat.php

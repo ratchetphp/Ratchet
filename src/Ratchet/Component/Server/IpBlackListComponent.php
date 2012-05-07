@@ -2,7 +2,6 @@
 namespace Ratchet\Component\Server;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Resource\Command\Action\CloseConnection;
 
 class IpBlackListComponent implements MessageComponentInterface {
     /**
@@ -74,7 +73,7 @@ class IpBlackListComponent implements MessageComponentInterface {
      */
     function onOpen(ConnectionInterface $conn) {
         if ($this->isBlocked($conn->remoteAddress)) {
-            return new CloseConnection($conn);
+            return $conn->close();
         }
 
         return $this->_decorating->onOpen($conn);

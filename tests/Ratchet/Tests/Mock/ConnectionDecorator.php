@@ -8,15 +8,15 @@ class ConnectionDecorator extends AbstractConnectionDecorator {
       , 'end'   => false
     );
 
-    public function write($data) {
+    public function send($data) {
         $this->last[__FUNCTION__] = $data;
 
-        $this->getConnection()->write($data);
+        $this->getConnection()->send($data);
     }
 
-    public function end() {
+    public function close() {
         $this->last[__FUNCTION__] = true;
 
-        $this->getConnection()->end();
+        $this->getConnection()->close();
     }
 }

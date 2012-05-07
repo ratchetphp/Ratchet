@@ -1,8 +1,7 @@
 <?php
 namespace Ratchet\Tests\Resource\Command;
 use Ratchet\Resource\Command\Composite;
-use Ratchet\Resource\Connection;
-use Ratchet\Tests\Mock\FakeSocket;
+use Ratchet\Tests\Mock\Connection;
 use Ratchet\Resource\Command\Action\Null as NullAction;
 
 /**
@@ -16,7 +15,7 @@ class CompositeTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function newNull() {
-        return new NullAction(new Connection(new FakeSocket));
+        return new NullAction(new Connection);
     }
 
     public function testCanEnqueueNull() {

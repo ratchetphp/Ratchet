@@ -2,15 +2,13 @@
 namespace Ratchet\Component\WebSocket;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Resource\Command\Factory;
-use Ratchet\Resource\Command\CommandInterface;
-use Ratchet\Resource\Command\Action\SendMessage;
 use Guzzle\Http\Message\RequestInterface;
 use Ratchet\Component\WebSocket\Guzzle\Http\Message\RequestFactory;
 
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
+ * @todo Separate this class into a two classes: Component and a protocol handler
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
@@ -22,10 +20,9 @@ class WebSocketComponent implements MessageComponentInterface {
     protected $_decorating;
 
     /**
-     * Creates commands/composites instead of calling several classes manually
-     * @var Ratchet\Resource\Command\Factory
+     * @var SplObjectStorage
      */
-    protected $_factory;
+    protected $connections;
 
     /**
      * Re-entrant instances of protocol version classes
@@ -48,7 +45,7 @@ class WebSocketComponent implements MessageComponentInterface {
 
     public function __construct(MessageComponentInterface $component) {
         $this->_decorating = $component;
-        $this->_factory    = new Factory;
+        $this->connections = new \SplObjectStorage;
     }
 
     /**
@@ -96,11 +93,12 @@ class WebSocketComponent implements MessageComponentInterface {
             $response->setHeader('X-Powered-By', \Ratchet\Resource\VERSION);
             $header = (string)$response;
 
-            $comp = $this->_factory->newComposite();
-            $comp->enqueue($this->_factory->newCommand('SendMessage', $from)->setMessage($header));
-            $comp->enqueue($this->prepareCommand($this->_decorating->onOpen($from, $msg))); // Need to send headers/handshake to application, let it have the cookies, etc
+            $from->send($header);
 
-            return $comp;
+            $conn = new WsConnection($from);
+            $this->connections->attach($from, $conn);
+
+            return $this->_decorating->onOpen($conn);
         }
 
         if (!isset($from->WebSocket->message)) {
@@ -115,6 +113,7 @@ class WebSocketComponent implements MessageComponentInterface {
         $from->WebSocket->frame->addBuffer($msg);
         if ($from->WebSocket->frame->isCoalesced()) {
             if ($from->WebSocket->frame->getOpcode() > 2) {
+                $from->end();
                 throw new \UnexpectedValueException('Control frame support coming soon!');
             }
             // Check frame
@@ -127,10 +126,8 @@ class WebSocketComponent implements MessageComponentInterface {
         }
 
         if ($from->WebSocket->message->isCoalesced()) {
-            $cmds = $this->prepareCommand($this->_decorating->onMessage($from, (string)$from->WebSocket->message));
+            $this->_decorating->onMessage($this->connections[$from], (string)$from->WebSocket->message);
             unset($from->WebSocket->message);
-
-            return $cmds;
         }
     }
 
@@ -138,57 +135,23 @@ class WebSocketComponent implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
-        return $this->prepareCommand($this->_decorating->onClose($conn));
+        // WS::onOpen is not called when the socket connects, it's call when the handshake is done
+        // The socket could close before WS calls onOpen, so we need to check if we've "opened" it for the developer yet
+        if ($this->connections->contains($conn)) {
+            $this->_decorating->onClose($this->connections[$conn]);
+            $this->connections->detach($conn);
+        }
     }
 
     /**
      * {@inheritdoc}
-     * @todo Shouldn't I be using prepareCommand() on the return? look into this
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return $this->_decorating->onError($conn, $e);
-    }
-
-    /**
-     * Checks if a return Command from your application is a message, if so encode it/them
-     * @param Ratchet\Resource\Command\CommandInterface|NULL
-     * @return Ratchet\Resource\Command\CommandInterface|NULL
-     */
-    protected function prepareCommand(CommandInterface $command = null) {
-        $cache = array();
-        return $this->mungCommand($command, $cache);
-    }
-
-    /**
-     * Does the actual work of prepareCommand
-     * Separated to pass the cache array by reference, so we're not framing the same stirng over and over
-     * @param Ratchet\Resource\Command\CommandInterface|NULL
-     * @param array
-     * @return Ratchet\Resource\Command\CommandInterface|NULL
-     */
-    protected function mungCommand(CommandInterface $command = null, &$cache) {
-        if ($command instanceof SendMessage) {
-            if (!isset($command->getConnection()->WebSocket->version)) { // Client could close connection before handshake complete or invalid handshake
-                return $command;
-            }
-
-            $version = $command->getConnection()->WebSocket->version;
-            $hash    = md5($command->getMessage()) . '-' . spl_object_hash($version);
-
-            if (!isset($cache[$hash])) {
-                $cache[$hash] = $version->frame($command->getMessage(), $this->_mask_payload);
-            }
-
-            return $command->setMessage($cache[$hash]);
+        if ($this->connections->contains($conn)) {
+            $this->_decorating->onError($this->connections[$conn], $e);
+        } else {
+            $conn->close();
         }
-
-        if ($command instanceof \Traversable) {
-            foreach ($command as $cmd) {
-                $cmd = $this->mungCommand($cmd, $cache);
-            }
-        }
-
-        return $command;
     }
 
     /**

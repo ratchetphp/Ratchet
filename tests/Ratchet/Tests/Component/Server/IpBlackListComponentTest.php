@@ -21,9 +21,9 @@ class IpBlackListComponentTest extends \PHPUnit_Framework_TestCase {
 
         $this->_comp->blockAddress($conn->remoteAddress);
 
-        $ret  = $this->_comp->onOpen($conn);
+        $ret = $this->_comp->onOpen($conn);
 
-        $this->assertInstanceOf('\\Ratchet\\Resource\\Command\\Action\\CloseConnection', $ret);
+        $this->assertTrue($conn->last['close']);
     }
 
     public function testAddAndRemoveWithFluentInterfaces() {

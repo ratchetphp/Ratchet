@@ -20,7 +20,7 @@ class Hixie76 implements VersionInterface {
      * {@inheritdoc}
      */
     public static function isProtocol(RequestInterface $request) {
-        return !(null === $request->getHeader('Sec-WebSocket-Key2'));
+        return !(null === $request->getHeader('Sec-WebSocket-Key2', true));
     }
 
     /**
@@ -28,13 +28,13 @@ class Hixie76 implements VersionInterface {
      * @return string
      */
     public function handshake(RequestInterface $request) {
-        $body = $this->sign($request->getHeader('Sec-WebSocket-Key1'), $request->getHeader('Sec-WebSocket-Key2'), $request->getBody());
+        $body = $this->sign($request->getHeader('Sec-WebSocket-Key1', true), $request->getHeader('Sec-WebSocket-Key2', true), (string)$request->getBody());
 
         $headers = array(
             'Upgrade'                => 'WebSocket'
           , 'Connection'             => 'Upgrade'
-          , 'Sec-WebSocket-Origin'   => $request->getHeader('Origin')
-          , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host') . $request->getPath()
+          , 'Sec-WebSocket-Origin'   => $request->getHeader('Origin', true)
+          , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host', true) . $request->getPath()
         );
 
         $response = new Response('101', $headers, $body);

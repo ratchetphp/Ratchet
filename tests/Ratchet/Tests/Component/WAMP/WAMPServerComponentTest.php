@@ -1,8 +1,7 @@
 <?php
 namespace Ratchet\Tests\Component\WAMP;
 use Ratchet\Component\WAMP\WAMPServerComponent;
-use Ratchet\Resource\Connection;
-use Ratchet\Tests\Mock\FakeSocket;
+use Ratchet\Tests\Mock\Connection;
 use Ratchet\Tests\Mock\WAMPComponent as TestComponent;
 use Ratchet\Component\WAMP\Command\Action\CallResult;
 use Ratchet\Component\WAMP\Command\Action\CallError;
@@ -23,7 +22,7 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function newConn() {
-        return new Connection(new FakeSocket);
+        return new Connection;
     }
 
     public function invalidMessageProvider() {
@@ -49,7 +48,7 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\Component\WAMP\Command\Action\Welcome
      */
     public function testWelcomeMessage() {
-        $conn = new Connection(new FakeSocket);
+        $conn = new Connection();
 
         $return  = $this->_comp->onOpen($conn);
         $action  = $return->pop();
@@ -155,10 +154,7 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
     public function testOnErrorPropagation() {
         $conn = $this->newConn();
 
-        try {
-            throw new \Exception('Nope');
-        } catch (\Exception $e) {
-        }
+        $e = new \Exception('Nope');
 
         $this->_comp->onError($conn, $e);
 
