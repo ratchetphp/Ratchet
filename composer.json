@@ -34,7 +34,7 @@
                 "name": "cboden/react"
               , "version": "dev-master"
               , "source": {
-                    "url": "git://github.com/cboden/Ratchet.git"
+                    "url": "git://github.com/cboden/SocketServer.git"
                   , "type": "git"
                   , "reference": "ratchet"
                 }
