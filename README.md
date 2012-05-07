@@ -70,8 +70,8 @@ class Chat implements MessageInterface {
 }
 
     // Run the server application through the WebSocket protocol
-    $server = new IoServer(new WsServer(new Chat));
-    $server->run(8000);
+    $server = IoServer::factory(new WsServer(new Chat));
+    $server->run();
 ```
 
     # php chat.php

@@ -1,5 +1,5 @@
 {
-    "hash": "ae2788962867b06b14a9e473cdd71ebd",
+    "hash": "9baa15e7791631e31de9c91ca4acf4b7",
     "packages": [
         {
             "package": "cboden/react",
@@ -8,8 +8,8 @@
         },
         {
             "package": "doctrine/common",
-            "version": "dev-master",
-            "source-reference": "717ea940ff8fa0854e84a2249edadfb998f91406"
+            "version": "2.2.x-dev",
+            "source-reference": "1e0aa60d109c630d19543d999f12e2852ef8f932"
         },
         {
             "package": "evenement/evenement",
@@ -33,7 +33,8 @@
         },
         {
             "package": "symfony/validator",
-            "version": "v2.0.10"
+            "version": "dev-master",
+            "source-reference": "dac248b43b62d30023dd9b73ad7e5b7bc1128e5e"
         }
     ],
     "packages-dev": null,

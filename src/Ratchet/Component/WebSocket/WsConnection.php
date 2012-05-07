@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Component\WebSocket;
 use Ratchet\Resource\AbstractConnectionDecorator;
-use Ratchet\Resrouce\ConnectionInterface;
 
 /**
  * @property stdClass $WebSocket

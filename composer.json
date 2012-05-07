@@ -38,7 +38,7 @@
                     }
                 }
               , "source": {
-                    "url": "git@github.com:cboden/SocketServer.git"
+                    "url": "https://github.com/cboden/Ratchet.git"
                   , "type": "git"
                   , "reference": "ratchet"
                 }
