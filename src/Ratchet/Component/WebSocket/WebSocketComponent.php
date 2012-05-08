@@ -138,8 +138,10 @@ class WebSocketComponent implements MessageComponentInterface {
         // WS::onOpen is not called when the socket connects, it's call when the handshake is done
         // The socket could close before WS calls onOpen, so we need to check if we've "opened" it for the developer yet
         if ($this->connections->contains($conn)) {
-            $this->_decorating->onClose($this->connections[$conn]);
+            $decor = $this->connections[$conn];
             $this->connections->detach($conn);
+
+            $this->_decorating->onClose($decor);
         }
     }
 

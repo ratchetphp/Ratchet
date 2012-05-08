@@ -1,15 +1,14 @@
 <?php
 namespace Ratchet\Tests\Component\WAMP;
 use Ratchet\Component\WAMP\WAMPServerComponent;
+use Ratchet\Component\WAMP\WampConnection;
 use Ratchet\Tests\Mock\Connection;
 use Ratchet\Tests\Mock\WAMPComponent as TestComponent;
-use Ratchet\Component\WAMP\Command\Action\CallResult;
-use Ratchet\Component\WAMP\Command\Action\CallError;
-use Ratchet\Component\WAMP\Command\Action\Event;
 
 /**
  * @covers Ratchet\Component\WAMP\WAMPServerComponent
  * @covers Ratchet\Component\WAMP\WAMPServerComponentInterface
+ * @covers Ratchet\Component\WAMP\WampConnection
  */
 class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
     protected $_comp;
@@ -41,18 +40,17 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
     public function testInvalidMessages($type) {
         $this->setExpectedException('\\Ratchet\\Component\\WAMP\\Exception');
 
-        $this->_comp->onMessage($this->newConn(), json_encode(array($type)));
+        $conn = $this->newConn();
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode(array($type)));
     }
 
-    /**
-     * @covers Ratchet\Component\WAMP\Command\Action\Welcome
-     */
     public function testWelcomeMessage() {
-        $conn = new Connection();
+        $conn = $this->newConn();
 
-        $return  = $this->_comp->onOpen($conn);
-        $action  = $return->pop();
-        $message = $action->getMessage();
+        $this->_comp->onOpen($conn);
+
+        $message = $conn->last['send'];
         $json    = json_decode($message);
 
         $this->assertEquals(4, count($json));
@@ -65,7 +63,10 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
         $uri = 'http://example.com';
         $clientMessage = array(5, $uri);
 
-        $this->_comp->onMessage($this->newConn(), json_encode($clientMessage));
+        $conn = $this->newConn();
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode($clientMessage));
 
         $this->assertEquals($uri, $this->_app->last['onSubscribe'][1]);
     }
@@ -74,7 +75,10 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
         $uri = 'http://example.com/endpoint';
         $clientMessage = array(6, $uri);
 
-        $this->_comp->onMessage($this->newConn(), json_encode($clientMessage));
+        $conn = $this->newConn();
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode($clientMessage));
 
         $this->assertEquals($uri, $this->_app->last['onUnSubscribe'][1]);
     }
@@ -103,7 +107,10 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
         $id  = uniqid();
         $clientMessage = array_merge(array(2, $id, $uri), $args);
 
-        $this->_comp->onMessage($this->newConn(), json_encode($clientMessage));
+        $conn = $this->newConn();
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode($clientMessage));
 
         $this->assertEquals($id,  $this->_app->last['onCall'][1]);
         $this->assertEquals($uri, $this->_app->last['onCall'][2]);
@@ -132,67 +139,68 @@ class WAMPServerComponentTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider eventProvider
-     * @covers Ratchet\Component\WAMP\Command\Action\Event
      */
     public function testEvent($topic, $payload) {
-        $event = new Event($this->newConn());
-        $event->setEvent($topic, $payload);
+        $conn = new WampConnection($this->newConn());
+        $conn->event($topic, $payload);
 
-        $eventString = $event->getMessage();
+        $eventString = $conn->last['send'];
 
         $this->assertSame(array(8, $topic, $payload), json_decode($eventString, true));
     }
 
     public function testOnClosePropagation() {
-        $conn = $this->newConn();
+        $conn = new Connection;
 
+        $this->_comp->onOpen($conn);
         $this->_comp->onClose($conn);
 
-        $this->assertSame($conn, $this->_app->last['onClose'][0]);
+        $class  = new \ReflectionClass('\\Ratchet\\Component\\WAMP\\WampConnection');
+        $method = $class->getMethod('getConnection');
+        $method->setAccessible(true);
+
+        $check = $method->invokeArgs($this->_app->last['onClose'][0], array());
+
+        $this->assertSame($conn, $check);
     }
 
     public function testOnErrorPropagation() {
-        $conn = $this->newConn();
+        $conn = new Connection;
 
         $e = new \Exception('Nope');
 
+        $this->_comp->onOpen($conn);
         $this->_comp->onError($conn, $e);
 
-        $this->assertSame($conn, $this->_app->last['onError'][0]);
+        $class  = new \ReflectionClass('\\Ratchet\\Component\\WAMP\\WampConnection');
+        $method = $class->getMethod('getConnection');
+        $method->setAccessible(true);
+
+        $check = $method->invokeArgs($this->_app->last['onError'][0], array());
+
+        $this->assertSame($conn, $check);
         $this->assertSame($e, $this->_app->last['onError'][1]);
     }
 
-    /**
-     * @covers Ratchet\Component\WAMP\Command\Action\Prefix
-     */
     public function testPrefix() {
-        $conn = $this->newConn();
+        $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
-        $shortOut = 'outgoing';
-        $longOut  = 'http://example.com/outoing';
+        $shortIn  = 'incoming';
+        $longIn   = 'http://example.com/incoming/';
 
-        $shortIn = 'incoming';
-        $shortIn = 'http://example.com/incoming/';
+        $this->_comp->onMessage($conn, json_encode(array(1, $shortIn, $longIn)));
 
-        $this->assertTrue(is_callable($conn->WAMP->addPrefix));
-
-        $cb = $conn->WAMP->addPrefix;
-        $cb($shortOut, $longOut);
-
-        $return  = $this->_comp->onMessage($conn, json_encode(array(1, $shortIn, $shortOut)));
-        $command = $return->pop();
-
-        $this->assertInstanceOf('Ratchet\\Component\\WAMP\\Command\\Action\\Prefix', $command);
-        $this->assertEquals($shortOut, $command->getCurie());
-        $this->assertEquals($longOut, $command->getUri());
-
-        $this->assertEquals(array(1, $shortOut, $longOut), json_decode($command->getMessage()));
+        $this->assertEquals($longIn, $conn->WAMP->prefixes[$shortIn]);
+        $this->assertEquals($longIn, $conn->getUri($shortIn));
     }
 
     public function testMessageMustBeJson() {
         $this->setExpectedException('\\Ratchet\\Component\\WAMP\\JsonException');
 
-        $this->_comp->onMessage($this->newConn(), 'Hello World!');
+        $conn = new Connection;
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, 'Hello World!');
     }
 }

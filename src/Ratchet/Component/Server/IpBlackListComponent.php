@@ -90,17 +90,17 @@ class IpBlackListComponent implements MessageComponentInterface {
      * {@inheritdoc}
      */
     function onClose(ConnectionInterface $conn) {
-        if ($this->isBlocked($conn->remoteAddress)) {
-            return null;
+        if (!$this->isBlocked($conn->remoteAddress)) {
+            $this->_decorating->onClose($conn);
         }
-
-        return $this->_decorating->onClose($conn);
     }
 
     /**
      * {@inheritdoc}
      */
     function onError(ConnectionInterface $conn, \Exception $e) {
-        return $this->_decorating->onError($conn, $e);
+        if (!$this->isBlocked($conn->remoteAddress)) {
+            $this->_decorating->onError($conn, $e);
+        }
     }
 }
