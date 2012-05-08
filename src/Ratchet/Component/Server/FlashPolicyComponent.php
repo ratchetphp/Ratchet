@@ -2,10 +2,6 @@
 namespace Ratchet\Component\Server;
 use Ratchet\Component\MessageComponentInterface;
 use Ratchet\Resource\ConnectionInterface;
-use Ratchet\Resource\Connection;
-use Ratchet\Resource\Command\CommandInterface;
-use Ratchet\Resource\Command\Action\SendMessage;
-use Ratchet\Resource\Command\Action\CloseConnection;
 
 /**
  * An app to go on a server stack to pass a policy file to a Flash socket
@@ -109,10 +105,7 @@ class FlashPolicyComponent implements MessageComponentInterface {
             $this->_cacheValid = true;
         }
 
-        $cmd = new SendMessage($from);
-        $cmd->setMessage($this->_cache . "\0");
-
-        return $cmd;
+        $from->send($this->_cache . "\0");
     }
 
     /**
@@ -125,7 +118,7 @@ class FlashPolicyComponent implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        return new CloseConnection($conn);
+        $conn->close();
     }
 
     /**
