@@ -125,4 +125,12 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
             $this->_version->handshake($request);
         }
     }
+
+    public function testNewMessage() {
+        $this->assertInstanceOf('\\Ratchet\\Component\\WebSocket\\Version\\RFC6455\\Message', $this->_version->newMessage());
+    }
+
+    public function testNewFrame() {
+        $this->assertInstanceOf('\\Ratchet\\Component\\WebSocket\\Version\\RFC6455\\Frame', $this->_version->newFrame());
+    }
 }
