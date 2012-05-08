@@ -1,15 +1,10 @@
 {
-    "hash": "bd02fb0517b1805dc483bbb064341ced",
+    "hash": "ce8ef8ec0b9f8fb32084fda8290120f7",
     "packages": [
         {
             "package": "cboden/react",
             "version": "dev-master",
             "source-reference": "ratchet"
-        },
-        {
-            "package": "doctrine/common",
-            "version": "dev-master",
-            "source-reference": "717ea940ff8fa0854e84a2249edadfb998f91406"
         },
         {
             "package": "evenement/evenement",
@@ -18,7 +13,7 @@
         },
         {
             "package": "guzzle/guzzle",
-            "version": "v2.4.1"
+            "version": "v2.5.0"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -30,10 +25,6 @@
             "version": "dev-master",
             "source-reference": "54c22f4bf8625303503a117dcc68544d3f8ac876",
             "alias": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/validator",
-            "version": "v2.0.10"
         }
     ],
     "packages-dev": null,
