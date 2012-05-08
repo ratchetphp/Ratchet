@@ -3,7 +3,7 @@ namespace Ratchet\Tests\Application\Server;
 use Ratchet\Component\Server\FlashPolicyComponent;
 
 /**
- * @covers Ratchet\Component\WebSocket\Version\Hixie76
+ * @covers Ratchet\Component\Server\FlashPolicyComponent
  */
 class FlashPolicyComponentTest extends \PHPUnit_Framework_TestCase {
 
