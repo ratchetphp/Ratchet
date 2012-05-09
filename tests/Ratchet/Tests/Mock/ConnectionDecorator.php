@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\Resource\AbstractConnectionDecorator;
+use Ratchet\AbstractConnectionDecorator;
 
 class ConnectionDecorator extends AbstractConnectionDecorator {
     public $last = array(

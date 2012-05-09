@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\Resource\ConnectionInterface;
+use Ratchet\ConnectionInterface;
 
 class Connection implements ConnectionInterface {
     public $last = array(
