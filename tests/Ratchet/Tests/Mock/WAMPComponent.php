@@ -3,7 +3,7 @@ namespace Ratchet\Tests\Mock;
 use Ratchet\Wamp\WampServerInterface;
 use Ratchet\ConnectionInterface;
 
-class WAMPComponent implements WampServerInterface {
+class WampComponent implements WampServerInterface {
     public $last = array();
 
     public function onCall(ConnectionInterface $conn, $id, $procURI, array $params) {

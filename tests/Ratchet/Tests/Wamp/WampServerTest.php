@@ -38,7 +38,7 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider invalidMessageProvider
      */
     public function testInvalidMessages($type) {
-        $this->setExpectedException('\\Ratchet\\WAMP\\Exception');
+        $this->setExpectedException('\\Ratchet\\Wamp\\Exception');
 
         $conn = $this->newConn();
         $this->_comp->onOpen($conn);
@@ -155,7 +155,7 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
         $this->_comp->onOpen($conn);
         $this->_comp->onClose($conn);
 
-        $class  = new \ReflectionClass('\\Ratchet\\WAMP\\WampConnection');
+        $class  = new \ReflectionClass('\\Ratchet\\Wamp\\WampConnection');
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
@@ -172,7 +172,7 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
         $this->_comp->onOpen($conn);
         $this->_comp->onError($conn, $e);
 
-        $class  = new \ReflectionClass('\\Ratchet\\WAMP\\WampConnection');
+        $class  = new \ReflectionClass('\\Ratchet\\Wamp\\WampConnection');
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
@@ -196,7 +196,7 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testMessageMustBeJson() {
-        $this->setExpectedException('\\Ratchet\\WAMP\\JsonException');
+        $this->setExpectedException('\\Ratchet\\Wamp\\JsonException');
 
         $conn = new Connection;
 
