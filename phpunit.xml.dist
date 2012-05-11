@@ -2,7 +2,7 @@
 <phpunit
     forceCoversAnnotation="true"
     mapTestClassNameToCoveredClassName="true"
-    bootstrap="tests/bootstrap.php"
+    bootstrap="vendor/autoload.php"
     colors="true"
     backupGlobals="false"
     backupStaticAttributes="false"

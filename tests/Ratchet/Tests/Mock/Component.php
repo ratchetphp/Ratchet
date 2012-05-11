@@ -1,8 +1,8 @@
 <?php
 namespace Ratchet\Tests\Mock;
-use Ratchet\Component\MessageComponentInterface;
+use Ratchet\MessageComponentInterface;
 use Ratchet\Tests\Mock\Socket as MockSocket;
-use Ratchet\Resource\ConnectionInterface;
+use Ratchet\ConnectionInterface;
 
 /**
  * @todo Rename to MessageComponent
