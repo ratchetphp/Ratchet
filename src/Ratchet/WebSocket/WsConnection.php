@@ -3,6 +3,7 @@ namespace Ratchet\WebSocket;
 use Ratchet\AbstractConnectionDecorator;
 
 /**
+ * {@inheritdoc}
  * @property stdClass $WebSocket
  */
 class WsConnection extends AbstractConnectionDecorator {

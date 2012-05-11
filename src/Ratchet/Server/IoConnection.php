@@ -4,8 +4,7 @@ use Ratchet\ConnectionInterface;
 use React\Socket\ConnectionInterface as ReactConn;
 
 /**
- * A proxy object representing a connection to the application
- * This acts as a container to storm data (in memory) about the connection
+ * {@inheritdoc}
  */
 class IoConnection implements ConnectionInterface {
     /**

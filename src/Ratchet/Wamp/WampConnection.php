@@ -5,6 +5,8 @@ use Ratchet\AbstractConnectionDecorator;
 use Ratchet\Wamp\WampServer as WAMP;
 
 /**
+ * A ConnectionInterface object wrapper that is passed to your WAMP application
+ * representing a client. Methods on this Connection are therefore different. 
  * @property stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {

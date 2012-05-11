@@ -72,13 +72,13 @@ class WampServer implements WsServerInterface {
     /**
      * @{inheritdoc}
      * @throws Exception
-     * @throws JSONException
+     * @throws JsonException
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         $from = $this->connections[$from];
 
         if (null === ($json = @json_decode($msg, true))) {
-            throw new JSONException;
+            throw new JsonException;
         }
 
         switch ($json[0]) {
