@@ -84,7 +84,6 @@ class WampServer implements WsServerInterface {
         switch ($json[0]) {
             case static::MSG_PREFIX:
                 $from->WAMP->prefixes[$json[1]] = $json[2];
-//                $from->WAMP->prefixes($json[1], $json[2]);
             break;
 
             case static::MSG_CALL:
@@ -108,7 +107,10 @@ class WampServer implements WsServerInterface {
             break;
 
             case static::MSG_PUBLISH:
-                $this->_decorating->onPublish($from, $from->getUri($json[1]), $json[2]);
+                $exclude  = (array_key_exists(3, $json) ? $json[3] : null);
+                $eligible = (array_key_exists(4, $json) ? $json[4] : null);
+
+                $this->_decorating->onPublish($from, $from->getUri($json[1]), $json[2], $exclude, $eligible);
             break;
 
             default:

@@ -2,13 +2,13 @@
 
 #Ratchet
 
-A PHP 5.3 (PSR-0) component library for serving sockets and building socket based applications.
+A PHP 5.3 (PSR-0) library for serving WebSockets and building socket based applications.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components. 
 
 ##WebSockets
 
-* Supports the RFC6455, HyBi-10, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 18 - 16, Firefox 6 - 8, Safari 5, iOS 4.2, iOS 5
+* Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
+* Tested on Chrome 18 - 16, Firefox 6 - 9, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 
@@ -31,7 +31,7 @@ See https://github.com/cboden/Ratchet-examples for some out-of-the-box working d
 
 ```php
 <?php
-use Ratchet\MessageInterface;
+use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
@@ -40,7 +40,7 @@ use Ratchet\WebSocket\WsServer;
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements MessageInterface {
+class Chat implements MessageComponentInterface {
     protected $clients;
 
     public function __construct() {

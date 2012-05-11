@@ -18,7 +18,7 @@ class WampComponent implements WampServerInterface {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onPublish(ConnectionInterface $conn, $uri, $event) {
+    public function onPublish(ConnectionInterface $conn, $uri, $event, $exclude, $eligible) {
         $this->last[__FUNCTION__] = func_get_args();
     }
 

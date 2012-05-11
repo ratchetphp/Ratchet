@@ -38,5 +38,5 @@ interface WampServerInterface extends ComponentInterface {
      * @param ...
      * @param string
      */
-    function onPublish(ConnectionInterface $conn, $uri, $event);
+    function onPublish(ConnectionInterface $conn, $uri, $event, $exclude, $eligible);
 }
