@@ -1,11 +1,6 @@
 {
-    "hash": "ce8ef8ec0b9f8fb32084fda8290120f7",
+    "hash": "b7d2ee4e3fd11f2e9c862b6b2ca2372f",
     "packages": [
-        {
-            "package": "cboden/react",
-            "version": "dev-master",
-            "source-reference": "ratchet"
-        },
         {
             "package": "evenement/evenement",
             "version": "dev-master",
@@ -16,6 +11,23 @@
             "version": "v2.5.0"
         },
         {
+            "package": "react/event-loop",
+            "version": "dev-master",
+            "source-reference": "e9850fe37b04a34cb4d6b59861d3a6c680fb1aa1"
+        },
+        {
+            "package": "react/socket",
+            "version": "dev-master",
+            "source-reference": "a2b7d74eef48f9fec44bf727d19b0385101b62a2"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source-reference": "0c1ae4898196f5e96b79028d8d2f35de4b584659",
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
             "source-reference": "0c1ae4898196f5e96b79028d8d2f35de4b584659"
@@ -24,7 +36,13 @@
             "package": "symfony/http-foundation",
             "version": "dev-master",
             "source-reference": "54c22f4bf8625303503a117dcc68544d3f8ac876",
-            "alias": "2.1.9999999.9999999-dev"
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/http-foundation",
+            "version": "dev-master",
+            "source-reference": "54c22f4bf8625303503a117dcc68544d3f8ac876"
         }
     ],
     "packages-dev": null,
