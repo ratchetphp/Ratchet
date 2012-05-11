@@ -75,11 +75,19 @@ class IoServer {
     }
 
     public function handleData($data, $conn) {
-        $this->app->onMessage($conn->decor, $data);
+        try {
+            $this->app->onMessage($conn->decor, $data);
+        } catch (\Exception $e) {
+            $this->handleError($e, $conn);
+        }
     }
 
     public function handleEnd($conn) {
-        $this->app->onClose($conn->decor);
+        try {
+            $this->app->onClose($conn->decor);
+        } catch (\Exception $e) {
+            $this->handleError($e, $conn);
+        }
     }
 
     public function handleError(\Exception $e, $conn) {
