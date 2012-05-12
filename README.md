@@ -5,7 +5,7 @@
 A PHP 5.3 (PSR-0) library for serving WebSockets and building socket based applications.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components. 
 
-##WebSockets
+##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
 * Tested on Chrome 18 - 16, Firefox 6 - 9, Safari 5, iOS 4.2, iOS 5
@@ -73,4 +73,4 @@ class Chat implements MessageComponentInterface {
     $server->run();
 ```
 
-    # php chat.php
+    $ php chat.php

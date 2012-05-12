@@ -6,7 +6,6 @@ use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
-use React\EventLoop\StreamSelectLoop;
 
 /**
  * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
@@ -45,16 +44,12 @@ class IoServer {
     }
 
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
-        // Enable this after we fix a bug with libevent
-        // $loop   = LoopFactory::create();
-
-        $loop = new StreamSelectLoop;
+        $loop   = LoopFactory::create();
 
         $socket = new Reactor($loop);
         $socket->listen($port, $address);
-        $server = new static($component, $socket, $loop);
 
-        return $server;
+        return new static($component, $socket, $loop);
     }
 
     public function run() {
@@ -65,7 +60,7 @@ class IoServer {
         $conn->decor = new IoConnection($conn, $this);
 
         $conn->decor->resourceId    = (int)$conn->socket;
-        $conn->decor->remoteAddress = '127.0.0.1'; // todo
+        $conn->decor->remoteAddress = $conn->getRemoteAddress();
 
         $this->app->onOpen($conn->decor);
 
