@@ -33,18 +33,9 @@
             "source-reference": "0b58a4019befc0bd038bc0ec0165101d5dd31754"
         },
         {
-            "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "source-reference": "0c1ae4898196f5e96b79028d8d2f35de4b584659",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "54c22f4bf8625303503a117dcc68544d3f8ac876",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
+            "source-reference": "cf8e8324c68ce584525502702866485f17f1c8a5"
         },
         {
             "package": "symfony/http-foundation",
@@ -52,11 +43,6 @@
             "source-reference": "cf8e8324c68ce584525502702866485f17f1c8a5",
             "alias-pretty-version": "2.1.x-dev",
             "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "source-reference": "cf8e8324c68ce584525502702866485f17f1c8a5"
         }
     ],
     "packages-dev": null,
