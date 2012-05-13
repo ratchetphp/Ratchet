@@ -15,7 +15,7 @@ use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
 class WsServer implements MessageComponentInterface {
     /**
      * Decorated component
-     * @var Ratchet\MessageComponentInterface
+     * @var Ratchet\MessageComponentInterface|WsServerInterface
      */
     protected $_decorating;
 
@@ -41,8 +41,17 @@ class WsServer implements MessageComponentInterface {
      * @deprecated
      * @temporary
      */
-    public $accepted_subprotocols = array();
+    protected $acceptedSubProtocols = array();
 
+    /**
+     * Flag if we have checked the decorated component for sub-protocols
+     * @var boolean
+     */
+    private $isSpGenerated = false;
+
+    /**
+     * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
+     */
     public function __construct(MessageComponentInterface $component) {
         $this->_decorating = $component;
         $this->connections = new \SplObjectStorage;
@@ -77,19 +86,10 @@ class WsServer implements MessageComponentInterface {
             $response = $from->WebSocket->version->handshake($from->WebSocket->headers);
             $from->WebSocket->handshake = true;
 
-            // This block is to be moved/changed later
-            $agreed_protocols    = array();
-            $requested_protocols = $from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',');
-            if (null !== $requested_protocols) {
-                foreach ($this->accepted_subprotocols as $sub_protocol) {
-                    if (false !== $requested_protocols->hasValue($sub_protocol)) {
-                        $agreed_protocols[] = $sub_protocol;
-                    }
-                }
+            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->headers->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
+                $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
             }
-            if (count($agreed_protocols) > 0) {
-                $response->setHeader('Sec-WebSocket-Protocol', implode(',', $agreed_protocols));
-            }
+
             $response->setHeader('X-Powered-By', \Ratchet\VERSION);
             $header = (string)$response;
 
@@ -203,6 +203,42 @@ class WsServer implements MessageComponentInterface {
         }
 
         return true;
+    }
+
+    /**
+     * @param string
+     * @return boolean
+     */
+    public function isSubProtocolSupported($name) {
+        if (!$this->isSpGenerated) {
+            if ($this->_decorating instanceof WsServerInterface) {
+                $this->acceptedSubProtocols = array_flip($this->_decorating->getSubProtocols());
+            }
+
+            $this->isSpGenerated = true;
+        }
+
+        return array_key_exists($name, $this->acceptedSubProtocols);
+    }
+
+    /**
+     * @param Traversable
+     * @return string
+     */
+    protected function getSubProtocolString(\Traversable $requested = null) {
+        if (null === $requested) {
+            return '';
+        }
+
+        $string = '';
+
+        foreach ($requested as $sub) {
+            if ($this->isSubProtocolSupported($sub)) {
+                $string .= $sub . ',';
+            }
+        }
+
+        return substr($string, 0, -1);
     }
 
     /**

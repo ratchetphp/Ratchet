@@ -1,16 +1,11 @@
 <?php
 namespace Ratchet\WebSocket;
-use Ratchet\MessageComponentInterface;
 
-interface WsServerInterface extends MessageComponentInterface {
+interface WsServerInterface {
     /**
-     * Currently instead of this, I'm setting header in the Connection object passed around...not sure which I like more
-     * @param string
+     * If any component in a stack supports a WebSocket sub-protocol return each supported in an array
+     * @return array
+     * @temporary This method may be removed in future version (note tha twill not break code, just make some code obsolete)
      */
-    //function setHeaders($headers);
-
-    /**
-     * @return string
-     */
-    function getSubProtocol();
+    function getSubProtocols();
 }

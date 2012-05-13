@@ -1,14 +1,14 @@
 <?php
 namespace Ratchet\Tests\Mock;
 use Ratchet\MessageComponentInterface;
+use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\Tests\Mock\Socket as MockSocket;
 use Ratchet\ConnectionInterface;
 
-/**
- * @todo Rename to MessageComponent
- */
-class Component implements MessageComponentInterface {
+class Component implements MessageComponentInterface, WsServerInterface {
     public $last = array();
+
+    public $protocols = array();
 
     public function __construct(ComponentInterface $app = null) {
         $this->last[__FUNCTION__] = func_get_args();
@@ -28,5 +28,9 @@ class Component implements MessageComponentInterface {
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
         $this->last[__FUNCTION__] = func_get_args();
+    }
+
+    public function getSubProtocols() {
+        return $this->protocols;
     }
 }

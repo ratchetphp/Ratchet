@@ -6,7 +6,6 @@ use Ratchet\ConnectionInterface;
 /**
  * A (not literal) extension of Ratchet\ConnectionInterface
  * onMessage is replaced by various types of messages for this protocol (pub/sub or rpc)
- * @todo Thought: URI as class.  Class has short and long version stored (if as prefix)
  */
 interface WampServerInterface extends ComponentInterface {
     /**

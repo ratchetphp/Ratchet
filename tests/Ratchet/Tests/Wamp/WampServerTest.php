@@ -203,4 +203,14 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
         $this->_comp->onOpen($conn);
         $this->_comp->onMessage($conn, 'Hello World!');
     }
+
+    public function testGetSubProtocolsReturnsArray() {
+        $this->assertTrue(is_array($this->_comp->getSubProtocols()));
+    }
+
+    public function testGetSubProtocolsGetFromApp() {
+        $this->_app->protocols = array('hello', 'world');
+
+        $this->assertGreaterThanOrEqual(3, count($this->_comp->getSubProtocols()));
+    }
 }

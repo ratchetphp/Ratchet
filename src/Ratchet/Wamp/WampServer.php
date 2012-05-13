@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Wamp;
+use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\ConnectionInterface;
 
@@ -23,7 +24,7 @@ use Ratchet\ConnectionInterface;
  * | EVENT        | 8  | Server-to-Client |
  * +--------------+----+------------------+
  */
-class WampServer implements WsServerInterface {
+class WampServer implements MessageComponentInterface, WsServerInterface {
     const MSG_WELCOME     = 0;
     const MSG_PREFIX      = 1;
     const MSG_CALL        = 2;
@@ -55,8 +56,15 @@ class WampServer implements WsServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function getSubProtocol() {
-        return 'wamp';
+    public function getSubProtocols() {
+        if ($this->_decorating instanceof WsServerInterface) {
+            $subs = $this->_decorating->getSubProtocols();
+            $subs[] = 'wamp';
+
+            return $subs;
+        } else {
+            return array('wamp');
+        }
     }
 
     /**
@@ -70,7 +78,7 @@ class WampServer implements WsServerInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      * @throws Exception
      * @throws JsonException
      */

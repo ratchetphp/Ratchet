@@ -107,4 +107,19 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($conns[2], $mock->last['onError'][0]);
         $this->assertEquals($e, $mock->last['onError'][1]);
     }
+
+    public function testGetSubProtocolsReturnsArray() {
+        $mock = new MockComponent;
+        $comp = new SessionProvider($mock, new NullSessionHandler);
+
+        $this->assertTrue(is_array($comp->getSubProtocols()));
+    }
+
+    public function testGetSubProtocolsGetFromApp() {
+        $mock = new MockComponent;
+        $mock->protocols = array('hello', 'world');
+        $comp = new SessionProvider($mock, new NullSessionHandler);
+
+        $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
+    }
 }
