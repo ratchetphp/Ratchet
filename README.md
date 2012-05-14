@@ -8,7 +8,7 @@ Build up your application through simple interfaces and re-use your application 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 18 - 16, Firefox 6 - 9, Safari 5, iOS 4.2, iOS 5
+* Tested on Chrome 18 - 16, Firefox 6 - 12, Safari 5, iOS 4.2, iOS 5
 
 ##Requirements
 

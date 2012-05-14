@@ -5,6 +5,7 @@
   , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
   , "website": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
+  , "version": "0.1.1"
   , "license": "MIT"
   , "authors": [
         {
@@ -17,7 +18,6 @@
         "psr-0": {
             "Ratchet\\Tests": "tests"
           , "Ratchet": "src"
-          , "React": "vendor/cboden/react/src"
         }
     }
   , "require": {

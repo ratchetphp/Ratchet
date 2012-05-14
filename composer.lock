@@ -1,5 +1,5 @@
 {
-    "hash": "6651c947d3ce090d73c14dfff3877944",
+    "hash": "98d06d4d9572c1ec0076a166377adc17",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -48,5 +48,9 @@
     "packages-dev": null,
     "aliases": [
 
-    ]
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "react/socket": 20
+    }
 }
