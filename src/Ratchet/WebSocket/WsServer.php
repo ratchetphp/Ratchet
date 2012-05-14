@@ -113,7 +113,7 @@ class WsServer implements MessageComponentInterface {
         $from->WebSocket->frame->addBuffer($msg);
         if ($from->WebSocket->frame->isCoalesced()) {
             if ($from->WebSocket->frame->getOpcode() > 2) {
-                $from->end();
+                $from->close();
                 throw new \UnexpectedValueException('Control frame support coming soon!');
             }
             // Check frame
