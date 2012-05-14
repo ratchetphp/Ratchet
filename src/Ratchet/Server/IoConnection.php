@@ -33,7 +33,7 @@ class IoConnection implements ConnectionInterface {
      * {@inheritdoc}
      */
     public function close() {
-        $this->server->onClose($this);
+//        $this->server->handleEnd($this);
         $this->conn->end();
     }
 }
