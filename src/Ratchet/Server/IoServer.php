@@ -33,6 +33,10 @@ class IoServer {
      * @param React\EventLoop\LoopInterface The React looper to run the Ratchet application off of
      */
     public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop) {
+        gc_enable();
+        set_time_limit(0);
+        ob_implicit_flush();
+
         $this->loop = $loop;
         $this->app  = $app;
 

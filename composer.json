@@ -5,7 +5,6 @@
   , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
   , "website": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
-  , "version": "0.1.1"
   , "license": "MIT"
   , "authors": [
         {
