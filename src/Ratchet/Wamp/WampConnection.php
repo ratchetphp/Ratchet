@@ -34,8 +34,8 @@ class WampConnection extends AbstractConnectionDecorator {
      * @param string A developer-oriented description of the error
      * @param string|null An optional human readable detail message to send back
      */
-    public function callError($id, $uri, $desc = '', $details = null) {
-        $data = array(WAMP::MSG_CALL_ERROR, $id, $uri, $desc);
+    public function callError($id, $topic, $desc = '', $details = null) {
+        $data = array(WAMP::MSG_CALL_ERROR, $id, $topic, $desc);
 
         if (null !== $details) {
             $data[] = $details;
@@ -45,11 +45,11 @@ class WampConnection extends AbstractConnectionDecorator {
     }
 
     /**
-     * @param string The URI or CURIE to broadcast to
+     * @param string The topic to broadcast to
      * @param mixed Data to send with the event.  Anything that is json'able
      */
-    public function event($uri, $msg) {
-        $this->send(json_encode(array(WAMP::MSG_EVENT, $uri, $msg)));
+    public function event($topic, $msg) {
+        $this->send(json_encode(array(WAMP::MSG_EVENT, $topic, $msg)));
     }
 
     /**
@@ -67,7 +67,7 @@ class WampConnection extends AbstractConnectionDecorator {
      * @return string
      */
     public function getUri($uri) {
-        return (isset($this->WAMP->prefixes[$uri]) ? $this->WAMP->prefixes[$uri] : $uri);
+        return (array_key_exists($uri, $this->WAMP->prefixes) ? $this->WAMP->prefixes[$uri] : $uri);
     }
 
     /**

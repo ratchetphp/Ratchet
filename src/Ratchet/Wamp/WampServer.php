@@ -116,7 +116,15 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
 
             case static::MSG_PUBLISH:
                 $exclude  = (array_key_exists(3, $json) ? $json[3] : null);
-                $eligible = (array_key_exists(4, $json) ? $json[4] : null);
+                if (!is_array($exclude)) {
+                    if (true === (boolean)$exclude) {
+                        $exclude = array($from->WAMP->sessionId);
+                    } else {
+                        $exclude = array();
+                    }
+                }
+
+                $eligible = (array_key_exists(4, $json) ? $json[4] : array());
 
                 $this->_decorating->onPublish($from, $from->getUri($json[1]), $json[2], $exclude, $eligible);
             break;

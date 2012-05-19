@@ -118,16 +118,43 @@ class WampServerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($paramNum, count($this->_app->last['onCall'][3]));
     }
 
-    public function publishProvider() {
-        return array(
-        );
+    public function testPublish() {
+        $conn = $this->newConn();
+
+        $topic = 'pubsubhubbub';
+        $event = 'Here I am, publishing data';
+
+        $clientMessage = array(7, $topic, $event);
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode($clientMessage));
+
+        $this->assertEquals($topic, $this->_app->last['onPublish'][1]);
+        $this->assertEquals($event, $this->_app->last['onPublish'][2]);
+        $this->assertEquals(array(), $this->_app->last['onPublish'][3]);
+        $this->assertEquals(array(), $this->_app->last['onPublish'][4]);
     }
 
-    /**
-     * @dataProvider publishProvider
-     */
-    public function TODOtestPublish() {
-        
+    public function testPublishAndExcludeMe() {
+        $conn = $this->newConn();
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode(array(7, 'topic', 'event', true)));
+
+        $this->assertEquals($conn->WAMP->sessionId, $this->_app->last['onPublish'][3][0]);
+    }
+
+    public function testPublishAndEligible() {
+        $conn = $this->newConn();
+
+        $buddy  = uniqid();
+        $friend = uniqid();
+
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, json_encode(array(7, 'topic', 'event', false, array($buddy, $friend))));
+
+        $this->assertEquals(array(), $this->_app->last['onPublish'][3]);
+        $this->assertEquals(2, count($this->_app->last['onPublish'][4]));
     }
 
     public function eventProvider() {

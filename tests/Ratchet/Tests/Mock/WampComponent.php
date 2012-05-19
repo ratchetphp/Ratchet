@@ -17,15 +17,15 @@ class WampComponent implements WampServerInterface, WsServerInterface {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onSubscribe(ConnectionInterface $conn, $uri) {
+    public function onSubscribe(ConnectionInterface $conn, $topic) {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onUnSubscribe(ConnectionInterface $conn, $uri) {
+    public function onUnSubscribe(ConnectionInterface $conn, $topic) {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onPublish(ConnectionInterface $conn, $uri, $event, $exclude, $eligible) {
+    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array()) {
         $this->last[__FUNCTION__] = func_get_args();
     }
 

@@ -10,32 +10,34 @@ use Ratchet\ConnectionInterface;
 interface WampServerInterface extends ComponentInterface {
     /**
      * An RPC call has been received
-     * @param Ratchet\Connection
-     * @param string
-     * @param ...
+     * @param Ratchet\ConnectionInterface
+     * @param string The unique ID of the RPC, required to respond to
+     * @param string The topic to execute the call against
      * @param array Call parameters received from the client
      */
-    function onCall(ConnectionInterface $conn, $id, $procURI, array $params);
+    function onCall(ConnectionInterface $conn, $id, $topic, array $params);
 
     /**
-     * A request to subscribe to a URI has been made
-     * @param Ratchet\Connection
-     * @param ...
+     * A request to subscribe to a topic has been made
+     * @param Ratchet\ConnectionInterface
+     * @param string The topic to subscribe to
      */
-    function onSubscribe(ConnectionInterface $conn, $uri);
+    function onSubscribe(ConnectionInterface $conn, $topic);
 
     /**
-     * A request to unsubscribe from a URI has been made
-     * @param Ratchet\Connection
-     * @param ...
+     * A request to unsubscribe from a topic has been made
+     * @param Ratchet\ConnectionInterface
+     * @param The topic to unsubscribe from
      */
-    function onUnSubscribe(ConnectionInterface $conn, $uri);
+    function onUnSubscribe(ConnectionInterface $conn, $topic);
 
     /**
      * A client is attempting to publish content to a subscribed connections on a URI
-     * @param Ratchet\Connection
-     * @param ...
-     * @param string
+     * @param Ratchet\ConnectionInterface
+     * @param The topic the user has attempted to publish to
+     * @param string Payload of the publish
+     * @param array A list of session IDs the message should be excluded from (blacklist)
+     * @param array A list of session Ids the message should be send to (whitelist)
      */
-    function onPublish(ConnectionInterface $conn, $uri, $event, $exclude, $eligible);
+    function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array());
 }
