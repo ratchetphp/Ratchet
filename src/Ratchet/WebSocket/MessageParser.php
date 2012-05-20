@@ -15,8 +15,9 @@ class MessageParser {
         $from->WebSocket->frame->addBuffer($data);
         if ($from->WebSocket->frame->isCoalesced()) {
             if ($from->WebSocket->frame->getOpcode() > 2) {
-                $from->close();
-                throw new \UnexpectedValueException('Control frame support coming soon!');
+                unset($from->WebSocket->frame);
+
+                return;
             }
             // Check frame
             // If is control frame, do your thing

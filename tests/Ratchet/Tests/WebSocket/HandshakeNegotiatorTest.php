@@ -22,10 +22,10 @@ class HandshakeNegotiatorTest extends \PHPUnit_Framework_TestCase {
         return array(
             array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n")
           , array(true,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n")
-          , array(false,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n1")
-          , array(false,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖")
+          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n1")
+          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖")
           , array(true,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖\r\n\r\n")
-          , array(false,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie\r\n")
+          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie\r\n")
         );
     }
 

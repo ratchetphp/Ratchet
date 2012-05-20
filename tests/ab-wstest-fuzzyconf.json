@@ -1,0 +1,11 @@
+
+{
+   "options": {"failByDrop": false},
+   "outdir": "../reports/ab",
+
+   "servers": [{"agent": "Ratchet/v0.2b", "url": "ws://localhost:8000", "options": {"version": 18}}],
+
+   "cases": ["*"],
+   "exclude-cases": ["9.*"],
+   "exclude-agent-cases": {}
+}
