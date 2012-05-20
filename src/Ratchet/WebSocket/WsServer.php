@@ -69,7 +69,7 @@ class WsServer implements MessageComponentInterface {
         // mb_internal_encoding('UTF-8');
 
         $this->handshaker = new HandshakeNegotiator;
-        $this->messager   = new MessageParser;
+        //$this->messager   = new MessageParser;
 
         $this->_decorating = $component;
         $this->connections = new \SplObjectStorage;
