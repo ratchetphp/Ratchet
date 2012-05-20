@@ -104,7 +104,7 @@ class HandshakeVerifier {
      * @todo The spec says we don't need to base64_decode - can I just check if the length is 24 and not decode?
      */
     public function verifyKey($val) {
-        return (16 === strlen(base64_decode((string)$val)));
+        return (16 === mb_strlen(base64_decode((string)$val), '8bit'));
     }
 
     /**
