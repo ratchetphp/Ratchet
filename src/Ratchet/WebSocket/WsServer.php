@@ -171,7 +171,6 @@ class WsServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-var_dump($e);
         if ($conn->WebSocket->established) {
             $this->_decorating->onError($this->connections[$conn], $e);
         } else {

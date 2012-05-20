@@ -40,8 +40,8 @@ class Hixie76 implements VersionInterface {
           , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host', true) . $request->getPath()
         );
 
-        $response = new Response('101', $headers, $body);
-        $response->setStatus('101', 'WebSocket Protocol Handshake');
+        $response = new Response(101, $headers, $body);
+        $response->setStatus(101, 'WebSocket Protocol Handshake');
 
         return $response;
     }
@@ -68,7 +68,7 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-        if (0 === substr_count($key, ' ')) {
+        if (0 === mb_substr_count($key, ' ', 'ASCII')) {
             return '';
         }
 

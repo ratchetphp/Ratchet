@@ -9,7 +9,7 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
     protected $_version;
 
     public function setUp() {
-        $this->_version = new Hixie76();
+        $this->_version = new Hixie76;
     }
 
     public function testClassImplementsVersionInterface() {
@@ -18,27 +18,13 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider HandshakeProvider
-     */
-    public function INCOMPLETEtestKeySigningForHandshake($key, $accept) {
-//        $this->assertEquals($accept, $this->_version->sign($key));
-    }
-
-    public static function HandshakeProvider() {
-        return array(
-            array('', '')
-          , array('', '')
-        );
-    }
-
-    /**
-     * @dataProvider KeyProvider
+     * @dataProvider keyProvider
      */
     public function testKeySigningForHandshake($accept, $key) {
         $this->assertEquals($accept, $this->_version->generateKeyNumber($key));
     }
 
-    public static function KeyProvider() {
+    public static function keyProvider() {
         return array(
             array(179922739, '17  9 G`ZD9   2 2b 7X 3 /r90')
           , array('', '17  9 G`ZD9   2 2b 7X 3 /r91')

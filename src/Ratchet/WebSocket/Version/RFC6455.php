@@ -4,7 +4,6 @@ use Ratchet\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
-
 /**
  * @link http://tools.ietf.org/html/rfc6455
  */
