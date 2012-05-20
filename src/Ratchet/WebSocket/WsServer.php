@@ -65,8 +65,7 @@ class WsServer implements MessageComponentInterface {
      * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
      */
     public function __construct(MessageComponentInterface $component) {
-        // This will be enabled shortly, causing problems
-        // mb_internal_encoding('UTF-8');
+        mb_internal_encoding('UTF-8');
 
         $this->handshaker = new HandshakeNegotiator;
         $this->messager   = new MessageParser;
