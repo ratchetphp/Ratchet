@@ -12,15 +12,18 @@ use Guzzle\Http\Message\Response;
  *     man-in-the-middle attack on 10%-15% of the people who saw their ad who had a browser (currently only Safari) supporting the Hixie76 protocol.
  *     This was exploited by taking advantage of proxy servers in front of the user who ignored some HTTP headers in the handshake
  * The Hixie76 is currently implemented by Safari
- * Handshake from Andrea Giammarchi (http://webreflection.blogspot.com/2010/06/websocket-handshake-76-simplified.html)
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
 class Hixie76 implements VersionInterface {
     /**
      * {@inheritdoc}
      */
-    public static function isProtocol(RequestInterface $request) {
+    public function isProtocol(RequestInterface $request) {
         return !(null === $request->getHeader('Sec-WebSocket-Key2', true));
+    }
+
+    public function getVersionNumber() {
+        return 0;
     }
 
     /**

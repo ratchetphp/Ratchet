@@ -3,10 +3,7 @@ namespace Ratchet\WebSocket\Version;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
- * Despite the version iterations of WebInterface the actions they go through are similar
- * This standardizes how the server handles communication with each protocol version
- * @todo Need better naming conventions...newMessage and newFrame are for reading incoming framed messages (action is unframing)
- *       The current method names suggest you could create a new message/frame to send, which they can not do
+ * A standard interface for interacting with the various version of the WebSocket protocol
  */
 interface VersionInterface {
     /**
@@ -15,15 +12,20 @@ interface VersionInterface {
      * @return bool
      * @throws UnderflowException If the protocol thinks the headers are still fragmented
      */
-    static function isProtocol(RequestInterface $request);
+    function isProtocol(RequestInterface $request);
+
+    /**
+     * Although the version has a name associated with it the integer returned is the proper identification
+     * @return int
+     */
+    function getVersionNumber();
 
     /**
      * Perform the handshake and return the response headers
      * @param Guzzle\Http\Message\RequestInterface
-     * @return array|string
+     * @return Guzzle\Http\Message\Response
      * @throws InvalidArgumentException If the HTTP handshake is mal-formed
      * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
-     * @todo Change param to accept a Guzzle RequestInterface object
      */
     function handshake(RequestInterface $request);
 
