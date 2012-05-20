@@ -3,12 +3,6 @@ namespace Ratchet\WebSocket\Version;
 
 interface FrameInterface {
     /**
-     * Dunno if I'll use this
-     * Thinking could be used if a control frame?
-     */
-//    function __invoke();
-
-    /**
      * @return bool
      */
     function isCoalesced();

@@ -32,10 +32,9 @@ class HandshakeVerifier {
      * Test the HTTP method.  MUST be "GET"
      * @param string
      * @return bool
-     * @todo Look into STD if "get" is valid (am I supposed to do case conversion?)
      */
     public function verifyMethod($val) {
-        return ('GET' === $val);
+        return ('get' === mb_strtolower($val, 'ASCII'));
     }
 
     /**
@@ -50,7 +49,6 @@ class HandshakeVerifier {
     /**
      * @param string
      * @return bool
-     * @todo Verify the logic here is correct
      */
     public function verifyRequestURI($val) {
         if ($val[0] != '/') {
@@ -80,7 +78,7 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyUpgradeRequest($val) {
-        return ('websocket' === $val);
+        return ('websocket' === mb_strtolower($val, 'ASCII'));
     }
 
     /**
@@ -89,12 +87,16 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyConnection($val) {
-        if ('Upgrade' === $val) {
+        $val = mb_strtolower($val, 'ASCII');
+
+        if ('upgrade' === $val) {
             return true;
         }
 
+        // todo change this to mb_eregi_replace
         $vals = explode(',', str_replace(', ', ',', $val));
-        return (false !== array_search('Upgrade', $vals));
+
+        return (false !== array_search('upgrade', $vals));
     }
 
     /**
