@@ -17,6 +17,7 @@ class WsServer implements MessageComponentInterface {
      * Negotiates upgrading the HTTP connection to a WebSocket connection
      * It contains useful configuration properties and methods
      * @var HandshakeNegotiator
+     * @note May not expose this in the future, may do through facade methods
      */
     public $handshaker;
 
@@ -35,18 +36,6 @@ class WsServer implements MessageComponentInterface {
      * @var MessageParser
      */
     protected $messager;
-
-    /**
-     * Re-entrant instances of protocol version classes
-     * @internal
-     */
-    protected $_versions = array(
-        'HyBi10'  => null
-      , 'Hixie76' => null
-      , 'RFC6455' => null
-    );
-
-    protected $_mask_payload = false;
 
     /**
      * For now, array_push accepted subprotocols to this array
@@ -177,6 +166,6 @@ class WsServer implements MessageComponentInterface {
             }
         }
 
-        return substr($string, 0, -1);
+        return mb_substr($string, 0, -1, 'ASCII');
     }
 }

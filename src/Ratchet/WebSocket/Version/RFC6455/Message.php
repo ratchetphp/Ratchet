@@ -35,7 +35,6 @@ class Message implements MessageInterface {
 
     /**
      * {@inheritdoc}
-     * @todo Should I allow addFrame if the frame is not coalesced yet?  I believe I'm assuming this class will only receive fully formed frame messages
      * @todo Also, I should perhaps check the type...control frames (ping/pong/close) are not to be considered part of a message
      */
     public function addFrame(FrameInterface $fragment) {
