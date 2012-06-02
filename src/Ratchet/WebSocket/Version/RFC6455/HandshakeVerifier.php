@@ -34,7 +34,7 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyMethod($val) {
-        return ('get' === mb_strtolower($val, 'ASCII'));
+        return ('get' === strtolower($val));
     }
 
     /**
@@ -59,7 +59,7 @@ class HandshakeVerifier {
             return false;
         }
 
-        return mb_check_encoding($val, 'ASCII');
+        return mb_check_encoding($val, 'US-ASCII');
     }
 
     /**
@@ -78,7 +78,7 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyUpgradeRequest($val) {
-        return ('websocket' === mb_strtolower($val, 'ASCII'));
+        return ('websocket' === strtolower($val));
     }
 
     /**
@@ -87,13 +87,12 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyConnection($val) {
-        $val = mb_strtolower($val, 'ASCII');
+        $val = strtolower($val);
 
         if ('upgrade' === $val) {
             return true;
         }
 
-        // todo change this to mb_eregi_replace
         $vals = explode(',', str_replace(', ', ',', $val));
 
         return (false !== array_search('upgrade', $vals));
@@ -104,9 +103,10 @@ class HandshakeVerifier {
      * @param string|null
      * @return bool
      * @todo The spec says we don't need to base64_decode - can I just check if the length is 24 and not decode?
+     * @todo Check the spec to see what the encoding of the key could be
      */
     public function verifyKey($val) {
-        return (16 === mb_strlen(base64_decode((string)$val), '8bit'));
+        return (16 === strlen(base64_decode((string)$val)));
     }
 
     /**

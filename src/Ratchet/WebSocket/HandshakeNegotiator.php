@@ -44,7 +44,7 @@ class HandshakeNegotiator {
     public function onData(WsConnection $conn, $data) {
         $conn->WebSocket->handshakeBuffer .= $data;
 
-        if (mb_strlen($conn->WebSocket->handshakeBuffer, '8bit') >= (int)$this->maxSize) {
+        if (strlen($conn->WebSocket->handshakeBuffer) >= (int)$this->maxSize) {
             return new Response(413, array('X-Powered-By' => \Ratchet\VERSION));
         }
 
@@ -59,7 +59,7 @@ class HandshakeNegotiator {
             }
 
             // TODO: confirm message is buffered
-            // Hixie requires the body to complete the handshake (6 characters long)
+            // Hixie requires the body to complete the handshake (6 characters long) - is that 6 ASCII or UTF-8 characters?
             // Update VersionInterface to check for this, ::canHandshake() maybe
             // return if can't, continue buffering
 

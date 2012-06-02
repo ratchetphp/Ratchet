@@ -48,7 +48,7 @@ class Frame implements FrameInterface {
         $buf = (string)$buf;
 
         $this->_data      .= $buf;
-        $this->_bytes_rec += mb_strlen($buf, '8bit');
+        $this->_bytes_rec += strlen($buf);
     }
 
     /**
@@ -59,7 +59,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
         }
 
-        $fbb = sprintf('%08b', ord(mb_substr($this->_data, 0, 1, '8bit')));
+        $fbb = sprintf('%08b', ord(substr($this->_data, 0, 1)));
         return (boolean)(int)$fbb[0];
     }
 
@@ -71,7 +71,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException("Not enough bytes received ({$this->_bytes_rec}) to determine if mask is set");
         }
 
-        return (boolean)bindec(mb_substr(sprintf('%08b', ord(mb_substr($this->_data, 1, 1, '8bit'))), 0, 1, '8bit'));
+        return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->_data, 1, 1))), 0, 1));
     }
 
     /**
@@ -82,7 +82,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
         }
 
-        return bindec(mb_substr(sprintf('%08b', ord(mb_substr($this->_data, 0, 1, '8bit'))), 4, 4, '8bit'));
+        return bindec(substr(sprintf('%08b', ord(substr($this->_data, 0, 1))), 4, 4));
     }
 
     /**
@@ -95,7 +95,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received');
         }
 
-        return ord(mb_substr($this->_data, 1, 1, '8bit')) & 127;
+        return ord(substr($this->_data, 1, 1)) & 127;
     }
 
     /**
@@ -152,6 +152,7 @@ class Frame implements FrameInterface {
 
         if ($length_check <= 125) {
             $this->_pay_len_def = $length_check;
+
             return $this->getPayloadLength();
         }
 
@@ -162,10 +163,11 @@ class Frame implements FrameInterface {
 
         $strings = array();
         for ($i = 2; $i < $byte_length + 1; $i++) {
-            $strings[] = ord(mb_substr($this->_data, $i, 1, '8bit'));
+            $strings[] = ord(substr($this->_data, $i, 1));
         }
 
         $this->_pay_len_def = bindec(vsprintf(str_repeat('%08b', $byte_length - 1), $strings));
+
         return $this->getPayloadLength();
     }
 
@@ -184,14 +186,14 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough data buffered to calculate the masking key');
         }
 
-        return mb_substr($this->_data, $start, $length, '8bit');
+        return substr($this->_data, $start, $length);
     }
 
     /**
      * {@inheritdoc}
      */
     public function getPayloadStartingByte() {
-        return 1 + $this->getNumPayloadBytes() + mb_strlen($this->getMaskingKey(), '8bit');
+        return 1 + $this->getNumPayloadBytes() + strlen($this->getMaskingKey());
     }
 
     /**
@@ -210,13 +212,14 @@ class Frame implements FrameInterface {
             $start = $this->getPayloadStartingByte();
 
             for ($i = 0; $i < $length; $i++) {
-                $payload .= mb_substr($this->_data, $i + $start, 1, '8bit') ^ mb_substr($mask, $i % 4, 1, '8bit');
+                // Double check the RFC - is the masking byte level or character level?
+                $payload .= substr($this->_data, $i + $start, 1) ^ substr($mask, $i % 4, 1);
             }
         } else {
-            $payload = mb_substr($this->_data, $start, $this->getPayloadLength(), '8bit');
+            $payload = substr($this->_data, $start, $this->getPayloadLength());
         }
 
-        if (mb_strlen($payload, '8bit') !== $length) {
+        if (strlen($payload) !== $length) {
             // Is this possible?  isCoalesced() math _should_ ensure if there is mal-formed data, it would return false
             throw new \UnexpectedValueException('Payload length does not match expected length');
         }

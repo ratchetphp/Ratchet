@@ -166,6 +166,6 @@ class WsServer implements MessageComponentInterface {
             }
         }
 
-        return mb_substr($string, 0, -1, 'ASCII');
+        return substr($string, 0, -1);
     }
 }

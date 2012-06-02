@@ -68,7 +68,7 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-        if (0 === mb_substr_count($key, ' ', 'ASCII')) {
+        if (0 === substr_count($key, ' ')) {
             return '';
         }
 
