@@ -3,11 +3,18 @@ namespace Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\FrameInterface;
 
 class Frame implements FrameInterface {
+    const OP_CONTINUE = 0;
+    const OP_TEXT     = 1;
+    const OP_BINARY   = 2;
+    const OP_CLOSE    = 8;
+    const OP_PING     = 9;
+    const OP_PONG     = 10;
+
     /**
      * The contents of the frame
      * @var string
      */
-    protected $_data = '';
+    public $data = '';
 
     /**
      * Number of bytes received from the frame
@@ -22,10 +29,66 @@ class Frame implements FrameInterface {
     protected $_pay_len_def = -1;
 
     /**
-     * Bit 9-15
-     * @var int
+     * @param string A valid UTF-8 string to send over the wire
+     * @param bool Is the final frame in a message
+     * @param int The opcode of the frame, see constants
+     * @param bool Mask the payload
+     * @return Frame
+     * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
+     * @throws BadMethodCallException If there is a problem with miss-matching parameters
+     * @throws LengthException If the payload is too big
      */
-    protected $_pay_check = -1;
+    public static function create($payload, $final = true, $opcode = 1, $mask = false) {
+        $frame = new static();
+
+        if (!mb_check_encoding($payload, 'UTF-8')) {
+            throw new \InvalidArgumentException("Payload is not a valid UTF-8 string");
+        }
+
+        if (false === (boolean)$final && $opcode !== static::OP_CONTINUE) {
+            throw new \BadMethodCallException("opcode MUST be 'continue' if the frame is not final");
+        }
+
+        $raw = (int)(boolean)$final . sprintf('%07b', (int)$opcode);
+
+        $plLen = strlen($payload);
+        if ($plLen <= 125) {
+            $raw .= sprintf('%08b', $plLen);
+        } elseif ($plLen <= 65535) {
+            $raw .= sprintf('%08b', 126) . sprintf('%016b', $plLen);
+        } else { // todo, make sure msg isn't longer than b1x71
+            $raw .= sprintf('%08b', 127) . sprintf('%064b', $plLen);
+        }
+
+        $frame->addBuffer(static::encode($raw) . $payload);
+
+        if ($mask) {
+            // create masking key
+            // insert it
+            // mask the payload
+        }
+
+        return $frame;
+    }
+
+    /**
+     * @param string of 1's and 0's
+     * @return string
+     */
+    public static function encode($in) {
+        if (strlen($in) > 8) {
+            $out = '';
+
+            while (strlen($in) >= 8) {
+                $out .= static::encode(substr($in, 0, 8));
+                $in   = substr($in, 8); 
+            }
+
+            return $out;
+        }
+
+        return chr(bindec($in));
+    }
 
     /**
      * {@inheritdoc}
@@ -38,7 +101,7 @@ class Frame implements FrameInterface {
             return false;
         }
 
-        return $payload_length + $payload_start === $this->_bytes_rec;        
+        return $this->_bytes_rec >= $payload_length + $payload_start;
     }
 
     /**
@@ -47,7 +110,7 @@ class Frame implements FrameInterface {
     public function addBuffer($buf) {
         $buf = (string)$buf;
 
-        $this->_data      .= $buf;
+        $this->data      .= $buf;
         $this->_bytes_rec += strlen($buf);
     }
 
@@ -59,7 +122,8 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->_data, 0, 1)));
+        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
+
         return (boolean)(int)$fbb[0];
     }
 
@@ -71,7 +135,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException("Not enough bytes received ({$this->_bytes_rec}) to determine if mask is set");
         }
 
-        return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->_data, 1, 1))), 0, 1));
+        return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->data, 1, 1))), 0, 1));
     }
 
     /**
@@ -82,7 +146,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
         }
 
-        return bindec(substr(sprintf('%08b', ord(substr($this->_data, 0, 1))), 4, 4));
+        return bindec(substr(sprintf('%08b', ord(substr($this->data, 0, 1))), 4, 4));
     }
 
     /**
@@ -95,7 +159,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received');
         }
 
-        return ord(substr($this->_data, 1, 1)) & 127;
+        return ord(substr($this->data, 1, 1)) & 127;
     }
 
     /**
@@ -163,7 +227,7 @@ class Frame implements FrameInterface {
 
         $strings = array();
         for ($i = 2; $i < $byte_length + 1; $i++) {
-            $strings[] = ord(substr($this->_data, $i, 1));
+            $strings[] = ord(substr($this->data, $i, 1));
         }
 
         $this->_pay_len_def = bindec(vsprintf(str_repeat('%08b', $byte_length - 1), $strings));
@@ -186,7 +250,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough data buffered to calculate the masking key');
         }
 
-        return substr($this->_data, $start, $length);
+        return substr($this->data, $start, $length);
     }
 
     /**
@@ -206,17 +270,17 @@ class Frame implements FrameInterface {
 
         $payload = '';
         $length  = $this->getPayloadLength();
+        $start   = $this->getPayloadStartingByte();
 
         if ($this->isMasked()) {
-            $mask  = $this->getMaskingKey();
-            $start = $this->getPayloadStartingByte();
+            $mask = $this->getMaskingKey();
 
             for ($i = 0; $i < $length; $i++) {
                 // Double check the RFC - is the masking byte level or character level?
-                $payload .= substr($this->_data, $i + $start, 1) ^ substr($mask, $i % 4, 1);
+                $payload .= substr($this->data, $i + $start, 1) ^ substr($mask, $i % 4, 1);
             }
         } else {
-            $payload = substr($this->_data, $start, $this->getPayloadLength());
+            $payload = substr($this->data, $start, $this->getPayloadLength());
         }
 
         if (strlen($payload) !== $length) {

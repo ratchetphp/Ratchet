@@ -77,6 +77,7 @@ class HandshakeNegotiator {
      * Determine if the message has been buffered as per the HTTP specification
      * @param string
      * @return boolean
+     * @todo Safari does not send 2xCRLF after the 6 byte body...this will always return false for Hixie
      */
     public function isEom($message) {
         return (static::EOM === substr($message, 0 - strlen(static::EOM)));

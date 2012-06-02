@@ -30,7 +30,7 @@ class WsConnection extends AbstractConnectionDecorator {
     }
 
     public function close() {
-        // send close frame
+        // send close frame with code 1000
 
         // ???
 
@@ -39,14 +39,9 @@ class WsConnection extends AbstractConnectionDecorator {
         $this->getConnection()->close(); // temporary
     }
 
-    public function ping() {
-    }
-
-    public function pong() {
-    }
-
     /**
      * @return boolean
+     * @internal
      */
     public function hasVersion() {
         return (null === $this->version);

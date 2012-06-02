@@ -73,6 +73,8 @@ class RFC6455 implements VersionInterface {
      * @return string
      */
     public function frame($message, $mask = true) {
+return RFC6455\Frame::create($message)->data;
+
         $payload = $message;
         $type    = 'text';
         $masked  = $mask;
