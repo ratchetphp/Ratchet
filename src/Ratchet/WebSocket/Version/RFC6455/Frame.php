@@ -10,6 +10,8 @@ class Frame implements FrameInterface {
     const OP_PING     = 9;
     const OP_PONG     = 10;
 
+    const MASK_LENGTH = 4;
+
     /**
      * The contents of the frame
      * @var string
@@ -37,7 +39,7 @@ class Frame implements FrameInterface {
      * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
      * @throws LengthException If the payload is too big
      */
-    public static function create($payload, $final = true, $opcode = 1, $mask = false) {
+    public static function create($payload, $final = true, $opcode = 1) {
         $frame = new static();
 
         if (!mb_check_encoding($payload, 'UTF-8')) {
@@ -56,12 +58,6 @@ class Frame implements FrameInterface {
         }
 
         $frame->addBuffer(static::encode($raw) . $payload);
-
-        if ($mask) {
-            // create masking key
-            // insert it
-            // mask the payload
-        }
 
         return $frame;
     }
@@ -132,6 +128,107 @@ class Frame implements FrameInterface {
         }
 
         return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->data, 1, 1))), 0, 1));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMaskingKey() {
+        if (!$this->isMasked()) {
+            return '';
+        }
+
+        $start  = 1 + $this->getNumPayloadBytes();
+
+        if ($this->_bytes_rec < $start + static::MASK_LENGTH) {
+            throw new \UnderflowException('Not enough data buffered to calculate the masking key');
+        }
+
+        return substr($this->data, $start, static::MASK_LENGTH);
+    }
+
+    /**
+     * @return string
+     */
+    public function generateMaskingKey() {
+        $mask = '';
+
+        for ($i = 1; $i <= static::MASK_LENGTH; $i++) {
+            $mask .= sprintf("%c", rand(32, 126));
+        }
+
+        return $mask;
+    }
+
+    /**
+     * Apply a mask to the payload
+     * @param string|null
+     * @throws InvalidArgumentException If there is an issue with the given masking key
+     * @throws UnderflowException If the frame is not coalesced
+     */
+    public function maskPayload($maskingKey = null) {
+        if (null === $maskingKey) {
+            $maskingKey = $this->generateMaskingKey();
+        }
+
+        if (static::MASK_LENGTH !== strlen($maskingKey)) {
+            throw new \InvalidArgumentException("Masking key must be " . static::MASK_LENGTH ." characters");
+        }
+
+        if (!mb_check_encoding($maskingKey, 'US-ASCII')) {
+            throw new \InvalidArgumentException("Masking key MUST be ASCII");
+        }
+
+        if (!$this->isCoalesced()) {
+            throw new \UnderflowException('Frame must be coalesced to apply a mask');
+        }
+
+        if ($this->isMasked()) {
+            $this->unMaskPayload();
+        }
+
+        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+
+        $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '1', 0, 1)), 1, 1);
+        $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
+
+        $this->_bytes_rec += static::MASK_LENGTH;
+
+        $plLen    = $this->getPayloadLength();
+        $start    = $this->getPayloadStartingByte();
+        $maskedPl = '';
+
+        for ($i = 0; $i < $plLen; $i++) {
+            $maskedPl .= substr($this->data, $i + $start, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
+        }
+
+        $this->data = substr_replace($this->data, $maskedPl, $start, $plLen);
+
+        return $this;
+    }
+
+    /**
+     * Remove a mask from the payload
+     * @throws UnderFlowException If the frame is not coalesced
+     * @return Frame
+     */
+    public function unMaskPayload() {
+        if (!$this->isMasked()) {
+            return $this;
+        }
+
+        if (!$this->isCoalesced()) {
+            throw new \UnderflowException('Frame must be coalesced to apply a mask');
+        }
+
+        $maskingKey = $this->getMaskingKey();
+
+        // set the indicator bit to 0
+        // remove the masking key
+        // get the masking key
+        // unmask the payload
+
+        return $this;
     }
 
     /**
@@ -234,24 +331,6 @@ class Frame implements FrameInterface {
     /**
      * {@inheritdoc}
      */
-    public function getMaskingKey() {
-        if (!$this->isMasked()) {
-            return '';
-        }
-
-        $length = 4;
-        $start  = 1 + $this->getNumPayloadBytes();
-
-        if ($this->_bytes_rec < $start + $length) {
-            throw new \UnderflowException('Not enough data buffered to calculate the masking key');
-        }
-
-        return substr($this->data, $start, $length);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getPayloadStartingByte() {
         return 1 + $this->getNumPayloadBytes() + strlen($this->getMaskingKey());
     }
@@ -273,7 +352,7 @@ class Frame implements FrameInterface {
 
             for ($i = 0; $i < $length; $i++) {
                 // Double check the RFC - is the masking byte level or character level?
-                $payload .= substr($this->data, $i + $start, 1) ^ substr($mask, $i % 4, 1);
+                $payload .= substr($this->data, $i + $start, 1) ^ substr($mask, $i % static::MASK_LENGTH, 1);
             }
         } else {
             $payload = substr($this->data, $start, $this->getPayloadLength());
@@ -286,6 +365,7 @@ class Frame implements FrameInterface {
 
         return $payload;
     }
+
     /**
      * Sometimes clients will concatinate more than one frame over the wire
      * This method will take the extra bytes off the end and return them

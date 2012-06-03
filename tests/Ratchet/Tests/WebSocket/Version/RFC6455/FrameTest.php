@@ -298,6 +298,14 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($string, $frame->getPayload());
     }
 
+    public function testMasking() {
+        $msg   = 'The quick brown fox jumps over the lazy dog.';
+        $frame = Frame::create($msg)->maskPayload();
+
+        $this->assertTrue($frame->isMasked());
+        $this->assertEquals($msg, $frame->getPayload());
+    }
+
     protected function generateRandomString($length = 10, $addSpaces = true, $addNumbers = true) {
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"$%&/()=[]{}'; // ยง
 

@@ -14,6 +14,9 @@ class MessageParser {
 
         $from->WebSocket->frame->addBuffer($data);
         if ($from->WebSocket->frame->isCoalesced()) {
+            // check if masked
+            // close if not
+
             if ($from->WebSocket->frame->getOpcode() > 2) {
                 // take action on the control frame
 
