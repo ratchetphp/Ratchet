@@ -179,13 +179,7 @@ class Frame implements FrameInterface {
             throw new \InvalidArgumentException("Masking key MUST be ASCII");
         }
 
-        if (!$this->isCoalesced()) {
-            throw new \UnderflowException('Frame must be coalesced to apply a mask');
-        }
-
-        if ($this->isMasked()) {
-            $this->unMaskPayload();
-        }
+        $this->unMaskPayload();
 
         $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
 
@@ -193,16 +187,7 @@ class Frame implements FrameInterface {
         $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
 
         $this->_bytes_rec += static::MASK_LENGTH;
-
-        $plLen    = $this->getPayloadLength();
-        $start    = $this->getPayloadStartingByte();
-        $maskedPl = '';
-
-        for ($i = 0; $i < $plLen; $i++) {
-            $maskedPl .= substr($this->data, $i + $start, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
-        }
-
-        $this->data = substr_replace($this->data, $maskedPl, $start, $plLen);
+        $this->data        = substr_replace($this->data, $this->applyMaskToPayload($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
 
         return $this;
     }
@@ -217,18 +202,33 @@ class Frame implements FrameInterface {
             return $this;
         }
 
+        $maskingKey = $this->getMaskingKey();
+
+        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+
+        $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '0', 0, 1)), 1, 1);
+        $this->data = substr_replace($this->data, '', $this->getNumPayloadBytes() + 1, static::MASK_LENGTH);
+
+        $this->_bytes_rec -= static::MASK_LENGTH;
+        $this->data        = substr_replace($this->data, $this->applyMaskToPayload($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
+
+        return $this;
+    }
+
+    protected function applyMaskToPayload($maskingKey) {
         if (!$this->isCoalesced()) {
             throw new \UnderflowException('Frame must be coalesced to apply a mask');
         }
 
-        $maskingKey = $this->getMaskingKey();
+        $plLen   = $this->getPayloadLength();
+        $start   = $this->getPayloadStartingByte();
+        $applied = '';
 
-        // set the indicator bit to 0
-        // remove the masking key
-        // get the masking key
-        // unmask the payload
+        for ($i = 0; $i < $plLen; $i++) {
+            $applied .= substr($this->data, $i + $start, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
+        }
 
-        return $this;
+        return $applied;
     }
 
     /**
@@ -343,17 +343,11 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Can not return partial message');
         }
 
-        $payload = '';
         $length  = $this->getPayloadLength();
         $start   = $this->getPayloadStartingByte();
 
         if ($this->isMasked()) {
-            $mask = $this->getMaskingKey();
-
-            for ($i = 0; $i < $length; $i++) {
-                // Double check the RFC - is the masking byte level or character level?
-                $payload .= substr($this->data, $i + $start, 1) ^ substr($mask, $i % static::MASK_LENGTH, 1);
-            }
+            $payload = $this->applyMaskToPayload($this->getMaskingKey());
         } else {
             $payload = substr($this->data, $start, $this->getPayloadLength());
         }

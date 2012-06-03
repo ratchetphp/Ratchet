@@ -306,6 +306,14 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($msg, $frame->getPayload());
     }
 
+    public function testUnMaskPayload() {
+        $string = $this->generateRandomString();
+        $frame  = Frame::create($string)->maskPayload()->unMaskPayload();
+
+        $this->assertFalse($frame->isMasked());
+        $this->assertEquals($string, $frame->getPayload());
+    }
+
     protected function generateRandomString($length = 10, $addSpaces = true, $addNumbers = true) {
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"$%&/()=[]{}'; // ยง
 
