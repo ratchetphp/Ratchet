@@ -241,8 +241,6 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider UnframeMessageProvider
      */
     public function testCheckPiecingTogetherMessage($msg, $encoded) {
-//        return $this->markTestIncomplete('Ran out of time, had to attend to something else, come finish me!');
-
         $framed = base64_decode($encoded);
         for ($i = 0, $len = strlen($framed);$i < $len; $i++) {
             $this->_frame->addBuffer(substr($framed, $i, 1));
@@ -263,6 +261,34 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($frame->isMasked());
         $this->assertEquals($len, $frame->getPayloadLength());
         $this->assertEquals($pl, $frame->getPayload());
+    }
+
+    public function testExtractOverflow() {
+        $string1 = $this->generateRandomString();
+        $frame1  = Frame::create($string1);
+
+        $string2 = $this->generateRandomString();
+        $frame2  = Frame::create($string2);
+
+        $cat = new Frame;
+        $cat->addBuffer($frame1->data . $frame2->data);
+
+        $this->assertEquals($string1, $cat->getPayload());
+
+        $uncat = new Frame;
+        $uncat->addBuffer($cat->extractOverflow());
+
+        $this->assertEquals($string1, $cat->getPayload());
+        $this->assertEquals($string2, $uncat->getPayload());
+    }
+
+    public function testEmptyExtractOverflow() {
+        $string = $this->generateRandomString();
+        $frame  = Frame::create($string);
+
+        $this->assertEquals($string, $frame->getPayload());
+        $this->assertEquals('', $frame->extractOverflow());
+        $this->assertEquals($string, $frame->getPayload());
     }
 
     protected function generateRandomString($length = 10, $addSpaces = true, $addNumbers = true) {

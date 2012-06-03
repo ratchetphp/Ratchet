@@ -72,6 +72,7 @@ class Frame implements FrameInterface {
     }
 
     /**
+     * Encode the fake binary string to send over the wire
      * @param string of 1's and 0's
      * @return string
      */
@@ -110,7 +111,7 @@ class Frame implements FrameInterface {
     public function addBuffer($buf) {
         $buf = (string)$buf;
 
-        $this->data      .= $buf;
+        $this->data       .= $buf;
         $this->_bytes_rec += strlen($buf);
     }
 
@@ -289,5 +290,26 @@ class Frame implements FrameInterface {
         }
 
         return $payload;
+    }
+    /**
+     * Sometimes clients will concatinate more than one frame over the wire
+     * This method will take the extra bytes off the end and return them
+     * @todo Consider returning new Frame
+     * @return string
+     */
+    public function extractOverflow() {
+        if ($this->isCoalesced()) {
+            $endPoint  = $this->getPayloadLength();
+            $endPoint += $this->getPayloadStartingByte();
+
+            if ($this->_bytes_rec > $endPoint) {
+                $overflow   = substr($this->data, $endPoint);
+                $this->data = substr($this->data, 0, $endPoint);
+
+                return $overflow;
+            }
+        }
+
+        return '';
     }
 }
