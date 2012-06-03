@@ -39,6 +39,8 @@ class Message implements MessageInterface {
      */
     public function addFrame(FrameInterface $fragment) {
         $this->_frames->push($fragment);
+
+        return $this;
     }
 
     /**
@@ -62,6 +64,7 @@ class Message implements MessageInterface {
             try {
                 $len += $frame->getPayloadLength();
             } catch (\UnderflowException $e) {
+                // Not an error, want the current amount buffered
             }
         }
 
@@ -73,7 +76,7 @@ class Message implements MessageInterface {
      */
     public function getPayload() {
         if (!$this->isCoalesced()) {
-            throw new \UnderflowMessage('Message has not been put back together yet');
+            throw new \UnderflowException('Message has not been put back together yet');
         }
 
         $buffer = '';

@@ -249,9 +249,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($msg, $this->_frame->getPayload());
     }
 
-    public function testCreate() {
+    public function testLongCreate() {
         $len = 65525;
-        $len = 65575;
         $pl  = $this->generateRandomString($len);
 
         $frame = Frame::create($pl, true, Frame::OP_PING);
@@ -261,6 +260,14 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($frame->isMasked());
         $this->assertEquals($len, $frame->getPayloadLength());
         $this->assertEquals($pl, $frame->getPayload());
+    }
+
+    public function testReallyLongCreate() {
+        $len = 65575;
+
+        $frame = Frame::create($this->generateRandomString($len));
+
+        $this->assertEquals($len, $frame->getPayloadLength());
     }
 
     public function testExtractOverflow() {

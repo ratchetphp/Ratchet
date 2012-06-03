@@ -21,13 +21,17 @@ class MessageParser {
 
                 return;
             }
+
             // Check frame
             // If is control frame, do your thing
             // Else, add to message
             // Control frames (ping, pong, close) can be sent in between a fragmented message
 
+            $nextFrame = $from->WebSocket->version->newFrame();
+            $nextFrame->addBuffer($from->WebSocket->frame->extractOverflow());
+
             $from->WebSocket->message->addFrame($from->WebSocket->frame);
-            unset($from->WebSocket->frame);
+            $from->WebSocket->frame = $nextFrame;
         }
 
         if ($from->WebSocket->message->isCoalesced()) {

@@ -36,6 +36,8 @@ class Message implements MessageInterface {
         }
 
         $this->_frame = $fragment;
+
+        return $this;
     }
 
     /**

@@ -35,7 +35,6 @@ class Frame implements FrameInterface {
      * @param bool Mask the payload
      * @return Frame
      * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
-     * @throws BadMethodCallException If there is a problem with miss-matching parameters
      * @throws LengthException If the payload is too big
      */
     public static function create($payload, $final = true, $opcode = 1, $mask = false) {
@@ -43,10 +42,6 @@ class Frame implements FrameInterface {
 
         if (!mb_check_encoding($payload, 'UTF-8')) {
             throw new \InvalidArgumentException("Payload is not a valid UTF-8 string");
-        }
-
-        if (false === (boolean)$final && $opcode !== static::OP_CONTINUE) {
-            throw new \BadMethodCallException("opcode MUST be 'continue' if the frame is not final");
         }
 
         $raw = (int)(boolean)$final . sprintf('%07b', (int)$opcode);

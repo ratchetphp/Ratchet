@@ -17,6 +17,7 @@ interface MessageInterface {
 
     /**
      * @param FragmentInterface
+     * @return MessageInterface
      */
     function addFrame(FrameInterface $fragment);
 
