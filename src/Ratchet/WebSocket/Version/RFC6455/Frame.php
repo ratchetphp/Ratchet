@@ -187,7 +187,7 @@ class Frame implements FrameInterface {
         $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
 
         $this->_bytes_rec += static::MASK_LENGTH;
-        $this->data        = substr_replace($this->data, $this->applyMaskToPayload($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
+        $this->data        = substr_replace($this->data, $this->applyMask($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
 
         return $this;
     }
@@ -210,22 +210,23 @@ class Frame implements FrameInterface {
         $this->data = substr_replace($this->data, '', $this->getNumPayloadBytes() + 1, static::MASK_LENGTH);
 
         $this->_bytes_rec -= static::MASK_LENGTH;
-        $this->data        = substr_replace($this->data, $this->applyMaskToPayload($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
+        $this->data        = substr_replace($this->data, $this->applyMask($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
 
         return $this;
     }
 
-    protected function applyMaskToPayload($maskingKey) {
-        if (!$this->isCoalesced()) {
-            throw new \UnderflowException('Frame must be coalesced to apply a mask');
+    protected function applyMask($maskingKey, $payload = null) {
+        if (null === $payload) {
+            if (!$this->isCoalesced()) {
+                throw new \UnderflowException('Frame must be coalesced to apply a mask');
+            }
+
+            $payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());
         }
 
-        $plLen   = $this->getPayloadLength();
-        $start   = $this->getPayloadStartingByte();
         $applied = '';
-
-        for ($i = 0; $i < $plLen; $i++) {
-            $applied .= substr($this->data, $i + $start, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
+        for ($i = 0, $len = strlen($payload); $i < $len; $i++) {
+            $applied .= substr($payload, $i, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
         }
 
         return $applied;
@@ -337,24 +338,17 @@ class Frame implements FrameInterface {
 
     /**
      * {@inheritdoc}
+     * @todo Consider not checking mask, always returning the payload, masked or not
      */
     public function getPayload() {
         if (!$this->isCoalesced()) {
             throw new \UnderflowException('Can not return partial message');
         }
 
-        $length  = $this->getPayloadLength();
-        $start   = $this->getPayloadStartingByte();
-
         if ($this->isMasked()) {
-            $payload = $this->applyMaskToPayload($this->getMaskingKey());
+            $payload = $this->applyMask($this->getMaskingKey());
         } else {
-            $payload = substr($this->data, $start, $this->getPayloadLength());
-        }
-
-        if (strlen($payload) !== $length) {
-            // Is this possible?  isCoalesced() math _should_ ensure if there is mal-formed data, it would return false
-            throw new \UnexpectedValueException('Payload length does not match expected length');
+            $payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());
         }
 
         return $payload;
