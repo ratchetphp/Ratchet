@@ -4,6 +4,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
+use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
 
@@ -48,8 +49,7 @@ class IoServer {
     }
 
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
-        $loop   = LoopFactory::create();
-
+        $loop   = new StreamSelectLoop;
         $socket = new Reactor($loop);
         $socket->listen($port, $address);
 

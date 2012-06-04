@@ -4,7 +4,7 @@
         {
             "package": "evenement/evenement",
             "version": "dev-master",
-            "source-reference": "808e3aaea8d4f908e455b0e047cc1acc46b38d44"
+            "source-reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d"
         },
         {
             "package": "guzzle/guzzle",
@@ -13,36 +13,34 @@
         {
             "package": "react/event-loop",
             "version": "dev-master",
-            "source-reference": "cc341b109feae06fa33dff7486aa567e3b9d1406"
+            "source-reference": "b8b05f583afeafdc9748bf114b367440112bea79"
         },
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "6801c6d8653e1999cb34b235cdb4b3a287e4d528"
+            "source-reference": "3b183d18e11789e0d3b37a88b19ce7170132930a"
         },
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "eb82542e8ec9506096caf7c528564c740a214f56",
             "alias-pretty-version": "2.1.x-dev",
             "alias-version": "2.1.9999999.9999999-dev"
         },
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "eb82542e8ec9506096caf7c528564c740a214f56"
+            "source-reference": "30d3f5da80c2aeab15bcdb5a7d448d15bc294b23"
         },
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3d9f4ce435f6322b9720c209ad610202526373c0",
             "alias-pretty-version": "2.1.x-dev",
             "alias-version": "2.1.9999999.9999999-dev"
         },
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3d9f4ce435f6322b9720c209ad610202526373c0"
+            "source-reference": "d9ef2afd0218415a8c04ea48a2c83bb5b8f0f51c"
         }
     ],
     "packages-dev": null,
