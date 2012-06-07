@@ -122,10 +122,7 @@ class WsServer implements MessageComponentInterface {
             // Control frames (ping, pong, close) can be sent in between a fragmented message
 
             $from->WebSocket->message->addFrame($from->WebSocket->frame);
-            $nextFrame = $from->WebSocket->version->newFrame();
-            $nextFrame->addBuffer($from->WebSocket->frame->extractOverflow());
             unset($from->WebSocket->frame);
-            $from->WebSocket->frame = $nextFrame;
         }
 
         if ($from->WebSocket->message->isCoalesced()) {

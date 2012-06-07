@@ -75,8 +75,4 @@ class Frame implements FrameInterface {
 
         return substr($this->_data, 1, strlen($this->_data) - 2);
     }
-
-    public function extractOverflow() {
-        return '';
-    }
 }

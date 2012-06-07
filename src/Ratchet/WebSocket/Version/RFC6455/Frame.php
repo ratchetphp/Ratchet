@@ -38,7 +38,7 @@ class Frame implements FrameInterface {
             return false;
         }
 
-        return $this->_bytes_rec >= $payload_length + $payload_start;
+        return $payload_length + $payload_start === $this->_bytes_rec;        
     }
 
     /**
@@ -222,27 +222,5 @@ class Frame implements FrameInterface {
         }
 
         return $payload;
-    }
-
-    /**
-     * Sometimes clients will concatinate more than one frame over the wire
-     * This method will take the extra bytes off the end and return them
-     * @todo Consider returning new Frame
-     * @return string
-     */
-    public function extractOverflow() {
-        if ($this->isCoalesced()) {
-            $endPoint  = $this->getPayloadLength();
-            $endPoint += $this->getPayloadStartingByte();
-
-            if ($this->_bytes_rec > $endPoint) {
-                $overflow    = substr($this->_data, $endPoint);
-                $this->_data = substr($this->_data, 0, $endPoint);
-
-                return $overflow;
-            }
-        }
-
-        return '';
     }
 }
