@@ -1,6 +1,10 @@
 <?php
 namespace Ratchet\WebSocket\Version;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageInterface;
 use Ratchet\WebSocket\Version\RFC6455\HandshakeVerifier;
+use Ratchet\WebSocket\Version\RFC6455\Message;
+use Ratchet\WebSocket\Version\RFC6455\Frame;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
@@ -16,8 +20,14 @@ class RFC6455 implements VersionInterface {
      */
     protected $_verifier;
 
-    public function __construct() {
-        $this->_verifier = new HandshakeVerifier;
+    /**
+     * @var Ratchet\MessageInterface
+     */
+    protected $coalescedCallback;
+
+    public function __construct(MessageInterface $coalescedCallback = null) {
+        $this->_verifier         = new HandshakeVerifier;
+        $this->coalescedCallback = $coalescedCallback;
     }
 
     /**
@@ -29,6 +39,9 @@ class RFC6455 implements VersionInterface {
         return ($this->getVersionNumber() === $version);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getVersionNumber() {
         return 13;
     }
@@ -52,17 +65,95 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function onMessage(ConnectionInterface $from, $data) {
+        $overflow = '';
+
+        if (!isset($from->WebSocket->message)) {
+            $from->WebSocket->message = $this->newMessage();
+        }
+
+        // There is a frame fragment attatched to the connection, add to it
+        if (!isset($from->WebSocket->frame)) {
+            $from->WebSocket->frame = $this->newFrame();
+        }
+
+        $from->WebSocket->frame->addBuffer($data);
+        if ($from->WebSocket->frame->isCoalesced()) {
+            $frame = $from->WebSocket->frame;
+
+            if (!$frame->isMasked()) {
+                unset($from->WebSocket->frame);
+
+                $from->send($this->newFrame($frame::CLOSE_PROTOCOL, true, $frame::OP_CLOSE));
+                $from->getConnection()->close();
+
+                return;
+            }
+
+            $opcode = $frame->getOpcode();
+
+            if ($opcode > 2) {
+                switch ($opcode) {
+                    case $frame::OP_CLOSE:
+                        $from->send($frame->unMaskPayload());
+                        $from->getConnection()->close();
+//                        $from->send(Frame::create(Frame::CLOSE_NORMAL, true, Frame::OP_CLOSE));
+
+                        return;
+                    break;
+                    case $frame::OP_PING:
+                        $from->send($this->newFrame($frame->getPayload(), true, $frame::OP_PONG));
+                    break;
+                    case $frame::OP_PONG:
+                    break;
+                    default:
+                        return $from->close($frame::CLOSE_PROTOCOL);
+                    break;
+                }
+
+                $overflow = $from->WebSocket->frame->extractOverflow();
+
+                unset($from->WebSocket->frame, $frame, $opcode);
+
+                if (strlen($overflow) > 0) {
+                    $this->onMessage($from, $overflow);
+                }
+
+                return;
+            }
+
+            $overflow = $from->WebSocket->frame->extractOverflow();
+
+            $from->WebSocket->message->addFrame($from->WebSocket->frame);
+            unset($from->WebSocket->frame);
+        }
+
+        if ($from->WebSocket->message->isCoalesced()) {
+            $parsed = $from->WebSocket->message->getPayload();
+            unset($from->WebSocket->message);
+
+            $this->coalescedCallback->onMessage($from, $parsed);
+        }
+
+        if (strlen($overflow) > 0) {
+            $this->onMessage($from, $overflow);
+        }
+    }
+
+    /**
      * @return RFC6455\Message
      */
     public function newMessage() {
-        return new RFC6455\Message;
+        return new Message;
     }
 
     /**
      * @return RFC6455\Frame
      */
-    public function newFrame() {
-        return new RFC6455\Frame;
+    public function newFrame($payload = null, $final = true, $opcode = 1) {
+        return new Frame($payload, $final, $opcode);
     }
 
     /**
@@ -71,7 +162,7 @@ class RFC6455 implements VersionInterface {
      * @return string
      */
     public function frame($message, $mask = true) {
-        return RFC6455\Frame::create($message)->data;
+        return $this->newFrame($message)->data;
     }
 
     /**

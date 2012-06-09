@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet;
-use Ratchet\ConnectionInterface;
 
 /**
  * This is the interface to build a Ratchet application with

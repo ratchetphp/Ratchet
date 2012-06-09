@@ -2,6 +2,7 @@
 namespace Ratchet\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\WebSocket\Version;
 use Guzzle\Http\Message\RequestInterface;
 use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
 
@@ -33,11 +34,6 @@ class WsServer implements MessageComponentInterface {
     protected $connections;
 
     /**
-     * @var MessageParser
-     */
-    protected $messager;
-
-    /**
      * For now, array_push accepted subprotocols to this array
      * @deprecated
      * @temporary
@@ -54,10 +50,15 @@ class WsServer implements MessageComponentInterface {
      * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
      */
     public function __construct(MessageComponentInterface $component) {
-        mb_internal_encoding('UTF-8');
+        //mb_internal_encoding('UTF-8');
 
-        $this->handshaker = new HandshakeNegotiator;
-        $this->messager   = new MessageParser;
+        $this->handshaker = new HandshakeNegotiator();
+
+        $this->handshaker
+            ->enableVersion(new Version\RFC6455($component))
+            ->enableVersion(new Version\HyBi10($component))
+            //->enableVersion(new Version\Hixie76)
+        ;
 
         $this->_decorating = $component;
         $this->connections = new \SplObjectStorage;
@@ -83,7 +84,7 @@ class WsServer implements MessageComponentInterface {
         $conn = $this->connections[$from];
 
         if (true !== $conn->WebSocket->established) {
-            if (null === ($response = $this->handshaker->onData($conn, $msg))) {
+            if (null === ($response = $this->handshaker->onMessage($conn, $msg))) {
                 return;
             }
 
@@ -103,9 +104,7 @@ class WsServer implements MessageComponentInterface {
             return $this->_decorating->onOpen($conn);
         }
 
-        if (null !== ($parsed = $this->messager->onData($conn, $msg))) {
-            $this->_decorating->onMessage($conn, $parsed);
-        }
+        $conn->WebSocket->version->onMessage($conn, $msg);
     }
 
     /**

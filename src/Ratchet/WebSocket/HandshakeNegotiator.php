@@ -1,12 +1,13 @@
 <?php
 namespace Ratchet\WebSocket;
+use Ratchet\MessageInterface;
+use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
 use Ratchet\WebSocket\Version\VersionInterface;
-use Ratchet\WebSocket\Version;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
-class HandshakeNegotiator {
+class HandshakeNegotiator implements MessageInterface {
     const EOM = "\r\n\r\n";
 
     /**
@@ -20,18 +21,10 @@ class HandshakeNegotiator {
 
     protected $versions = array();
 
-    public function __construct($autoloadVersions = true) {
-        if ($autoloadVersions) {
-            $this->enableVersion(new Version\RFC6455);
-            $this->enableVersion(new Version\HyBi10);
-            $this->enableVersion(new Version\Hixie76);
-        }
-    }
-
     /**
      * @param WsConnection
      */
-    public function onOpen(WsConnection $conn) {
+    public function onOpen(ConnectionInterface $conn) {
         $conn->WebSocket->handshakeBuffer = '';
     }
 
@@ -41,7 +34,7 @@ class HandshakeNegotiator {
      * @return Guzzle\Http\Message\Response|null Response object if it's done parsing, null if there's more to be buffered
      * @throws HttpException
      */
-    public function onData(WsConnection $conn, $data) {
+    public function onMessage(ConnectionInterface $conn, $data) {
         $conn->WebSocket->handshakeBuffer .= $data;
 
         if (strlen($conn->WebSocket->handshakeBuffer) >= (int)$this->maxSize) {
@@ -66,7 +59,8 @@ class HandshakeNegotiator {
             $response = $version->handshake($conn->WebSocket->request);
             $response->setHeader('X-Powered-By', \Ratchet\VERSION);
 
-            $conn->setVersion($version);
+            // This needs to be decoupled
+            $conn->WebSocket->version = $version;
             unset($conn->WebSocket->handshakeBuffer);
 
             return $response;
@@ -77,10 +71,10 @@ class HandshakeNegotiator {
      * Determine if the message has been buffered as per the HTTP specification
      * @param string
      * @return boolean
-     * @todo Safari does not send 2xCRLF after the 6 byte body...this will always return false for Hixie
      */
     public function isEom($message) {
-        return (static::EOM === substr($message, 0 - strlen(static::EOM)));
+        //return (static::EOM === substr($message, 0 - strlen(static::EOM)));
+        return (boolean)strpos($message, static::EOM);
     }
 
     /**
