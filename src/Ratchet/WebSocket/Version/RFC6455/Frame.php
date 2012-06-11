@@ -10,6 +10,19 @@ class Frame implements FrameInterface {
     const OP_PING     = 9;
     const OP_PONG     = 10;
 
+    const CLOSE_NORMAL      = 1000;
+    const CLOSE_GOING_AWAY  = 1001;
+    const CLOSE_PROTOCOL    = 1002;
+    const CLOSE_BAD_DATA    = 1003;
+    const CLOSE_NO_STATUS   = 1005;
+    const CLOSE_ABNORMAL    = 1006;
+    const CLOSE_BAD_PAYLOAD = 1007;
+    const CLOSE_POLICY      = 1008;
+    const CLOSE_TOO_BIG     = 1009;
+    const CLOSE_MAND_EXT    = 1010;
+    const CLOSE_SRV_ERR     = 1011;
+    const CLOSE_TLS         = 1015;
+
     const MASK_LENGTH = 4;
 
     /**
@@ -22,7 +35,7 @@ class Frame implements FrameInterface {
      * Number of bytes received from the frame
      * @var int
      */
-    public $_bytes_rec = 0;
+    public $bytesRecvd = 0;
 
     /**
      * Number of bytes in the payload (as per framing protocol)
@@ -30,20 +43,9 @@ class Frame implements FrameInterface {
      */
     protected $_pay_len_def = -1;
 
-    /**
-     * @param string A valid UTF-8 string to send over the wire
-     * @param bool Is the final frame in a message
-     * @param int The opcode of the frame, see constants
-     * @param bool Mask the payload
-     * @return Frame
-     * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
-     * @throws LengthException If the payload is too big
-     */
-    public static function create($payload, $final = true, $opcode = 1) {
-        $frame = new static();
-
-        if (!mb_check_encoding($payload, 'UTF-8')) {
-            throw new \InvalidArgumentException("Payload is not a valid UTF-8 string");
+    public function __construct($payload = null, $final = true, $opcode = 1) {
+        if (null === $payload) {
+            return;
         }
 
         $raw = (int)(boolean)$final . sprintf('%07b', (int)$opcode);
@@ -57,9 +59,20 @@ class Frame implements FrameInterface {
             $raw .= sprintf('%08b', 127) . sprintf('%064b', $plLen);
         }
 
-        $frame->addBuffer(static::encode($raw) . $payload);
+        $this->addBuffer(static::encode($raw) . $payload);
+    }
 
-        return $frame;
+    /**
+     * @param string A valid UTF-8 string to send over the wire
+     * @param bool Is the final frame in a message
+     * @param int The opcode of the frame, see constants
+     * @param bool Mask the payload
+     * @return Frame
+     * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
+     * @throws LengthException If the payload is too big
+     */
+    public static function create($payload, $final = true, $opcode = 1) {
+        return new static($payload, $final, $opcode);
     }
 
     /**
@@ -93,7 +106,7 @@ class Frame implements FrameInterface {
             return false;
         }
 
-        return $this->_bytes_rec >= $payload_length + $payload_start;
+        return $this->bytesRecvd >= $payload_length + $payload_start;
     }
 
     /**
@@ -103,14 +116,14 @@ class Frame implements FrameInterface {
         $buf = (string)$buf;
 
         $this->data       .= $buf;
-        $this->_bytes_rec += strlen($buf);
+        $this->bytesRecvd += strlen($buf);
     }
 
     /**
      * {@inheritdoc}
      */
     public function isFinal() {
-        if ($this->_bytes_rec < 1) {
+        if ($this->bytesRecvd < 1) {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
         }
 
@@ -123,8 +136,8 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function isMasked() {
-        if ($this->_bytes_rec < 2) {
-            throw new \UnderflowException("Not enough bytes received ({$this->_bytes_rec}) to determine if mask is set");
+        if ($this->bytesRecvd < 2) {
+            throw new \UnderflowException("Not enough bytes received ({$this->bytesRecvd}) to determine if mask is set");
         }
 
         return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->data, 1, 1))), 0, 1));
@@ -140,7 +153,7 @@ class Frame implements FrameInterface {
 
         $start  = 1 + $this->getNumPayloadBytes();
 
-        if ($this->_bytes_rec < $start + static::MASK_LENGTH) {
+        if ($this->bytesRecvd < $start + static::MASK_LENGTH) {
             throw new \UnderflowException('Not enough data buffered to calculate the masking key');
         }
 
@@ -186,7 +199,7 @@ class Frame implements FrameInterface {
         $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '1', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
 
-        $this->_bytes_rec += static::MASK_LENGTH;
+        $this->bytesRecvd += static::MASK_LENGTH;
         $this->data        = substr_replace($this->data, $this->applyMask($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
 
         return $this;
@@ -209,7 +222,7 @@ class Frame implements FrameInterface {
         $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '0', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, '', $this->getNumPayloadBytes() + 1, static::MASK_LENGTH);
 
-        $this->_bytes_rec -= static::MASK_LENGTH;
+        $this->bytesRecvd -= static::MASK_LENGTH;
         $this->data        = substr_replace($this->data, $this->applyMask($maskingKey), $this->getPayloadStartingByte(), $this->getPayloadLength());
 
         return $this;
@@ -236,7 +249,7 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function getOpcode() {
-        if ($this->_bytes_rec < 1) {
+        if ($this->bytesRecvd < 1) {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
         }
 
@@ -249,7 +262,7 @@ class Frame implements FrameInterface {
      * @throws UnderflowException If the buffer doesn't have enough data to determine this
      */
     protected function getFirstPayloadVal() {
-        if ($this->_bytes_rec < 2) {
+        if ($this->bytesRecvd < 2) {
             throw new \UnderflowException('Not enough bytes received');
         }
 
@@ -261,7 +274,7 @@ class Frame implements FrameInterface {
      * @throws UnderflowException
      */
     protected function getNumPayloadBits() {
-        if ($this->_bytes_rec < 2) {
+        if ($this->bytesRecvd < 2) {
             throw new \UnderflowException('Not enough bytes received');
         }
 
@@ -315,7 +328,7 @@ class Frame implements FrameInterface {
         }
 
         $byte_length = $this->getNumPayloadBytes();
-        if ($this->_bytes_rec < 1 + $byte_length) {
+        if ($this->bytesRecvd < 1 + $byte_length) {
             throw new \UnderflowException('Not enough data buffered to determine payload length');
         }
 
@@ -365,7 +378,7 @@ class Frame implements FrameInterface {
             $endPoint  = $this->getPayloadLength();
             $endPoint += $this->getPayloadStartingByte();
 
-            if ($this->_bytes_rec > $endPoint) {
+            if ($this->bytesRecvd > $endPoint) {
                 $overflow   = substr($this->data, $endPoint);
                 $this->data = substr($this->data, 0, $endPoint);
 

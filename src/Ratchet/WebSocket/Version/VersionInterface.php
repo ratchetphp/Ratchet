@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\WebSocket\Version;
+use Ratchet\MessageInterface;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
  * A standard interface for interacting with the various version of the WebSocket protocol
  */
-interface VersionInterface {
+interface VersionInterface extends MessageInterface {
     /**
      * Given an HTTP header, determine if this version should handle the protocol
      * @param Guzzle\Http\Message\RequestInterface
@@ -45,5 +46,5 @@ interface VersionInterface {
      * @return string
      * @todo Change to use other classes, this will be removed eventually
      */
-    function frame($message, $mask = true);
+    //function frame($message, $mask = true);
 }

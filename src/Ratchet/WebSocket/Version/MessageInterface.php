@@ -6,11 +6,6 @@ namespace Ratchet\WebSocket\Version;
  */
 interface MessageInterface {
     /**
-     * @alias getPayload
-     */
-    function __toString();
-
-    /**
      * @return bool
      */
     function isCoalesced();

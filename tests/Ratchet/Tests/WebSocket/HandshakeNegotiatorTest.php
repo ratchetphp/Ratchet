@@ -22,10 +22,10 @@ class HandshakeNegotiatorTest extends \PHPUnit_Framework_TestCase {
         return array(
             array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n")
           , array(true,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n")
-          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n1")
-          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖")
+          , array(true, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n1")
+          , array(true, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖")
           , array(true,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie✖\r\n\r\n")
-          , array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie\r\n")
+          , array(true, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\nHixie\r\n")
         );
     }
 
@@ -83,6 +83,10 @@ class HandshakeNegotiatorTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetSupportedVersionAfterRemoval() {
+        $this->parser->enableVersion(new RFC6455);
+        $this->parser->enableVersion(new HyBi10);
+        $this->parser->enableVersion(new Hixie76);
+
         $this->parser->disableVersion(0);
 
         $values = explode(',', $this->parser->getSupportedVersionString());
@@ -97,7 +101,7 @@ class HandshakeNegotiatorTest extends \PHPUnit_Framework_TestCase {
 
         $this->parser->maxSize = 20;
 
-        $this->assertNull($this->parser->onData($conn, "GET / HTTP/1.1\r\n"));
-        $this->assertGreaterThan(400, $this->parser->onData($conn, "Header-Is: Too Big")->getStatusCode());
+        $this->assertNull($this->parser->onMessage($conn, "GET / HTTP/1.1\r\n"));
+        $this->assertGreaterThan(400, $this->parser->onMessage($conn, "Header-Is: Too Big")->getStatusCode());
     }
 }
