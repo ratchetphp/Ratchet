@@ -172,6 +172,6 @@ class RFC6455 implements VersionInterface {
      * @internal
      */
     public function sign($key) {
-        return base64_encode(sha1($key . static::GUID, 1));
+        return base64_encode(sha1($key . static::GUID, true));
     }
 }

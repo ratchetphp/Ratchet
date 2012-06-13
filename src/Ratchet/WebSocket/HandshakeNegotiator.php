@@ -115,12 +115,7 @@ class HandshakeNegotiator implements MessageInterface {
     public function disableVersion($versionId) {
         unset($this->versions[$versionId]);
 
-        $this->versionString = '';
-
-        foreach ($this->versions as $id => $object) {
-            $this->versionString .= "{$id}, ";
-        }
-        $this->versionString = substr($this->versionString, 0, -2);
+        $this->versionString = implode(',', array_keys($this->versions));
 
         return $this;
     }
