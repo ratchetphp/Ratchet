@@ -81,24 +81,21 @@ class WsServer implements MessageComponentInterface {
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->WebSocket->established) {
-            if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
-                return;
+            try {
+                if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
+                    return;
+                }
+            } catch (\OverflowException $oe) {
+                return $this->close($from, 413);
             }
 
             if (!$this->versioner->isVersionEnabled($request)) {
-                $response = new Response(400, array(
-                    'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
-                  , 'X-Powered-By'          => \Ratchet\VERSION
-                ));
-
-                $from->send((string)$response);
-                $from->close();
-
-                return;
+                return $this->close($from);
             }
 
             $from->WebSocket->version = $this->versioner->getVersion($request);
             $response = $from->WebSocket->version->handshake($request);
+            $response->setHeader('X-Powered-By', \Ratchet\VERSION);
 
             // This needs to be refactored later on, incorporated with routing
             if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
@@ -148,6 +145,16 @@ class WsServer implements MessageComponentInterface {
         } else {
             $conn->close();
         }
+    }
+
+    protected function close(ConnectionInterface $conn, $code = 400) {
+        $response = new Response($code, array(
+            'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
+          , 'X-Powered-By'          => \Ratchet\VERSION
+        ));
+
+        $conn->send((string)$response);
+        $conn->close();
     }
 
     /**

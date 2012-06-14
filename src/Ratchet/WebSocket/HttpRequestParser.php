@@ -5,7 +5,6 @@ use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
 use Ratchet\WebSocket\Version\VersionInterface;
 use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
 
 class HttpRequestParser implements MessageInterface {
     const EOM = "\r\n\r\n";
@@ -18,9 +17,9 @@ class HttpRequestParser implements MessageInterface {
     public $maxSize = 4096;
 
     /**
-     * @param StdClass
+     * @param Ratchet\ConnectionInterface
      * @param string Data stream to buffer
-     * @return Guzzle\Http\Message\Response|null Response object if it's done parsing, null if there's more to be buffered
+     * @return Guzzle\Http\Message\RequestInterface|null
      * @throws OverflowException
      */
     public function onMessage(ConnectionInterface $context, $data) {
@@ -32,8 +31,6 @@ class HttpRequestParser implements MessageInterface {
 
         if (strlen($context->httpBuffer) > (int)$this->maxSize) {
             throw new \OverflowException("Maximum buffer size of {$this->maxSize} exceeded parsing HTTP header");
-
-            //return new Response(413, array('X-Powered-By' => \Ratchet\VERSION));
         }
 
         if ($this->isEom($context->httpBuffer)) {

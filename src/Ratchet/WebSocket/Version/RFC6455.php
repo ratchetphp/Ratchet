@@ -43,23 +43,17 @@ class RFC6455 implements VersionInterface {
 
     /**
      * {@inheritdoc}
-     * @todo Decide what to do on failure...currently throwing an exception and I think socket connection is closed.  Should be sending 40x error - but from where?
      */
     public function handshake(RequestInterface $request) {
         if (true !== $this->_verifier->verifyAll($request)) {
-            // new header with 4xx error message
-
-            throw new \InvalidArgumentException('Invalid HTTP header');
+            return new Response(400);
         }
 
-        $headers = array(
+        return new Response(101, array(
             'Upgrade'              => 'websocket'
           , 'Connection'           => 'Upgrade'
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
-          , 'X-Powered-By'         => \Ratchet\VERSION
-        );
-
-        return new Response(101, $headers);
+        ));
     }
 
     /**
@@ -112,8 +106,11 @@ class RFC6455 implements VersionInterface {
             if ($opcode > 2) {
                 switch ($opcode) {
                     case $frame::OP_CLOSE:
+                        $from->close($frame->getPayload());
+/*
                         $from->send($frame->unMaskPayload());
                         $from->getConnection()->close();
+*/
 //                        $from->send(Frame::create(Frame::CLOSE_NORMAL, true, Frame::OP_CLOSE));
 
                         return;
