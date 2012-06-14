@@ -8,7 +8,6 @@ use Guzzle\Http\Message\Response;
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
- * @todo Separate this class into a two classes: Component and a protocol handler
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
@@ -73,12 +72,6 @@ class WsServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        //$wsConn = new WsConnection($conn);
-
-        //$this->connections->attach($conn, $wsConn);
-
-        //$this->reqParser->onOpen($wsConn);
-
         $conn->WebSocket = new \StdClass;
         $conn->WebSocket->established = false;
     }

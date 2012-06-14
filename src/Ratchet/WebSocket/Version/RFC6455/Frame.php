@@ -3,11 +3,11 @@ namespace Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\FrameInterface;
 
 class Frame implements FrameInterface {
-    const OP_CONTINUE = 0;
-    const OP_TEXT     = 1;
-    const OP_BINARY   = 2;
-    const OP_CLOSE    = 8;
-    const OP_PING     = 9;
+    const OP_CONTINUE =  0;
+    const OP_TEXT     =  1;
+    const OP_BINARY   =  2;
+    const OP_CLOSE    =  8;
+    const OP_PING     =  9;
     const OP_PONG     = 10;
 
     const CLOSE_NORMAL      = 1000;

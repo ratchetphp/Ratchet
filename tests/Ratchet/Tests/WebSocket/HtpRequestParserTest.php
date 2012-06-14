@@ -31,7 +31,6 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $this->parser->isEom($message));
     }
 
-
     public function testBufferOverflowResponse() {
         $conn = new ConnectionStub;
 
@@ -42,7 +41,5 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('OverflowException');
 
         $this->parser->onMessage($conn, "Header-Is: Too Big");
-
-        //$this->assertGreaterThan(400, $this->parser->onMessage($conn, "Header-Is: Too Big")->getStatusCode());
     }
 }

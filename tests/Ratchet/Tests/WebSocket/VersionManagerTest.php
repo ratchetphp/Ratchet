@@ -44,8 +44,22 @@ class VersionManagerTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('InvalidArgumentException');
 
         $this->vm->getVersion($req);
+    }
 
-        //$this->assertFalse($this->vm->getVersion($req));
+    public function testYesIsVersionEnabled() {
+        $this->vm->enableVersion(new RFC6455);
+
+        $this->assertTrue($this->vm->isVersionEnabled(new EntityEnclosingRequest('get', '/', array(
+            'Host' => 'socketo.me'
+          , 'Sec-WebSocket-Version' => 13
+        ))));
+    }
+
+    public function testNoIsVersionEnabled() {
+        $this->assertFalse($this->vm->isVersionEnabled(new EntityEnclosingRequest('get', '/', array(
+            'Host' => 'socketo.me'
+          , 'Sec-WebSocket-Version' => 9000
+        ))));
     }
 
     public function testGetSupportedVersionString() {
