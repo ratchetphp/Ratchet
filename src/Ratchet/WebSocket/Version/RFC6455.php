@@ -5,6 +5,7 @@ use Ratchet\MessageInterface;
 use Ratchet\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Ratchet\WebSocket\Version\RFC6455\Message;
 use Ratchet\WebSocket\Version\RFC6455\Frame;
+use Ratchet\WebSocket\Version\RFC6455\Connection;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
@@ -20,14 +21,8 @@ class RFC6455 implements VersionInterface {
      */
     protected $_verifier;
 
-    /**
-     * @var Ratchet\MessageInterface
-     */
-    protected $coalescedCallback;
-
-    public function __construct(MessageInterface $coalescedCallback = null) {
-        $this->_verifier         = new HandshakeVerifier;
-        $this->coalescedCallback = $coalescedCallback;
+    public function __construct() {
+        $this->_verifier = new HandshakeVerifier;
     }
 
     /**
@@ -52,6 +47,8 @@ class RFC6455 implements VersionInterface {
      */
     public function handshake(RequestInterface $request) {
         if (true !== $this->_verifier->verifyAll($request)) {
+            // new header with 4xx error message
+
             throw new \InvalidArgumentException('Invalid HTTP header');
         }
 
@@ -59,13 +56,31 @@ class RFC6455 implements VersionInterface {
             'Upgrade'              => 'websocket'
           , 'Connection'           => 'Upgrade'
           , 'Sec-WebSocket-Accept' => $this->sign($request->getHeader('Sec-WebSocket-Key'))
+          , 'X-Powered-By'         => \Ratchet\VERSION
         );
 
         return new Response(101, $headers);
     }
 
     /**
-     * {@inheritdoc}
+     * @param Ratchet\ConnectionInterface
+     * @return Ratchet\WebSocket\Version\RFC6455\Connection
+     */
+    public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback) {
+        $upgraded = new Connection($conn);
+
+        if (!isset($upgraded->WebSocket)) {
+            $upgraded->WebSocket = new \StdClass;
+        }
+
+        $upgraded->WebSocket->coalescedCallback = $coalescedCallback;
+
+        return $upgraded;
+    }
+
+    /**
+     * @param Ratchet\WebSocket\Version\RFC6455\Connection
+     * @param string
      */
     public function onMessage(ConnectionInterface $from, $data) {
         $overflow = '';
@@ -134,7 +149,7 @@ class RFC6455 implements VersionInterface {
             $parsed = $from->WebSocket->message->getPayload();
             unset($from->WebSocket->message);
 
-            $this->coalescedCallback->onMessage($from, $parsed);
+            $from->WebSocket->coalescedCallback->onMessage($from, $parsed);
         }
 
         if (strlen($overflow) > 0) {

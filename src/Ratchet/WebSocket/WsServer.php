@@ -3,8 +3,7 @@ namespace Ratchet\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Version;
-use Guzzle\Http\Message\RequestInterface;
-use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
+use Guzzle\Http\Message\Response;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -15,12 +14,17 @@ use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
  */
 class WsServer implements MessageComponentInterface {
     /**
-     * Negotiates upgrading the HTTP connection to a WebSocket connection
-     * It contains useful configuration properties and methods
-     * @var HandshakeNegotiator
+     * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
+     * @var HttpRequestParser
      * @note May not expose this in the future, may do through facade methods
      */
-    public $handshaker;
+    public $reqParser;
+
+    /**
+     * Manage the various WebSocket versions to support
+     * @var VersionManager
+     */
+    protected $versioner;
 
     /**
      * Decorated component
@@ -52,9 +56,10 @@ class WsServer implements MessageComponentInterface {
     public function __construct(MessageComponentInterface $component) {
         //mb_internal_encoding('UTF-8');
 
-        $this->handshaker = new HandshakeNegotiator();
+        $this->reqParser = new HttpRequestParser;
+        $this->versioner = new VersionManager;
 
-        $this->handshaker
+        $this->versioner
             ->enableVersion(new Version\RFC6455($component))
             ->enableVersion(new Version\HyBi10($component))
             //->enableVersion(new Version\Hixie76)
@@ -68,12 +73,13 @@ class WsServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        $wsConn = new WsConnection($conn);
+        //$wsConn = new WsConnection($conn);
 
-        $this->connections->attach($conn, $wsConn);
+        //$this->connections->attach($conn, $wsConn);
 
-        $this->handshaker->onOpen($wsConn);
+        //$this->reqParser->onOpen($wsConn);
 
+        $conn->WebSocket = new \StdClass;
         $conn->WebSocket->established = false;
     }
 
@@ -81,15 +87,28 @@ class WsServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        $conn = $this->connections[$from];
-
-        if (true !== $conn->WebSocket->established) {
-            if (null === ($response = $this->handshaker->onMessage($conn, $msg))) {
+        if (true !== $from->WebSocket->established) {
+            if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
                 return;
             }
 
+            if (!$this->versioner->isVersionEnabled($request)) {
+                $response = new Response(400, array(
+                    'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
+                  , 'X-Powered-By'          => \Ratchet\VERSION
+                ));
+
+                $from->send((string)$response);
+                $from->close();
+
+                return;
+            }
+
+            $from->WebSocket->version = $this->versioner->getVersion($request);
+            $response = $from->WebSocket->version->handshake($request);
+
             // This needs to be refactored later on, incorporated with routing
-            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
+            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
                 $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
             }
 
@@ -99,24 +118,30 @@ class WsServer implements MessageComponentInterface {
                 return $from->close();
             }
 
-            $conn->WebSocket->established = true;
+            $upgraded = $from->WebSocket->version->upgradeConnection($from, $this->_decorating);
 
-            return $this->_decorating->onOpen($conn);
+            $this->connections->attach($from, $upgraded);
+
+            $upgraded->WebSocket->established = true;
+
+            return $this->_decorating->onOpen($upgraded);
         }
 
-        $conn->WebSocket->version->onMessage($conn, $msg);
+        $from->WebSocket->version->onMessage($this->connections[$from], $msg);
     }
 
     /**
      * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
-        $decor = $this->connections[$conn];
-        $this->connections->detach($conn);
+        if ($this->connections->contains($conn)) {
+            $decor = $this->connections[$conn];
+            $this->connections->detach($conn);
+        }
 
         // WS::onOpen is not called when the socket connects, it's call when the handshake is done
         // The socket could close before WS calls onOpen, so we need to check if we've "opened" it for the developer yet
-        if ($decor->WebSocket->established) {
+        if (isset($decor)) {
             $this->_decorating->onClose($decor);
         }
     }
