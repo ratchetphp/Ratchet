@@ -14,23 +14,18 @@ class Connection extends AbstractConnectionDecorator {
     }
 
     public function send($msg) {
-        if ($msg instanceof FrameInterface) {
-            $data = $msg->data;
-        } else {
-            $frame = new Frame($msg);
-            $data  = $frame->data;
+        if (!($msg instanceof FrameInterface)) {
+            $msg = new Frame($msg);
         }
 
-        $this->getConnection()->send($data);
+        $this->getConnection()->send($msg->getContents());
     }
 
     /**
      * {@inheritdoc}
      */
     public function close($code = 1000) {
-        $frame = new Frame($code, true, Frame::OP_CLOSE);
-
-        $this->send($frame->data);
+        $this->send(new Frame($code, true, Frame::OP_CLOSE));
 
         $this->getConnection()->close();
     }

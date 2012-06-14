@@ -278,8 +278,9 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $frame2  = Frame::create($string2);
 
         $cat = new Frame;
-        $cat->addBuffer($frame1->data . $frame2->data);
+        $cat->addBuffer($frame1->getContents() . $frame2->getContents());
 
+        $this->assertEquals($frame1->getContents(), $cat->getContents());
         $this->assertEquals($string1, $cat->getPayload());
 
         $uncat = new Frame;

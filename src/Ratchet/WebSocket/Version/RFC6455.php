@@ -177,7 +177,7 @@ class RFC6455 implements VersionInterface {
      * @return string
      */
     public function frame($message, $mask = true) {
-        return $this->newFrame($message)->data;
+        return $this->newFrame($message)->getContents();
     }
 
     /**

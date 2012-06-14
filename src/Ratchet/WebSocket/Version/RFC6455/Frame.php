@@ -29,7 +29,7 @@ class Frame implements FrameInterface {
      * The contents of the frame
      * @var string
      */
-    public $data = '';
+    protected $data = '';
 
     /**
      * Number of bytes received from the frame
@@ -365,6 +365,14 @@ class Frame implements FrameInterface {
         }
 
         return $payload;
+    }
+
+    /**
+     * Get the raw contents of the frame
+     * @todo This is untested, make sure the substr is right - trying to return the frame w/o the overflow
+     */
+    public function getContents() {
+        return substr($this->data, 0, $this->getPayloadStartingByte() + $this->getPayloadLength());
     }
 
     /**
