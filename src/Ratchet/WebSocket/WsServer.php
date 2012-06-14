@@ -61,7 +61,7 @@ class WsServer implements MessageComponentInterface {
         $this->versioner
             ->enableVersion(new Version\RFC6455($component))
             ->enableVersion(new Version\HyBi10($component))
-            //->enableVersion(new Version\Hixie76)
+            ->enableVersion(new Version\Hixie76)
         ;
 
         $this->_decorating = $component;

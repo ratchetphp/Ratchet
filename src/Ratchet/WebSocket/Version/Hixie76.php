@@ -1,7 +1,11 @@
 <?php
 namespace Ratchet\WebSocket\Version;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageInterface;
+use Ratchet\WebSocket\Version\Hixie76\Connection;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
+use Ratchet\WebSocket\Version\Hixie76\Frame;
 
 /**
  * FOR THE LOVE OF BEER, PLEASE PLEASE PLEASE DON'T allow the use of this in your application!
@@ -22,6 +26,9 @@ class Hixie76 implements VersionInterface {
         return !(null === $request->getHeader('Sec-WebSocket-Key2', true));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getVersionNumber() {
         return 0;
     }
@@ -47,24 +54,46 @@ class Hixie76 implements VersionInterface {
     }
 
     /**
-     * @return Hixie76\Message
-     */
-    public function newMessage() {
-        return new Hixie76\Message;
-    }
-
-    /**
-     * @return Hixie76\Frame
-     */
-    public function newFrame() {
-        return new Hixie76\Frame;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function frame($message, $mask = true) {
-        return chr(0) . $message . chr(255);
+    public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback) {
+        $upgraded = new Connection($conn);
+
+        if (!isset($upgraded->WebSocket)) {
+            $upgraded->WebSocket = new \StdClass;
+        }
+
+        $upgraded->WebSocket->coalescedCallback = $coalescedCallback;
+
+        return $upgraded;
+    }
+
+    public function onMessage(ConnectionInterface $from, $data) {
+        $overflow = '';
+
+        if (!isset($from->WebSocket->frame)) {
+            $from->WebSocket->frame = $this->newFrame();
+        }
+
+        $from->WebSocket->frame->addBuffer($data);
+        if ($from->WebSocket->frame->isCoalesced()) {
+            $overflow = $from->WebSocket->frame->extractOverflow();
+
+            $parsed = $from->WebSocket->frame->getPayload();
+            unset($from->WebSocket->frame);
+
+            $from->WebSocket->coalescedCallback->onMessage($from, $parsed);
+
+            unset($from->WebSocket->frame);
+        }
+
+        if (strlen($overflow) > 0) {
+            $this->onMessage($from, $overflow);
+        }
+    }
+
+    public function newFrame() {
+        return new Frame;
     }
 
     public function generateKeyNumber($key) {

@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\WebSocket\Version;
 use Ratchet\MessageInterface;
+use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
@@ -25,20 +26,26 @@ interface VersionInterface extends MessageInterface {
      * Perform the handshake and return the response headers
      * @param Guzzle\Http\Message\RequestInterface
      * @return Guzzle\Http\Message\Response
-     * @throws InvalidArgumentException If the HTTP handshake is mal-formed
      * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
      */
     function handshake(RequestInterface $request);
 
     /**
+     * @param Ratchet\ConnectionInterface
+     * @param Ratchet\MessageInterface
+     * @return Ratchet\ConnectionInterface
+     */
+    function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback);
+
+    /**
      * @return MessageInterface
      */
-    function newMessage();
+    //function newMessage();
 
     /**
      * @return FrameInterface
      */
-    function newFrame();
+    //function newFrame();
 
     /**
      * @param string

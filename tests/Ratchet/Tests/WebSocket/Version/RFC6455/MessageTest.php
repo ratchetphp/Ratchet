@@ -60,11 +60,4 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(28, $this->message->getPayloadLength());
     }
-
-    public function testToString() {
-        $msg = 'Who likes short shorts?';
-        $this->message->addFrame(Frame::create($msg));
-
-        $this->assertEquals($msg, (string)$this->message);
-    }
 }

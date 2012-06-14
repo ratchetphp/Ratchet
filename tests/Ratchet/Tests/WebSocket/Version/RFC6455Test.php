@@ -50,7 +50,7 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
 
     public function testUnframeMatchesPreFraming() {
         $string = 'Hello World!';
-        $framed = $this->version->frame($string);
+        $framed = $this->version->newFrame($string)->getContents();
 
         $frame = new Frame;
         $frame->addBuffer($framed);

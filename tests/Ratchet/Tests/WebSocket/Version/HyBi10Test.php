@@ -57,7 +57,7 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
 
     public function testUnframeMatchesPreFraming() {
         $string   = 'Hello World!';
-        $framed   = $this->_version->frame($string);
+        $framed   = $this->_version->newFrame($string)->getContents();
 
         $frame = new Frame;
         $frame->addBuffer($framed);

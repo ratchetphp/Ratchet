@@ -2,14 +2,14 @@
 namespace Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\ConnectionInterface;
 use Ratchet\AbstractConnectionDecorator;
-use Ratchet\WebSocket\Version\FrameInterface;
+use Ratchet\WebSocket\Version\DataInterface;
 
 /**
  * {@inheritdoc}
  */
 class Connection extends AbstractConnectionDecorator {
     public function send($msg) {
-        if (!($msg instanceof FrameInterface)) {
+        if (!($msg instanceof DataInterface)) {
             $msg = new Frame($msg);
         }
 

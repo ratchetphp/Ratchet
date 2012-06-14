@@ -16,13 +16,6 @@ class Message implements MessageInterface {
     /**
      * {@inheritdoc}
      */
-    public function __toString() {
-        return $this->getPayload();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isCoalesced() {
         if (count($this->_frames) == 0) {
             return false;
@@ -83,6 +76,23 @@ class Message implements MessageInterface {
 
         foreach ($this->_frames as $frame) {
             $buffer .= $frame->getPayload();
+        }
+
+        return $buffer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContents() {
+        if (!$this->isCoalesced()) {
+            throw new \UnderflowException("Message has not been put back together yet");
+        }
+
+        $buffer = '';
+
+        foreach ($this->_frames as $frame) {
+            $buffer .= $frame->getContents();
         }
 
         return $buffer;
