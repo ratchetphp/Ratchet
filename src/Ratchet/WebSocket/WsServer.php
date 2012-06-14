@@ -93,7 +93,9 @@ class WsServer implements MessageComponentInterface {
                 return $this->close($from);
             }
 
+            $from->WebSocket->request = $request;
             $from->WebSocket->version = $this->versioner->getVersion($request);
+
             $response = $from->WebSocket->version->handshake($request);
             $response->setHeader('X-Powered-By', \Ratchet\VERSION);
 
