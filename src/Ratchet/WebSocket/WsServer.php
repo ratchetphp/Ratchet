@@ -22,8 +22,9 @@ class WsServer implements MessageComponentInterface {
     /**
      * Manage the various WebSocket versions to support
      * @var VersionManager
+     * @note May not expose this in the future, may do through facade methods
      */
-    protected $versioner;
+    public $versioner;
 
     /**
      * Decorated component
@@ -149,16 +150,6 @@ class WsServer implements MessageComponentInterface {
         }
     }
 
-    protected function close(ConnectionInterface $conn, $code = 400) {
-        $response = new Response($code, array(
-            'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
-          , 'X-Powered-By'          => \Ratchet\VERSION
-        ));
-
-        $conn->send((string)$response);
-        $conn->close();
-    }
-
     /**
      * @param string
      * @return boolean
@@ -193,5 +184,20 @@ class WsServer implements MessageComponentInterface {
         }
 
         return substr($string, 0, -1);
+    }
+
+    /**
+     * Close a connection with an HTTP response
+     * @param Ratchet\ConnectionInterface
+     * @param int HTTP status code
+     */
+    protected function close(ConnectionInterface $conn, $code = 400) {
+        $response = new Response($code, array(
+            'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
+          , 'X-Powered-By'          => \Ratchet\VERSION
+        ));
+
+        $conn->send((string)$response);
+        $conn->close();
     }
 }
