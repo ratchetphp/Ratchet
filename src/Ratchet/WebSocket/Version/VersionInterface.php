@@ -1,41 +1,51 @@
 <?php
 namespace Ratchet\WebSocket\Version;
+use Ratchet\MessageInterface;
+use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\RequestInterface;
 
 /**
- * Despite the version iterations of WebInterface the actions they go through are similar
- * This standardizes how the server handles communication with each protocol version
- * @todo Need better naming conventions...newMessage and newFrame are for reading incoming framed messages (action is unframing)
- *       The current method names suggest you could create a new message/frame to send, which they can not do
+ * A standard interface for interacting with the various version of the WebSocket protocol
  */
-interface VersionInterface {
+interface VersionInterface extends MessageInterface {
     /**
      * Given an HTTP header, determine if this version should handle the protocol
      * @param Guzzle\Http\Message\RequestInterface
      * @return bool
      * @throws UnderflowException If the protocol thinks the headers are still fragmented
      */
-    static function isProtocol(RequestInterface $request);
+    function isProtocol(RequestInterface $request);
+
+    /**
+     * Although the version has a name associated with it the integer returned is the proper identification
+     * @return int
+     */
+    function getVersionNumber();
 
     /**
      * Perform the handshake and return the response headers
      * @param Guzzle\Http\Message\RequestInterface
-     * @return array|string
-     * @throws InvalidArgumentException If the HTTP handshake is mal-formed
+     * @return Guzzle\Http\Message\Response
      * @throws UnderflowException If the message hasn't finished buffering (not yet implemented, theoretically will only happen with Hixie version)
-     * @todo Change param to accept a Guzzle RequestInterface object
      */
     function handshake(RequestInterface $request);
 
     /**
+     * @param Ratchet\ConnectionInterface
+     * @param Ratchet\MessageInterface
+     * @return Ratchet\ConnectionInterface
+     */
+    function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback);
+
+    /**
      * @return MessageInterface
      */
-    function newMessage();
+    //function newMessage();
 
     /**
      * @return FrameInterface
      */
-    function newFrame();
+    //function newFrame();
 
     /**
      * @param string
@@ -43,5 +53,5 @@ interface VersionInterface {
      * @return string
      * @todo Change to use other classes, this will be removed eventually
      */
-    function frame($message, $mask = true);
+    //function frame($message, $mask = true);
 }

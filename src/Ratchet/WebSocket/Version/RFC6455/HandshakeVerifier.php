@@ -32,10 +32,9 @@ class HandshakeVerifier {
      * Test the HTTP method.  MUST be "GET"
      * @param string
      * @return bool
-     * @todo Look into STD if "get" is valid (am I supposed to do case conversion?)
      */
     public function verifyMethod($val) {
-        return ('GET' === $val);
+        return ('get' === strtolower($val));
     }
 
     /**
@@ -50,7 +49,6 @@ class HandshakeVerifier {
     /**
      * @param string
      * @return bool
-     * @todo Verify the logic here is correct
      */
     public function verifyRequestURI($val) {
         if ($val[0] != '/') {
@@ -61,7 +59,7 @@ class HandshakeVerifier {
             return false;
         }
 
-        return mb_check_encoding($val, 'ASCII');
+        return mb_check_encoding($val, 'US-ASCII');
     }
 
     /**
@@ -80,7 +78,7 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyUpgradeRequest($val) {
-        return ('websocket' === $val);
+        return ('websocket' === strtolower($val));
     }
 
     /**
@@ -89,12 +87,15 @@ class HandshakeVerifier {
      * @return bool
      */
     public function verifyConnection($val) {
-        if ('Upgrade' === $val) {
+        $val = strtolower($val);
+
+        if ('upgrade' === $val) {
             return true;
         }
 
         $vals = explode(',', str_replace(', ', ',', $val));
-        return (false !== array_search('Upgrade', $vals));
+
+        return (false !== array_search('upgrade', $vals));
     }
 
     /**
@@ -102,9 +103,10 @@ class HandshakeVerifier {
      * @param string|null
      * @return bool
      * @todo The spec says we don't need to base64_decode - can I just check if the length is 24 and not decode?
+     * @todo Check the spec to see what the encoding of the key could be
      */
     public function verifyKey($val) {
-        return (16 === mb_strlen(base64_decode((string)$val), '8bit'));
+        return (16 === strlen(base64_decode((string)$val)));
     }
 
     /**

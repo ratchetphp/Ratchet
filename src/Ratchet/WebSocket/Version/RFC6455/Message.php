@@ -16,13 +16,6 @@ class Message implements MessageInterface {
     /**
      * {@inheritdoc}
      */
-    public function __toString() {
-        return $this->getPayload();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function isCoalesced() {
         if (count($this->_frames) == 0) {
             return false;
@@ -35,11 +28,12 @@ class Message implements MessageInterface {
 
     /**
      * {@inheritdoc}
-     * @todo Should I allow addFrame if the frame is not coalesced yet?  I believe I'm assuming this class will only receive fully formed frame messages
      * @todo Also, I should perhaps check the type...control frames (ping/pong/close) are not to be considered part of a message
      */
     public function addFrame(FrameInterface $fragment) {
         $this->_frames->push($fragment);
+
+        return $this;
     }
 
     /**
@@ -63,6 +57,7 @@ class Message implements MessageInterface {
             try {
                 $len += $frame->getPayloadLength();
             } catch (\UnderflowException $e) {
+                // Not an error, want the current amount buffered
             }
         }
 
@@ -74,13 +69,30 @@ class Message implements MessageInterface {
      */
     public function getPayload() {
         if (!$this->isCoalesced()) {
-            throw new \UnderflowMessage('Message has not been put back together yet');
+            throw new \UnderflowException('Message has not been put back together yet');
         }
 
         $buffer = '';
 
         foreach ($this->_frames as $frame) {
             $buffer .= $frame->getPayload();
+        }
+
+        return $buffer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContents() {
+        if (!$this->isCoalesced()) {
+            throw new \UnderflowException("Message has not been put back together yet");
+        }
+
+        $buffer = '';
+
+        foreach ($this->_frames as $frame) {
+            $buffer .= $frame->getContents();
         }
 
         return $buffer;

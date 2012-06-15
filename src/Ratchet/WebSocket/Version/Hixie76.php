@@ -1,7 +1,11 @@
 <?php
 namespace Ratchet\WebSocket\Version;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageInterface;
+use Ratchet\WebSocket\Version\Hixie76\Connection;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
+use Ratchet\WebSocket\Version\Hixie76\Frame;
 
 /**
  * FOR THE LOVE OF BEER, PLEASE PLEASE PLEASE DON'T allow the use of this in your application!
@@ -12,15 +16,21 @@ use Guzzle\Http\Message\Response;
  *     man-in-the-middle attack on 10%-15% of the people who saw their ad who had a browser (currently only Safari) supporting the Hixie76 protocol.
  *     This was exploited by taking advantage of proxy servers in front of the user who ignored some HTTP headers in the handshake
  * The Hixie76 is currently implemented by Safari
- * Handshake from Andrea Giammarchi (http://webreflection.blogspot.com/2010/06/websocket-handshake-76-simplified.html)
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
 class Hixie76 implements VersionInterface {
     /**
      * {@inheritdoc}
      */
-    public static function isProtocol(RequestInterface $request) {
+    public function isProtocol(RequestInterface $request) {
         return !(null === $request->getHeader('Sec-WebSocket-Key2', true));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersionNumber() {
+        return 0;
     }
 
     /**
@@ -37,31 +47,53 @@ class Hixie76 implements VersionInterface {
           , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host', true) . $request->getPath()
         );
 
-        $response = new Response('101', $headers, $body);
-        $response->setStatus('101', 'WebSocket Protocol Handshake');
+        $response = new Response(101, $headers, $body);
+        $response->setStatus(101, 'WebSocket Protocol Handshake');
 
         return $response;
     }
 
     /**
-     * @return Hixie76\Message
-     */
-    public function newMessage() {
-        return new Hixie76\Message;
-    }
-
-    /**
-     * @return Hixie76\Frame
-     */
-    public function newFrame() {
-        return new Hixie76\Frame;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function frame($message, $mask = true) {
-        return chr(0) . $message . chr(255);
+    public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback) {
+        $upgraded = new Connection($conn);
+
+        if (!isset($upgraded->WebSocket)) {
+            $upgraded->WebSocket = new \StdClass;
+        }
+
+        $upgraded->WebSocket->coalescedCallback = $coalescedCallback;
+
+        return $upgraded;
+    }
+
+    public function onMessage(ConnectionInterface $from, $data) {
+        $overflow = '';
+
+        if (!isset($from->WebSocket->frame)) {
+            $from->WebSocket->frame = $this->newFrame();
+        }
+
+        $from->WebSocket->frame->addBuffer($data);
+        if ($from->WebSocket->frame->isCoalesced()) {
+            $overflow = $from->WebSocket->frame->extractOverflow();
+
+            $parsed = $from->WebSocket->frame->getPayload();
+            unset($from->WebSocket->frame);
+
+            $from->WebSocket->coalescedCallback->onMessage($from, $parsed);
+
+            unset($from->WebSocket->frame);
+        }
+
+        if (strlen($overflow) > 0) {
+            $this->onMessage($from, $overflow);
+        }
+    }
+
+    public function newFrame() {
+        return new Frame;
     }
 
     public function generateKeyNumber($key) {

@@ -18,7 +18,8 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
     public static function methodProvider() {
         return array(
             array(true,  'GET')
-          , array(false, 'get') // I'm not sure if this is valid or not, need to check standard
+          , array(true,  'get')
+          , array(true,  'Get')
           , array(false, 'POST')
           , array(false, 'DELETE')
           , array(false, 'PUT')
@@ -64,6 +65,7 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
           , array(false, '/chat#bad')
           , array(false, 'nope')
           , array(false, '/ ಠ_ಠ ')
+          , array(false, '/✖')
         );
     }
 
@@ -91,7 +93,8 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
     public static function upgradeProvider() {
         return array(
             array(true,  'websocket')
-          , array(false, 'Websocket')
+          , array(true,  'Websocket')
+          , array(true,  'webSocket')
           , array(false, null)
           , array(false, '')
         );
@@ -107,7 +110,7 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
     public static function connectionProvider() {
         return array(
             array(true,  'Upgrade')
-          , array(false, 'upgrade')
+          , array(true,  'upgrade')
           , array(true,  'keep-alive, Upgrade')
           , array(true,  'Upgrade, keep-alive')
           , array(true,  'keep-alive, Upgrade, something')
@@ -133,6 +136,8 @@ class HandshakeVerifierTest extends \PHPUnit_Framework_TestCase {
           , array(false, 'Hello World')
           , array(false, '1234567890123456')
           , array(false, '123456789012345678901234')
+          , array(true,  base64_encode('UTF8allthngs+✓'))
+          , array(true,  'dGhlIHNhbXBsZSBub25jZQ==')
         );
     }
 

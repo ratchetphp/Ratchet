@@ -43,6 +43,10 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
      * I think I have severly butchered this test...it's not so much of a unit test as it is a full-fledged component test
      */
     public function testConnectionValueFromPdo() {
+        if (!extension_loaded('PDO')) {
+            return $this->markTestSkipped();
+        }
+
         $sessionId = md5('testSession');
 
         $dbOptions = array(
@@ -63,7 +67,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue($sessionId));
 
         $connection->WebSocket          = new \StdClass;
-        $connection->WebSocket->headers = $headers;
+        $connection->WebSocket->request = $headers;
 
         $component->onOpen($connection);
 
@@ -79,7 +83,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
             $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
             $conns[$i]->WebSocket          = new \StdClass;
-            $conns[$i]->WebSocket->headers = $headers;
+            $conns[$i]->WebSocket->request = $headers;
         }
 
         $mock = new MockComponent;

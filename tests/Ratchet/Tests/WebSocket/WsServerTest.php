@@ -5,6 +5,8 @@ use Ratchet\Tests\Mock\Component as MockComponent;
 
 /**
  * @covers Ratchet\WebSocket\WsServer
+ * @covers Ratchet\ComponentInterface
+ * @covers Ratchet\MessageComponentInterface
  */
 class WsServerTest extends \PHPUnit_Framework_TestCase {
     protected $comp;

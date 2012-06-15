@@ -3,33 +3,26 @@ namespace Ratchet\Tests\WebSocket\Version;
 use Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\RFC6455\Frame;
 use Guzzle\Http\Message\RequestFactory;
+use Guzzle\Http\Message\EntityEnclosingRequest;
 
 /**
  * @covers Ratchet\WebSocket\Version\RFC6455
  */
 class RFC6455Test extends \PHPUnit_Framework_TestCase {
-    protected $_version;
+    protected $version;
 
     public function setUp() {
-        $this->_version = new RFC6455();
+        $this->version = new RFC6455;
     }
 
     /**
-     * Is this useful?
-     */
-    public function testClassImplementsVersionInterface() {
-        $constraint = $this->isInstanceOf('\\Ratchet\\WebSocket\\Version\\VersionInterface');
-        $this->assertThat($this->_version, $constraint);
-    }
-
-    /**
-     * @dataProvider HandshakeProvider
+     * @dataProvider handshakeProvider
      */
     public function testKeySigningForHandshake($key, $accept) {
-        $this->assertEquals($accept, $this->_version->sign($key));
+        $this->assertEquals($accept, $this->version->sign($key));
     }
 
-    public static function HandshakeProvider() {
+    public static function handshakeProvider() {
         return array(
             array('x3JJHMbDL1EzLkh9GBhXDw==', 'HSmrc0sMlYUkAGmm5OPpG2HaGWk=')
           , array('dGhlIHNhbXBsZSBub25jZQ==', 's3pPLMBiTxaQ9kYGzzhZRbK+xOo=')
@@ -56,8 +49,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
     }
 
     public function testUnframeMatchesPreFraming() {
-        $string   = 'Hello World!';
-        $framed   = $this->_version->frame($string);
+        $string = 'Hello World!';
+        $framed = $this->version->newFrame($string)->getContents();
 
         $frame = new Frame;
         $frame->addBuffer($framed);
@@ -76,6 +69,26 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
       , 'Sec-WebSocket-Protocol' => 'chat, superchat'
       , 'Sec-WebSocket-Version'  => 13
     );
+
+    public function caseVariantProvider() {
+        return array(
+            array('Sec-Websocket-Version')
+          , array('sec-websocket-version')
+          , array('SEC-WEBSOCKET-VERSION')
+          , array('sEC-wEBsOCKET-vERSION')
+        );
+    }
+
+    /**
+     * @dataProvider caseVariantProvider
+     */
+    public function testIsProtocolWithCaseInsensitivity($headerName) {
+        $header = static::$good_header;
+        unset($header['Sec-WebSocket-Version']);
+        $header[$headerName] = 13;
+
+        $this->assertTrue($this->version->isProtocol(new EntityEnclosingRequest('get', '/', $header)));
+    }
 
     /**
      * A helper function to try and quickly put together a valid WebSocket HTTP handshake
@@ -116,21 +129,23 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
      * @dataProvider headerHandshakeProvider
      */
     public function testVariousHeadersToCheckHandshakeTolerance($pass, $header) {
-        $request = RequestFactory::getInstance()->fromMessage($header);
+        $request  = RequestFactory::getInstance()->fromMessage($header);
+        $response = $this->version->handshake($request);
+
+        $this->assertInstanceOf('\\Guzzle\\Http\\Message\\Response', $response);
 
         if ($pass) {
-            $this->assertInstanceOf('\\Guzzle\\Http\\Message\\Response', $this->_version->handshake($request));
+            $this->assertEquals(101, $response->getStatusCode());
         } else {
-            $this->setExpectedException('InvalidArgumentException');
-            $this->_version->handshake($request);
+            $this->assertGreaterThanOrEqual(400, $response->getStatusCode());
         }
     }
 
     public function testNewMessage() {
-        $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Message', $this->_version->newMessage());
+        $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Message', $this->version->newMessage());
     }
 
     public function testNewFrame() {
-        $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Frame', $this->_version->newFrame());
+        $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Frame', $this->version->newFrame());
     }
 }

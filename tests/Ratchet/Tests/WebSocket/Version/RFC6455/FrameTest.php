@@ -19,21 +19,6 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->_frame = new Frame;
     }
 
-    protected static function convert($in) {
-        if (strlen($in) > 8) {
-            $out = '';
-
-            while (strlen($in) > 8) {
-                $out .= static::convert(substr($in, 0, 8));
-                $in   = substr($in, 8); 
-            }
-
-            return $out;
-        }
-
-        return pack('C', bindec($in));
-    }
-
     /**
      * This is a data provider
      * @param string The UTF8 message
@@ -67,7 +52,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\UnderflowException');
 
         if (!empty($bin)) {
-            $this->_frame->addBuffer(static::convert($bin));
+            $this->_frame->addBuffer(Frame::encode($bin));
         }
 
         call_user_func(array($this->_frame, $method));
@@ -93,7 +78,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider firstByteProvider
      */
     public function testFinCodeFromBits($fin, $opcode, $bin) {
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($bin));
         $this->assertEquals($fin, $this->_frame->isFinal());
     }
 
@@ -109,7 +94,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider firstByteProvider
      */
     public function testOpcodeFromBits($fin, $opcode, $bin) {
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($bin));
         $this->assertEquals($opcode, $this->_frame->getOpcode());
     }
 
@@ -136,8 +121,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider payloadLengthDescriptionProvider
      */
     public function testFirstPayloadDesignationValue($bits, $bin) {
-        $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(Frame::encode($bin));
 
         $ref = new \ReflectionClass($this->_frame);
         $cb  = $ref->getMethod('getFirstPayloadVal');
@@ -150,8 +135,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider payloadLengthDescriptionProvider
      */
     public function testDetermineHowManyBitsAreUsedToDescribePayload($expected_bits, $bin) {
-        $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(Frame::encode($bin));
 
         $ref = new \ReflectionClass($this->_frame);
         $cb  = $ref->getMethod('getNumPayloadBits');
@@ -172,8 +157,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider secondByteProvider
      */
     public function testIsMaskedReturnsExpectedValue($masked, $payload_length, $bin) {
-        $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(Frame::encode($bin));
 
         $this->assertEquals($masked, $this->_frame->isMasked());
     }
@@ -190,8 +175,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider secondByteProvider
      */
     public function testGetPayloadLengthWhenOnlyFirstFrameIsUsed($masked, $payload_length, $bin) {
-        $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
-        $this->_frame->addBuffer(static::convert($bin));
+        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(Frame::encode($bin));
 
         $this->assertEquals($payload_length, $this->_frame->getPayloadLength());
     }
@@ -230,8 +215,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @todo I I wrote the dataProvider incorrectly, skpping for now
      */
     public function testGetMaskingKey($mask) {
-        $this->_frame->addBuffer(static::convert($this->_firstByteFinText));
-        $this->_frame->addBuffer(static::convert($this->_secondByteMaskedSPL));
+        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(Frame::encode($this->_secondByteMaskedSPL));
         $this->_frame->addBuffer($mask);
 
         $this->assertEquals($mask, $this->_frame->getMaskingKey());
@@ -256,13 +241,101 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider UnframeMessageProvider
      */
     public function testCheckPiecingTogetherMessage($msg, $encoded) {
-//        return $this->markTestIncomplete('Ran out of time, had to attend to something else, come finish me!');
-
         $framed = base64_decode($encoded);
         for ($i = 0, $len = strlen($framed);$i < $len; $i++) {
             $this->_frame->addBuffer(substr($framed, $i, 1));
         }
 
         $this->assertEquals($msg, $this->_frame->getPayload());
+    }
+
+    public function testLongCreate() {
+        $len = 65525;
+        $pl  = $this->generateRandomString($len);
+
+        $frame = Frame::create($pl, true, Frame::OP_PING);
+
+        $this->assertTrue($frame->isFinal());
+        $this->assertEquals(Frame::OP_PING, $frame->getOpcode());
+        $this->assertFalse($frame->isMasked());
+        $this->assertEquals($len, $frame->getPayloadLength());
+        $this->assertEquals($pl, $frame->getPayload());
+    }
+
+    public function testReallyLongCreate() {
+        $len = 65575;
+
+        $frame = Frame::create($this->generateRandomString($len));
+
+        $this->assertEquals($len, $frame->getPayloadLength());
+    }
+
+    public function testExtractOverflow() {
+        $string1 = $this->generateRandomString();
+        $frame1  = Frame::create($string1);
+
+        $string2 = $this->generateRandomString();
+        $frame2  = Frame::create($string2);
+
+        $cat = new Frame;
+        $cat->addBuffer($frame1->getContents() . $frame2->getContents());
+
+        $this->assertEquals($frame1->getContents(), $cat->getContents());
+        $this->assertEquals($string1, $cat->getPayload());
+
+        $uncat = new Frame;
+        $uncat->addBuffer($cat->extractOverflow());
+
+        $this->assertEquals($string1, $cat->getPayload());
+        $this->assertEquals($string2, $uncat->getPayload());
+    }
+
+    public function testEmptyExtractOverflow() {
+        $string = $this->generateRandomString();
+        $frame  = Frame::create($string);
+
+        $this->assertEquals($string, $frame->getPayload());
+        $this->assertEquals('', $frame->extractOverflow());
+        $this->assertEquals($string, $frame->getPayload());
+    }
+
+    public function testMasking() {
+        $msg   = 'The quick brown fox jumps over the lazy dog.';
+        $frame = Frame::create($msg)->maskPayload();
+
+        $this->assertTrue($frame->isMasked());
+        $this->assertEquals($msg, $frame->getPayload());
+    }
+
+    public function testUnMaskPayload() {
+        $string = $this->generateRandomString();
+        $frame  = Frame::create($string)->maskPayload()->unMaskPayload();
+
+        $this->assertFalse($frame->isMasked());
+        $this->assertEquals($string, $frame->getPayload());
+    }
+
+    protected function generateRandomString($length = 10, $addSpaces = true, $addNumbers = true) {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"$%&/()=[]{}'; // ยง
+
+        $useChars = array();
+        for($i = 0; $i < $length; $i++) {
+            $useChars[] = $characters[mt_rand(0, strlen($characters) - 1)];
+        }
+
+        if($addSpaces === true) {
+            array_push($useChars, ' ', ' ', ' ', ' ', ' ', ' ');
+        }
+
+        if($addNumbers === true) {
+            array_push($useChars, rand(0, 9), rand(0, 9), rand(0, 9));
+        }
+
+        shuffle($useChars);
+
+        $randomString = trim(implode('', $useChars));
+        $randomString = substr($randomString, 0, $length);
+
+        return $randomString;
     }
 }

@@ -5,6 +5,7 @@ use Ratchet\Tests\Mock\Connection;
 
 /**
  * @covers Ratchet\AbstractConnectionDecorator
+ * @covers Ratchet\ConnectionInterface
  */
 class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
     protected $mock;
