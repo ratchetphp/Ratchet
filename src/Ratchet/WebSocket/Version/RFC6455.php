@@ -99,7 +99,7 @@ class RFC6455 implements VersionInterface {
             $opcode = $frame->getOpcode();
 
             if ($opcode > 2) {
-                if ($frame->getPayloadLength() > 125) {
+                if ($frame->getPayloadLength() > 125 || !$frame->isFinal()) {
                     return $from->close($frame::CLOSE_PROTOCOL);
                 }
 
