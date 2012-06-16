@@ -20,7 +20,11 @@ class Connection extends AbstractConnectionDecorator {
      * {@inheritdoc}
      */
     public function close($code = 1000) {
-        $this->send(new Frame($code, true, Frame::OP_CLOSE));
+        if ($code instanceof DataInterface) {
+            $this->send($code);
+        } else {
+            $this->send(new Frame(Frame::encode(sprintf('%016b', $code)), true, Frame::OP_CLOSE));
+        }
 
         $this->getConnection()->close();
     }

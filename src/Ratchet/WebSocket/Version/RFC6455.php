@@ -93,27 +93,19 @@ class RFC6455 implements VersionInterface {
             $frame = $from->WebSocket->frame;
 
             if (!$frame->isMasked()) {
-                unset($from->WebSocket->frame);
-
-                $from->send($this->newFrame($frame::CLOSE_PROTOCOL, true, $frame::OP_CLOSE));
-                $from->getConnection()->close();
-
-                return;
+                return $from->close($frame::CLOSE_PROTOCOL);
             }
 
             $opcode = $frame->getOpcode();
 
             if ($opcode > 2) {
+                if ($frame->getPayloadLength() > 125) {
+                    return $from->close($frame::CLOSE_PROTOCOL);
+                }
+
                 switch ($opcode) {
                     case $frame::OP_CLOSE:
-                        $from->close($frame->getPayload());
-/*
-                        $from->send($frame->unMaskPayload());
-                        $from->getConnection()->close();
-*/
-//                        $from->send(Frame::create(Frame::CLOSE_NORMAL, true, Frame::OP_CLOSE));
-
-                        return;
+                        return $from->close($frame);
                     break;
                     case $frame::OP_PING:
                         $from->send($this->newFrame($frame->getPayload(), true, $frame::OP_PONG));
