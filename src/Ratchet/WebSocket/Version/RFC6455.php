@@ -146,6 +146,10 @@ class RFC6455 implements VersionInterface {
             $parsed = $from->WebSocket->message->getPayload();
             unset($from->WebSocket->message);
 
+            if (!mb_check_encoding($parsed, 'UTF-8')) {
+                return $from->close(Frame::CLOSE_BAD_PAYLOAD);
+            }
+
             $from->WebSocket->coalescedCallback->onMessage($from, $parsed);
         }
 
