@@ -3,7 +3,7 @@ namespace Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\MessageInterface;
 use Ratchet\WebSocket\Version\FrameInterface;
 
-class Message implements MessageInterface {
+class Message implements MessageInterface, \Countable {
     /**
      * @var SplDoublyLinkedList
      */
@@ -11,6 +11,13 @@ class Message implements MessageInterface {
 
     public function __construct() {
         $this->_frames = new \SplDoublyLinkedList;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count() {
+        return count($this->_frames);
     }
 
     /**

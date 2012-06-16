@@ -130,6 +130,14 @@ class RFC6455 implements VersionInterface {
 
             $overflow = $from->WebSocket->frame->extractOverflow();
 
+            if ($frame::OP_CONTINUE == $frame->getOpcode() && 0 == count($from->WebSocket->message)) {
+                return $from->close($frame::CLOSE_PROTOCOL);
+            }
+
+            if (count($from->WebSocket->message) > 0 && $frame::OP_CONTINUE != $frame->getOpcode()) {
+                return $from->close($frame::CLOSE_PROTOCOL);
+            }
+
             $from->WebSocket->message->addFrame($from->WebSocket->frame);
             unset($from->WebSocket->frame);
         }
