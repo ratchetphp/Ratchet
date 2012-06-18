@@ -18,7 +18,7 @@
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "b78d96a2cde9a78ab2f923e9aa9a40f778d051df"
+            "source-reference": "ce608dc03d609719eee1cd3f814912d11273fbfe"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -28,13 +28,19 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "d9ef2afd0218415a8c04ea48a2c83bb5b8f0f51c"
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
         },
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
             "alias-pretty-version": "2.1.x-dev",
             "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/http-foundation",
+            "version": "dev-master",
+            "source-reference": "5d15807c883c6a927eb3ac3c04e9a3f62b92e5b4"
         }
     ],
     "packages-dev": null,
