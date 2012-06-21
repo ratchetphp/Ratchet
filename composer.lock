@@ -1,10 +1,11 @@
 {
-    "hash": "253370657f067dacf104d5fae531f20a",
+    "hash": "4bab6332da5386b0aacee051f5111f04",
     "packages": [
         {
             "package": "evenement/evenement",
-            "version": "dev-master",
-            "source-reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d"
+            "version": "1.0.x-dev",
+            "source-reference": "v1.0.0",
+            "commit-date": "1338390068"
         },
         {
             "package": "guzzle/guzzle",
@@ -13,17 +14,26 @@
         {
             "package": "react/event-loop",
             "version": "dev-master",
-            "source-reference": "0927a2129394f10cc8534994271c6073ca9e350c"
+            "source-reference": "0927a2129394f10cc8534994271c6073ca9e350c",
+            "commit-date": "1337810634"
         },
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "ce608dc03d609719eee1cd3f814912d11273fbfe"
+            "source-reference": "e6f56a2d9ed1ad51d931ae3d3fee4a5803585bc8",
+            "commit-date": "1340206359"
         },
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "30d3f5da80c2aeab15bcdb5a7d448d15bc294b23"
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source-reference": "30d3f5da80c2aeab15bcdb5a7d448d15bc294b23",
+            "commit-date": "1338018513"
         },
         {
             "package": "symfony/http-foundation",
@@ -34,13 +44,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "source-reference": "5d15807c883c6a927eb3ac3c04e9a3f62b92e5b4"
+            "source-reference": "5d15807c883c6a927eb3ac3c04e9a3f62b92e5b4",
+            "commit-date": "1339597310"
         }
     ],
     "packages-dev": null,
