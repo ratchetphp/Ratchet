@@ -63,7 +63,7 @@ class IoServer {
     public function handleConnect($conn) {
         $conn->decor = new IoConnection($conn, $this);
 
-        $conn->decor->resourceId    = (int)$conn->socket;
+        $conn->decor->resourceId    = (int)$conn->stream;
         $conn->decor->remoteAddress = $conn->getRemoteAddress();
 
         $this->app->onOpen($conn->decor);

@@ -20,8 +20,14 @@
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "e6f56a2d9ed1ad51d931ae3d3fee4a5803585bc8",
-            "commit-date": "1340206359"
+            "source-reference": "bdc8d6a75ae7160578dcbe2e2c2c9d4acd6332ec",
+            "commit-date": "1341694306"
+        },
+        {
+            "package": "react/stream",
+            "version": "dev-master",
+            "source-reference": "41ff804ea579d9b7da75f51dd8ad6e65e4fdcdc1",
+            "commit-date": "1341694306"
         },
         {
             "package": "symfony/event-dispatcher",
