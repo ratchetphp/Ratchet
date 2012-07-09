@@ -11,8 +11,13 @@
         {
             "name": "Chris Boden"
           , "email": "cboden@gmail.com"
+          , "role": "Developer"
         }
     ]
+  , "support": {
+        "forum": "https://groups.google.com/forum/#!forum/ratchet-php"
+      , "issues": "https://github.com/cboden/Ratchet/issues"
+    }
   , "autoload": {
         "psr-0": {
             "Ratchet\\Tests": "tests"

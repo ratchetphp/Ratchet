@@ -151,6 +151,14 @@ class WsServer implements MessageComponentInterface {
     }
 
     /**
+     * Disable a specific version of the WebSocket protocol
+     * @param int Version ID to disable
+     */
+    public function disableVersion($versionId) {
+        $this->versioner->disableVersion($versionId);
+    }
+
+    /**
      * @param string
      * @return boolean
      */

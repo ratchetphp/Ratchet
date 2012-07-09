@@ -1,5 +1,5 @@
 {
-    "hash": "34dae9a47679408d18e075f80e827ea4",
+    "hash": "31c6274af1ace64552f45608ba1f829d",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -20,8 +20,8 @@
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "bdc8d6a75ae7160578dcbe2e2c2c9d4acd6332ec",
-            "commit-date": "1341694306"
+            "source-reference": "b9ea58b137ab5ae8162f0a73f16112c9d9293591",
+            "commit-date": "1341800000"
         },
         {
             "package": "react/stream",
@@ -32,14 +32,8 @@
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "source-reference": "v2.1.0-BETA1",
-            "commit-date": "1338018513"
+            "source-reference": "0dc437f2eca7dea19facfde6db7f7f5e8e71d0bc",
+            "commit-date": "1341838460"
         },
         {
             "package": "symfony/http-foundation",
@@ -50,8 +44,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3e53f0a9f802dc1f34a722109df0b0d2679671a8",
-            "commit-date": "1341379664"
+            "source-reference": "985f3aa6c9f8074b2d1a12345e0768f8c24aa72d",
+            "commit-date": "1341838460"
         }
     ],
     "packages-dev": null,
