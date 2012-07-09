@@ -41,7 +41,7 @@ class IoServer {
         $this->loop = $loop;
         $this->app  = $app;
 
-        $socket->on('connect', array($this, 'handleConnect'));
+        $socket->on('connection', array($this, 'handleConnect'));
 
         $this->handlers['data']  = array($this, 'handleData');
         $this->handlers['end']   = array($this, 'handleEnd');
