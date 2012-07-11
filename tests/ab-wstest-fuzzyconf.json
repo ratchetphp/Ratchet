@@ -1,4 +1,3 @@
-
 {
     "options": {"failByDrop": false}
   , "outdir": "../reports/ab"

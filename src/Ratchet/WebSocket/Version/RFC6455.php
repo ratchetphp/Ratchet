@@ -21,6 +21,10 @@ class RFC6455 implements VersionInterface {
      */
     protected $_verifier;
 
+    /**
+     * A lookup of the valid close codes that can be sent in a frame
+     * @var array
+     */
     private $closeCodes = array();
 
     public function __construct() {

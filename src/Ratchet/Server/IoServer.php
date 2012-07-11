@@ -9,7 +9,8 @@ use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
 
 /**
- * Creates an open-ended socket to listen on a port for incomming connections.  Events are delegated through this to attached applications
+ * Creates an open-ended socket to listen on a port for incomming connections. 
+ * Events are delegated through this to attached applications
  */
 class IoServer {
     /**
@@ -48,6 +49,12 @@ class IoServer {
         $this->handlers['error'] = array($this, 'handleError');
     }
 
+    /**
+     * @param Ratchet\MessageComponentInterface The application that I/O will call when events are received
+     * @param int The port to server sockets on
+     * @param string The address to receive sockets on (0.0.0.0 means receive connections from any)
+     * @return Ratchet\Server\IoServer
+     */
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
         $loop   = new StreamSelectLoop;
         $socket = new Reactor($loop);
@@ -56,10 +63,16 @@ class IoServer {
         return new static($component, $socket, $loop);
     }
 
+    /**
+     * Run the application by entering the event loop
+     */
     public function run() {
         $this->loop->run();
     }
 
+    /**
+     * Triggered when a new connection is received from React
+     */
     public function handleConnect($conn) {
         $conn->decor = new IoConnection($conn, $this);
 
@@ -73,6 +86,11 @@ class IoServer {
         $conn->on('error', $this->handlers['error']);
     }
 
+    /**
+     * Data has been received from React
+     * @param string
+     * @param React\Socket\Connection
+     */
     public function handleData($data, $conn) {
         try {
             $this->app->onMessage($conn->decor, $data);
@@ -81,6 +99,10 @@ class IoServer {
         }
     }
 
+    /**
+     * A connection has been closed by React
+     * @param React\Socket\Connection
+     */
     public function handleEnd($conn) {
         try {
             $this->app->onClose($conn->decor);
@@ -89,6 +111,11 @@ class IoServer {
         }
     }
 
+    /**
+     * An error has occurred, let the listening application know
+     * @param Exception
+     * @param React\Socket\Connection
+     */
     public function handleError(\Exception $e, $conn) {
         $this->app->onError($conn->decor, $e);
     }

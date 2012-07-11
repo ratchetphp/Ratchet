@@ -54,8 +54,6 @@ class WsServer implements MessageComponentInterface {
      * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
      */
     public function __construct(MessageComponentInterface $component) {
-        //mb_internal_encoding('UTF-8');
-
         $this->reqParser = new HttpRequestParser;
         $this->versioner = new VersionManager;
 
