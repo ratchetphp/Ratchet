@@ -8,7 +8,7 @@ Build up your application through simple interfaces and re-use your application 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 19, Firefox 6 - 12, Safari 5.0.1+, iOS 4.2, iOS 5
+* Tested on Chrome 13 - 20, Firefox 6 - 12, Safari 5.0.1+, iOS 4.2, iOS 5
 
 ##Requirements
 
@@ -25,6 +25,8 @@ Accessing your website's session data in Ratchet requires you to use [Symfony2 S
 User and API documentation is available on Ratchet's website: http://socketo.me
 
 See https://github.com/cboden/Ratchet-examples for some out-of-the-box working demos using Ratchet.
+
+Need help?  Have a question?  Want to provide feedback?  Write a message on the [Google Groups Mailing List](https://groups.google.com/forum/#!forum/ratchet-php).
 
 ---
 
