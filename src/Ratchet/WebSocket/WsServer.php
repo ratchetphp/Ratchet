@@ -130,11 +130,7 @@ class WsServer implements MessageComponentInterface {
         if ($this->connections->contains($conn)) {
             $decor = $this->connections[$conn];
             $this->connections->detach($conn);
-        }
 
-        // WS::onOpen is not called when the socket connects, it's call when the handshake is done
-        // The socket could close before WS calls onOpen, so we need to check if we've "opened" it for the developer yet
-        if (isset($decor)) {
             $this->_decorating->onClose($decor);
         }
     }
