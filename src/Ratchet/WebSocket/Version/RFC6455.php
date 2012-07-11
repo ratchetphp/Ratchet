@@ -21,8 +21,11 @@ class RFC6455 implements VersionInterface {
      */
     protected $_verifier;
 
+    private $closeCodes = array();
+
     public function __construct() {
         $this->_verifier = new HandshakeVerifier;
+        $this->setCloseCodes();
     }
 
     /**
@@ -92,6 +95,13 @@ class RFC6455 implements VersionInterface {
         if ($from->WebSocket->frame->isCoalesced()) {
             $frame = $from->WebSocket->frame;
 
+            if (false !== $frame->getRsv1() ||
+                false !== $frame->getRsv2() ||
+                false !== $frame->getRsv3()
+            ) {
+                return $from->close($frame::CLOSE_PROTOCOL);
+            }
+
             if (!$frame->isMasked()) {
                 return $from->close($frame::CLOSE_PROTOCOL);
             }
@@ -105,6 +115,26 @@ class RFC6455 implements VersionInterface {
 
                 switch ($opcode) {
                     case $frame::OP_CLOSE:
+                        $closeCode = 0;
+
+                        $bin = $frame->getPayload();
+
+                        if (empty($bin)) {
+                            return $from->close();
+                        }
+
+                        if (strlen($bin) >= 2) {
+                            list($closeCode) = array_merge(unpack('n*', substr($bin, 0, 2)));
+                        }
+
+                        if (!$this->isValidCloseCode($closeCode)) {
+                            return $from->close($frame::CLOSE_PROTOCOL);
+                        }
+
+                        if (!mb_check_encoding(substr($bin, 2), 'UTF-8')) {
+                            return $from->close($frame::CLOSE_BAD_PAYLOAD);
+                        }
+
                         return $from->close($frame);
                     break;
                     case $frame::OP_PING:
@@ -189,5 +219,41 @@ class RFC6455 implements VersionInterface {
      */
     public function sign($key) {
         return base64_encode(sha1($key . static::GUID, true));
+    }
+
+    /**
+     * Determine if a close code is valid
+     * @param int|string
+     * @return bool
+     */
+    public function isValidCloseCode($val) {
+        if (array_key_exists($val, $this->closeCodes)) {
+            return true;
+        }
+
+        if ($val >= 3000 && $val <= 4999) {
+            return true;
+        }
+
+        return false;
+
+        if (empty($val)) {
+            return false;
+        }
+    }
+
+    /**
+     * Creates a private lookup of valid, private close codes
+     */
+    protected function setCloseCodes() {
+        $this->closeCodes[Frame::CLOSE_NORMAL]      = true;
+        $this->closeCodes[Frame::CLOSE_GOING_AWAY]  = true;
+        $this->closeCodes[Frame::CLOSE_PROTOCOL]    = true;
+        $this->closeCodes[Frame::CLOSE_BAD_DATA]    = true;
+        $this->closeCodes[Frame::CLOSE_BAD_PAYLOAD] = true;
+        $this->closeCodes[Frame::CLOSE_POLICY]      = true;
+        $this->closeCodes[Frame::CLOSE_TOO_BIG]     = true;
+        $this->closeCodes[Frame::CLOSE_MAND_EXT]    = true;
+        $this->closeCodes[Frame::CLOSE_SRV_ERR]     = true;
     }
 }

@@ -133,6 +133,48 @@ class Frame implements FrameInterface {
     }
 
     /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv1() {
+        if ($this->bytesRecvd < 1) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
+
+        return (boolean)(int)$fbb[1];
+    }
+
+    /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv2() {
+        if ($this->bytesRecvd < 1) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
+
+        return (boolean)(int)$fbb[2];
+    }
+
+    /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv3() {
+        if ($this->bytesRecvd < 1) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
+
+        return (boolean)(int)$fbb[3];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function isMasked() {
