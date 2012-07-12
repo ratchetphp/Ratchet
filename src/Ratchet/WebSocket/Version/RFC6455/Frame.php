@@ -203,6 +203,7 @@ class Frame implements FrameInterface {
     }
 
     /**
+     * Create a 4 byte masking key
      * @return string
      */
     public function generateMaskingKey() {
@@ -270,6 +271,13 @@ class Frame implements FrameInterface {
         return $this;
     }
 
+    /**
+     * Apply a mask to a string or the payload of the instance
+     * @param string The 4 character masking key to be applied
+     * @param string|null A string to mask or null to use the payload
+     * @throws UnderflowException If using the payload but enough hasn't been buffered
+     * @return string The masked string
+     */
     protected function applyMask($maskingKey, $payload = null) {
         if (null === $payload) {
             if (!$this->isCoalesced()) {
