@@ -16,6 +16,7 @@ Build up your application through simple interfaces and re-use your application 
 Shell access is required and a dedicated machine with root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine (for now).
+
 PHP 5.3.3 (or higher) is required. If you have access, PHP5.4 is recommended for its performance improvements. 
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
