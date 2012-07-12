@@ -12,6 +12,7 @@ CHANGELOG
 
  * Ratchet passes every non-binary message AB test
  * Ratchet now relies on all stable dependancies
+ * mbstring no longer required (but recommended if compliance is important to you)
 
 * 0.1.4 (2012-06-17)
 

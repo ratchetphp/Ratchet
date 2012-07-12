@@ -231,7 +231,7 @@ class Frame implements FrameInterface {
             throw new \InvalidArgumentException("Masking key must be " . static::MASK_LENGTH ." characters");
         }
 
-        if (!mb_check_encoding($maskingKey, 'US-ASCII')) {
+        if (extension_loaded('mbstring') && true !== mb_check_encoding($maskingKey, 'US-ASCII')) {
             throw new \InvalidArgumentException("Masking key MUST be ASCII");
         }
 

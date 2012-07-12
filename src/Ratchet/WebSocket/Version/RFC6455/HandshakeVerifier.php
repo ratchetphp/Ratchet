@@ -59,6 +59,10 @@ class HandshakeVerifier {
             return false;
         }
 
+        if (!extension_loaded('mbstring')) {
+            return true;
+        }
+
         return mb_check_encoding($val, 'US-ASCII');
     }
 

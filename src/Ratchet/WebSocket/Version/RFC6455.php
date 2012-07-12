@@ -53,9 +53,17 @@ class RFC6455 implements VersionInterface {
      */
     private $closeCodes = array();
 
+    /**
+     * Lookup if mbstring is available
+     * @var bool
+     */
+     private $hasMbString = false;
+
     public function __construct() {
         $this->_verifier = new HandshakeVerifier;
         $this->setCloseCodes();
+
+        $this->hasMbString = extension_loaded('mbstring');
     }
 
     /**
@@ -292,7 +300,7 @@ class RFC6455 implements VersionInterface {
      * @return bool
      */
     function isUtf8($str) {
-        if (false === mb_check_encoding($str, 'UTF-8')) {
+        if ($this->hasMbString && false === mb_check_encoding($str, 'UTF-8')) {
             return false;
         }
 
