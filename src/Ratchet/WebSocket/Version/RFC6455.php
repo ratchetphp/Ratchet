@@ -266,10 +266,6 @@ class RFC6455 implements VersionInterface {
         }
 
         return false;
-
-        if (empty($val)) {
-            return false;
-        }
     }
 
     /**
@@ -296,12 +292,19 @@ class RFC6455 implements VersionInterface {
      * @return bool
      */
     function isUtf8($str) {
-        if (isset($str[100000])) {
+        if (false === mb_check_encoding($str, 'UTF-8')) {
+            return false;
+        }
+
+        $len = strlen($str);
+
+        // The secondary method of checking is painfully slow
+        // If the message is more than 10kb, skip UTF-8 checks
+        if ($len > 10000) {
             return true;
         }
 
         $state = static::UTF8_ACCEPT;
-        $len   = strlen($str);
 
         for ($i = 0; $i < $len; $i++) {
             $state = static::$dfa[256 + ($state << 4) + static::$dfa[ord($str[$i])]];
@@ -311,6 +314,6 @@ class RFC6455 implements VersionInterface {
             }
         }
 
-        return mb_check_encoding($str, 'UTF-8');
+        return true;
     }
 }
