@@ -13,21 +13,17 @@
         },
         {
             "package": "react/event-loop",
-            "version": "dev-master",
-            "source-reference": "0927a2129394f10cc8534994271c6073ca9e350c",
-            "commit-date": "1337810634"
+            "version": "v0.1.1"
         },
         {
             "package": "react/socket",
             "version": "dev-master",
-            "source-reference": "b9ea58b137ab5ae8162f0a73f16112c9d9293591",
-            "commit-date": "1341800000"
+            "source-reference": "v0.1.1",
+            "commit-date": "1342126952"
         },
         {
             "package": "react/stream",
-            "version": "dev-master",
-            "source-reference": "41ff804ea579d9b7da75f51dd8ad6e65e4fdcdc1",
-            "commit-date": "1341694306"
+            "version": "v0.1.1"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -44,8 +40,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "985f3aa6c9f8074b2d1a12345e0768f8c24aa72d",
-            "commit-date": "1341838460"
+            "source-reference": "3399f6f068cd41f1b42140699db1f1e6d3bcb361",
+            "commit-date": "1342107786"
         }
     ],
     "packages-dev": null,
