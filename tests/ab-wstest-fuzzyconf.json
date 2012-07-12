@@ -4,8 +4,8 @@
   , "outdir": "../reports/ab"
 
   , "servers": [
-        {"agent": "Ratchet-libevent/v0.2b", "url": "ws://localhost:8000", "options": {"version": 18}}
-      , {"agent": "Ratchet-stream/v0.2b", "url": "ws://localhost:8001", "options": {"version": 18}}
+        {"agent": "Ratchet-libevent/v0.1.5", "url": "ws://localhost:8000", "options": {"version": 18}}
+      , {"agent": "Ratchet-stream/v0.1.5", "url": "ws://localhost:8001", "options": {"version": 18}}
     ]
 
   , "cases": ["*"]

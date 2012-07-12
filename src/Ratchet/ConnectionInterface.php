@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet;
 
-const VERSION = 'Ratchet/0.1.4';
+const VERSION = 'Ratchet/0.1.5';
 
 /**
  * A proxy object representing a connection to the application
