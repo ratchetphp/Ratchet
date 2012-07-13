@@ -13,15 +13,15 @@
         },
         {
             "package": "react/event-loop",
-            "version": "v0.1.0"
+            "version": "v0.1.1"
         },
         {
             "package": "react/socket",
-            "version": "v0.1.0"
+            "version": "v0.1.1"
         },
         {
             "package": "react/stream",
-            "version": "v0.1.0"
+            "version": "v0.1.1"
         },
         {
             "package": "symfony/event-dispatcher",

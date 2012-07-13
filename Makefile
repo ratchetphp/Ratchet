@@ -1,4 +1,7 @@
-unittests:
+test:
+	phpunit
+
+cover:
 	phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:

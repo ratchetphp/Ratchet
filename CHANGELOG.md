@@ -14,6 +14,11 @@ CHANGELOG
  * Ratchet now relies on all stable dependancies
  * mbstring no longer required (but recommended if compliance is important to you)
 
+* 0.1.5 (2012-07-12)
+
+ * BF: Error where service wouldn't run on PHP <= 5.3.8
+ * Dependancy library updates
+
 * 0.1.4 (2012-06-17)
 
  * Fixed dozens of failing AB tests
