@@ -109,6 +109,8 @@ class IoServer {
         } catch (\Exception $e) {
             $this->handleError($e, $conn);
         }
+
+        unset($conn->decor);
     }
 
     /**
