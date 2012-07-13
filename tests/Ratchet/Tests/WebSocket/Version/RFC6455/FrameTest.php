@@ -66,20 +66,40 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      */
     public static function firstByteProvider() {
         return array(
-            array(false, 8,  '00001000')
-          , array(true,  10, '10001010')
-          , array(false, 15, '00001111')
-          , array(true,   1, '10000001')
-          , array(true,  15, '11111111')
+            array(false, false, false, true,   8, '00011000')
+          , array(true,  false, true,  false, 10, '10101010')
+          , array(false, false, false, false, 15, '00001111')
+          , array(true,  false, false, false,  1, '10000001')
+          , array(true,  true,  true,  true,  15, '11111111')
+          , array(true,  true,  false, false,  7, '11000111')
         );
     }
 
     /**
      * @dataProvider firstByteProvider
      */
-    public function testFinCodeFromBits($fin, $opcode, $bin) {
+    public function testFinCodeFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
         $this->_frame->addBuffer(Frame::encode($bin));
         $this->assertEquals($fin, $this->_frame->isFinal());
+    }
+
+    /**
+     * @dataProvider firstByteProvider
+     */
+    public function testGetRsvFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
+        $this->_frame->addBuffer(Frame::encode($bin));
+
+        $this->assertEquals($rsv1, $this->_frame->getRsv1());
+        $this->assertEquals($rsv2, $this->_frame->getRsv2());
+        $this->assertEquals($rsv3, $this->_frame->getRsv3());
+    }
+
+    /**
+     * @dataProvider firstByteProvider
+     */
+    public function testOpcodeFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
+        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->assertEquals($opcode, $this->_frame->getOpcode());
     }
 
     /**
@@ -88,14 +108,6 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     public function testFinCodeFromFullMessage($msg, $encoded) {
         $this->_frame->addBuffer(base64_decode($encoded));
         $this->assertTrue($this->_frame->isFinal());
-    }
-
-    /**
-     * @dataProvider firstByteProvider
-     */
-    public function testOpcodeFromBits($fin, $opcode, $bin) {
-        $this->_frame->addBuffer(Frame::encode($bin));
-        $this->assertEquals($opcode, $this->_frame->getOpcode());
     }
 
     /**

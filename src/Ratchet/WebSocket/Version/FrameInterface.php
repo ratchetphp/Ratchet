@@ -15,7 +15,7 @@ interface FrameInterface extends DataInterface {
     function isFinal();
 
     /**
-     * Was the payload masked?
+     * Is the payload masked?
      * @return bool
      */
     function isMasked();

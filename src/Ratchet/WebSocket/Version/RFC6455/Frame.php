@@ -127,9 +127,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
-
-        return (boolean)(int)$fbb[0];
+        return 128 === (ord($this->data[0]) & 128);
     }
 
     /**
@@ -141,9 +139,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine reserved bit');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
-
-        return (boolean)(int)$fbb[1];
+        return 64 === (ord($this->data[0]) & 64);
     }
 
     /**
@@ -155,9 +151,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine reserved bit');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
-
-        return (boolean)(int)$fbb[2];
+        return 32 === (ord($this->data[0]) & 32);
     }
 
     /**
@@ -169,9 +163,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine reserved bit');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
-
-        return (boolean)(int)$fbb[3];
+        return 16 == (ord($this->data[0]) & 16);
     }
 
     /**
@@ -182,7 +174,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException("Not enough bytes received ({$this->bytesRecvd}) to determine if mask is set");
         }
 
-        return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->data, 1, 1))), 0, 1));
+        return 128 === (ord($this->data[1]) & 128);
     }
 
     /**
