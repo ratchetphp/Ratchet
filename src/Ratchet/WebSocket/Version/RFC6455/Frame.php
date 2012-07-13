@@ -113,8 +113,6 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function addBuffer($buf) {
-        $buf = (string)$buf;
-
         $this->data       .= $buf;
         $this->bytesRecvd += strlen($buf);
     }
@@ -202,7 +200,7 @@ class Frame implements FrameInterface {
         $mask = '';
 
         for ($i = 1; $i <= static::MASK_LENGTH; $i++) {
-            $mask .= sprintf("%c", rand(32, 126));
+            $mask .= chr(rand(32, 126));
         }
 
         return $mask;
@@ -210,7 +208,7 @@ class Frame implements FrameInterface {
 
     /**
      * Apply a mask to the payload
-     * @param string|null
+     * @param string|null If NULL is passed a masking key will be generated
      * @throws InvalidArgumentException If there is an issue with the given masking key
      * @throws UnderflowException If the frame is not coalesced
      */
@@ -224,12 +222,12 @@ class Frame implements FrameInterface {
         }
 
         if (extension_loaded('mbstring') && true !== mb_check_encoding($maskingKey, 'US-ASCII')) {
-            throw new \InvalidArgumentException("Masking key MUST be ASCII");
+            throw new \OutOfBoundsException("Masking key MUST be ASCII");
         }
 
         $this->unMaskPayload();
 
-        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+        $byte = sprintf('%08b', ord($this->data[1]));
 
         $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '1', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
@@ -252,7 +250,7 @@ class Frame implements FrameInterface {
 
         $maskingKey = $this->getMaskingKey();
 
-        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+        $byte = sprintf('%08b', ord($this->data[1]));
 
         $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '0', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, '', $this->getNumPayloadBytes() + 1, static::MASK_LENGTH);
@@ -281,7 +279,7 @@ class Frame implements FrameInterface {
 
         $applied = '';
         for ($i = 0, $len = strlen($payload); $i < $len; $i++) {
-            $applied .= substr($payload, $i, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
+            $applied .= $payload[$i] ^ $maskingKey[$i % static::MASK_LENGTH];
         }
 
         return $applied;
@@ -295,7 +293,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
         }
 
-        return bindec(substr(sprintf('%08b', ord(substr($this->data, 0, 1))), 4, 4));
+        return bindec(substr(sprintf('%08b', ord($this->data[0])), 4, 4));
     }
 
     /**
@@ -308,7 +306,7 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough bytes received');
         }
 
-        return ord(substr($this->data, 1, 1)) & 127;
+        return ord($this->data[1]) & 127;
     }
 
     /**
@@ -333,13 +331,9 @@ class Frame implements FrameInterface {
         }
 
         // If the value of the initial payload length are is 127 an additional 48 bits are used to describe length 
-        // Note: The documentation specifies the length is to be 63 bits, but I think that's a type and is 64 (16+48)
+        // Note: The documentation specifies the length is to be 63 bits, but I think that's a typo and is 64 (16+48)
         if ($check === 127) {
             $bits += 48;
-        }
-
-        if (!in_array($bits, array(7, 23, 71))) {
-            throw new \UnexpectedValueException("Malformed frame, invalid payload length provided");
         }
 
         return $bits;
