@@ -26,8 +26,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
         $a = 'Hello ';
         $b = 'World!';
 
-        $f1 = Frame::create($a, false);
-        $f2 = Frame::create($b, true, Frame::OP_CONTINUE);
+        $f1 = new Frame($a, false);
+        $f2 = new Frame($b, true, Frame::OP_CONTINUE);
 
         $this->message->addFrame($f1)->addFrame($f2);
 
@@ -36,7 +36,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testUnbufferedFragment() {
-        $this->message->addFrame(Frame::create('The quick brow', false));
+        $this->message->addFrame(new Frame('The quick brow', false));
 
         $this->setExpectedException('UnderflowException');
         $this->message->getPayload();
@@ -44,9 +44,9 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetOpCode() {
         $this->message
-            ->addFrame(Frame::create('The quick brow', false, Frame::OP_TEXT))
-            ->addFrame(Frame::create('n fox jumps ov', false, Frame::OP_CONTINUE))
-            ->addFrame(Frame::create('er the lazy dog', true, Frame::OP_CONTINUE))
+            ->addFrame(new Frame('The quick brow', false, Frame::OP_TEXT))
+            ->addFrame(new Frame('n fox jumps ov', false, Frame::OP_CONTINUE))
+            ->addFrame(new Frame('er the lazy dog', true, Frame::OP_CONTINUE))
         ;
 
         $this->assertEquals(Frame::OP_TEXT, $this->message->getOpCode());
@@ -54,8 +54,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetUnBufferedPayloadLength() {
         $this->message
-            ->addFrame(Frame::create('The quick brow', false, Frame::OP_TEXT))
-            ->addFrame(Frame::create('n fox jumps ov', false, Frame::OP_CONTINUE))
+            ->addFrame(new Frame('The quick brow', false, Frame::OP_TEXT))
+            ->addFrame(new Frame('n fox jumps ov', false, Frame::OP_CONTINUE))
         ;
 
         $this->assertEquals(28, $this->message->getPayloadLength());

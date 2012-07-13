@@ -63,19 +63,6 @@ class Frame implements FrameInterface {
     }
 
     /**
-     * @param string A valid UTF-8 string to send over the wire
-     * @param bool Is the final frame in a message
-     * @param int The opcode of the frame, see constants
-     * @param bool Mask the payload
-     * @return Frame
-     * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
-     * @throws LengthException If the payload is too big
-     */
-    public static function create($payload, $final = true, $opcode = 1) {
-        return new static($payload, $final, $opcode);
-    }
-
-    /**
      * Encode the fake binary string to send over the wire
      * @param string of 1's and 0's
      * @return string

@@ -241,15 +241,6 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
-     * @todo This is needed when a client is created - needs re-write as missing parts of protocol
-     * @param string
-     * @return string
-     */
-    public function frame($message, $mask = true) {
-        return $this->newFrame($message)->getContents();
-    }
-
-    /**
      * Used when doing the handshake to encode the key, verifying client/server are speaking the same language
      * @param string
      * @return string

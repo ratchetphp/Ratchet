@@ -202,23 +202,13 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(strlen($msg), $this->_frame->getPayloadLength());
     }
 
-    /**
-     * @todo Use a masking key generator when one is coded later
-     */
-    protected function generateMask() {
-        $mask = '';
-        for($i = 0; $i < 4; $i++) {
-            $mask .= chr(rand(0, 255));
-        }
-
-        return $mask;
-    }
-
     public function maskingKeyProvider() {
+        $frame = new Frame;
+
         return array(
-            array($this->generateMask())
-          , array($this->generateMask())
-          , array($this->generateMask())
+            array($frame->generateMaskingKey())
+          , array($frame->generateMaskingKey())
+          , array($frame->generateMaskingKey())
         );
     }
 
@@ -265,7 +255,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $len = 65525;
         $pl  = $this->generateRandomString($len);
 
-        $frame = Frame::create($pl, true, Frame::OP_PING);
+        $frame = new Frame($pl, true, Frame::OP_PING);
 
         $this->assertTrue($frame->isFinal());
         $this->assertEquals(Frame::OP_PING, $frame->getOpcode());
@@ -277,17 +267,17 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     public function testReallyLongCreate() {
         $len = 65575;
 
-        $frame = Frame::create($this->generateRandomString($len));
+        $frame = new Frame($this->generateRandomString($len));
 
         $this->assertEquals($len, $frame->getPayloadLength());
     }
 
     public function testExtractOverflow() {
         $string1 = $this->generateRandomString();
-        $frame1  = Frame::create($string1);
+        $frame1  = new Frame($string1);
 
         $string2 = $this->generateRandomString();
-        $frame2  = Frame::create($string2);
+        $frame2  = new Frame($string2);
 
         $cat = new Frame;
         $cat->addBuffer($frame1->getContents() . $frame2->getContents());
@@ -304,7 +294,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
 
     public function testEmptyExtractOverflow() {
         $string = $this->generateRandomString();
-        $frame  = Frame::create($string);
+        $frame  = new Frame($string);
 
         $this->assertEquals($string, $frame->getPayload());
         $this->assertEquals('', $frame->extractOverflow());
@@ -313,7 +303,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
 
     public function testMasking() {
         $msg   = 'The quick brown fox jumps over the lazy dog.';
-        $frame = Frame::create($msg)->maskPayload();
+        $frame = new Frame($msg);
+        $frame->maskPayload();
 
         $this->assertTrue($frame->isMasked());
         $this->assertEquals($msg, $frame->getPayload());
@@ -321,7 +312,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
 
     public function testUnMaskPayload() {
         $string = $this->generateRandomString();
-        $frame  = Frame::create($string)->maskPayload()->unMaskPayload();
+        $frame  = new Frame($string);
+        $frame->maskPayload()->unMaskPayload();
 
         $this->assertFalse($frame->isMasked());
         $this->assertEquals($string, $frame->getPayload());
