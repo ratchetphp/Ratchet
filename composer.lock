@@ -1,5 +1,5 @@
 {
-    "hash": "6d331b3b6c00e17206dc072901df055e",
+    "hash": "c336c90dea505c6e69f35b0190556c1b",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -26,8 +26,14 @@
         {
             "package": "symfony/event-dispatcher",
             "version": "dev-master",
-            "source-reference": "0dc437f2eca7dea19facfde6db7f7f5e8e71d0bc",
-            "commit-date": "1341838460"
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source-reference": "b99b49760016467099f010aff7a5098861d49e09",
+            "commit-date": "1342207366"
         },
         {
             "package": "symfony/http-foundation",
@@ -38,8 +44,8 @@
         {
             "package": "symfony/http-foundation",
             "version": "dev-master",
-            "source-reference": "3399f6f068cd41f1b42140699db1f1e6d3bcb361",
-            "commit-date": "1342107786"
+            "source-reference": "498c2da9c3fecefc7e3b0add73621f3feb337ddd",
+            "commit-date": "1342207366"
         }
     ],
     "packages-dev": null,
