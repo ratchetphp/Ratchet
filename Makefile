@@ -6,11 +6,17 @@ cover:
 
 abtests:
 	ulimit -n 2048
-	php tests/ab-wstest-libevent.php &
-	php tests/ab-wstest-stream.php &
-	cd tests && wstest -m fuzzingclient -s ab-wstest-fuzzyconf.json
+	php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
+	php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
+	wstest -m testeeserver -w ws://localhost:8002 &
+	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
 	killall php
-	echo
+	killall python
+
+profile:
+	php -d 'xdebug.profiler_enable=1' tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
+	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-profile.json
+	killall php
 
 apidocs:
 	apigen --title Ratchet -d reports/api -s src/ \
