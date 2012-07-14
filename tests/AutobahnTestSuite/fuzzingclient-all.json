@@ -5,7 +5,7 @@
   , "servers": [
         {"agent": "Ratchet-libevent/0.2b", "url": "ws://localhost:8000", "options": {"version": 18}}
       , {"agent": "Ratchet-stream/0.2b", "url": "ws://localhost:8001", "options": {"version": 18}}
-      , {"agent": "AutobahnTestSuite/0.5.1-0.5.2", "url": "ws://localhost:8002", "options": {"version": 18}}
+      , {"agent": "AutobahnTestSuite/0.5.2", "url": "ws://localhost:8002", "options": {"version": 18}}
     ]
 
   , "cases": ["*"]

@@ -6,6 +6,8 @@ use Ratchet\WebSocket\Version\RFC6455\HandshakeVerifier;
 use Ratchet\WebSocket\Version\RFC6455\Message;
 use Ratchet\WebSocket\Version\RFC6455\Frame;
 use Ratchet\WebSocket\Version\RFC6455\Connection;
+use Ratchet\WebSocket\Encoding\ValidatorInterface;
+use Ratchet\WebSocket\Encoding\Validator;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
@@ -15,32 +17,6 @@ use Guzzle\Http\Message\Response;
  */
 class RFC6455 implements VersionInterface {
     const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-
-    const UTF8_ACCEPT = 0;
-    const UTF8_REJECT = 1;
-
-    /**
-     * Incremental UTF-8 validator with constant memory consumption (minimal state).
-     *
-     * Implements the algorithm "Flexible and Economical UTF-8 Decoder" by
-     * Bjoern Hoehrmann (http://bjoern.hoehrmann.de/utf-8/decoder/dfa/).
-     */
-    public static $dfa = array(
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, # 00..1f
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, # 20..3f
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, # 40..5f
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, # 60..7f
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9, # 80..9f
-        7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7, # a0..bf
-        8,8,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, # c0..df
-        0xa,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x4,0x3,0x3, # e0..ef
-        0xb,0x6,0x6,0x6,0x5,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8, # f0..ff
-        0x0,0x1,0x2,0x3,0x5,0x8,0x7,0x1,0x1,0x1,0x4,0x6,0x1,0x1,0x1,0x1, # s0..s0
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1, # s1..s2
-        1,2,1,1,1,1,1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1, # s3..s4
-        1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,3,1,1,1,1,1,1, # s5..s6
-        1,3,1,1,1,1,1,3,1,3,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1, # s7..s8
-    );
 
     /**
      * @var RFC6455\HandshakeVerifier
@@ -54,16 +30,19 @@ class RFC6455 implements VersionInterface {
     private $closeCodes = array();
 
     /**
-     * Lookup if mbstring is available
-     * @var bool
+     * @var Ratchet\WebSocket\Encoding\ValidatorInterface
      */
-     private $hasMbString = false;
+    protected $validator;
 
-    public function __construct() {
+    public function __construct(ValidatorInterface $validator = null) {
         $this->_verifier = new HandshakeVerifier;
         $this->setCloseCodes();
 
-        $this->hasMbString = extension_loaded('mbstring');
+        if (null === $validator) {
+            $validator = new Validator;
+        }
+
+        $this->validator = $validator;
     }
 
     /**
@@ -169,7 +148,7 @@ class RFC6455 implements VersionInterface {
                             return $from->close($frame::CLOSE_PROTOCOL);
                         }
 
-                        if (!$this->isUtf8(substr($bin, 2))) {
+                        if (!$this->validator->checkEncoding(substr($bin, 2), 'UTF-8')) {
                             return $from->close($frame::CLOSE_BAD_PAYLOAD);
                         }
 
@@ -214,7 +193,7 @@ class RFC6455 implements VersionInterface {
             $parsed = $from->WebSocket->message->getPayload();
             unset($from->WebSocket->message);
 
-            if (!$this->isUtf8($parsed)) {
+            if (!$this->validator->checkEncoding($parsed, 'UTF-8')) {
                 return $from->close(Frame::CLOSE_BAD_PAYLOAD);
             }
 
@@ -236,7 +215,7 @@ class RFC6455 implements VersionInterface {
     /**
      * @return RFC6455\Frame
      */
-    public function newFrame($payload = null, $final = true, $opcode = 1) {
+    public function newFrame($payload = null, $final = null, $opcode = null) {
         return new Frame($payload, $final, $opcode);
     }
 
@@ -283,36 +262,5 @@ class RFC6455 implements VersionInterface {
         $this->closeCodes[Frame::CLOSE_MAND_EXT]    = true;
         $this->closeCodes[Frame::CLOSE_SRV_ERR]     = true;
         //$this->closeCodes[Frame::CLOSE_TLS]         = true;
-    }
-
-    /**
-     * Determine if a string is a valid UTF-8 string
-     * @param string
-     * @return bool
-     */
-    function isUtf8($str) {
-        if ($this->hasMbString && false === mb_check_encoding($str, 'UTF-8')) {
-            return false;
-        }
-
-        $len = strlen($str);
-
-        // The secondary method of checking is painfully slow
-        // If the message is more than 10kb, skip UTF-8 checks
-        if ($len > 10000) {
-            return true;
-        }
-
-        $state = static::UTF8_ACCEPT;
-
-        for ($i = 0; $i < $len; $i++) {
-            $state = static::$dfa[256 + ($state << 4) + static::$dfa[ord($str[$i])]];
-
-            if (static::UTF8_REJECT === $state) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

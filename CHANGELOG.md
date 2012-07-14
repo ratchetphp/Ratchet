@@ -10,9 +10,11 @@ CHANGELOG
 
 * 0.2 (2012-TBD)
 
- * Ratchet passes every non-binary message AB test
+ * Ratchet passes every non-binary-frame test from the Autobahn Testsuite
+ * Major performance improvements
  * Ratchet now relies on all stable dependancies
- * mbstring no longer required (but recommended if compliance is important to you)
+ * Option to turn off UTF-8 checks in order to increase performance
+ * mbstring no longer required
 
 * 0.1.5 (2012-07-12)
 

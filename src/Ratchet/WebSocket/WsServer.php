@@ -3,6 +3,7 @@ namespace Ratchet\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Version;
+use Ratchet\WebSocket\Encoding\ToggleableValidator;
 use Guzzle\Http\Message\Response;
 
 /**
@@ -45,6 +46,11 @@ class WsServer implements MessageComponentInterface {
     protected $acceptedSubProtocols = array();
 
     /**
+     * @var Ratchet\WebSocket\Encoding\ValidatorInterface
+     */
+    protected $validator;
+
+    /**
      * Flag if we have checked the decorated component for sub-protocols
      * @var boolean
      */
@@ -56,10 +62,11 @@ class WsServer implements MessageComponentInterface {
     public function __construct(MessageComponentInterface $component) {
         $this->reqParser = new HttpRequestParser;
         $this->versioner = new VersionManager;
+        $this->validator = new ToggleableValidator;
 
         $this->versioner
-            ->enableVersion(new Version\RFC6455($component))
-            ->enableVersion(new Version\HyBi10($component))
+            ->enableVersion(new Version\RFC6455($this->validator))
+            ->enableVersion(new Version\HyBi10($this->validator))
             ->enableVersion(new Version\Hixie76)
         ;
 
@@ -147,9 +154,23 @@ class WsServer implements MessageComponentInterface {
     /**
      * Disable a specific version of the WebSocket protocol
      * @param int Version ID to disable
+     * @return WsServer
      */
     public function disableVersion($versionId) {
         $this->versioner->disableVersion($versionId);
+
+        return $this;
+    }
+
+    /**
+     * Toggle weather to check encoding of incoming messages
+     * @param bool
+     * @return WsServer
+     */
+    public function setEncodingChecks($opt) {
+        $this->validator->on = (boolean)$opt;
+
+        return $this;
     }
 
     /**

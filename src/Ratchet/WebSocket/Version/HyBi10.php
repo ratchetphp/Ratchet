@@ -11,19 +11,4 @@ class HyBi10 extends RFC6455 {
     public function getVersionNumber() {
         return 6;
     }
-
-    /**
-     * @return HyBi10\Message
-     * /
-    public function newMessage() {
-        return new HyBi10\Message;
-    }
-
-    /**
-     * @return HyBi10\Frame
-     * /
-    public function newFrame() {
-        return new HyBi10\Frame;
-    }
-    /**/
 }
