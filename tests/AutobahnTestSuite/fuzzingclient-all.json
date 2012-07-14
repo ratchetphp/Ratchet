@@ -3,8 +3,8 @@
   , "outdir": "reports/ab"
 
   , "servers": [
-        {"agent": "Ratchet-libevent/0.2b", "url": "ws://localhost:8000", "options": {"version": 18}}
-      , {"agent": "Ratchet-stream/0.2b", "url": "ws://localhost:8001", "options": {"version": 18}}
+        {"agent": "Ratchet/0.2 PHP 5.3-libevent", "url": "ws://localhost:8000", "options": {"version": 18}}
+      , {"agent": "Ratchet/0.2 PHP 5.4-streams", "url": "ws://localhost:8001", "options": {"version": 18}}
       , {"agent": "AutobahnTestSuite/0.5.2", "url": "ws://localhost:8002", "options": {"version": 18}}
     ]
 

@@ -6,11 +6,10 @@ cover:
 
 abtests:
 	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
+	ulimit -n 2048 && php54 tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
 	wstest -m testeeserver -w ws://localhost:8002 &
 	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
-	killall php
-	killall python
+	killall php php54 python
 
 profile:
 	php -d 'xdebug.profiler_enable=1' tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
