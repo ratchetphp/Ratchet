@@ -5,9 +5,8 @@ cover:
 	phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:
-	ulimit -n 2048
-	php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
-	php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
 	wstest -m testeeserver -w ws://localhost:8002 &
 	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
 	killall php
