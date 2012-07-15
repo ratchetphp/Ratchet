@@ -19,6 +19,26 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Encode the fake binary string to send over the wire
+     * @param string of 1's and 0's
+     * @return string
+     */
+    public static function encode($in) {
+        if (strlen($in) > 8) {
+            $out = '';
+
+            while (strlen($in) >= 8) {
+                $out .= static::encode(substr($in, 0, 8));
+                $in   = substr($in, 8); 
+            }
+
+            return $out;
+        }
+
+        return chr(bindec($in));
+    }
+
+    /**
      * This is a data provider
      * @param string The UTF8 message
      * @param string The WebSocket framed message, then base64_encoded
@@ -63,7 +83,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('\UnderflowException');
 
         if (!empty($bin)) {
-            $this->_frame->addBuffer(Frame::encode($bin));
+            $this->_frame->addBuffer(static::encode($bin));
         }
 
         call_user_func(array($this->_frame, $method));
@@ -91,7 +111,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::isFinal
      */
     public function testFinCodeFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($bin));
         $this->assertEquals($fin, $this->_frame->isFinal());
     }
 
@@ -102,7 +122,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getRsv3
      */
     public function testGetRsvFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($bin));
 
         $this->assertEquals($rsv1, $this->_frame->getRsv1());
         $this->assertEquals($rsv2, $this->_frame->getRsv2());
@@ -114,7 +134,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getOpcode
      */
     public function testOpcodeFromBits($fin, $rsv1, $rsv2, $rsv3, $opcode, $bin) {
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($bin));
         $this->assertEquals($opcode, $this->_frame->getOpcode());
     }
 
@@ -153,8 +173,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getFirstPayloadVal
      */
     public function testFirstPayloadDesignationValue($bits, $bin) {
-        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(static::encode($bin));
 
         $ref = new \ReflectionClass($this->_frame);
         $cb  = $ref->getMethod('getFirstPayloadVal');
@@ -180,8 +200,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getNumPayloadBits
      */
     public function testDetermineHowManyBitsAreUsedToDescribePayload($expected_bits, $bin) {
-        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(static::encode($bin));
 
         $ref = new \ReflectionClass($this->_frame);
         $cb  = $ref->getMethod('getNumPayloadBits');
@@ -215,8 +235,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::isMasked
      */
     public function testIsMaskedReturnsExpectedValue($masked, $payload_length, $bin) {
-        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(static::encode($bin));
 
         $this->assertEquals($masked, $this->_frame->isMasked());
     }
@@ -235,8 +255,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getPayloadLength
      */
     public function testGetPayloadLengthWhenOnlyFirstFrameIsUsed($masked, $payload_length, $bin) {
-        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
-        $this->_frame->addBuffer(Frame::encode($bin));
+        $this->_frame->addBuffer(static::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(static::encode($bin));
 
         $this->assertEquals($payload_length, $this->_frame->getPayloadLength());
     }
@@ -267,8 +287,8 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
      * @todo I I wrote the dataProvider incorrectly, skpping for now
      */
     public function testGetMaskingKey($mask) {
-        $this->_frame->addBuffer(Frame::encode($this->_firstByteFinText));
-        $this->_frame->addBuffer(Frame::encode($this->_secondByteMaskedSPL));
+        $this->_frame->addBuffer(static::encode($this->_firstByteFinText));
+        $this->_frame->addBuffer(static::encode($this->_secondByteMaskedSPL));
         $this->_frame->addBuffer($mask);
 
         $this->assertEquals($mask, $this->_frame->getMaskingKey());

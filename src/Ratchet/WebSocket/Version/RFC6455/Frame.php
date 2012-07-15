@@ -67,39 +67,22 @@ class Frame implements FrameInterface {
             return;
         }
 
-        $firstByte = chr(($final ? 128 : 0) + $opcode);
+        $this->defPayLen   = strlen($payload);
+        $this->firstByte   = ($final ? 128 : 0) + $opcode;
+        $this->secondByte  = $this->defPayLen;
+        $this->isCoalesced = true;
 
-        $raw   = '';
-        $plLen = strlen($payload);
-        if ($plLen <= 125) {
-            $raw .= sprintf('%08b', $plLen);
-        } elseif ($plLen <= 65535) {
-            $raw .= sprintf('%08b', 126) . sprintf('%016b', $plLen);
-        } else { // todo, make sure msg isn't longer than b1x71
-            $raw .= sprintf('%08b', 127) . sprintf('%064b', $plLen);
+        $ext = '';
+        if ($this->defPayLen > 65535) {
+            $ext = pack('NN', 0, $this->defPayLen);
+            $this->secondByte = 127;
+        } elseif ($this->defPayLen > 125) {
+            $ext = pack('n', $this->defPayLen);
+            $this->secondByte = 126;
         }
 
-        $this->addBuffer($firstByte . static::encode($raw) . $payload);
-    }
-
-    /**
-     * Encode the fake binary string to send over the wire
-     * @param string of 1's and 0's
-     * @return string
-     */
-    public static function encode($in) {
-        if (strlen($in) > 8) {
-            $out = '';
-
-            while (strlen($in) >= 8) {
-                $out .= static::encode(substr($in, 0, 8));
-                $in   = substr($in, 8); 
-            }
-
-            return $out;
-        }
-
-        return chr(bindec($in));
+        $this->data       = chr($this->firstByte) . chr($this->secondByte) . $ext . $payload;
+        $this->bytesRecvd = 2 + strlen($ext) + $this->defPayLen;
     }
 
     /**
@@ -407,7 +390,7 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function getPayloadStartingByte() {
-        return 1 + $this->getNumPayloadBytes() + strlen($this->getMaskingKey());
+        return 1 + $this->getNumPayloadBytes() + ($this->isMasked() ? static::MASK_LENGTH : 0);
     }
 
     /**
