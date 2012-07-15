@@ -23,7 +23,7 @@ class Connection extends AbstractConnectionDecorator {
         if ($code instanceof DataInterface) {
             $this->send($code);
         } else {
-            $this->send(new Frame(Frame::encode(sprintf('%016b', $code)), true, Frame::OP_CLOSE));
+            $this->send(new Frame(pack('n', $code), true, Frame::OP_CLOSE));
         }
 
         $this->getConnection()->close();
