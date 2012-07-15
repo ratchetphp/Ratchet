@@ -17,7 +17,7 @@ Shell access is required and a dedicated machine with root access is recommended
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
 Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine (for now).
 
-PHP 5.3.4 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements. 
+PHP 5.3.3 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements. 
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
 Accessing your website's session data in Ratchet requires you to use [Symfony2 Sessions](http://symfony.com/doc/master/components/http_foundation/sessions.html) on your website. 
