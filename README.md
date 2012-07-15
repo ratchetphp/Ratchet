@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png?branch=master)](http://travis-ci.org/cboden/Ratchet)
 
-A PHP 5.3 library for serving WebSockets and building socket based applications.
+A PHP 5.3 library for asynchronously serving WebSockets.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components. 
 
 ##WebSocket Compliance
