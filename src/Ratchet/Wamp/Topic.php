@@ -37,14 +37,14 @@ class Topic implements \IteratorAggregate, \Countable {
     /**
      * @param WampConnection
      */
-    public function subscribed(WampConnection $conn) {
+    public function add(WampConnection $conn) {
         $this->subscribers->attach($conn);
     }
 
     /**
      * @param WampConnection
      */
-    public function unsubscribed(WampConnection $conn) {
+    public function remove(WampConnection $conn) {
         if ($this->subscribers->contains($conn)) {
             $this->subscribers->detach($conn);
         }
