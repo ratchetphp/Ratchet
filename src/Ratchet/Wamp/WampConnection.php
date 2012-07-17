@@ -2,7 +2,7 @@
 namespace Ratchet\Wamp;
 use Ratchet\ConnectionInterface;
 use Ratchet\AbstractConnectionDecorator;
-use Ratchet\Wamp\WampServer as WAMP;
+use Ratchet\Wamp\ServerProtocol as WAMP;
 
 /**
  * A ConnectionInterface object wrapper that is passed to your WAMP application

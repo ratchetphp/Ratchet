@@ -25,15 +25,7 @@
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "source-reference": "v2.1.0-BETA3",
-            "commit-date": "1342347231"
+            "version": "v2.1.0-BETA3"
         },
         {
             "package": "symfony/http-foundation",

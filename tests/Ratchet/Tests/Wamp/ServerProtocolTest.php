@@ -1,23 +1,23 @@
 <?php
 namespace Ratchet\Tests\Wamp;
-use Ratchet\Wamp\WampServer;
+use Ratchet\Wamp\ServerProtocol;
 use Ratchet\Wamp\WampConnection;
 use Ratchet\Tests\Mock\Connection;
 use Ratchet\Tests\Mock\WampComponent as TestComponent;
 
 /**
- * @covers Ratchet\Wamp\WampServer
+ * @covers Ratchet\Wamp\ServerProtocol
  * @covers Ratchet\Wamp\WampServerInterface
  * @covers Ratchet\Wamp\WampConnection
  */
-class WampServerTest extends \PHPUnit_Framework_TestCase {
+class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
     protected $_comp;
 
     protected $_app;
 
     public function setUp() {
         $this->_app  = new TestComponent;
-        $this->_comp = new WampServer($this->_app);
+        $this->_comp = new ServerProtocol($this->_app);
     }
 
     protected function newConn() {

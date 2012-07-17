@@ -8,6 +8,11 @@ CHANGELOG
 
 ---
 
+* wamp-topics (devel branch)
+
+ * BC: Renamed "WampServer" to "ServerProtocol"
+ * BC: New "WampServer" component manages Topic containers of subscribed Connections
+
 * 0.2 (2012-TBD)
 
  * Ratchet passes every non-binary-frame test from the Autobahn Testsuite
