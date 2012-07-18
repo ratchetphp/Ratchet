@@ -29,25 +29,31 @@ class Topic implements \IteratorAggregate, \Countable {
       * @param string
       */
     public function broadcast($msg) {
-        foreach ($thisi->subscribers as $client) {
+        foreach ($this->subscribers as $client) {
             $client->event($this->id, $msg);
         }
     }
 
     /**
      * @param WampConnection
+     * @return Topic
      */
     public function add(WampConnection $conn) {
         $this->subscribers->attach($conn);
+
+        return $this;
     }
 
     /**
      * @param WampConnection
+     * @return Topic
      */
     public function remove(WampConnection $conn) {
         if ($this->subscribers->contains($conn)) {
             $this->subscribers->detach($conn);
         }
+
+        return $this;
     }
 
     /**

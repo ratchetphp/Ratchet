@@ -1,0 +1,82 @@
+<?php
+namespace Ratchet\Tests\Wamp;
+use Ratchet\Wamp\Topic;
+use Ratchet\Wamp\WampConnection;
+use Ratchet\Tests\Mock\Connection as MockConnection;
+
+/**
+ * @covers Ratchet\Wamp\Topic
+ */
+class TopicTest extends \PHPUnit_Framework_TestCase {
+    public function testGetId() {
+        $id    = uniqid();
+        $topic = new Topic($id);
+
+        $this->assertEquals($id, $topic->getId());
+    }
+
+    public function testAddAndCount() {
+        $topic = new Topic('merp');
+
+        $topic->add($this->newConn());
+        $topic->add($this->newConn());
+        $topic->add($this->newConn());
+
+        $this->assertEquals(3, count($topic));
+    }
+
+    public function testRemove() {
+        $topic   = new Topic('boop');
+        $tracked = $this->newConn();
+
+        $topic->add($this->newConn());
+        $topic->add($tracked);
+        $topic->add($this->newConn());
+
+        $topic->remove($tracked);
+
+        $this->assertEquals(2, count($topic));
+    }
+
+    public function testBroadcast() {
+        $msg = 'Hello World!';
+        $name = 'batman';
+        $protocol = json_encode(array(8, $name, $msg));
+
+        $first  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array(new MockConnection));
+        $second = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array(new MockConnection));
+
+        $first->expects($this->once())
+              ->method('send')
+              ->with($this->equalTo($protocol));
+
+        $second->expects($this->once())
+              ->method('send')
+              ->with($this->equalTo($protocol));
+
+        $topic = new Topic($name);
+        $topic->add($first);
+        $topic->add($second);
+
+        $topic->broadcast($msg);
+    }
+
+    public function testIterator() {
+        $first  = $this->newConn();
+        $second = $this->newConn();
+        $third  = $this->newConn();
+
+        $topic  = new Topic('joker');
+        $topic->add($first)->add($second)->add($third);
+
+        $check = array($first, $second, $third);
+
+        foreach ($topic as $mock) {
+            $this->assertNotSame(false, array_search($mock, $check));
+        }
+    }
+
+    protected function newConn() {
+        return new WampConnection(new MockConnection);
+    }
+}
