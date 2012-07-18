@@ -41,6 +41,8 @@ use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 
+    require __DIR__ . '/vendor/autoload.php';
+
 /**
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
