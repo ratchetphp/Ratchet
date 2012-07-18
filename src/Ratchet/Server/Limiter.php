@@ -19,11 +19,15 @@ class Limiter implements MessageComponentInterface, WsServerInterface {
 
     protected $connections = 0;
 
+    protected $connectionsAddress = array();
+
     /**
-     * @param Ratchet\MessageComponentInterface
+     * @param MessageComponentInterface
      */
     public function __construct(MessageComponentInterface $app) {
         $this->app = $app;
+        $this->connectionsAddress['addresses'] = new \SplFixedArray($this->settings['maxConnections']);
+        $this->connectionsAddress['counters']  = new \SplFixedArray($this->settings['maxConnections']);
     }
 
     /**
@@ -33,10 +37,29 @@ class Limiter implements MessageComponentInterface, WsServerInterface {
         $this->settings['maxConnections'] = (int)$num;
     }
 
-/*
+    /**
+     * @param  int     $num
+     * @return Limiter Provides fluent interface
+     * @throws \InvalidArgumentException
+     */
     public function maxConnectionsPerAddress($num) {
-    }
+        $num = (int)$num;
 
+        if ($num > $this->settings['maxConnections']) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "maxConnectionsPerAddress can't be greater than %d (maxConnections setting), %d given.",
+                    $this->settings['maxConnections'],
+                    $num
+                )
+            );
+        }
+
+        $this->settings['maxConnectionsPerAddress'] = $num;
+
+        return $this;
+    }
+/*
     public function maxDataPerInterval($size, $seconds) {
     }
 
@@ -48,9 +71,13 @@ class Limiter implements MessageComponentInterface, WsServerInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        $this->connections++;
+        ++$this->connections;
 
         if ($this->connections > $this->settings['maxConnections']) {
+            return $conn->close();
+        }
+        $this->updateAddressConnectionsCount($conn->remoteAddress, 1);
+        if ($this->getAddressConnectionsCount($conn->remoteAddress) > $this->settings['maxConnectionsPerAddress']) {
             return $conn->close();
         }
 
@@ -68,7 +95,9 @@ class Limiter implements MessageComponentInterface, WsServerInterface {
      * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
-        $this->connections--;
+        --$this->connections;
+
+        $this->updateAddressConnectionsCount($conn->remoteAddress, -1);
 
         $this->app->onClose($conn);
     }
@@ -85,5 +114,48 @@ class Limiter implements MessageComponentInterface, WsServerInterface {
      */
     public function getSubProtocols() {
         return ($this->app instanceof WsServerInterface ? $this->app->getSubProtocols() : array());
+    }
+
+    protected function getAddressConnectionsCount($remoteAddress)
+    {
+        $index = $this->lookupAddressConnectionsIndex($remoteAddress);
+
+        return (isset($this->connectionsAddress['counters'][$index]))
+            ? $this->connectionsAddress['counters'][$index]
+            : 0;
+    }
+
+    protected function updateAddressConnectionsCount($remoteAddress, $flag) {
+
+        $flag = ((int) $flag > 0) ? +1 : -1;
+        $index = $this->lookupAddressConnectionsIndex($remoteAddress);
+        if (!isset($this->connectionsAddress['addresses'][$index])) {
+            $index = key($this->connectionsAddress['addresses']);
+            $this->connectionsAddress['addresses'][$index] = $remoteAddress;
+            $this->connectionsAddress['counters'][$index] = 0;
+        }
+
+        $newCount = abs($flag + $this->connectionsAddress['counters'][$index]);
+
+        if (0 >= $newCount) {
+            unset($this->connectionsAddress['counters'][$index]);
+            unset($this->connectionsAddress['addresses'][$index]);
+        }
+
+        $this->connectionsAddress['counters'][$index] = $newCount;
+
+        return $newCount;
+    }
+
+    protected function lookupAddressConnectionsIndex($remoteAddress)
+    {
+        foreach ($this->connectionsAddress['addresses'] as $key => $address) {
+            if ($remoteAddress === $address) {
+
+                return $key;
+            }
+        }
+
+        return null;
     }
 }

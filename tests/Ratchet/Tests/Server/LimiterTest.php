@@ -10,6 +10,9 @@ use Ratchet\Tests\Mock\Connection;
 class LimiterTest extends \PHPUnit_Framework_TestCase {
     protected $app;
 
+    /**
+     * @var Limiter
+     */
     protected $limit;
 
     public function setUp() {
@@ -72,5 +75,33 @@ class LimiterTest extends \PHPUnit_Framework_TestCase {
         $this->app->protocols = array('hello', 'world');
 
         $this->assertGreaterThanOrEqual(2, count($this->limit->getSubProtocols()));
+    }
+
+    public function testMaxConnectionPerAddress() {
+        $this->limit->maxConnectionsPerAddress(3);
+
+        $conn1 = new Connection();
+        $conn2 = new Connection();
+        $conn3 = new Connection();
+
+        $this->limit->onOpen($conn1);
+        $this->limit->onOpen($conn2);
+        $this->limit->onOpen($conn3);
+
+        $nope = new Connection;
+        $this->limit->onOpen($nope);
+
+        $this->assertFalse($conn3->last['close']);
+        $this->assertTrue($nope->last['close']);
+    }
+
+    public function testSetMaxConnectionsPerAddressGreaterThanMaxConnectionsThrowAnException()
+    {
+        $this->setExpectedException(
+          '\InvalidArgumentException',
+           sprintf("maxConnectionsPerAddress can't be greater than %d (maxConnections setting), %d given.", 1, 3)
+        );
+        $this->limit->maxConnections(1);
+        $this->limit->maxConnectionsPerAddress(3);
     }
 }
