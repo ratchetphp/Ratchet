@@ -82,6 +82,30 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($name, (string)$topic);
     }
 
+    public function testDoesHave() {
+        $conn  = $this->newConn();
+        $topic = new Topic('Two Face');
+        $topic->add($conn);
+
+        $this->assertTrue($topic->has($conn));
+    }
+
+    public function testDoesNotHave() {
+        $conn  = $this->newConn();
+        $topic = new Topic('Alfred');
+
+        $this->assertFalse($topic->has($conn));
+    }
+
+    public function testDoesNotHaveAfterRemove() {
+        $conn  = $this->newConn();
+        $topic = new Topic('Ras');
+
+        $topic->add($conn)->remove($conn);
+
+        $this->assertFalse($topic->has($conn));
+    }
+
     protected function newConn() {
         return new WampConnection($this->getMock('\\Ratchet\\ConnectionInterface'));
     }

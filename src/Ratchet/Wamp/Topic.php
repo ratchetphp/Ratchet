@@ -44,6 +44,14 @@ class Topic implements \IteratorAggregate, \Countable {
 
     /**
      * @param WampConnection
+     * @return boolean
+     */
+    public function has(ConnectionInterface $conn) {
+        return $this->subscribers->contains($conn);
+    }
+
+    /**
+     * @param WampConnection
      * @return Topic
      */
     public function add(ConnectionInterface $conn) {
