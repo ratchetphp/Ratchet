@@ -19,10 +19,6 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onOpen($this->conn);
     }
 
-    public function isTopic() {
-        return new \PHPUnit_Framework_Constraint_IsInstanceOf('\\Ratchet\\Wamp\\Topic');
-    }
-
     public function testGetTopicReturnsTopicObject() {
         $class  = new \ReflectionClass('\\Ratchet\\Wamp\\TopicManager');
         $method = $class->getMethod('getTopic');
@@ -67,7 +63,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mock->expects($this->once())->method('onCall')->with(
             $this->conn
           , $id
-          , $this->isTopic()
+          , $this->isInstanceOf('\\Ratchet\\Wamp\\Topic')
           , array()
         );
 
@@ -76,7 +72,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
 
     public function testOnSubscribeCreatesTopicObject() {
         $this->mock->expects($this->once())->method('onSubscribe')->with(
-            $this->conn, $this->isTopic()
+            $this->conn, $this->isInstanceOf('\\Ratchet\\Wamp\\Topic')
         );
 
         $this->mngr->onSubscribe($this->conn, 'new topic');
@@ -106,7 +102,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     public function testUnsubscribeEvent() {
         $name = 'in and out';
         $this->mock->expects($this->once())->method('onUnsubscribe')->with(
-            $this->conn, $this->isTopic()
+            $this->conn, $this->isInstanceOf('\\Ratchet\\Wamp\\Topic')
         );
 
         $this->mngr->onSubscribe($this->conn, $name);
@@ -135,5 +131,21 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onUnsubscribe($this->conn, $name);
 
         $this->assertFalse($this->conn->WAMP->topics->contains($topic));
+    }
+
+    public function testOnCloseBubbles() {
+        $this->mock->expects($this->once())->method('onClose')->with($this->conn);
+        $this->mngr->onClose($this->conn);
+    }
+
+    public function testOnErrorBubbles() {
+        $e = new \Exception('All work and no play makes Chris a dull boy');
+        $this->mock->expects($this->once())->method('onError')->with($this->conn, $e);
+
+        $this->mngr->onError($this->conn, $e);
+    }
+
+    public function testGetSubProtocolsReturnsArray() {
+        $this->assertInternalType('array', $this->mngr->getSubProtocols());
     }
 }
