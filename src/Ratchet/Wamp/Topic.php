@@ -24,14 +24,21 @@ class Topic implements \IteratorAggregate, \Countable {
         return $this->id;
     }
 
+    public function __toString() {
+        return $this->getId();
+    }
+
     /**
       * Send a message to all the connectiosn in this topic
       * @param string
+      * @return Topic
       */
     public function broadcast($msg) {
         foreach ($this->subscribers as $client) {
             $client->event($this->id, $msg);
         }
+
+        return $this;
     }
 
     /**

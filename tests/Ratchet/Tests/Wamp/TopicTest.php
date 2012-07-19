@@ -2,7 +2,6 @@
 namespace Ratchet\Tests\Wamp;
 use Ratchet\Wamp\Topic;
 use Ratchet\Wamp\WampConnection;
-use Ratchet\Tests\Mock\Connection as MockConnection;
 
 /**
  * @covers Ratchet\Wamp\Topic
@@ -39,12 +38,12 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBroadcast() {
-        $msg = 'Hello World!';
-        $name = 'batman';
+        $msg  = 'Hello World!';
+        $name = 'Batman';
         $protocol = json_encode(array(8, $name, $msg));
 
-        $first  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array(new MockConnection));
-        $second = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array(new MockConnection));
+        $first  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+        $second = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
 
         $first->expects($this->once())
               ->method('send')
@@ -66,7 +65,7 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         $second = $this->newConn();
         $third  = $this->newConn();
 
-        $topic  = new Topic('joker');
+        $topic  = new Topic('Joker');
         $topic->add($first)->add($second)->add($third);
 
         $check = array($first, $second, $third);
@@ -76,7 +75,14 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
+    public function testToString() {
+        $name  = 'Bane';
+        $topic = new Topic($name);
+
+        $this->assertEquals($name, (string)$topic);
+    }
+
     protected function newConn() {
-        return new WampConnection(new MockConnection);
+        return new WampConnection($this->getMock('\\Ratchet\\ConnectionInterface'));
     }
 }

@@ -12,7 +12,7 @@ interface WampServerInterface extends ComponentInterface {
      * An RPC call has been received
      * @param Ratchet\ConnectionInterface
      * @param string The unique ID of the RPC, required to respond to
-     * @param string The topic to execute the call against
+     * @param string|Topic The topic to execute the call against
      * @param array Call parameters received from the client
      */
     function onCall(ConnectionInterface $conn, $id, $topic, array $params);
@@ -20,21 +20,21 @@ interface WampServerInterface extends ComponentInterface {
     /**
      * A request to subscribe to a topic has been made
      * @param Ratchet\ConnectionInterface
-     * @param string The topic to subscribe to
+     * @param string|Topic The topic to subscribe to
      */
     function onSubscribe(ConnectionInterface $conn, $topic);
 
     /**
      * A request to unsubscribe from a topic has been made
      * @param Ratchet\ConnectionInterface
-     * @param The topic to unsubscribe from
+     * @param string|Topic The topic to unsubscribe from
      */
     function onUnSubscribe(ConnectionInterface $conn, $topic);
 
     /**
      * A client is attempting to publish content to a subscribed connections on a URI
      * @param Ratchet\ConnectionInterface
-     * @param The topic the user has attempted to publish to
+     * @param string|Topic The topic the user has attempted to publish to
      * @param string Payload of the publish
      * @param array A list of session IDs the message should be excluded from (blacklist)
      * @param array A list of session Ids the message should be send to (whitelist)

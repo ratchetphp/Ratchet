@@ -48,8 +48,8 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
     /**
      * @param WampServerInterface An class to propagate calls through
      */
-    public function __construct(WampServerInterface $server_component) {
-        $this->_decorating = $server_component;
+    public function __construct(WampServerInterface $serverComponent) {
+        $this->_decorating = $serverComponent;
         $this->connections = new \SplObjectStorage;
     }
 

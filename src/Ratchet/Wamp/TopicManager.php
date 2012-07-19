@@ -49,7 +49,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onUnsubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->topics->contains($topicobj) {
+        if ($conn->WAMP->topics->contains($topicobj)) {
             $conn->WAMP->topics->remove($topicObj);
         }
 
@@ -93,6 +93,10 @@ class TopicManager implements WsServerInterface, WampServerInterface {
         return array();
     }
 
+    /**
+     * @param string
+     * @return Topic
+     */
     protected function getTopic($topic) {
         if (!array_key_exists($topic, $this->topicLookup)) {
             $this->topicLookup[$topic] = new Topic($topic);
