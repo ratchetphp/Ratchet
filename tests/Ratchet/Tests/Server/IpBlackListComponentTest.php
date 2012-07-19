@@ -1,29 +1,75 @@
 <?php
 namespace Ratchet\Tests\Server;
 use Ratchet\Server\IpBlackList;
-use Ratchet\Tests\Mock\Connection;
-use Ratchet\Tests\Mock\Component as MockComponent;
 
 /**
  * @covers Ratchet\Server\IpBlackList
  */
 class IpBlackListTest extends \PHPUnit_Framework_TestCase {
-    protected $_comp;
-    protected $_mock;
+    protected $blocker;
+    protected $mock;
 
     public function setUp() {
-        $this->_mock = new MockComponent;
-        $this->_comp = new IpBlackList($this->_mock);
+        $this->mock = $this->getMock('\\Ratchet\\MessageComponentInterface');
+        $this->blocker = new IpBlackList($this->mock);
     }
 
-    public function testBlockAndCloseOnOpen() {
-        $conn = new Connection;
+    public function testOnOpen() {
+        $this->mock->expects($this->exactly(3))->method('onOpen');
 
-        $this->_comp->blockAddress($conn->remoteAddress);
+        $conn1 = $this->newConn();
+        $conn2 = $this->newConn();
+        $conn3 = $this->newConn();
 
-        $ret = $this->_comp->onOpen($conn);
+        $this->blocker->onOpen($conn1);
+        $this->blocker->onOpen($conn3);
+        $this->blocker->onOpen($conn2);
+    }
 
-        $this->assertTrue($conn->last['close']);
+    public function testBlockDoesNotTriggerOnOpen() {
+        $conn = $this->newConn();
+
+        $this->blocker->blockAddress($conn->remoteAddress);
+
+        $this->mock->expects($this->never())->method('onOpen');
+
+        $ret = $this->blocker->onOpen($conn);
+    }
+
+    public function testBlockDoesNotTriggerOnClose() {
+        $conn = $this->newConn();
+
+        $this->blocker->blockAddress($conn->remoteAddress);
+
+        $this->mock->expects($this->never())->method('onClose');
+
+        $ret = $this->blocker->onOpen($conn);
+    }
+
+    public function testOnMessageDecoration() {
+        $conn = $this->newConn();
+        $msg  = 'Hello not being blocked';
+
+        $this->mock->expects($this->once())->method('onMessage')->with($conn, $msg);
+
+        $this->blocker->onMessage($conn, $msg);
+    }
+
+    public function testOnCloseDecoration() {
+        $conn = $this->newConn();
+
+        $this->mock->expects($this->once())->method('onClose')->with($conn);
+
+        $this->blocker->onClose($conn);
+    }
+
+    public function testBlockClosesConnection() {
+        $conn = $this->newConn();
+        $this->blocker->blockAddress($conn->remoteAddress);
+
+        $conn->expects($this->once())->method('close');
+
+        $this->blocker->onOpen($conn);
     }
 
     public function testAddAndRemoveWithFluentInterfaces() {
@@ -31,42 +77,23 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
         $blockTwo = '192.168.1.1';
         $unblock  = '75.119.207.140';
 
-        $this->_comp
+        $this->blocker
             ->blockAddress($unblock)
             ->blockAddress($blockOne)
             ->unblockAddress($unblock)
             ->blockAddress($blockTwo)
         ;
 
-        $this->assertEquals(array($blockOne, $blockTwo), $this->_comp->getBlockedAddresses());
+        $this->assertEquals(array($blockOne, $blockTwo), $this->blocker->getBlockedAddresses());
     }
 
-    public function testDecoratingMethods() {
-        $conn1 = new Connection;
-        $conn2 = new Connection;
-        $conn3 = new Connection;
+    public function testDecoratorPassesErrors() {
+        $conn = $this->newConn();
+        $e    = new \Exception('I threw an error');
 
-        $this->_comp->onOpen($conn1);
-        $this->_comp->onOpen($conn3);
-        $this->_comp->onOpen($conn2);
-        $this->assertSame($conn2, $this->_mock->last['onOpen'][0]);
+        $this->mock->expects($this->once())->method('onError')->with($conn, $e);
 
-        $msg = 'Hello World!';
-        $this->_comp->onMessage($conn1, $msg);
-        $this->assertSame($conn1, $this->_mock->last['onMessage'][0]);
-        $this->assertEquals($msg, $this->_mock->last['onMessage'][1]);
-
-        $this->_comp->onClose($conn3);
-        $this->assertSame($conn3, $this->_mock->last['onClose'][0]);
-
-        try {
-            throw new \Exception('I threw an error');
-        } catch (\Exception $e) {
-        }
-
-        $this->_comp->onError($conn2, $e);
-        $this->assertEquals($conn2, $this->_mock->last['onError'][0]);
-        $this->assertEquals($e, $this->_mock->last['onError'][1]);
+        $this->blocker->onError($conn, $e);
     }
 
     public function addressProvider() {
@@ -82,10 +109,17 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider addressProvider
      */
     public function testFilterAddress($expected, $input) {
-        $this->assertEquals($expected, $this->_comp->filterAddress($input));
+        $this->assertEquals($expected, $this->blocker->filterAddress($input));
     }
 
     public function testUnblockingSilentlyFails() {
-        $this->assertInstanceOf('\\Ratchet\\Server\\IpBlackList', $this->_comp->unblockAddress('localhost'));
+        $this->assertInstanceOf('\\Ratchet\\Server\\IpBlackList', $this->blocker->unblockAddress('localhost'));
+    }
+
+    protected function newConn() {
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn->remoteAddress = '127.0.0.1';
+
+        return $conn;
     }
 }

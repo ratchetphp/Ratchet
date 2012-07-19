@@ -17,6 +17,7 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('example.com', '*');
         $this->_policy->addAllowedAccess('dev.example.com', '*');
+
         $this->assertInstanceOf('SimpleXMLElement', $this->_policy->renderPolicy());
     }
 
@@ -107,5 +108,33 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
           , array(false, ',,,')
           , array(false, '838*')
         );
+    }
+
+    public function testAddAllowedAccessOnlyAcceptsValidPorts() {
+        $this->setExpectedException('UnexpectedValueException');
+
+        $this->_policy->addAllowedAccess('*', 'nope');
+    }
+
+    public function testSetSiteControlThrowsException() {
+        $this->setExpectedException('UnexpectedValueException');
+
+        $this->_policy->setSiteControl('nope');
+    }
+
+    public function testErrorClosesConnection() {
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn->expects($this->once())->method('close');
+
+        $this->_policy->onError($conn, new \Exception);
+    }
+
+    public function testOnMessageSendsString() {
+        $this->_policy->addAllowedAccess('*', '*');
+
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn->expects($this->once())->method('send')->with($this->isType('string'));
+
+        $this->_policy->onMessage($conn, ' ');
     }
 }
