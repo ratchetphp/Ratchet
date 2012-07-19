@@ -49,7 +49,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onUnsubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->topics->contains($topicobj)) {
+        if ($conn->WAMP->topics->contains($topicObj)) {
             $conn->WAMP->topics->remove($topicObj);
         }
 
