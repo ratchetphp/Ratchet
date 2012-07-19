@@ -31,9 +31,9 @@ class IoServer {
     /**
      * @param Ratchet\MessageComponentInterface The Ratchet application stack to host
      * @param React\Socket\ServerInterface The React socket server to run the Ratchet application off of
-     * @param React\EventLoop\LoopInterface The React looper to run the Ratchet application off of
+     * @param React\EventLoop\LoopInterface|null The React looper to run the Ratchet application off of
      */
-    public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop) {
+    public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop = null) {
         gc_enable();
         set_time_limit(0);
         ob_implicit_flush();
@@ -64,8 +64,13 @@ class IoServer {
 
     /**
      * Run the application by entering the event loop
+     * @throws RuntimeException If a loop was not previously specified
      */
     public function run() {
+        if (null === $this->loop) {
+            throw new \RuntimeException("A React Loop was not provided during instantiation");
+        }
+
         $this->loop->run();
     }
 
@@ -73,7 +78,7 @@ class IoServer {
      * Triggered when a new connection is received from React
      */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn, $this);
+        $conn->decor = new IoConnection($conn);
 
         $conn->decor->resourceId    = (int)$conn->stream;
         $conn->decor->remoteAddress = $conn->getRemoteAddress();

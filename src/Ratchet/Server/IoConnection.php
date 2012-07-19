@@ -8,18 +8,12 @@ use React\Socket\ConnectionInterface as ReactConn;
  */
 class IoConnection implements ConnectionInterface {
     /**
-     * @var Ratchet\Server\IOServer
-     */
-    protected $server;
-
-    /**
      * @var React\Socket\ConnectionInterface
      */
     protected $conn;
 
-    public function __construct(ReactConn $conn, IoServer $server) {
+    public function __construct(ReactConn $conn) {
         $this->conn   = $conn;
-        $this->server = $server;
     }
 
     /**

@@ -1,3 +1,6 @@
+# This file is intended to ease the author's development and testing process
+# Users do not need to use `make`; Ratchet does not need to be compiled
+
 test:
 	phpunit
 

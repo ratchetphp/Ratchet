@@ -3,9 +3,7 @@
     "packages": [
         {
             "package": "evenement/evenement",
-            "version": "1.0.x-dev",
-            "source-reference": "v1.0.0",
-            "commit-date": "1338390068"
+            "version": "v1.0.0"
         },
         {
             "package": "guzzle/guzzle",
@@ -29,15 +27,7 @@
         },
         {
             "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "source-reference": "v2.1.0-BETA3",
-            "commit-date": "1342347231"
+            "version": "v2.1.0-BETA3"
         }
     ],
     "packages-dev": null,

@@ -20,7 +20,7 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->app = new Component;
 
-        $loop = new StreamSelectLoop(0);
+        $loop = new StreamSelectLoop;
         $this->reactor = new Server($loop);
         $this->reactor->listen(0);
 
@@ -85,5 +85,13 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
 
     public function testFactory() {
         $this->assertInstanceOf('\\Ratchet\\Server\\IoServer', IoServer::factory($this->app, 0));
+    }
+
+    public function testNoLoopProvidedError() {
+        $loop = new StreamSelectLoop;
+        $io   = new IoServer(new Component, new Server($loop));
+
+        $this->setExpectedException('RuntimeException');
+        $io->run();
     }
 }
