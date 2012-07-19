@@ -240,4 +240,11 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertGreaterThanOrEqual(3, count($this->_comp->getSubProtocols()));
     }
+
+    public function testWampOnMessageApp() {
+        $app = $this->getMock('\\Ratchet\\Wamp\\WampServerInterface');
+        $wamp = new ServerProtocol($app);
+
+        $this->assertContains('wamp', $wamp->getSubProtocols());
+    }
 }

@@ -71,7 +71,9 @@ class IoServer {
             throw new \RuntimeException("A React Loop was not provided during instantiation");
         }
 
+        // @codeCoverageIgnoreStart
         $this->loop->run();
+        // @codeCoverageIgnoreEnd
     }
 
     /**

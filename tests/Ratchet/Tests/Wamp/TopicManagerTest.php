@@ -82,7 +82,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onSubscribe($this->conn, 'new topic');
     }
 
-    public function testTopicIsInConnection() {
+    public function testTopicIsInConnectionOnSubscribe() {
         $name = 'New Topic';
 
         $class  = new \ReflectionClass('\\Ratchet\\Wamp\\TopicManager');
@@ -94,5 +94,46 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onSubscribe($this->conn, $name);
 
         $this->assertTrue($this->conn->WAMP->topics->contains($topic));
+    }
+
+    public function testDoubleSubscriptionFiresOnce() {
+        $this->mock->expects($this->exactly(1))->method('onSubscribe');
+
+        $this->mngr->onSubscribe($this->conn, 'same topic');
+        $this->mngr->onSubscribe($this->conn, 'same topic');
+    }
+
+    public function testUnsubscribeEvent() {
+        $name = 'in and out';
+        $this->mock->expects($this->once())->method('onUnsubscribe')->with(
+            $this->conn, $this->isTopic()
+        );
+
+        $this->mngr->onSubscribe($this->conn, $name);
+        $this->mngr->onUnsubscribe($this->conn, $name);
+    }
+
+    public function testUnsubscribeFiresOnce() {
+        $name = 'getting sleepy';
+        $this->mock->expects($this->exactly(1))->method('onUnsubscribe');
+
+        $this->mngr->onSubscribe($this->conn,   $name);
+        $this->mngr->onUnsubscribe($this->conn, $name);
+        $this->mngr->onUnsubscribe($this->conn, $name);
+    }
+
+    public function testUnsubscribeRemovesTopicFromConnection() {
+        $name = 'Bye Bye Topic';
+
+        $class  = new \ReflectionClass('\\Ratchet\\Wamp\\TopicManager');
+        $method = $class->getMethod('getTopic');
+        $method->setAccessible(true);
+
+        $topic = $method->invokeArgs($this->mngr, array($name));
+
+        $this->mngr->onSubscribe($this->conn, $name);
+        $this->mngr->onUnsubscribe($this->conn, $name);
+
+        $this->assertFalse($this->conn->WAMP->topics->contains($topic));
     }
 }

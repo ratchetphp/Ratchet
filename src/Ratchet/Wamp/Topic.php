@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Wamp;
+use Ratchet\ConnectionInterface;
 
 /**
  * A topic/channel containing connections that have subscribed to it
@@ -45,7 +46,7 @@ class Topic implements \IteratorAggregate, \Countable {
      * @param WampConnection
      * @return Topic
      */
-    public function add(WampConnection $conn) {
+    public function add(ConnectionInterface $conn) {
         $this->subscribers->attach($conn);
 
         return $this;
@@ -55,7 +56,7 @@ class Topic implements \IteratorAggregate, \Countable {
      * @param WampConnection
      * @return Topic
      */
-    public function remove(WampConnection $conn) {
+    public function remove(ConnectionInterface $conn) {
         if ($this->subscribers->contains($conn)) {
             $this->subscribers->detach($conn);
         }

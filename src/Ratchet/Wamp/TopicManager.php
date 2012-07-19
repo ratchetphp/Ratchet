@@ -39,6 +39,10 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onSubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
+        if ($conn->WAMP->topics->contains($topicObj)) {
+            return;
+        }
+
         $conn->WAMP->topics->attach($topicObj);
         $this->app->onSubscribe($conn, $topicObj);
     }
@@ -50,7 +54,9 @@ class TopicManager implements WsServerInterface, WampServerInterface {
         $topicObj = $this->getTopic($topic);
 
         if ($conn->WAMP->topics->contains($topicObj)) {
-            $conn->WAMP->topics->remove($topicObj);
+            $conn->WAMP->topics->detach($topicObj);
+        } else {
+            return;
         }
 
         $this->topicLookup[$topic]->remove($conn);
