@@ -8,11 +8,12 @@ CHANGELOG
 
 ---
 
-* 0.2 (2012-TBD)
+* 0.2 (2012-07-TBD)
 
  * Ratchet passes every non-binary-frame test from the Autobahn Testsuite
  * Major performance improvements
- * Ratchet now relies on all stable dependancies
+ * BC: Renamed "WampServer" to "ServerProtocol"
+ * BC: New "WampServer" component passes Topic container objects of subscribed Connections
  * Option to turn off UTF-8 checks in order to increase performance
  * mbstring no longer required
 
