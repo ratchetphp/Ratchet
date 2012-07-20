@@ -11,6 +11,7 @@ interface ConnectionInterface {
     /**
      * Send data to the connection
      * @param string
+     * @return ConnectionInterface
      */
     function send($data);
 

@@ -13,14 +13,16 @@ class IoConnection implements ConnectionInterface {
     protected $conn;
 
     public function __construct(ReactConn $conn) {
-        $this->conn   = $conn;
+        $this->conn = $conn;
     }
 
     /**
      * {@inheritdoc}
      */
     public function send($data) {
-        return $this->conn->write($data);
+        $this->conn->write($data);
+
+        return $this;
     }
 
     /**
