@@ -89,7 +89,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
 
         $this->mngr->onSubscribe($this->conn, $name);
 
-        $this->assertTrue($this->conn->WAMP->topics->contains($topic));
+        $this->assertTrue($this->conn->WAMP->subscriptions->contains($topic));
     }
 
     public function testDoubleSubscriptionFiresOnce() {
@@ -130,7 +130,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onSubscribe($this->conn, $name);
         $this->mngr->onUnsubscribe($this->conn, $name);
 
-        $this->assertFalse($this->conn->WAMP->topics->contains($topic));
+        $this->assertFalse($this->conn->WAMP->subscriptions->contains($topic));
     }
 
     public function testOnPublishBubbles() {

@@ -22,7 +22,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        $conn->WAMP->topics = new \SplObjectStorage;
+        $conn->WAMP->subscriptions = new \SplObjectStorage;
         $this->app->onOpen($conn);
     }
 
@@ -39,12 +39,12 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onSubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->topics->contains($topicObj)) {
+        if ($conn->WAMP->subscriptions->contains($topicObj)) {
             return;
         }
 
         $this->topicLookup[$topic]->add($conn);
-        $conn->WAMP->topics->attach($topicObj);
+        $conn->WAMP->subscriptions->attach($topicObj);
         $this->app->onSubscribe($conn, $topicObj);
     }
 
@@ -54,8 +54,8 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onUnsubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->topics->contains($topicObj)) {
-            $conn->WAMP->topics->detach($topicObj);
+        if ($conn->WAMP->subscriptions->contains($topicObj)) {
+            $conn->WAMP->subscriptions->detach($topicObj);
         } else {
             return;
         }
