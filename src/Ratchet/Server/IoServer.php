@@ -24,9 +24,9 @@ class IoServer {
 
     /**
      * Array of React event handlers
-     * @var array
+     * @var SplFixedArray
      */
-    protected $handlers = array();
+    protected $handlers;
 
     /**
      * @param Ratchet\MessageComponentInterface The Ratchet application stack to host
@@ -43,9 +43,10 @@ class IoServer {
 
         $socket->on('connection', array($this, 'handleConnect'));
 
-        $this->handlers['data']  = array($this, 'handleData');
-        $this->handlers['end']   = array($this, 'handleEnd');
-        $this->handlers['error'] = array($this, 'handleError');
+        $this->handlers = new \SplFixedArray(3);
+        $this->handlers[0] = array($this, 'handleData');
+        $this->handlers[1] = array($this, 'handleEnd');
+        $this->handlers[2] = array($this, 'handleError');
     }
 
     /**
@@ -87,9 +88,9 @@ class IoServer {
 
         $this->app->onOpen($conn->decor);
 
-        $conn->on('data', $this->handlers['data']);
-        $conn->on('end', $this->handlers['end']);
-        $conn->on('error', $this->handlers['error']);
+        $conn->on('data', $this->handlers[0]);
+        $conn->on('end', $this->handlers[1]);
+        $conn->on('error', $this->handlers[2]);
     }
 
     /**
