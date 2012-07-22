@@ -12,6 +12,7 @@ use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
 /**
+ * The latest version of the WebSocket protocol
  * @link http://tools.ietf.org/html/rfc6455
  * @todo Unicode: return mb_convert_encoding(pack("N",$u), mb_internal_encoding(), 'UCS-4BE');
  */

@@ -4,7 +4,7 @@ use Ratchet\ComponentInterface;
 use Ratchet\ConnectionInterface;
 
 /**
- * A (not literal) extension of Ratchet\ConnectionInterface
+ * An extension of Ratchet\ComponentInterface to server a WAMP application
  * onMessage is replaced by various types of messages for this protocol (pub/sub or rpc)
  */
 interface WampServerInterface extends ComponentInterface {

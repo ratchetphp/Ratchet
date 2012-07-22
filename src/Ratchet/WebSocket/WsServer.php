@@ -29,7 +29,7 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * Decorated component
-     * @var Ratchet\MessageComponentInterface|WsServerInterface
+     * @var Ratchet\MessageComponentInterface
      */
     protected $_decorating;
 
@@ -46,6 +46,7 @@ class WsServer implements MessageComponentInterface {
     protected $acceptedSubProtocols = array();
 
     /**
+     * UTF-8 validator
      * @var Ratchet\WebSocket\Encoding\ValidatorInterface
      */
     protected $validator;
@@ -58,6 +59,7 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
+     * If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
     public function __construct(MessageComponentInterface $component) {
         $this->reqParser = new HttpRequestParser;

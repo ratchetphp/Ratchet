@@ -6,6 +6,11 @@ use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
 use Ratchet\WebSocket\Version\VersionInterface;
 use Guzzle\Http\Message\RequestInterface;
 
+/**
+ * This class receives streaming data from a client request
+ * and parses HTTP headers, returning a Guzzle Request object
+ * once it's been buffered
+ */
 class HttpRequestParser implements MessageInterface {
     const EOM = "\r\n\r\n";
 
@@ -20,7 +25,7 @@ class HttpRequestParser implements MessageInterface {
      * @param Ratchet\ConnectionInterface
      * @param string Data stream to buffer
      * @return Guzzle\Http\Message\RequestInterface|null
-     * @throws OverflowException
+     * @throws OverflowException If the message buffer has become too large
      */
     public function onMessage(ConnectionInterface $context, $data) {
         if (!isset($context->httpBuffer)) {

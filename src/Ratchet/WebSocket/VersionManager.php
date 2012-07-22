@@ -3,9 +3,21 @@ namespace Ratchet\WebSocket;
 use Ratchet\WebSocket\Version\VersionInterface;
 use Guzzle\Http\Message\RequestInterface;
 
+/**
+ * Manage the various versions of the WebSocket protocol
+ * This accepts interfaces of versions to enable/disable
+ */
 class VersionManager {
+    /**
+     * The header string to let clients know which versions are supported
+     * @var string
+     */
     private $versionString = '';
 
+    /**
+     * Storage of each version enabled
+     * @var array
+     */
     protected $versions = array();
 
     /**
