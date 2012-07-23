@@ -67,7 +67,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array()) {
+    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible) {
         $this->app->onPublish($conn, $this->getTopic($topic), $event, $exclude, $eligible);
     }
 

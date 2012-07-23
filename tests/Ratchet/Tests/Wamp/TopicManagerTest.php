@@ -144,7 +144,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
           , $this->isType('array')
         );
 
-        $this->mngr->onPublish($this->conn, 'topic coverage', $msg);
+        $this->mngr->onPublish($this->conn, 'topic coverage', $msg, array(), array());
     }
 
     public function testOnCloseBubbles() {

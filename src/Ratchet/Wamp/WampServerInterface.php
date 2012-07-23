@@ -39,5 +39,5 @@ interface WampServerInterface extends ComponentInterface {
      * @param array A list of session IDs the message should be excluded from (blacklist)
      * @param array A list of session Ids the message should be send to (whitelist)
      */
-    function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array());
+    function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible);
 }
