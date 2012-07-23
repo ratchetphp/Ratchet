@@ -14,6 +14,8 @@ class Connection extends AbstractConnectionDecorator {
         }
 
         $this->getConnection()->send($msg->getContents());
+
+        return $this;
     }
 
     /**
