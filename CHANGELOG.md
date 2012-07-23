@@ -15,6 +15,7 @@ CHANGELOG
  * BC: Renamed "WampServer" to "ServerProtocol"
  * BC: New "WampServer" component passes Topic container objects of subscribed Connections
  * Option to turn off UTF-8 checks in order to increase performance
+ * Switched dependancy guzzle/guzzle to guzzle/http (no API changes)
  * mbstring no longer required
 
 * 0.1.5 (2012-07-12)

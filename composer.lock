@@ -1,13 +1,21 @@
 {
-    "hash": "1b52ec320b406d0b97b00cec6e7586e0",
+    "hash": "8e06f011f15dae3364497835c0e86e08",
     "packages": [
         {
             "package": "evenement/evenement",
             "version": "v1.0.0"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.5.0"
+            "package": "guzzle/common",
+            "version": "v2.8.1"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.1"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.1"
         },
         {
             "package": "react/event-loop",

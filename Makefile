@@ -22,7 +22,6 @@ profile:
 apidocs:
 	apigen --title Ratchet -d reports/api -s src/ \
 		-s vendor/react \
-		-s vendor/guzzle/guzzle/src/Guzzle/Http \
-		-s vendor/guzzle/guzzle/src/Guzzle/Common \
+		-s vendor/guzzle \
 		-s vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Session \
 		-s vendor/evenement/evenement/src/Evenement
