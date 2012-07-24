@@ -6,6 +6,7 @@
   , "homepage": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
+  , "minimum-stability": "beta"
   , "authors": [
         {
             "name": "Chris Boden"
@@ -17,9 +18,6 @@
         "forum": "https://groups.google.com/forum/#!forum/ratchet-php"
       , "issues": "https://github.com/cboden/Ratchet/issues"
     }
-  , "suggest": {
-        "symfony/http-foundation": "2.1.*"
-    }
   , "autoload": {
         "psr-0": {
             "Ratchet\\Tests": "tests"
@@ -30,8 +28,9 @@
         "php": ">=5.3.3"
       , "react/socket": "0.1.*"
       , "guzzle/http": "2.8.*"
+      , "symfony/http-foundation": "2.1.*"
     }
   , "require-dev": {
-        "symfony/http-foundation": "2.1.*"
+        "react/socket": "0.1.*"
     }
 }
