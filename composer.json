@@ -6,7 +6,7 @@
   , "homepage": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
-  , "minimum-stability": "beta"
+  , "minimum-stability": "RC"
   , "authors": [
         {
             "name": "Chris Boden"
@@ -29,8 +29,5 @@
       , "react/socket": "0.1.*"
       , "guzzle/http": "2.8.*"
       , "symfony/http-foundation": "2.1.*"
-    }
-  , "require-dev": {
-        "react/socket": "0.1.*"
     }
 }
