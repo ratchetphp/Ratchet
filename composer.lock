@@ -1,5 +1,5 @@
 {
-    "hash": "074cc084d4038ca0c7038beefcb7ef3c",
+    "hash": "2c082c116d4e2eb8846c78e5c1ff0f58",
     "packages": [
         {
             "package": "evenement/evenement",
@@ -7,15 +7,15 @@
         },
         {
             "package": "guzzle/common",
-            "version": "v2.8.2"
+            "version": "v2.8.6"
         },
         {
             "package": "guzzle/http",
-            "version": "v2.8.2"
+            "version": "v2.8.6"
         },
         {
             "package": "guzzle/parser",
-            "version": "v2.8.2"
+            "version": "v2.8.6"
         },
         {
             "package": "react/event-loop",
@@ -31,18 +31,18 @@
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.0"
         },
         {
             "package": "symfony/http-foundation",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.0"
         }
     ],
     "packages-dev": null,
     "aliases": [
 
     ],
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "stability-flags": [
 
     ]

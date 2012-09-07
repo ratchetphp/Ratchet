@@ -6,7 +6,6 @@
   , "homepage": "http://socketo.me"
   , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
-  , "minimum-stability": "RC"
   , "authors": [
         {
             "name": "Chris Boden"
