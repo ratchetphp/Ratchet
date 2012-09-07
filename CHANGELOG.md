@@ -8,7 +8,7 @@ CHANGELOG
 
 ---
 
-* 0.2 (2012-07-TBD)
+* 0.2 (2012-09-07)
 
  * Ratchet passes every non-binary-frame test from the Autobahn Testsuite
  * Major performance improvements
