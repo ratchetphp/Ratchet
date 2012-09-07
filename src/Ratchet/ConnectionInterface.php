@@ -1,16 +1,21 @@
 <?php
 namespace Ratchet;
 
-const VERSION = 'Ratchet/0.1.5';
+/**
+ * The version of Ratchet being used
+ * @var string
+ */
+const VERSION = 'Ratchet/0.2';
 
 /**
  * A proxy object representing a connection to the application
- * This acts as a container to storm data (in memory) about the connection
+ * This acts as a container to store data (in memory) about the connection
  */
 interface ConnectionInterface {
     /**
      * Send data to the connection
      * @param string
+     * @return ConnectionInterface
      */
     function send($data);
 

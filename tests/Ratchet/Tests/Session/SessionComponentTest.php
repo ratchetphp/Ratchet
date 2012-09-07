@@ -1,9 +1,7 @@
 <?php
 namespace Ratchet\Tests\Session;
 use Ratchet\Session\SessionProvider;
-use Ratchet\Tests\Mock\Component as MockComponent;
 use Ratchet\Tests\Mock\MemorySessionHandler;
-use Ratchet\Tests\Mock\Connection;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Guzzle\Http\Message\Request;
@@ -35,7 +33,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider(new MockComponent, new MemorySessionHandler);
+        $component = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), new MemorySessionHandler);
         $this->assertEquals($out, $method->invokeArgs($component, array($in)));
     }
 
@@ -44,7 +42,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
      */
     public function testConnectionValueFromPdo() {
         if (!extension_loaded('PDO')) {
-            return $this->markTestSkipped();
+            return $this->markTestSkipped('Session test requires PDO');
         }
 
         $sessionId = md5('testSession');
@@ -60,8 +58,8 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $pdo->exec(vsprintf("CREATE TABLE %s (%s VARCHAR(255) PRIMARY KEY, %s TEXT, %s INTEGER)", $dbOptions));
         $pdo->prepare(vsprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", $dbOptions))->execute(array($sessionId, base64_encode('_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}'), time()));
 
-        $component  = new SessionProvider(new MockComponent, new PdoSessionHandler($pdo, $dbOptions), array('auto_start' => 1));
-        $connection = new Connection();
+        $component  = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), new PdoSessionHandler($pdo, $dbOptions), array('auto_start' => 1));
+        $connection = $this->getMock('Ratchet\\ConnectionInterface');
 
         $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue($sessionId));
@@ -74,54 +72,70 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('world', $connection->Session->get('hello'));
     }
 
-    public function testDecoratingMethods() {
-        $conns = array();
-        for ($i = 1; $i <= 3; $i++) {
-            $conns[$i] = new Connection;
+    protected function newConn() {
+        $conn = $this->getMock('Ratchet\\ConnectionInterface');
 
-            $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
-            $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
+        $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
+        $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
-            $conns[$i]->WebSocket          = new \StdClass;
-            $conns[$i]->WebSocket->request = $headers;
-        }
+        $conn->WebSocket          = new \StdClass;
+        $conn->WebSocket->request = $headers;
 
-        $mock = new MockComponent;
+        return $conn;
+    }
+
+    public function testOnOpenBubbles() {
+        $conn = $this->newConn();
+        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
-        $comp->onOpen($conns[1]);
-        $comp->onOpen($conns[3]);
-        $comp->onOpen($conns[2]);
-        $this->assertSame($conns[2], $mock->last['onOpen'][0]);
+        $mock->expects($this->once())->method('onOpen')->with($conn);
+        $comp->onOpen($conn);
+    }
 
-        $msg = 'Hello World!';
-        $comp->onMessage($conns[1], $msg);
-        $this->assertSame($conns[1], $mock->last['onMessage'][0]);
-        $this->assertEquals($msg, $mock->last['onMessage'][1]);
+    protected function getOpenConn() {
+        $conn = $this->newConn();
+        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
+        $prov = new SessionProvider($mock, new NullSessionHandler);
 
-        $comp->onClose($conns[3]);
-        $this->assertSame($conns[3], $mock->last['onClose'][0]);
+        $prov->onOpen($conn);
 
-        try {
-            throw new \Exception('I threw an error');
-        } catch (\Exception $e) {
-        }
+        return array($conn, $mock, $prov);
+    }
 
-        $comp->onError($conns[2], $e);
-        $this->assertEquals($conns[2], $mock->last['onError'][0]);
-        $this->assertEquals($e, $mock->last['onError'][1]);
+    public function testOnMessageBubbles() {
+        list($conn, $mock, $prov) = $this->getOpenConn();
+        $msg = 'No sessions here';
+
+        $mock->expects($this->once())->method('onMessage')->with($conn, $msg);
+        $prov->onMessage($conn, $msg);
+    }
+
+    public function testOnCloseBubbles() {
+        list($conn, $mock, $prov) = $this->getOpenConn();
+
+        $mock->expects($this->once())->method('onClose')->with($conn);
+        $prov->onClose($conn);
+    }
+
+    public function testOnErrorBubbles() {
+        list($conn, $mock, $prov) = $this->getOpenConn();
+        $e = new \Exception('I made a boo boo');
+
+        $mock->expects($this->once())->method('onError')->with($conn, $e);
+        $prov->onError($conn, $e);
     }
 
     public function testGetSubProtocolsReturnsArray() {
-        $mock = new MockComponent;
+        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
-        $this->assertTrue(is_array($comp->getSubProtocols()));
+        $this->assertInternalType('array', $comp->getSubProtocols());
     }
 
     public function testGetSubProtocolsGetFromApp() {
-        $mock = new MockComponent;
-        $mock->protocols = array('hello', 'world');
+        $mock = $this->getMock('Ratchet\\Tests\\WebSocket\\Stub\\WsMessageComponentInterface');
+        $mock->expects($this->once())->method('getSubProtocols')->will($this->returnValue(array('hello', 'world')));
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
         $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));

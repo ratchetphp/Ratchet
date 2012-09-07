@@ -3,6 +3,7 @@ namespace Ratchet\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Version;
+use Ratchet\WebSocket\Encoding\ToggleableValidator;
 use Guzzle\Http\Message\Response;
 
 /**
@@ -28,7 +29,7 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * Decorated component
-     * @var Ratchet\MessageComponentInterface|WsServerInterface
+     * @var Ratchet\MessageComponentInterface
      */
     protected $_decorating;
 
@@ -45,6 +46,12 @@ class WsServer implements MessageComponentInterface {
     protected $acceptedSubProtocols = array();
 
     /**
+     * UTF-8 validator
+     * @var Ratchet\WebSocket\Encoding\ValidatorInterface
+     */
+    protected $validator;
+
+    /**
      * Flag if we have checked the decorated component for sub-protocols
      * @var boolean
      */
@@ -52,16 +59,16 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
+     * If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
     public function __construct(MessageComponentInterface $component) {
-        //mb_internal_encoding('UTF-8');
-
         $this->reqParser = new HttpRequestParser;
         $this->versioner = new VersionManager;
+        $this->validator = new ToggleableValidator;
 
         $this->versioner
-            ->enableVersion(new Version\RFC6455($component))
-            ->enableVersion(new Version\HyBi10($component))
+            ->enableVersion(new Version\RFC6455($this->validator))
+            ->enableVersion(new Version\HyBi10($this->validator))
             ->enableVersion(new Version\Hixie76)
         ;
 
@@ -130,11 +137,7 @@ class WsServer implements MessageComponentInterface {
         if ($this->connections->contains($conn)) {
             $decor = $this->connections[$conn];
             $this->connections->detach($conn);
-        }
 
-        // WS::onOpen is not called when the socket connects, it's call when the handshake is done
-        // The socket could close before WS calls onOpen, so we need to check if we've "opened" it for the developer yet
-        if (isset($decor)) {
             $this->_decorating->onClose($decor);
         }
     }
@@ -153,9 +156,23 @@ class WsServer implements MessageComponentInterface {
     /**
      * Disable a specific version of the WebSocket protocol
      * @param int Version ID to disable
+     * @return WsServer
      */
     public function disableVersion($versionId) {
         $this->versioner->disableVersion($versionId);
+
+        return $this;
+    }
+
+    /**
+     * Toggle weather to check encoding of incoming messages
+     * @param bool
+     * @return WsServer
+     */
+    public function setEncodingChecks($opt) {
+        $this->validator->on = (boolean)$opt;
+
+        return $this;
     }
 
     /**

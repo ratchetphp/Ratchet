@@ -41,64 +41,58 @@ class Frame implements FrameInterface {
      * Number of bytes in the payload (as per framing protocol)
      * @var int
      */
-    protected $_pay_len_def = -1;
+    protected $defPayLen = -1;
+
+    /**
+     * If the frame is coalesced this is true
+     * This is to prevent doing math every time ::isCoaleced is called
+     * @var boolean
+     */
+    private $isCoalesced = false;
+
+    /**
+     * The unpacked first byte of the frame
+     * @var int
+     */
+    protected $firstByte = -1;
+
+    /**
+     * The unpacked second byte of the frame
+     * @var int
+     */
+    protected $secondByte = -1;
 
     public function __construct($payload = null, $final = true, $opcode = 1) {
         if (null === $payload) {
             return;
         }
 
-        $raw = (int)(boolean)$final . sprintf('%07b', (int)$opcode);
+        $this->defPayLen   = strlen($payload);
+        $this->firstByte   = ($final ? 128 : 0) + $opcode;
+        $this->secondByte  = $this->defPayLen;
+        $this->isCoalesced = true;
 
-        $plLen = strlen($payload);
-        if ($plLen <= 125) {
-            $raw .= sprintf('%08b', $plLen);
-        } elseif ($plLen <= 65535) {
-            $raw .= sprintf('%08b', 126) . sprintf('%016b', $plLen);
-        } else { // todo, make sure msg isn't longer than b1x71
-            $raw .= sprintf('%08b', 127) . sprintf('%064b', $plLen);
+        $ext = '';
+        if ($this->defPayLen > 65535) {
+            $ext = pack('NN', 0, $this->defPayLen);
+            $this->secondByte = 127;
+        } elseif ($this->defPayLen > 125) {
+            $ext = pack('n', $this->defPayLen);
+            $this->secondByte = 126;
         }
 
-        $this->addBuffer(static::encode($raw) . $payload);
-    }
-
-    /**
-     * @param string A valid UTF-8 string to send over the wire
-     * @param bool Is the final frame in a message
-     * @param int The opcode of the frame, see constants
-     * @param bool Mask the payload
-     * @return Frame
-     * @throws InvalidArgumentException If the payload is not a valid UTF-8 string
-     * @throws LengthException If the payload is too big
-     */
-    public static function create($payload, $final = true, $opcode = 1) {
-        return new static($payload, $final, $opcode);
-    }
-
-    /**
-     * Encode the fake binary string to send over the wire
-     * @param string of 1's and 0's
-     * @return string
-     */
-    public static function encode($in) {
-        if (strlen($in) > 8) {
-            $out = '';
-
-            while (strlen($in) >= 8) {
-                $out .= static::encode(substr($in, 0, 8));
-                $in   = substr($in, 8); 
-            }
-
-            return $out;
-        }
-
-        return chr(bindec($in));
+        $this->data       = chr($this->firstByte) . chr($this->secondByte) . $ext . $payload;
+        $this->bytesRecvd = 2 + strlen($ext) + $this->defPayLen;
     }
 
     /**
      * {@inheritdoc}
      */
     public function isCoalesced() {
+        if (true === $this->isCoalesced) {
+            return true;
+        }
+
         try {
             $payload_length = $this->getPayloadLength();
             $payload_start  = $this->getPayloadStartingByte();
@@ -106,41 +100,85 @@ class Frame implements FrameInterface {
             return false;
         }
 
-        return $this->bytesRecvd >= $payload_length + $payload_start;
+        $this->isCoalesced = $this->bytesRecvd >= $payload_length + $payload_start;
+
+        return $this->isCoalesced;
     }
 
     /**
      * {@inheritdoc}
      */
     public function addBuffer($buf) {
-        $buf = (string)$buf;
+        $len = strlen($buf);
 
         $this->data       .= $buf;
-        $this->bytesRecvd += strlen($buf);
+        $this->bytesRecvd += $len;
+
+        if ($this->firstByte === -1 && $this->bytesRecvd !== 0) {
+            $this->firstByte = ord($this->data[0]);
+        }
+
+        if ($this->secondByte === -1 && $this->bytesRecvd >= 2) {
+            $this->secondByte = ord($this->data[1]);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
     public function isFinal() {
-        if ($this->bytesRecvd < 1) {
+        if (-1 === $this->firstByte) {
             throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
         }
 
-        $fbb = sprintf('%08b', ord(substr($this->data, 0, 1)));
+        return 128 === ($this->firstByte & 128);
+    }
 
-        return (boolean)(int)$fbb[0];
+    /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv1() {
+        if (-1 === $this->firstByte) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        return 64 === ($this->firstByte & 64);
+    }
+
+    /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv2() {
+        if (-1 === $this->firstByte) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        return 32 === ($this->firstByte & 32);
+    }
+
+    /**
+     * @return boolean
+     * @throws UnderflowException
+     */
+    public function getRsv3() {
+        if (-1 === $this->firstByte) {
+            throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+        }
+
+        return 16 == ($this->firstByte & 16);
     }
 
     /**
      * {@inheritdoc}
      */
     public function isMasked() {
-        if ($this->bytesRecvd < 2) {
+        if (-1 === $this->secondByte) {
             throw new \UnderflowException("Not enough bytes received ({$this->bytesRecvd}) to determine if mask is set");
         }
 
-        return (boolean)bindec(substr(sprintf('%08b', ord(substr($this->data, 1, 1))), 0, 1));
+        return 128 === ($this->secondByte & 128);
     }
 
     /**
@@ -161,13 +199,14 @@ class Frame implements FrameInterface {
     }
 
     /**
+     * Create a 4 byte masking key
      * @return string
      */
     public function generateMaskingKey() {
         $mask = '';
 
         for ($i = 1; $i <= static::MASK_LENGTH; $i++) {
-            $mask .= sprintf("%c", rand(32, 126));
+            $mask .= chr(rand(32, 126));
         }
 
         return $mask;
@@ -175,7 +214,7 @@ class Frame implements FrameInterface {
 
     /**
      * Apply a mask to the payload
-     * @param string|null
+     * @param string|null If NULL is passed a masking key will be generated
      * @throws InvalidArgumentException If there is an issue with the given masking key
      * @throws UnderflowException If the frame is not coalesced
      */
@@ -188,15 +227,15 @@ class Frame implements FrameInterface {
             throw new \InvalidArgumentException("Masking key must be " . static::MASK_LENGTH ." characters");
         }
 
-        if (!mb_check_encoding($maskingKey, 'US-ASCII')) {
-            throw new \InvalidArgumentException("Masking key MUST be ASCII");
+        if (extension_loaded('mbstring') && true !== mb_check_encoding($maskingKey, 'US-ASCII')) {
+            throw new \OutOfBoundsException("Masking key MUST be ASCII");
         }
 
         $this->unMaskPayload();
 
-        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+        $this->secondByte = $this->secondByte | 128;
+        $this->data[1]    = chr($this->secondByte);
 
-        $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '1', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, $maskingKey, $this->getNumPayloadBytes() + 1, 0);
 
         $this->bytesRecvd += static::MASK_LENGTH;
@@ -211,15 +250,19 @@ class Frame implements FrameInterface {
      * @return Frame
      */
     public function unMaskPayload() {
+        if (!$this->isCoalesced()) {
+            throw new \UnderflowException('Frame must be coalesced before applying mask');
+        }
+
         if (!$this->isMasked()) {
             return $this;
         }
 
         $maskingKey = $this->getMaskingKey();
 
-        $byte = sprintf('%08b', ord(substr($this->data, 1, 1)));
+        $this->secondByte = $this->secondByte & ~128;
+        $this->data[1] = chr($this->secondByte);
 
-        $this->data = substr_replace($this->data, static::encode(substr_replace($byte, '0', 0, 1)), 1, 1);
         $this->data = substr_replace($this->data, '', $this->getNumPayloadBytes() + 1, static::MASK_LENGTH);
 
         $this->bytesRecvd -= static::MASK_LENGTH;
@@ -228,7 +271,14 @@ class Frame implements FrameInterface {
         return $this;
     }
 
-    protected function applyMask($maskingKey, $payload = null) {
+    /**
+     * Apply a mask to a string or the payload of the instance
+     * @param string The 4 character masking key to be applied
+     * @param string|null A string to mask or null to use the payload
+     * @throws UnderflowException If using the payload but enough hasn't been buffered
+     * @return string The masked string
+     */
+    public function applyMask($maskingKey, $payload = null) {
         if (null === $payload) {
             if (!$this->isCoalesced()) {
                 throw new \UnderflowException('Frame must be coalesced to apply a mask');
@@ -239,7 +289,7 @@ class Frame implements FrameInterface {
 
         $applied = '';
         for ($i = 0, $len = strlen($payload); $i < $len; $i++) {
-            $applied .= substr($payload, $i, 1) ^ substr($maskingKey, $i % static::MASK_LENGTH, 1);
+            $applied .= $payload[$i] ^ $maskingKey[$i % static::MASK_LENGTH];
         }
 
         return $applied;
@@ -249,11 +299,11 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function getOpcode() {
-        if ($this->bytesRecvd < 1) {
+        if (-1 === $this->firstByte) {
             throw new \UnderflowException('Not enough bytes received to determine opcode');
         }
 
-        return bindec(substr(sprintf('%08b', ord(substr($this->data, 0, 1))), 4, 4));
+        return ($this->firstByte & ~240);
     }
 
     /**
@@ -262,11 +312,11 @@ class Frame implements FrameInterface {
      * @throws UnderflowException If the buffer doesn't have enough data to determine this
      */
     protected function getFirstPayloadVal() {
-        if ($this->bytesRecvd < 2) {
+        if (-1 === $this->secondByte) {
             throw new \UnderflowException('Not enough bytes received');
         }
 
-        return ord(substr($this->data, 1, 1)) & 127;
+        return $this->secondByte & 127;
     }
 
     /**
@@ -274,7 +324,7 @@ class Frame implements FrameInterface {
      * @throws UnderflowException
      */
     protected function getNumPayloadBits() {
-        if ($this->bytesRecvd < 2) {
+        if (-1 === $this->secondByte) {
             throw new \UnderflowException('Not enough bytes received');
         }
 
@@ -291,13 +341,9 @@ class Frame implements FrameInterface {
         }
 
         // If the value of the initial payload length are is 127 an additional 48 bits are used to describe length 
-        // Note: The documentation specifies the length is to be 63 bits, but I think that's a type and is 64 (16+48)
+        // Note: The documentation specifies the length is to be 63 bits, but I think that's a typo and is 64 (16+48)
         if ($check === 127) {
             $bits += 48;
-        }
-
-        if (!in_array($bits, array(7, 23, 71))) {
-            throw new \UnexpectedValueException("Malformed frame, invalid payload length provided");
         }
 
         return $bits;
@@ -315,15 +361,12 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function getPayloadLength() {
-        if ($this->_pay_len_def !== -1) {
-            return $this->_pay_len_def;
+        if ($this->defPayLen !== -1) {
+            return $this->defPayLen;
         }
 
-        $length_check = $this->getFirstPayloadVal();
-
-        if ($length_check <= 125) {
-            $this->_pay_len_def = $length_check;
-
+        $this->defPayLen = $this->getFirstPayloadVal();
+        if ($this->defPayLen <= 125) {
             return $this->getPayloadLength();
         }
 
@@ -332,12 +375,13 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Not enough data buffered to determine payload length');
         }
 
-        $strings = array();
-        for ($i = 2; $i < $byte_length + 1; $i++) {
-            $strings[] = ord(substr($this->data, $i, 1));
+        $len = 0;
+        for ($i = 2; $i <= $byte_length; $i++) {
+            $len <<= 8;
+            $len  += ord($this->data[$i]);
         }
 
-        $this->_pay_len_def = bindec(vsprintf(str_repeat('%08b', $byte_length - 1), $strings));
+        $this->defPayLen = $len;
 
         return $this->getPayloadLength();
     }
@@ -346,7 +390,7 @@ class Frame implements FrameInterface {
      * {@inheritdoc}
      */
     public function getPayloadStartingByte() {
-        return 1 + $this->getNumPayloadBytes() + strlen($this->getMaskingKey());
+        return 1 + $this->getNumPayloadBytes() + ($this->isMasked() ? static::MASK_LENGTH : 0);
     }
 
     /**
@@ -358,10 +402,10 @@ class Frame implements FrameInterface {
             throw new \UnderflowException('Can not return partial message');
         }
 
+        $payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());
+
         if ($this->isMasked()) {
-            $payload = $this->applyMask($this->getMaskingKey());
-        } else {
-            $payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());
+            $payload = $this->applyMask($this->getMaskingKey(), $payload);
         }
 
         return $payload;

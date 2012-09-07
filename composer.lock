@@ -1,15 +1,21 @@
 {
-    "hash": "31c6274af1ace64552f45608ba1f829d",
+    "hash": "2c082c116d4e2eb8846c78e5c1ff0f58",
     "packages": [
         {
             "package": "evenement/evenement",
-            "version": "1.0.x-dev",
-            "source-reference": "v1.0.0",
-            "commit-date": "1338390068"
+            "version": "v1.0.0"
         },
         {
-            "package": "guzzle/guzzle",
-            "version": "v2.5.0"
+            "package": "guzzle/common",
+            "version": "v2.8.6"
+        },
+        {
+            "package": "guzzle/http",
+            "version": "v2.8.6"
+        },
+        {
+            "package": "guzzle/parser",
+            "version": "v2.8.6"
         },
         {
             "package": "react/event-loop",
@@ -17,9 +23,7 @@
         },
         {
             "package": "react/socket",
-            "version": "dev-master",
-            "source-reference": "v0.1.1",
-            "commit-date": "1342126952"
+            "version": "v0.1.1"
         },
         {
             "package": "react/stream",
@@ -27,29 +31,19 @@
         },
         {
             "package": "symfony/event-dispatcher",
-            "version": "dev-master",
-            "source-reference": "0dc437f2eca7dea19facfde6db7f7f5e8e71d0bc",
-            "commit-date": "1341838460"
+            "version": "v2.1.0"
         },
         {
             "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/http-foundation",
-            "version": "dev-master",
-            "source-reference": "3399f6f068cd41f1b42140699db1f1e6d3bcb361",
-            "commit-date": "1342107786"
+            "version": "v2.1.0"
         }
     ],
     "packages-dev": null,
     "aliases": [
 
     ],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "react/socket": 20
-    }
+    "minimum-stability": "stable",
+    "stability-flags": [
+
+    ]
 }
