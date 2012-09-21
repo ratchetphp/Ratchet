@@ -208,7 +208,7 @@ class WsServer implements MessageComponentInterface {
             }
         }
 
-        return substr($string, 0, -1);
+        return substr($string, 0, -1) ?: '';
     }
 
     /**
