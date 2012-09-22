@@ -45,6 +45,6 @@ class WsServerTest extends \PHPUnit_Framework_TestCase {
         $method = $class->getMethod('getSubProtocolString');
         $method->setAccessible(true);
 
-        $this->assertEquals($expected, $method->invokeArgs($this->serv, array($req)));
+        $this->assertSame($expected, $method->invokeArgs($this->serv, array($req)));
     }
 }
