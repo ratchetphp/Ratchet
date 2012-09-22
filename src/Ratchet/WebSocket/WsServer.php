@@ -200,15 +200,15 @@ class WsServer implements MessageComponentInterface {
             return '';
         }
 
-        $string = '';
+        $result = array();
 
         foreach ($requested as $sub) {
             if ($this->isSubProtocolSupported($sub)) {
-                $string .= $sub . ',';
+                $result[] = $sub;
             }
         }
 
-        return substr($string, 0, -1) ?: '';
+        return implode(',', $result);
     }
 
     /**
