@@ -284,7 +284,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider maskingKeyProvider
      * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getMaskingKey
-     * @todo I I wrote the dataProvider incorrectly, skpping for now
+     * @todo I I wrote the dataProvider incorrectly, skipping for now
      */
     public function testGetMaskingKey($mask) {
         $this->_frame->addBuffer(static::encode($this->_firstByteFinText));

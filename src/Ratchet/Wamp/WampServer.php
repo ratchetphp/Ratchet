@@ -5,7 +5,7 @@ use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\ConnectionInterface;
 
 /**
- * Enable support for the offical WAMP sub-protocol in your application
+ * Enable support for the official WAMP sub-protocol in your application
  * WAMP allows for Pub/Sub and RPC
  * @link http://wamp.ws The WAMP specification
  * @link https://github.com/oberstet/AutobahnJS Souce for client side library

@@ -45,7 +45,7 @@ class Frame implements FrameInterface {
 
     /**
      * If the frame is coalesced this is true
-     * This is to prevent doing math every time ::isCoaleced is called
+     * This is to prevent doing math every time ::isCoalesced is called
      * @var boolean
      */
     private $isCoalesced = false;
@@ -420,7 +420,7 @@ class Frame implements FrameInterface {
     }
 
     /**
-     * Sometimes clients will concatinate more than one frame over the wire
+     * Sometimes clients will concatenate more than one frame over the wire
      * This method will take the extra bytes off the end and return them
      * @todo Consider returning new Frame
      * @return string

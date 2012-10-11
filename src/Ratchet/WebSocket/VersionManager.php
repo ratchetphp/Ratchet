@@ -51,7 +51,7 @@ class VersionManager {
 
     /**
      * Enable support for a specific version of the WebSocket protocol
-     * @param Ratchet\WebSocket\Vesion\VersionInterface
+     * @param Ratchet\WebSocket\Version\VersionInterface
      * @return HandshakeNegotiator
      */
     public function enableVersion(VersionInterface $version) {

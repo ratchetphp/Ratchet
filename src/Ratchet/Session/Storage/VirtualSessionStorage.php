@@ -12,7 +12,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
 
     /**
      * @param SessionHandlerInterface
-     * @param string The ID of the session to retreive
+     * @param string The ID of the session to retrieve
      * @param Ratchet\Session\Serialize\HandlerInterface
      */
     public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {

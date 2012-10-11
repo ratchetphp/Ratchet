@@ -30,7 +30,7 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-      * Send a message to all the connectiosn in this topic
+      * Send a message to all the connections in this topic
       * @param string
       * @return Topic
       */
