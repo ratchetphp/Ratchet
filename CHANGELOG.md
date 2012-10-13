@@ -8,6 +8,12 @@ CHANGELOG
 
 ---
 
+* 0.2.1 (2012-10-13)
+
+ * BF: No more UTF-8 warnings in browsers (no longer sending empty sub-protocol string)
+ * Documentation corrections
+ * Using new composer structure
+
 * 0.2 (2012-09-07)
 
  * Ratchet passes every non-binary-frame test from the Autobahn Testsuite
