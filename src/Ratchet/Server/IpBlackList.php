@@ -20,7 +20,7 @@ class IpBlackList implements MessageComponentInterface {
 
     /**
      * Add an address to the blacklist that will not be allowed to connect to your application
-     * @param string IP address to block from connecting to yoru application
+     * @param string IP address to block from connecting to your application
      * @return IpBlackList
      */
     public function blockAddress($ip) {
@@ -31,7 +31,7 @@ class IpBlackList implements MessageComponentInterface {
 
     /**
      * Unblock an address so they can access your application again
-     * @param string IP address to unblock from connecting to yoru application
+     * @param string IP address to unblock from connecting to your application
      * @return IpBlackList
      */
     public function unblockAddress($ip) {

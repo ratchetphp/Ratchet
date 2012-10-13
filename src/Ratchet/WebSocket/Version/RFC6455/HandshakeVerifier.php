@@ -70,7 +70,7 @@ class HandshakeVerifier {
      * @param string|null
      * @return bool
      * @todo Find out if I can find the master socket, ensure the port is attached to header if not 80 or 443 - not sure if this is possible, as I tried to hide it
-     * @todo Once I fix HTTP::getHeaders just verify this isn't NULL or empty...or manybe need to verify it's a valid domin??? Or should it equal $_SERVER['HOST'] ?
+     * @todo Once I fix HTTP::getHeaders just verify this isn't NULL or empty...or maybe need to verify it's a valid domain??? Or should it equal $_SERVER['HOST'] ?
      */
     public function verifyHost($val) {
         return (null !== $val);
@@ -103,7 +103,7 @@ class HandshakeVerifier {
     }
 
     /**
-     * This function verifyies the nonce is valid (64 big encoded, 16 bytes random string)
+     * This function verifies the nonce is valid (64 big encoded, 16 bytes random string)
      * @param string|null
      * @return bool
      * @todo The spec says we don't need to base64_decode - can I just check if the length is 24 and not decode?
@@ -118,7 +118,7 @@ class HandshakeVerifier {
      * Origin is an optional field
      * @param string|null
      * @return bool
-     * @todo Implement verification functality - see section 4.2.1.7
+     * @todo Implement verification functionality - see section 4.2.1.7
      */
     public function verifyOrigin($val) {
         if (null === $val) {

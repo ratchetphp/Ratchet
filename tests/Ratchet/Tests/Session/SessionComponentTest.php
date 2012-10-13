@@ -38,7 +38,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * I think I have severly butchered this test...it's not so much of a unit test as it is a full-fledged component test
+     * I think I have severely butchered this test...it's not so much of a unit test as it is a full-fledged component test
      */
     public function testConnectionValueFromPdo() {
         if (!extension_loaded('PDO')) {

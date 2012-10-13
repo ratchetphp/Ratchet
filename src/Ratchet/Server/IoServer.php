@@ -8,7 +8,7 @@ use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
 
 /**
- * Creates an open-ended socket to listen on a port for incomming connections. 
+ * Creates an open-ended socket to listen on a port for incoming connections.
  * Events are delegated through this to attached applications
  */
 class IoServer {
