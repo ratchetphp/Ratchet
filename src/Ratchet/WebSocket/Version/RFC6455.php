@@ -104,7 +104,7 @@ class RFC6455 implements VersionInterface {
             $from->WebSocket->message = $this->newMessage();
         }
 
-        // There is a frame fragment attatched to the connection, add to it
+        // There is a frame fragment attached to the connection, add to it
         if (!isset($from->WebSocket->frame)) {
             $from->WebSocket->frame = $this->newFrame();
         }

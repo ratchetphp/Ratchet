@@ -67,7 +67,7 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
             array(true, '*')
           , array(true, 'example.com')
           , array(true, 'exam-ple.com')
-          , array(true, '*.exmple.com')
+          , array(true, '*.example.com')
           , array(true, 'www.example.com')
           , array(true, 'dev.dev.example.com')
           , array(true, 'http://example.com')

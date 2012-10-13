@@ -45,7 +45,7 @@ class WampConnectionTest extends \PHPUnit_Framework_TestCase {
 
     public function testPrefix() {
         $shortOut = 'outgoing';
-        $longOut  = 'http://example.com/outoing';
+        $longOut  = 'http://example.com/outgoing';
 
         $this->mock->expects($this->once())->method('send')->with(json_encode(array(1, $shortOut, $longOut)));
 
