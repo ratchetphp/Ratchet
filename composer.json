@@ -25,7 +25,7 @@
     }
   , "require": {
         "php": ">=5.3.3"
-      , "react/socket": "0.1.*"
+      , "react/socket": "0.2.*"
       , "guzzle/http": "2.8.*"
       , "symfony/http-foundation": "2.1.*"
     }
