@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.2.2 (2012-10-20)
+
+ * Bumped deps to use React v0.2
+
 * 0.2.1 (2012-10-13)
 
  * BF: No more UTF-8 warnings in browsers (no longer sending empty sub-protocol string)
