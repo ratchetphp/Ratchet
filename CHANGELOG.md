@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.2.3 (2012-11-17)
+
+ * Bumped deps to use Guzzle v3
+
 * 0.2.2 (2012-10-20)
 
  * Bumped deps to use React v0.2

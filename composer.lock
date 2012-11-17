@@ -43,24 +43,24 @@
         },
         {
             "name": "guzzle/common",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/common.git",
-                "reference": "v3.0.3"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/archive/v3.0.3.zip",
-                "reference": "v3.0.3",
+                "url": "https://github.com/guzzle/common/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2012-11-04 20:31:03",
+            "time": "2012-11-12 00:00:24",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -82,17 +82,17 @@
         },
         {
             "name": "guzzle/http",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/http.git",
-                "reference": "v3.0.3"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/archive/v3.0.3.zip",
-                "reference": "v3.0.3",
+                "url": "https://github.com/guzzle/http/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
@@ -101,7 +101,7 @@
                 "guzzle/parser": "self.version",
                 "guzzle/stream": "self.version"
             },
-            "time": "2012-11-03 00:09:36",
+            "time": "2012-11-11 23:54:57",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -131,17 +131,17 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "git://github.com/guzzle/parser.git",
-                "reference": "v3.0.3"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/archive/v3.0.3.zip",
-                "reference": "v3.0.3",
+                "url": "https://github.com/guzzle/parser/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
@@ -170,24 +170,24 @@
         },
         {
             "name": "guzzle/stream",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "target-dir": "Guzzle/Stream",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/stream",
-                "reference": "v3.0.3"
+                "reference": "v3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/stream/archive/v3.0.3.zip",
-                "reference": "v3.0.3",
+                "url": "https://github.com/guzzle/stream/archive/v3.0.4.zip",
+                "reference": "v3.0.4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
                 "guzzle/common": "self.version"
             },
-            "time": "2012-10-31 05:10:58",
+            "time": "2012-11-11 23:54:57",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -215,31 +215,32 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "target-dir": "React/EventLoop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop",
-                "reference": "v0.2.2"
+                "reference": "v0.2.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/event-loop/zipball/v0.2.2",
-                "reference": "v0.2.2",
+                "url": "https://github.com/reactphp/event-loop/archive/v0.2.3.zip",
+                "reference": "v0.2.3",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "suggest": {
-                "ext-libevent": ">=0.0.5"
+                "ext-libevent": ">=0.0.5",
+                "ext-libev": "*"
             },
-            "time": "2012-09-10 05:53:22",
+            "time": "2012-11-12 23:00:05",
             "type": "library",
             "extra": {
-                "branch-alias": [
-
-    ]
+                "branch-alias": {
+                    "dev-master": "0.2-dev"
+                }
             },
             "installation-source": "dist",
             "autoload": {
@@ -257,17 +258,17 @@
         },
         {
             "name": "react/socket",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "target-dir": "React/Socket",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket",
-                "reference": "v0.2.2"
+                "reference": "v0.2.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/socket/zipball/v0.2.2",
-                "reference": "v0.2.2",
+                "url": "https://github.com/reactphp/socket/archive/v0.2.3.zip",
+                "reference": "v0.2.3",
                 "shasum": ""
             },
             "require": {
@@ -276,12 +277,12 @@
                 "react/event-loop": "0.2.*",
                 "react/stream": "0.2.*"
             },
-            "time": "2012-09-10 05:56:19",
+            "time": "2012-11-05 13:25:35",
             "type": "library",
             "extra": {
-                "branch-alias": [
-
-    ]
+                "branch-alias": {
+                    "dev-master": "0.2-dev"
+                }
             },
             "installation-source": "dist",
             "autoload": {
@@ -299,17 +300,17 @@
         },
         {
             "name": "react/stream",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "target-dir": "React/Stream",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/stream",
-                "reference": "v0.2.2"
+                "reference": "v0.2.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/stream/zipball/v0.2.2",
-                "reference": "v0.2.2",
+                "url": "https://github.com/reactphp/stream/archive/v0.2.3.zip",
+                "reference": "v0.2.3",
                 "shasum": ""
             },
             "require": {
@@ -319,12 +320,12 @@
             "suggest": {
                 "react/event-loop": "0.2.*"
             },
-            "time": "2012-10-28 03:28:34",
+            "time": "2012-11-05 13:25:35",
             "type": "library",
             "extra": {
-                "branch-alias": [
-
-    ]
+                "branch-alias": {
+                    "dev-master": "0.2-dev"
+                }
             },
             "installation-source": "dist",
             "autoload": {

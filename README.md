@@ -8,14 +8,14 @@ Build up your application through simple interfaces and re-use your application 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 22, Firefox 6 - 16, Safari 5.0.1 - 6, iOS 4.2, iOS 5 - 6
+* Tested on Chrome 13 - 23, Firefox 6 - 16, Safari 5.0.1 - 6, iOS 4.2, iOS 5 - 6
 * Ratchet [passes](http://socketo.me/reports/ab/) the [Autobahn Testsuite](http://autobahn.ws/testsuite) (non-binary messages)
 
 ##Requirements
 
 Shell access is required and a dedicated machine with root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access.
-Note that you can not run two applications (Apache and Ratchet) on the same port, thus the requirement for a separate machine (for now).
+Note that you can not run two applications (Apache and Ratchet) on the same port, thus the suggestion for a separate machine (unless you have a reverse proxy).
 
 PHP 5.3.3 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements. 
 
