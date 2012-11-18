@@ -10,9 +10,16 @@ cover:
 abtests:
 	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
 	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
-	wstest -m testeeserver -w ws://localhost:8002 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libev.php &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-noutf8.php &
+	wstest -m testeeserver -w ws://localhost:8004 &
 	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
 	killall php wstest
+
+abtest:
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
+	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-quick.json
+	killall php
 
 profile:
 	php -d 'xdebug.profiler_enable=1' tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
