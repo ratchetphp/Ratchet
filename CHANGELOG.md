@@ -8,9 +8,10 @@ CHANGELOG
 
 ---
 
-* 0.2.3 (2012-11-17)
+* 0.2.3 (2012-11-21)
 
- * Bumped deps to use Guzzle v3
+ * Bumped dep: Guzzle to v3, React to v0.2.4
+ * More tests
 
 * 0.2.2 (2012-10-20)
 
