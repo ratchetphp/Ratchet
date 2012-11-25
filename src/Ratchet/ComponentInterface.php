@@ -2,8 +2,8 @@
 namespace Ratchet;
 
 /**
- * This is the interface to build a Ratchet application with
- * It impelemtns the decorator and command pattern to build an application stack
+ * This is the interface to build a Ratchet application with.
+ * It implements the decorator pattern to build an application stack
  */
 interface ComponentInterface {
     /**
