@@ -73,7 +73,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
             throw new \InvalidArgumentException('Handler must be instance of SessionHandlerInterface');
         }
 
-        if (!($saveHandler instanceof \VirtualProxy)) {
+        if (!($saveHandler instanceof VirtualProxy)) {
             $saveHandler = new VirtualProxy($saveHandler);
         }
 
