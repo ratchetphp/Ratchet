@@ -30,13 +30,13 @@ CHANGELOG
  * BC: Renamed "WampServer" to "ServerProtocol"
  * BC: New "WampServer" component passes Topic container objects of subscribed Connections
  * Option to turn off UTF-8 checks in order to increase performance
- * Switched dependancy guzzle/guzzle to guzzle/http (no API changes)
+ * Switched dependency guzzle/guzzle to guzzle/http (no API changes)
  * mbstring no longer required
 
 * 0.1.5 (2012-07-12)
 
  * BF: Error where service wouldn't run on PHP <= 5.3.8
- * Dependancy library updates
+ * Dependency library updates
 
 * 0.1.4 (2012-06-17)
 
@@ -47,8 +47,8 @@ CHANGELOG
 
  * Major refactor inside WebSocket protocol handling, more loosley coupled
  * BF: Proper error handling on failed WebSocket connections
- * BF: Handle TCP message concatination
- * Inclusing of the AutobahnTestSuite checking WebSocket protocol compliance
+ * BF: Handle TCP message concatenation
+ * Inclusion of the AutobahnTestSuite checking WebSocket protocol compliance
  * mb_string now a requirement
 
 * 0.1.2 (2012-05-19)
@@ -64,4 +64,4 @@ CHANGELOG
 * 0.1 (2012-05-11)
 
  * First release with components: IoServer, WsServer, SessionProvider, WampServer, FlashPolicy, IpBlackList
- * I/O now handled by React, making Ratchet fully asyncronous 
+ * I/O now handled by React, making Ratchet fully asynchronous 
