@@ -14,8 +14,9 @@
         }
     ]
   , "support": {
-        "forum": "https://groups.google.com/forum/#!forum/ratchet-php"
+        "forum":  "https://groups.google.com/forum/#!forum/ratchet-php"
       , "issues": "https://github.com/cboden/Ratchet/issues"
+      , "irc":    "irc://irc.freenode.org/reactphp"
     }
   , "autoload": {
         "psr-0": {

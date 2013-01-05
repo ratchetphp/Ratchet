@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\WebSocket\Version\RFC6455;
-use Ratchet\ConnectionInterface;
 use Ratchet\AbstractConnectionDecorator;
 use Ratchet\WebSocket\Version\DataInterface;
 
