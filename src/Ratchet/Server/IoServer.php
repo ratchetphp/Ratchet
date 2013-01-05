@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;

@@ -3,8 +3,6 @@ namespace Ratchet\WebSocket;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
-use Ratchet\WebSocket\Version\VersionInterface;
-use Guzzle\Http\Message\RequestInterface;
 
 /**
  * This class receives streaming data from a client request

@@ -2,7 +2,6 @@
 namespace Ratchet\Tests\Mock;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
-use Ratchet\Tests\Mock\Socket as MockSocket;
 use Ratchet\ConnectionInterface;
 
 class Component implements MessageComponentInterface, WsServerInterface {
