@@ -22,8 +22,9 @@ class VersionManager {
 
     /**
      * Get the protocol negotiator for the request, if supported
-     * @param Guzzle\Http\Message\RequestInterface
-     * @return Ratchet\WebSocket\Version\VersionInterface
+     * @param  \Guzzle\Http\Message\RequestInterface $request
+     * @throws \InvalidArgumentException
+     * @return \Ratchet\WebSocket\Version\VersionInterface
      */
     public function getVersion(RequestInterface $request) {
         foreach ($this->versions as $version) {
@@ -36,7 +37,7 @@ class VersionManager {
     }
 
     /**
-     * @param Guzzle\Http\Message\RequestInterface
+     * @param  \Guzzle\Http\Message\RequestInterface
      * @return bool
      */
     public function isVersionEnabled(RequestInterface $request) {
@@ -51,8 +52,8 @@ class VersionManager {
 
     /**
      * Enable support for a specific version of the WebSocket protocol
-     * @param Ratchet\WebSocket\Version\VersionInterface
-     * @return HandshakeNegotiator
+     * @param  \Ratchet\WebSocket\Version\VersionInterface $version
+     * @return VersionManager
      */
     public function enableVersion(VersionInterface $version) {
         $this->versions[$version->getVersionNumber()] = $version;
@@ -68,8 +69,8 @@ class VersionManager {
 
     /**
      * Disable support for a specific WebSocket protocol version
-     * @param int The version ID to un-support
-     * @return HandshakeNegotiator
+     * @param  int $versionId The version ID to un-support
+     * @return VersionManager
      */
     public function disableVersion($versionId) {
         unset($this->versions[$versionId]);

@@ -62,6 +62,12 @@ class Frame implements FrameInterface {
      */
     protected $secondByte = -1;
 
+
+    /**
+     * @param string|null $payload
+     * @param bool        $final
+     * @param int         $opcode
+     */
     public function __construct($payload = null, $final = true, $opcode = 1) {
         if (null === $payload) {
             return;
@@ -136,7 +142,7 @@ class Frame implements FrameInterface {
 
     /**
      * @return boolean
-     * @throws UnderflowException
+     * @throws \UnderflowException
      */
     public function getRsv1() {
         if (-1 === $this->firstByte) {
@@ -148,7 +154,7 @@ class Frame implements FrameInterface {
 
     /**
      * @return boolean
-     * @throws UnderflowException
+     * @throws \UnderflowException
      */
     public function getRsv2() {
         if (-1 === $this->firstByte) {
@@ -160,7 +166,7 @@ class Frame implements FrameInterface {
 
     /**
      * @return boolean
-     * @throws UnderflowException
+     * @throws \UnderflowException
      */
     public function getRsv3() {
         if (-1 === $this->firstByte) {
@@ -215,8 +221,9 @@ class Frame implements FrameInterface {
     /**
      * Apply a mask to the payload
      * @param string|null If NULL is passed a masking key will be generated
-     * @throws InvalidArgumentException If there is an issue with the given masking key
-     * @throws UnderflowException If the frame is not coalesced
+     * @throws \OutOfBoundsException
+     * @throws \InvalidArgumentException If there is an issue with the given masking key
+     * @return Frame
      */
     public function maskPayload($maskingKey = null) {
         if (null === $maskingKey) {
@@ -246,7 +253,7 @@ class Frame implements FrameInterface {
 
     /**
      * Remove a mask from the payload
-     * @throws UnderFlowException If the frame is not coalesced
+     * @throws \UnderFlowException If the frame is not coalesced
      * @return Frame
      */
     public function unMaskPayload() {
@@ -273,10 +280,10 @@ class Frame implements FrameInterface {
 
     /**
      * Apply a mask to a string or the payload of the instance
-     * @param string The 4 character masking key to be applied
-     * @param string|null A string to mask or null to use the payload
-     * @throws UnderflowException If using the payload but enough hasn't been buffered
-     * @return string The masked string
+     * @param string $maskingKey   The 4 character masking key to be applied
+     * @param string|null $payload A string to mask or null to use the payload
+     * @throws \UnderflowException If using the payload but enough hasn't been buffered
+     * @return string              The masked string
      */
     public function applyMask($maskingKey, $payload = null) {
         if (null === $payload) {
@@ -309,7 +316,7 @@ class Frame implements FrameInterface {
     /**
      * Gets the decimal value of bits 9 (10th) through 15 inclusive
      * @return int
-     * @throws UnderflowException If the buffer doesn't have enough data to determine this
+     * @throws \UnderflowException If the buffer doesn't have enough data to determine this
      */
     protected function getFirstPayloadVal() {
         if (-1 === $this->secondByte) {
@@ -321,7 +328,7 @@ class Frame implements FrameInterface {
 
     /**
      * @return int (7|23|71) Number of bits defined for the payload length in the fame
-     * @throws UnderflowException
+     * @throws \UnderflowException
      */
     protected function getNumPayloadBits() {
         if (-1 === $this->secondByte) {

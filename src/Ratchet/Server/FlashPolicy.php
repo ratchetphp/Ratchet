@@ -45,15 +45,16 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * Add a domain to an allowed access list.
      *
-     * @param string Specifies a requesting domain to be granted access. Both named domains and IP
+     * @param string $domain Specifies a requesting domain to be granted access. Both named domains and IP
      * addresses are acceptable values. Subdomains are considered different domains. A wildcard (*) can
      * be used to match all domains when used alone, or multiple domains (subdomains) when used as a
      * prefix for an explicit, second-level domain name separated with a dot (.)
-     * @param string A comma-separated list of ports or range of ports that a socket connection
+     * @param string $ports A comma-separated list of ports or range of ports that a socket connection
      * is allowed to connect to. A range of ports is specified through a dash (-) between two port numbers.
      * Ranges can be used with individual ports when separated with a comma. A single wildcard (*) can
      * be used to allow all ports.
-     * @param bool
+     * @param bool $secure
+     * @throws \UnexpectedValueException
      * @return FlashPolicy
      */
     public function addAllowedAccess($domain, $ports = '*', $secure = false) {
@@ -76,7 +77,8 @@ class FlashPolicy implements MessageComponentInterface {
      * domain policy files other than the master policy file located in the target domain's root and named
      * crossdomain.xml.
      *
-     * @param string
+     * @param string $permittedCrossDomainPolicies
+     * @throws \UnexpectedValueException
      * @return FlashPolicy
      */
     public function setSiteControl($permittedCrossDomainPolicies = 'all') {
@@ -124,7 +126,8 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * Builds the crossdomain file based on the template policy
      *
-     * @return SimpleXMLElement
+     * @throws \UnexpectedValueException
+     * @return \SimpleXMLElement
      */
     public function renderPolicy() {
         $policy = new \SimpleXMLElement($this->_policy);
@@ -154,7 +157,7 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * Make sure the proper site control was passed
      *
-     * @param string
+     * @param string $permittedCrossDomainPolicies
      * @return bool
      */
     public function validateSiteControl($permittedCrossDomainPolicies) {
@@ -165,7 +168,7 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * Validate for proper domains (wildcards allowed)
      *
-     * @param string
+     * @param string $domain
      * @return bool
      */
     public function validateDomain($domain) {
@@ -175,7 +178,7 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * Make sure valid ports were passed
      *
-     * @param string
+     * @param string $port
      * @return bool
      */
     public function validatePorts($port) {

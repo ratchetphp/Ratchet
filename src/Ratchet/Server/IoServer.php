@@ -12,25 +12,25 @@ use React\Socket\Server as Reactor;
  */
 class IoServer {
     /**
-     * @var React\EventLoop\LoopInterface
+     * @var \React\EventLoop\LoopInterface
      */
     public $loop;
 
     /**
-     * @var Ratchet\MessageComponentInterface
+     * @var \Ratchet\MessageComponentInterface
      */
     public $app;
 
     /**
      * Array of React event handlers
-     * @var SplFixedArray
+     * @var \SplFixedArray
      */
     protected $handlers;
 
     /**
-     * @param Ratchet\MessageComponentInterface The Ratchet application stack to host
-     * @param React\Socket\ServerInterface The React socket server to run the Ratchet application off of
-     * @param React\EventLoop\LoopInterface|null The React looper to run the Ratchet application off of
+     * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
+     * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
+     * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
      */
     public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop = null) {
         gc_enable();
@@ -49,10 +49,10 @@ class IoServer {
     }
 
     /**
-     * @param Ratchet\MessageComponentInterface The application that I/O will call when events are received
-     * @param int The port to server sockets on
-     * @param string The address to receive sockets on (0.0.0.0 means receive connections from any)
-     * @return Ratchet\Server\IoServer
+     * @param  \Ratchet\MessageComponentInterface $component The application that I/O will call when events are received
+     * @param  int                                $port      The port to server sockets on
+     * @param  string                             $address   The address to receive sockets on (0.0.0.0 means receive connections from any)
+     * @return IoServer
      */
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
         $loop   = LoopFactory::create();
@@ -64,7 +64,7 @@ class IoServer {
 
     /**
      * Run the application by entering the event loop
-     * @throws RuntimeException If a loop was not previously specified
+     * @throws \RuntimeException If a loop was not previously specified
      */
     public function run() {
         if (null === $this->loop) {
@@ -78,6 +78,7 @@ class IoServer {
 
     /**
      * Triggered when a new connection is received from React
+     * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleConnect($conn) {
         $conn->decor = new IoConnection($conn);
@@ -94,8 +95,8 @@ class IoServer {
 
     /**
      * Data has been received from React
-     * @param string
-     * @param React\Socket\Connection
+     * @param string                            $data
+     * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleData($data, $conn) {
         try {
@@ -107,7 +108,7 @@ class IoServer {
 
     /**
      * A connection has been closed by React
-     * @param React\Socket\Connection
+     * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleEnd($conn) {
         try {
@@ -121,8 +122,8 @@ class IoServer {
 
     /**
      * An error has occurred, let the listening application know
-     * @param Exception
-     * @param React\Socket\Connection
+     * @param \Exception                        $e
+     * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleError(\Exception $e, $conn) {
         $this->app->onError($conn->decor, $e);

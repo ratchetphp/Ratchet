@@ -14,7 +14,7 @@ const VERSION = 'Ratchet/0.2.3';
 interface ConnectionInterface {
     /**
      * Send data to the connection
-     * @param string
+     * @param  string $data
      * @return ConnectionInterface
      */
     function send($data);

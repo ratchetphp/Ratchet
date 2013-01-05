@@ -29,12 +29,12 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * Decorated component
-     * @var Ratchet\MessageComponentInterface
+     * @var \Ratchet\MessageComponentInterface
      */
     protected $_decorating;
 
     /**
-     * @var SplObjectStorage
+     * @var \SplObjectStorage
      */
     protected $connections;
 
@@ -47,7 +47,7 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * UTF-8 validator
-     * @var Ratchet\WebSocket\Encoding\ValidatorInterface
+     * @var \Ratchet\WebSocket\Encoding\ValidatorInterface
      */
     protected $validator;
 
@@ -58,7 +58,7 @@ class WsServer implements MessageComponentInterface {
     private $isSpGenerated = false;
 
     /**
-     * @param Ratchet\MessageComponentInterface Your application to run with WebSockets
+     * @param \Ratchet\MessageComponentInterface $component Your application to run with WebSockets
      * If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
     public function __construct(MessageComponentInterface $component) {
@@ -155,7 +155,7 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * Disable a specific version of the WebSocket protocol
-     * @param int Version ID to disable
+     * @param int $versionId Version ID to disable
      * @return WsServer
      */
     public function disableVersion($versionId) {
@@ -192,7 +192,7 @@ class WsServer implements MessageComponentInterface {
     }
 
     /**
-     * @param Traversable
+     * @param  \Traversable|null $requested
      * @return string
      */
     protected function getSubProtocolString(\Traversable $requested = null) {
@@ -213,8 +213,9 @@ class WsServer implements MessageComponentInterface {
 
     /**
      * Close a connection with an HTTP response
-     * @param Ratchet\ConnectionInterface
-     * @param int HTTP status code
+     * @param \Ratchet\ConnectionInterface $conn
+     * @param int                          $code HTTP status code
+     * @return void
      */
     protected function close(ConnectionInterface $conn, $code = 400) {
         $response = new Response($code, array(

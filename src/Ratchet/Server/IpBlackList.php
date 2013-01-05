@@ -10,17 +10,20 @@ class IpBlackList implements MessageComponentInterface {
     protected $_blacklist = array();
 
     /**
-     * @var Ratchet\MessageComponentInterface
+     * @var \Ratchet\MessageComponentInterface
      */
     protected $_decorating;
 
+    /**
+     * @param \Ratchet\MessageComponentInterface $component
+     */
     public function __construct(MessageComponentInterface $component) {
         $this->_decorating = $component;
     }
 
     /**
      * Add an address to the blacklist that will not be allowed to connect to your application
-     * @param string IP address to block from connecting to your application
+     * @param  string $ip IP address to block from connecting to your application
      * @return IpBlackList
      */
     public function blockAddress($ip) {
@@ -31,7 +34,7 @@ class IpBlackList implements MessageComponentInterface {
 
     /**
      * Unblock an address so they can access your application again
-     * @param string IP address to unblock from connecting to your application
+     * @param string $ip IP address to unblock from connecting to your application
      * @return IpBlackList
      */
     public function unblockAddress($ip) {
@@ -43,7 +46,7 @@ class IpBlackList implements MessageComponentInterface {
     }
 
     /**
-     * @param string
+     * @param  string $address
      * @return bool
      */
     public function isBlocked($address) {
@@ -59,7 +62,7 @@ class IpBlackList implements MessageComponentInterface {
     }
 
     /**
-     * @param string
+     * @param  string $address
      * @return string
      */
     public function filterAddress($address) {

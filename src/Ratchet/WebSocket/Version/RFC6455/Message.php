@@ -5,7 +5,7 @@ use Ratchet\WebSocket\Version\FrameInterface;
 
 class Message implements MessageInterface, \Countable {
     /**
-     * @var SplDoublyLinkedList
+     * @var \SplDoublyLinkedList
      */
     protected $_frames;
 

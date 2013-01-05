@@ -16,33 +16,33 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  */
 class SessionProvider implements MessageComponentInterface, WsServerInterface {
     /**
-     * @var Ratchet\MessageComponentInterface
+     * @var \Ratchet\MessageComponentInterface
      */
     protected $_app;
 
     /**
      * Selected handler storage assigned by the developer
-     * @var SessionHandlerInterface
+     * @var \SessionHandlerInterface
      */
     protected $_handler;
 
     /**
      * Null storage handler if no previous session was found
-     * @var SessionHandlerInterface
+     * @var \SessionHandlerInterface
      */
     protected $_null;
 
     /**
-     * @var Ratchet\Session\Serialize\HandlerInterface
+     * @var \Ratchet\Session\Serialize\HandlerInterface
      */
     protected $_serializer;
 
     /**
-     * @param Ratchet\MessageComponentInterface
-     * @param SessionHandlerInterface
-     * @param array
-     * @param Ratchet\Session\Serialize\HandlerInterface
-     * @throws RuntimeException If unable to match serialization methods
+     * @param \Ratchet\MessageComponentInterface          $app
+     * @param \SessionHandlerInterface                    $handler
+     * @param array                                       $options
+     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
+     * @throws \RuntimeExcpetion
      */
     public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;
@@ -124,7 +124,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
     /**
      * Set all the php session. ini options
      * © Symfony
-     * @param array
+     * @param array $options
      * @return array
      */
     protected function setOptions(array $options) {
@@ -152,7 +152,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
     }
 
     /**
-     * @param string Input to convert
+     * @param string $langDef Input to convert
      * @return string
      */
     protected function toClassCase($langDef) {

@@ -8,10 +8,14 @@ use React\Socket\ConnectionInterface as ReactConn;
  */
 class IoConnection implements ConnectionInterface {
     /**
-     * @var React\Socket\ConnectionInterface
+     * @var \React\Socket\ConnectionInterface
      */
     protected $conn;
 
+
+    /**
+     * @param \React\Socket\ConnectionInterface $conn
+     */
     public function __construct(ReactConn $conn) {
         $this->conn = $conn;
     }

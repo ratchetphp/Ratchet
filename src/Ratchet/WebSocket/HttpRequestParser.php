@@ -20,10 +20,10 @@ class HttpRequestParser implements MessageInterface {
     public $maxSize = 4096;
 
     /**
-     * @param Ratchet\ConnectionInterface
-     * @param string Data stream to buffer
-     * @return Guzzle\Http\Message\RequestInterface|null
-     * @throws OverflowException If the message buffer has become too large
+     * @param \Ratchet\ConnectionInterface $context
+     * @param string                       $data Data stream to buffer
+     * @return \Guzzle\Http\Message\RequestInterface|null
+     * @throws \OverflowException If the message buffer has become too large
      */
     public function onMessage(ConnectionInterface $context, $data) {
         if (!isset($context->httpBuffer)) {
@@ -47,7 +47,7 @@ class HttpRequestParser implements MessageInterface {
 
     /**
      * Determine if the message has been buffered as per the HTTP specification
-     * @param string
+     * @param  string  $message
      * @return boolean
      */
     public function isEom($message) {

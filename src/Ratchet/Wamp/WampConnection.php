@@ -7,7 +7,7 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
 /**
  * A ConnectionInterface object wrapper that is passed to your WAMP application
  * representing a client. Methods on this Connection are therefore different. 
- * @property stdClass $WAMP
+ * @property \stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {
     /**
@@ -25,8 +25,9 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * Successfully respond to a call made by the client
-     * @param string The unique ID given by the client to respond to
-     * @param array An array of data to return to the client
+     * @param string $id   The unique ID given by the client to respond to
+     * @param array  $data An array of data to return to the client
+     * @return WampConnection
      */
     public function callResult($id, array $data = array()) {
         return $this->send(json_encode(array(WAMP::MSG_CALL_RESULT, $id, $data)));
@@ -34,10 +35,11 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * Respond with an error to a client call
-     * @param string The unique ID given by the client to respond to
-     * @param string The URI given to identify the specific error
-     * @param string A developer-oriented description of the error
-     * @param string|null An optional human readable detail message to send back
+     * @param string $id The   unique ID given by the client to respond to
+     * @param string $errorUri The URI given to identify the specific error
+     * @param string $desc     A developer-oriented description of the error
+     * @param string $details An optional human readable detail message to send back
+     * @return WampConnection
      */
     public function callError($id, $errorUri, $desc = '', $details = null) {
         if ($errorUri instanceof Topic) {
@@ -54,16 +56,18 @@ class WampConnection extends AbstractConnectionDecorator {
     }
 
     /**
-     * @param string The topic to broadcast to
-     * @param mixed Data to send with the event.  Anything that is json'able
+     * @param string $topic The topic to broadcast to
+     * @param mixed  $msg   Data to send with the event.  Anything that is json'able
+     * @return WampConnection
      */
     public function event($topic, $msg) {
         return $this->send(json_encode(array(WAMP::MSG_EVENT, (string)$topic, $msg)));
     }
 
     /**
-     * @param string
-     * @param string
+     * @param string $curie
+     * @param string $uri
+     * @return WampConnection
      */
     public function prefix($curie, $uri) {
         $this->WAMP->prefixes[$curie] = (string)$uri;
@@ -73,7 +77,7 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * Get the full request URI from the connection object if a prefix has been established for it
-     * @param string
+     * @param string $uri
      * @return string
      */
     public function getUri($uri) {

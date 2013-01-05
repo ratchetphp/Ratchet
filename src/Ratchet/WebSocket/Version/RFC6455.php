@@ -31,7 +31,7 @@ class RFC6455 implements VersionInterface {
     private $closeCodes = array();
 
     /**
-     * @var Ratchet\WebSocket\Encoding\ValidatorInterface
+     * @var \Ratchet\WebSocket\Encoding\ValidatorInterface
      */
     protected $validator;
 
@@ -78,8 +78,9 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
-     * @param Ratchet\ConnectionInterface
-     * @return Ratchet\WebSocket\Version\RFC6455\Connection
+     * @param  \Ratchet\ConnectionInterface $conn
+     * @param  \Ratchet\MessageInterface    $coalescedCallback
+     * @return \Ratchet\WebSocket\Version\RFC6455\Connection
      */
     public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback) {
         $upgraded = new Connection($conn);
@@ -94,8 +95,8 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
-     * @param Ratchet\WebSocket\Version\RFC6455\Connection
-     * @param string
+     * @param \Ratchet\WebSocket\Version\RFC6455\Connection $from
+     * @param string                                        $data
      */
     public function onMessage(ConnectionInterface $from, $data) {
         $overflow = '';
@@ -214,6 +215,9 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
+     * @param string|null $payload
+     * @param bool|null   $final
+     * @param int|null    $opcode
      * @return RFC6455\Frame
      */
     public function newFrame($payload = null, $final = null, $opcode = null) {
@@ -222,7 +226,7 @@ class RFC6455 implements VersionInterface {
 
     /**
      * Used when doing the handshake to encode the key, verifying client/server are speaking the same language
-     * @param string
+     * @param  string $key
      * @return string
      * @internal
      */

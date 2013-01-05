@@ -41,12 +41,12 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
     protected $_decorating;
 
     /**
-     * @var SplObjectStorage
+     * @var \SplObjectStorage
      */
     protected $connections;
 
     /**
-     * @param WampServerInterface An class to propagate calls through
+     * @param WampServerInterface $serverComponent An class to propagate calls through
      */
     public function __construct(WampServerInterface $serverComponent) {
         $this->_decorating = $serverComponent;
@@ -79,7 +79,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
     /**
      * {@inheritdoc}
-     * @throws Exception
+     * @throws \Exception
      * @throws JsonException
      */
     public function onMessage(ConnectionInterface $from, $msg) {

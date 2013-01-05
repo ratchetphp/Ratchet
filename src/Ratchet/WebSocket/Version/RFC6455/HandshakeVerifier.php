@@ -10,7 +10,7 @@ use Guzzle\Http\Message\RequestInterface;
 class HandshakeVerifier {
     /**
      * Given an array of the headers this method will run through all verification methods
-     * @param Guzzle\Http\Message\RequestInterface
+     * @param \Guzzle\Http\Message\RequestInterface $request
      * @return bool TRUE if all headers are valid, FALSE if 1 or more were invalid
      */
     public function verifyAll(RequestInterface $request) {
@@ -78,7 +78,7 @@ class HandshakeVerifier {
 
     /**
      * Verify the Upgrade request to WebSockets.
-     * @param string MUST equal "websocket"
+     * @param  string $val MUST equal "websocket"
      * @return bool
      */
     public function verifyUpgradeRequest($val) {
@@ -87,7 +87,7 @@ class HandshakeVerifier {
 
     /**
      * Verify the Connection header
-     * @param string MUST equal "Upgrade"
+     * @param  string $val MUST equal "Upgrade"
      * @return bool
      */
     public function verifyConnection($val) {

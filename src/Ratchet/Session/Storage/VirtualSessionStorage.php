@@ -6,14 +6,14 @@ use Ratchet\Session\Serialize\HandlerInterface;
 
 class VirtualSessionStorage extends NativeSessionStorage {
     /**
-     * @var Ratchet\Session\Serialize\HandlerInterface
+     * @var \Ratchet\Session\Serialize\HandlerInterface
      */
     protected $_serializer;
 
     /**
-     * @param SessionHandlerInterface
-     * @param string The ID of the session to retrieve
-     * @param Ratchet\Session\Serialize\HandlerInterface
+     * @param \SessionHandlerInterface                    $handler
+     * @param string                                      $sessionId The ID of the session to retrieve
+     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      */
     public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
         $this->setSaveHandler($handler);

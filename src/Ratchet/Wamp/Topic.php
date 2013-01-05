@@ -11,7 +11,7 @@ class Topic implements \IteratorAggregate, \Countable {
     private $subscribers;
 
     /**
-     * @param string Unique ID for this object
+     * @param string $topicId Unique ID for this object
      */
     public function __construct($topicId) {
         $this->id = $topicId;
@@ -31,7 +31,7 @@ class Topic implements \IteratorAggregate, \Countable {
 
     /**
       * Send a message to all the connections in this topic
-      * @param string
+      * @param string $msg
       * @return Topic
       */
     public function broadcast($msg) {
@@ -43,7 +43,7 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * @param WampConnection
+     * @param  WampConnection $conn
      * @return boolean
      */
     public function has(ConnectionInterface $conn) {
@@ -51,7 +51,7 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * @param WampConnection
+     * @param WampConnection $conn
      * @return Topic
      */
     public function add(ConnectionInterface $conn) {
@@ -61,7 +61,7 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * @param WampConnection
+     * @param WampConnection $conn
      * @return Topic
      */
     public function remove(ConnectionInterface $conn) {

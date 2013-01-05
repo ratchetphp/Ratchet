@@ -34,8 +34,8 @@ class Hixie76 implements VersionInterface {
     }
 
     /**
-     * @param Guzzle\Http\Message\RequestInterface
-     * @return Guzzle\Http\Message\Response
+     * @param  \Guzzle\Http\Message\RequestInterface $request
+     * @return \Guzzle\Http\Message\Response
      */
     public function handshake(RequestInterface $request) {
         $body = $this->sign($request->getHeader('Sec-WebSocket-Key1', true), $request->getHeader('Sec-WebSocket-Key2', true), (string)$request->getBody());

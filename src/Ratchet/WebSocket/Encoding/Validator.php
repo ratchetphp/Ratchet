@@ -49,8 +49,8 @@ class Validator {
     }
 
     /**
-     * @param string The value to check the encoding
-     * @param string The type of encoding to check against
+     * @param  string $str     The value to check the encoding
+     * @param  string $against The type of encoding to check against
      * @return bool
      */
     public function checkEncoding($str, $against) {
