@@ -1,5 +1,5 @@
 {
-    "hash": "fad48a754b78c8c7c67e7ca1448d48ec",
+    "hash": "5175bd19b8591aed1319dd5cb4edf0a9",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -20,12 +20,12 @@
             },
             "time": "2012-05-30 08:01:08",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Evenement": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -67,7 +67,6 @@
                     "dev-master": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Common": ""
@@ -80,10 +79,10 @@
             "description": "Common libraries used by Guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
-                "event",
-                "exception",
+                "collection",
                 "common",
-                "collection"
+                "event",
+                "exception"
             ]
         },
         {
@@ -102,11 +101,11 @@
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2",
                 "ext-curl": "*",
                 "guzzle/common": "self.version",
                 "guzzle/parser": "self.version",
-                "guzzle/stream": "self.version"
+                "guzzle/stream": "self.version",
+                "php": ">=5.3.2"
             },
             "time": "2012-12-14 00:49:17",
             "type": "library",
@@ -115,7 +114,6 @@
                     "dev-master": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Http": ""
@@ -135,11 +133,11 @@
             "description": "HTTP libraries used by Guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
+                "Guzzle",
+                "client",
                 "curl",
                 "http",
-                "http client",
-                "client",
-                "Guzzle"
+                "http client"
             ]
         },
         {
@@ -167,7 +165,6 @@
                     "dev-master": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Parser": ""
@@ -180,11 +177,11 @@
             "description": "Interchangeable parsers used by Guzzle",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
-                "http",
-                "url",
-                "message",
+                "URI Template",
                 "cookie",
-                "URI Template"
+                "http",
+                "message",
+                "url"
             ]
         },
         {
@@ -203,8 +200,8 @@
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2",
-                "guzzle/common": "self.version"
+                "guzzle/common": "self.version",
+                "php": ">=5.3.2"
             },
             "time": "2012-12-07 16:45:11",
             "type": "library",
@@ -213,7 +210,6 @@
                     "dev-master": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Guzzle\\Stream": ""
@@ -233,9 +229,9 @@
             "description": "Guzzle stream wrapper component",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
-                "stream",
                 "Guzzle",
-                "component"
+                "component",
+                "stream"
             ]
         },
         {
@@ -257,8 +253,8 @@
                 "php": ">=5.3.3"
             },
             "suggest": {
-                "ext-libevent": ">=0.0.5",
-                "ext-libev": "*"
+                "ext-libev": "*",
+                "ext-libevent": ">=0.0.5"
             },
             "time": "2013-01-05 11:41:26",
             "type": "library",
@@ -267,7 +263,6 @@
                     "dev-master": "0.2-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "React\\EventLoop": ""
@@ -298,8 +293,8 @@
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3",
                 "evenement/evenement": "1.0.*",
+                "php": ">=5.3.3",
                 "react/event-loop": "0.2.*",
                 "react/stream": "0.2.*"
             },
@@ -310,7 +305,6 @@
                     "dev-master": "0.2-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "React\\Socket": ""
@@ -341,8 +335,8 @@
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3",
-                "evenement/evenement": "1.0.*"
+                "evenement/evenement": "1.0.*",
+                "php": ">=5.3.3"
             },
             "suggest": {
                 "react/event-loop": "0.2.*",
@@ -355,7 +349,6 @@
                     "dev-master": "0.2-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "React\\Stream": ""
@@ -367,8 +360,8 @@
             ],
             "description": "Basic readable and writable stream interfaces that support piping.",
             "keywords": [
-                "stream",
-                "pipe"
+                "pipe",
+                "stream"
             ]
         },
         {
@@ -398,7 +391,6 @@
             },
             "time": "2012-12-06 10:00:55",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\EventDispatcher": ""
@@ -423,30 +415,36 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.6",
+            "version": "v2.2.0-RC2",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation",
-                "reference": "v2.1.6"
+                "reference": "v2.2.0-RC2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpFoundation/archive/v2.1.6.zip",
-                "reference": "v2.1.6",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.2.0-RC2",
+                "reference": "v2.2.0-RC2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-12-14 21:03:29",
+            "time": "2013-02-11 12:46:49",
             "type": "library",
-            "installation-source": "dist",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
-                    "Symfony\\Component\\HttpFoundation": "",
-                    "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
-                }
+                    "Symfony\\Component\\HttpFoundation\\": ""
+                },
+                "classmap": [
+                    "Symfony/Component/HttpFoundation/Resources/stubs"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
