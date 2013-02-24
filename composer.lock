@@ -1,5 +1,5 @@
 {
-    "hash": "5175bd19b8591aed1319dd5cb4edf0a9",
+    "hash": "1710e103f0e1fe453f59905b8b9742e1",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -18,14 +18,12 @@
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2012-05-30 08:01:08",
             "type": "library",
             "autoload": {
                 "psr-0": {
                     "Evenement": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -39,7 +37,8 @@
             "description": "Événement is a very simple event dispatching library for PHP 5.3",
             "keywords": [
                 "event-dispatcher"
-            ]
+            ],
+            "time": "2012-05-30 08:01:08"
         },
         {
             "name": "guzzle/common",
@@ -60,7 +59,6 @@
                 "php": ">=5.3.2",
                 "symfony/event-dispatcher": ">=2.1"
             },
-            "time": "2012-12-19 23:06:35",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -83,7 +81,8 @@
                 "common",
                 "event",
                 "exception"
-            ]
+            ],
+            "time": "2012-12-19 23:06:35"
         },
         {
             "name": "guzzle/http",
@@ -107,7 +106,6 @@
                 "guzzle/stream": "self.version",
                 "php": ">=5.3.2"
             },
-            "time": "2012-12-14 00:49:17",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -138,7 +136,8 @@
                 "curl",
                 "http",
                 "http client"
-            ]
+            ],
+            "time": "2012-12-14 00:49:17"
         },
         {
             "name": "guzzle/parser",
@@ -158,7 +157,6 @@
             "require": {
                 "php": ">=5.3.2"
             },
-            "time": "2012-12-07 16:45:11",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -182,7 +180,8 @@
                 "http",
                 "message",
                 "url"
-            ]
+            ],
+            "time": "2012-12-07 16:45:11"
         },
         {
             "name": "guzzle/stream",
@@ -203,7 +202,6 @@
                 "guzzle/common": "self.version",
                 "php": ">=5.3.2"
             },
-            "time": "2012-12-07 16:45:11",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -232,7 +230,8 @@
                 "Guzzle",
                 "component",
                 "stream"
-            ]
+            ],
+            "time": "2012-12-07 16:45:11"
         },
         {
             "name": "react/event-loop",
@@ -256,7 +255,6 @@
                 "ext-libev": "*",
                 "ext-libevent": ">=0.0.5"
             },
-            "time": "2013-01-05 11:41:26",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -275,7 +273,8 @@
             "description": "Event loop abstraction layer that libraries can use for evented I/O.",
             "keywords": [
                 "event-loop"
-            ]
+            ],
+            "time": "2013-01-05 11:41:26"
         },
         {
             "name": "react/socket",
@@ -298,7 +297,6 @@
                 "react/event-loop": "0.2.*",
                 "react/stream": "0.2.*"
             },
-            "time": "2012-12-14 00:58:14",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -317,7 +315,8 @@
             "description": "Library for building an evented socket server.",
             "keywords": [
                 "Socket"
-            ]
+            ],
+            "time": "2012-12-14 00:58:14"
         },
         {
             "name": "react/stream",
@@ -342,7 +341,6 @@
                 "react/event-loop": "0.2.*",
                 "react/promise": "1.0.*"
             },
-            "time": "2012-12-14 00:58:14",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -362,21 +360,22 @@
             "keywords": [
                 "pipe",
                 "stream"
-            ]
+            ],
+            "time": "2012-12-14 00:58:14"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.6",
+            "version": "v2.1.8",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "v2.1.6"
+                "url": "https://github.com/symfony/EventDispatcher.git",
+                "reference": "v2.1.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/archive/v2.1.6.zip",
-                "reference": "v2.1.6",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.1.8",
+                "reference": "v2.1.8",
                 "shasum": ""
             },
             "require": {
@@ -389,14 +388,13 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/http-kernel": "2.1.*"
             },
-            "time": "2012-12-06 10:00:55",
             "type": "library",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\EventDispatcher": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -411,42 +409,35 @@
                 }
             ],
             "description": "Symfony EventDispatcher Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "2013-02-11 11:26:14"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.2.0-RC2",
+            "version": "v2.1.8",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/HttpFoundation",
-                "reference": "v2.2.0-RC2"
+                "url": "https://github.com/symfony/HttpFoundation.git",
+                "reference": "v2.1.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.2.0-RC2",
-                "reference": "v2.2.0-RC2",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.1.8",
+                "reference": "v2.1.8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2013-02-11 12:46:49",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.2-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
-                    "Symfony\\Component\\HttpFoundation\\": ""
-                },
-                "classmap": [
-                    "Symfony/Component/HttpFoundation/Resources/stubs"
-                ]
+                    "Symfony\\Component\\HttpFoundation": "",
+                    "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
+                }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -461,7 +452,8 @@
                 }
             ],
             "description": "Symfony HttpFoundation Component",
-            "homepage": "http://symfony.com"
+            "homepage": "http://symfony.com",
+            "time": "2013-02-22 18:02:22"
         }
     ],
     "packages-dev": null,
