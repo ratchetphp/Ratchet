@@ -58,7 +58,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
         if (null === $serializer) {
             $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
             if (!class_exists($serialClass)) {
-                throw new \RuntimeExcpetion('Unable to parse session serialize handler');
+                throw new \RuntimeException('Unable to parse session serialize handler');
             }
 
             $serializer = new $serialClass;
