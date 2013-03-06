@@ -1,5 +1,5 @@
 {
-    "hash": "1710e103f0e1fe453f59905b8b9742e1",
+    "hash": "9ccce99ef687cb79dad8a4c581f38cc5",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -42,17 +42,17 @@
         },
         {
             "name": "guzzle/common",
-            "version": "v3.0.7",
+            "version": "v3.3.0",
             "target-dir": "Guzzle/Common",
             "source": {
                 "type": "git",
-                "url": "git://github.com/guzzle/common.git",
-                "reference": "v3.0.7"
+                "url": "https://github.com/guzzle/common.git",
+                "reference": "v3.3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/common/archive/v3.0.7.zip",
-                "reference": "v3.0.7",
+                "url": "https://api.github.com/repos/guzzle/common/zipball/v3.3.0",
+                "reference": "v3.3.0",
                 "shasum": ""
             },
             "require": {
@@ -82,29 +82,31 @@
                 "event",
                 "exception"
             ],
-            "time": "2012-12-19 23:06:35"
+            "time": "2013-03-04 00:41:45"
         },
         {
             "name": "guzzle/http",
-            "version": "v3.0.7",
+            "version": "v3.3.0",
             "target-dir": "Guzzle/Http",
             "source": {
                 "type": "git",
-                "url": "git://github.com/guzzle/http.git",
-                "reference": "v3.0.7"
+                "url": "https://github.com/guzzle/http.git",
+                "reference": "v3.3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/http/archive/v3.0.7.zip",
-                "reference": "v3.0.7",
+                "url": "https://api.github.com/repos/guzzle/http/zipball/v3.3.0",
+                "reference": "v3.3.0",
                 "shasum": ""
             },
             "require": {
-                "ext-curl": "*",
                 "guzzle/common": "self.version",
                 "guzzle/parser": "self.version",
                 "guzzle/stream": "self.version",
                 "php": ">=5.3.2"
+            },
+            "suggest": {
+                "ext-curl": "*"
             },
             "type": "library",
             "extra": {
@@ -137,21 +139,21 @@
                 "http",
                 "http client"
             ],
-            "time": "2012-12-14 00:49:17"
+            "time": "2013-03-03 21:40:51"
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.0.7",
+            "version": "v3.3.0",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
-                "url": "git://github.com/guzzle/parser.git",
-                "reference": "v3.0.7"
+                "url": "https://github.com/guzzle/parser.git",
+                "reference": "v3.3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/parser/archive/v3.0.7.zip",
-                "reference": "v3.0.7",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.3.0",
+                "reference": "v3.3.0",
                 "shasum": ""
             },
             "require": {
@@ -181,21 +183,21 @@
                 "message",
                 "url"
             ],
-            "time": "2012-12-07 16:45:11"
+            "time": "2013-01-12 21:43:21"
         },
         {
             "name": "guzzle/stream",
-            "version": "v3.0.7",
+            "version": "v3.3.0",
             "target-dir": "Guzzle/Stream",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzle/stream",
-                "reference": "v3.0.7"
+                "url": "https://github.com/guzzle/stream.git",
+                "reference": "v3.3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/guzzle/stream/archive/v3.0.7.zip",
-                "reference": "v3.0.7",
+                "url": "https://api.github.com/repos/guzzle/stream/zipball/v3.3.0",
+                "reference": "v3.3.0",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +233,7 @@
                 "component",
                 "stream"
             ],
-            "time": "2012-12-07 16:45:11"
+            "time": "2013-03-03 03:07:02"
         },
         {
             "name": "react/event-loop",
@@ -365,36 +367,41 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.8",
+            "version": "v2.2.0",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "v2.1.8"
+                "reference": "v2.2.0-RC3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.1.8",
-                "reference": "v2.1.8",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.2.0-RC3",
+                "reference": "v2.2.0-RC3",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "symfony/dependency-injection": "2.1.*"
+                "symfony/dependency-injection": ">=2.0,<3.0"
             },
             "suggest": {
-                "symfony/dependency-injection": "2.1.*",
-                "symfony/http-kernel": "2.1.*"
+                "symfony/dependency-injection": "2.2.*",
+                "symfony/http-kernel": "2.2.*"
             },
             "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\Component\\EventDispatcher": ""
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
                 }
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -410,34 +417,41 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2013-02-11 11:26:14"
+            "time": "2013-02-11 11:26:43"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.8",
+            "version": "v2.2.0",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "v2.1.8"
+                "reference": "v2.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.1.8",
-                "reference": "v2.1.8",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.2.0",
+                "reference": "v2.2.0",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\Component\\HttpFoundation": "",
-                    "SessionHandlerInterface": "Symfony/Component/HttpFoundation/Resources/stubs"
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
                 }
             },
-            "notification-url": "http://packagist.org/downloads/",
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\HttpFoundation\\": ""
+                },
+                "classmap": [
+                    "Symfony/Component/HttpFoundation/Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -453,15 +467,23 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "http://symfony.com",
-            "time": "2013-02-22 18:02:22"
+            "time": "2013-02-26 09:42:13"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "stable",
     "stability-flags": [
+
+    ],
+    "platform": {
+        "php": ">=5.3.3"
+    },
+    "platform-dev": [
 
     ]
 }
