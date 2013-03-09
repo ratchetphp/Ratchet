@@ -8,6 +8,11 @@ CHANGELOG
 
 ---
 
+* 0.2.4 (2013-03-09)
+
+ * Support for Symfony 2.2 and Guzzle 2.3
+ * Minor bug fixes when handling errors
+
 * 0.2.3 (2012-11-21)
 
  * Bumped dep: Guzzle to v3, React to v0.2.4
