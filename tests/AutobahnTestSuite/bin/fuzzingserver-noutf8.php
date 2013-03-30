@@ -7,7 +7,8 @@
     $app  = new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer);
     $app->setEncodingChecks(false);
 
-    $sock->listen(8003, '0.0.0.0');
+    $port = $argc > 1 ? $argv[1] : 8000;
+    $sock->listen($port, '0.0.0.0');
 
     $server = new Ratchet\Server\IoServer($app, $sock, $loop);
     $server->run();

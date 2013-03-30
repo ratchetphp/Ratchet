@@ -3,7 +3,7 @@
   , "outdir": "reports/rfc"
 
   , "servers": [
-       {"agent": "Ratchet", "url": "ws://localhost:8001", "options": {"version": 18}}
+       {"agent": "Ratchet", "url": "ws://localhost:8000", "options": {"version": 18}}
     ]
 
   , "cases": ["*"]

@@ -8,11 +8,12 @@ cover:
 	phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libev.php &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-noutf8.php &
-	wstest -m testeeserver -w ws://localhost:8004 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php 8002 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php 8001 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libev.php 8004 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libuv.php 8005 &
+	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-noutf8.php 8003 &
+	wstest -m testeeserver -w ws://localhost:8000 &
 	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
 	killall php wstest
 
