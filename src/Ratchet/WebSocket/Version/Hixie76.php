@@ -103,13 +103,7 @@ class Hixie76 implements VersionInterface {
     }
 
     public function generateKeyNumber($key) {
-        if (0 === substr_count($key, ' ')) {
-            return '';
-        }
-
-        $int = (int)preg_replace('[\D]', '', $key) / substr_count($key, ' ');
-
-        return (is_int($int)) ? $int : '';
+        return preg_replace('[\D]', '', $key) / substr_count($key, ' ');
     }
 
     protected function sign($key1, $key2, $code) {
