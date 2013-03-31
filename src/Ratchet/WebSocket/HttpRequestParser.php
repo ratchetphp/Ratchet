@@ -51,7 +51,6 @@ class HttpRequestParser implements MessageInterface {
      * @return boolean
      */
     public function isEom($message) {
-        //return (static::EOM === substr($message, 0 - strlen(static::EOM)));
         return (boolean)strpos($message, static::EOM);
     }
 }
