@@ -32,6 +32,7 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         return array(
             array(179922739, '17  9 G`ZD9   2 2b 7X 3 /r90')
           , array(906585445, '3e6b263  4 17 80')
+          , array(0, '3e6b26341780')
         );
     }
 
