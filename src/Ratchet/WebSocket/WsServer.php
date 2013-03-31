@@ -88,54 +88,54 @@ class WsServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        if (true !== $from->WebSocket->established) {
-            if (isset($from->WebSocket->request)) {
-                $from->WebSocket->request->getBody()->write($msg);
-            } else {
-                try {
-                    if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
-                        return;
-                    }
-                } catch (\OverflowException $oe) {
-                    return $this->close($from, 413);
-                }
-
-                if (!$this->versioner->isVersionEnabled($request)) {
-                    return $this->close($from);
-                }
-
-                $from->WebSocket->request = $request;
-                $from->WebSocket->version = $this->versioner->getVersion($request);
-            }
-
-            try {
-                $response = $from->WebSocket->version->handshake($from->WebSocket->request);
-            } catch (\UnderflowException $e) {
-                return;
-            }
-            $response->setHeader('X-Powered-By', \Ratchet\VERSION);
-
-            // This needs to be refactored later on, incorporated with routing
-            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
-                $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
-            }
-
-            $from->send((string)$response);
-
-            if (101 != $response->getStatusCode()) {
-                return $from->close();
-            }
-
-            $upgraded = $from->WebSocket->version->upgradeConnection($from, $this->_decorating);
-
-            $this->connections->attach($from, $upgraded);
-
-            $upgraded->WebSocket->established = true;
-
-            return $this->_decorating->onOpen($upgraded);
+        if (true === $from->WebSocket->established) {
+            return $from->WebSocket->version->onMessage($this->connections[$from], $msg);
         }
 
-        $from->WebSocket->version->onMessage($this->connections[$from], $msg);
+        if (isset($from->WebSocket->request)) {
+            $from->WebSocket->request->getBody()->write($msg);
+        } else {
+            try {
+                if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
+                    return;
+                }
+            } catch (\OverflowException $oe) {
+                return $this->close($from, 413);
+            }
+
+            if (!$this->versioner->isVersionEnabled($request)) {
+                return $this->close($from);
+            }
+
+            $from->WebSocket->request = $request;
+            $from->WebSocket->version = $this->versioner->getVersion($request);
+        }
+
+        try {
+            $response = $from->WebSocket->version->handshake($from->WebSocket->request);
+        } catch (\UnderflowException $e) {
+            return;
+        }
+
+        // This needs to be refactored later on, incorporated with routing
+        if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
+            $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
+        }
+
+        $response->setHeader('X-Powered-By', \Ratchet\VERSION);
+        $from->send((string)$response);
+
+        if (101 != $response->getStatusCode()) {
+            return $from->close();
+        }
+
+        $upgraded = $from->WebSocket->version->upgradeConnection($from, $this->_decorating);
+
+        $this->connections->attach($from, $upgraded);
+
+        $upgraded->WebSocket->established = true;
+
+        return $this->_decorating->onOpen($upgraded);
     }
 
     /**

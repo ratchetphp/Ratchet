@@ -39,7 +39,7 @@ class Hixie76 implements VersionInterface {
      * @throws \UnderflowException If there hasn't been enough data received
      */
     public function handshake(RequestInterface $request) {
-        $body      = substr($request->getBody(), 0, 8);
+        $body = substr($request->getBody(), 0, 8);
         if (8 !== strlen($body)) {
             throw new \UnderflowException("Not enough data received to issue challenge response");
         }
