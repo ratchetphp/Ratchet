@@ -7,6 +7,9 @@ use Ratchet\WebSocket\WsServer;
  * @covers Ratchet\WebSocket\Version\Hixie76
  */
 class Hixie76Test extends \PHPUnit_Framework_TestCase {
+    protected $_crlf = "\r\n";
+    protected $_body = '6dW+XgKfWV0=';
+
     protected $_version;
 
     public function setUp() {
@@ -36,22 +39,39 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testTcpFragmentedUpgrade() {
+    public function headerProvider() {
         $key1 = base64_decode('QTN+ICszNiA2IDJvICBWOG4gNyAgc08yODhZ');
         $key2 = base64_decode('TzEyICAgeVsgIFFSNDUgM1IgLiAyOFggNC00dn4z');
-        $body = base64_decode('6dW+XgKfWV0=');
-
-        $crlf = "\r\n";
 
         $headers  = "GET / HTTP/1.1";
-        $headers .= "Upgrade: WebSocket{$crlf}";
-        $headers .= "Connection: Upgrade{$crlf}";
-        $headers .= "Host: home.chrisboden.ca{$crlf}";
-        $headers .= "Origin: http://fiddle.jshell.net{$crlf}";
-        $headers .= "Sec-WebSocket-Key1:17 Z4< F94 N3  7P41  7{$crlf}";
-        $headers .= "Sec-WebSocket-Key2:1 23C3:,2% 1-29  4 f0{$crlf}";
-        $headers .= "(Key3):70:00:EE:6E:33:20:90:69{$crlf}";
-        $headers .= $crlf;
+        $headers .= "Upgrade: WebSocket{$this->_crlf}";
+        $headers .= "Connection: Upgrade{$this->_crlf}";
+        $headers .= "Host: home.chrisboden.ca{$this->_crlf}";
+        $headers .= "Origin: http://fiddle.jshell.net{$this->_crlf}";
+        $headers .= "Sec-WebSocket-Key1:17 Z4< F94 N3  7P41  7{$this->_crlf}";
+        $headers .= "Sec-WebSocket-Key2:1 23C3:,2% 1-29  4 f0{$this->_crlf}";
+        $headers .= "(Key3):70:00:EE:6E:33:20:90:69{$this->_crlf}";
+        $headers .= $this->_crlf;
+
+        return $headers;
+    }
+
+    public function testNoUpgradeBeforeBody() {
+        $headers = $this->headerProvider();
+        $body    = base64_decode($this->_body);
+
+        $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
+
+        $server = new WsServer($mockApp);
+        $server->onOpen($mockConn);
+        $mockApp->expects($this->exactly(0))->method('onOpen');
+        $server->onMessage($mockConn, $headers);
+    }
+
+    public function testTcpFragmentedUpgrade() {
+        $headers = $this->headerProvider();
+        $body    = base64_decode($this->_body);
 
         $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
@@ -61,6 +81,6 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $server->onMessage($mockConn, $headers);
 
         $mockApp->expects($this->once())->method('onOpen');
-        $server->onMessage($mockConn, $body . $crlf . $crlf);
+        $server->onMessage($mockConn, $body . $this->_crlf . $this->_crlf);
     }
 }

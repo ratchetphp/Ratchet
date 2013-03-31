@@ -89,26 +89,34 @@ class WsServer implements MessageComponentInterface {
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->WebSocket->established) {
-            try {
-                if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
-                    return;
+            if (isset($from->WebSocket->request)) {
+                $from->WebSocket->request->getBody()->write($msg);
+            } else {
+                try {
+                    if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
+                        return;
+                    }
+                } catch (\OverflowException $oe) {
+                    return $this->close($from, 413);
                 }
-            } catch (\OverflowException $oe) {
-                return $this->close($from, 413);
+
+                if (!$this->versioner->isVersionEnabled($request)) {
+                    return $this->close($from);
+                }
+
+                $from->WebSocket->request = $request;
+                $from->WebSocket->version = $this->versioner->getVersion($request);
             }
 
-            if (!$this->versioner->isVersionEnabled($request)) {
-                return $this->close($from);
+            try {
+                $response = $from->WebSocket->version->handshake($from->WebSocket->request);
+            } catch (\UnderflowException $e) {
+                return;
             }
-
-            $from->WebSocket->request = $request;
-            $from->WebSocket->version = $this->versioner->getVersion($request);
-
-            $response = $from->WebSocket->version->handshake($request);
             $response->setHeader('X-Powered-By', \Ratchet\VERSION);
 
             // This needs to be refactored later on, incorporated with routing
-            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
+            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
                 $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
             }
 

@@ -36,9 +36,15 @@ class Hixie76 implements VersionInterface {
     /**
      * @param  \Guzzle\Http\Message\RequestInterface $request
      * @return \Guzzle\Http\Message\Response
+     * @throws \UnderflowException If there hasn't been enough data received
      */
     public function handshake(RequestInterface $request) {
-        $body = $this->sign($request->getHeader('Sec-WebSocket-Key1', true), $request->getHeader('Sec-WebSocket-Key2', true), (string)$request->getBody());
+        $body      = substr($request->getBody(), 0, 8);
+        if (8 !== strlen($body)) {
+            throw new \UnderflowException("Not enough data received to issue challenge response");
+        }
+
+        $challenge = $this->sign($request->getHeader('Sec-WebSocket-Key1', true), $request->getHeader('Sec-WebSocket-Key2', true), $body);
 
         $headers = array(
             'Upgrade'                => 'WebSocket'
@@ -47,7 +53,7 @@ class Hixie76 implements VersionInterface {
           , 'Sec-WebSocket-Location' => 'ws://' . $request->getHeader('Host', true) . $request->getPath()
         );
 
-        $response = new Response(101, $headers, $body);
+        $response = new Response(101, $headers, $challenge);
         $response->setStatus(101, 'WebSocket Protocol Handshake');
 
         return $response;
