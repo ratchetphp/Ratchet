@@ -4,6 +4,7 @@ use Ratchet\AbstractConnectionDecorator;
 
 /**
  * {@inheritdoc}
+ * @property \StdClass $WebSocket
  */
 class Connection extends AbstractConnectionDecorator {
     public function send($msg) {

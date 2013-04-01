@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.2.5 (2013-??-??)
+
+ * Fixed Hixie-76 handshake bug
+
 * 0.2.4 (2013-03-09)
 
  * Support for Symfony 2.2 and Guzzle 2.3
