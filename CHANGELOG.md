@@ -8,7 +8,7 @@ CHANGELOG
 
 ---
 
-* 0.2.5 (2013-??-??)
+* 0.2.5 (2013-04-01)
 
  * Fixed Hixie-76 handshake bug
 
