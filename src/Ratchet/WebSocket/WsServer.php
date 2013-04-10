@@ -133,7 +133,7 @@ class WsServer implements MessageComponentInterface {
 
         $this->connections->attach($from, $upgraded);
 
-        $upgraded->WebSocket->established = true;
+        $from->WebSocket->established = true;
 
         return $this->_decorating->onOpen($upgraded);
     }
