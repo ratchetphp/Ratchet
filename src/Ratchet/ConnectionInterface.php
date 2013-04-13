@@ -15,7 +15,7 @@ interface ConnectionInterface {
     /**
      * Send data to the connection
      * @param  string $data
-     * @return ConnectionInterface
+     * @return \Ratchet\ConnectionInterface
      */
     function send($data);
 
