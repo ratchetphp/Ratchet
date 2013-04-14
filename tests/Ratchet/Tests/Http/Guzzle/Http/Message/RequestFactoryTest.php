@@ -1,6 +1,6 @@
 <?php
-namespace Ratchet\Tests\WebSocket\Guzzle\Http\Message;
-use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
+namespace Ratchet\Tests\Http\Guzzle\Http\Message;
+use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
 
 /**
  * @covers Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory

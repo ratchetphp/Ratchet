@@ -1,7 +1,6 @@
 <?php
-namespace Ratchet\Tests\WebSocket;
-use Ratchet\WebSocket\HttpRequestParser;
-use Ratchet\Tests\Mock\Connection as ConnectionStub;
+namespace Ratchet\Tests\Http;
+use Ratchet\Http\HttpRequestParser;
 
 /**
  * @covers Ratchet\WebSocket\HttpRequestParser
@@ -32,7 +31,7 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBufferOverflowResponse() {
-        $conn = new ConnectionStub;
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
 
         $this->parser->maxSize = 20;
 

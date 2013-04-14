@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Tests\WebSocket\Version;
 use Ratchet\WebSocket\Version\Hixie76;
+use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 
 /**
@@ -60,7 +61,7 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
-        $server = new WsServer($mockApp);
+        $server = new HttpServer(new WsServer($mockApp));
         $server->onOpen($mockConn);
         $mockApp->expects($this->exactly(0))->method('onOpen');
         $server->onMessage($mockConn, $headers);
@@ -73,7 +74,7 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
-        $server = new WsServer($mockApp);
+        $server = new HttpServer(new WsServer($mockApp));
         $server->onOpen($mockConn);
         $server->onMessage($mockConn, $headers);
 
