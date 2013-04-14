@@ -1,5 +1,5 @@
 <?php
-namespace Ratchet\WebSocket\Guzzle\Http\Message;
+namespace Ratchet\Http\Guzzle\Http\Message;
 use Guzzle\Http\Message\RequestFactory as GuzzleRequestFactory;
 use Guzzle\Http\EntityBody;
 

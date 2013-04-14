@@ -3,9 +3,6 @@ namespace Ratchet\Http;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-// @todo This class will move to this namespace
-use Ratchet\WebSocket\HttpRequestParser;
-
 use Symfony\Component\Routing\RouteCollection;
 
 class HttpServer implements MessageComponentInterface {
@@ -15,6 +12,11 @@ class HttpServer implements MessageComponentInterface {
      */
     protected $_decorating;
 
+    /**
+     * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
+     * @var HttpRequestParser
+     * @note May not expose this in the future, may do through facade methods
+     */
     protected $_reqParser;
 
     /**

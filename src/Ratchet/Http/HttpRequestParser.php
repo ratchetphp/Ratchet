@@ -1,8 +1,8 @@
 <?php
-namespace Ratchet\WebSocket;
+namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory;
+use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
 
 /**
  * This class receives streaming data from a client request

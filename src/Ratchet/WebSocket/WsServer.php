@@ -2,12 +2,11 @@
 namespace Ratchet\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\Http\HttpServerInterface;
+use Guzzle\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use Ratchet\WebSocket\Version;
 use Ratchet\WebSocket\Encoding\ToggleableValidator;
-use Guzzle\Http\Message\Response;
-
-use Guzzle\Http\Message\RequestInterface;
-use Ratchet\Http\HttpServerInterface;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -16,13 +15,6 @@ use Ratchet\Http\HttpServerInterface;
  * @link http://dev.w3.org/html5/websockets/
  */
 class WsServer implements HttpServerInterface {
-    /**
-     * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
-     * @var HttpRequestParser
-     * @note May not expose this in the future, may do through facade methods
-     */
-    public $reqParser;
-
     /**
      * Manage the various WebSocket versions to support
      * @var VersionManager
@@ -65,7 +57,6 @@ class WsServer implements HttpServerInterface {
      * If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
     public function __construct(MessageComponentInterface $component) {
-        $this->reqParser = new HttpRequestParser;
         $this->versioner = new VersionManager;
         $this->validator = new ToggleableValidator;
 
