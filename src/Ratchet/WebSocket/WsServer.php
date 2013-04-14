@@ -6,13 +6,16 @@ use Ratchet\WebSocket\Version;
 use Ratchet\WebSocket\Encoding\ToggleableValidator;
 use Guzzle\Http\Message\Response;
 
+use Guzzle\Http\Message\RequestInterface;
+use Ratchet\Http\HttpServerInterface;
+
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
-class WsServer implements MessageComponentInterface {
+class WsServer implements HttpServerInterface {
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
      * @var HttpRequestParser
@@ -79,9 +82,12 @@ class WsServer implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn) {
-        $conn->WebSocket = new \StdClass;
+    public function onOpen(ConnectionInterface $conn, RequestInterface $headers = null) {
+        $conn->WebSocket              = new \StdClass;
+        $conn->WebSocket->request     = $headers;
         $conn->WebSocket->established = false;
+
+        $this->attemptUpgrade($conn);
     }
 
     /**
@@ -92,46 +98,42 @@ class WsServer implements MessageComponentInterface {
             return $from->WebSocket->version->onMessage($this->connections[$from], $msg);
         }
 
-        if (isset($from->WebSocket->request)) {
-            $from->WebSocket->request->getBody()->write($msg);
+        $this->attemptUpgrade($from, $msg);
+    }
+
+    protected function attemptUpgrade(ConnectionInterface $conn, $data = '') {
+        if ('' !== $data) {
+            $conn->WebSocket->request->getBody()->write($data);
         } else {
-            try {
-                if (null === ($request = $this->reqParser->onMessage($from, $msg))) {
-                    return;
-                }
-            } catch (\OverflowException $oe) {
-                return $this->close($from, 413);
+            if (!$this->versioner->isVersionEnabled($conn->WebSocket->request)) {
+                return $this->close($conn);
             }
 
-            if (!$this->versioner->isVersionEnabled($request)) {
-                return $this->close($from);
-            }
-
-            $from->WebSocket->request = $request;
-            $from->WebSocket->version = $this->versioner->getVersion($request);
+            $conn->WebSocket->request = $conn->WebSocket->request;
+            $conn->WebSocket->version = $this->versioner->getVersion($conn->WebSocket->request);
         }
 
         try {
-            $response = $from->WebSocket->version->handshake($from->WebSocket->request);
+            $response = $conn->WebSocket->version->handshake($conn->WebSocket->request);
         } catch (\UnderflowException $e) {
             return;
         }
 
         // This needs to be refactored later on, incorporated with routing
-        if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
+        if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($conn->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
             $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
         }
 
         $response->setHeader('X-Powered-By', \Ratchet\VERSION);
-        $from->send((string)$response);
+        $conn->send((string)$response);
 
         if (101 != $response->getStatusCode()) {
-            return $from->close();
+            return $conn->close();
         }
 
-        $upgraded = $from->WebSocket->version->upgradeConnection($from, $this->_decorating);
+        $upgraded = $conn->WebSocket->version->upgradeConnection($conn, $this->_decorating);
 
-        $this->connections->attach($from, $upgraded);
+        $this->connections->attach($conn, $upgraded);
 
         $upgraded->WebSocket->established = true;
 
