@@ -39,6 +39,7 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 
     require __DIR__ . '/vendor/autoload.php';
@@ -76,7 +77,7 @@ class Chat implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 8080
-    $server = IoServer::factory(new WsServer(new Chat), 8080);
+    $server = IoServer::factory(new HttpServer(new WsServer(new Chat)), 8080);
     $server->run();
 ```
 
