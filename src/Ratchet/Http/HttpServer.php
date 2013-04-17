@@ -2,16 +2,15 @@
 namespace Ratchet\Http;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-
+use Guzzle\Http\Message\Response;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class HttpServer implements MessageComponentInterface {
-    /**
-     * Decorated component
-     * @var HttpServerInterface
-     */
-    protected $_decorating;
-
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
      * @var HttpRequestParser
@@ -24,12 +23,22 @@ class HttpServer implements MessageComponentInterface {
      */
     protected $_routes;
 
-    /**
-     * @todo Change parameter from HttpServerInterface to RouteCollection
-     */
-    public function __construct(HttpServerInterface $component) {
-        $this->_decorating = $component;
+    public function __construct() {
+        $this->_routes    = new RouteCollection;
         $this->_reqParser = new HttpRequestParser;
+    }
+
+    /**
+     * @param string
+     * @param string
+     * @param Ratchet\Http\HttpServerInterface
+     * @param array
+     */
+    public function addRoute($name, $path, MessageComponentInterface $controller, $allowedOrigins = array()) {
+        $this->_routes->add($name, new Route($path, array(
+            '_controller' => $controller
+          , 'allowedOrigins' => $allowedOrigins
+        )));
     }
 
     /**
@@ -53,15 +62,25 @@ class HttpServer implements MessageComponentInterface {
                 return $this->close($from, 413);
             }
 
-            // check routes, return 404 or onOpen the route
+            $context = new RequestContext($request->getUrl(), $request->getMethod(), $request->getHost(), $request->getScheme(), $request->getPort());
+            $matcher = new UrlMatcher($this->_routes, $context);
 
-            $from->Http->headers = true;
-            $from->Http->request = $request;
+            try {
+                $route = $matcher->match($request->getPath());
+            } catch (MethodNotAllowedException $nae) {
+                return $this->close($from, 403);
+            } catch (ResourceNotFoundException $nfe) {
+                return $this->close($from, 404);
+            }
 
-            return $this->_decorating->onOpen($from, $request);
+            $from->Http->headers    = true;
+            $from->Http->request    = $request;
+            $from->Http->controller = $route['_controller'];
+
+            return $from->Http->controller->onOpen($from, $request);
         }
 
-        $this->_decorating->onMessage($from, $msg);
+        $from->Http->controller->onMessage($from, $msg);
     }
 
     /**
