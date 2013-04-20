@@ -61,7 +61,8 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
-        $server = new HttpServer(new WsServer($mockApp));
+        $server = new HttpServer;
+        $server->addRoute('test', '/', new WsServer($mockApp));
         $server->onOpen($mockConn);
         $mockApp->expects($this->exactly(0))->method('onOpen');
         $server->onMessage($mockConn, $headers);
@@ -74,7 +75,8 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
-        $server = new HttpServer(new WsServer($mockApp));
+        $server = new HttpServer;
+        $server->addRoute('test', '/', new WsServer($mockApp));
         $server->onOpen($mockConn);
         $server->onMessage($mockConn, $headers);
 
