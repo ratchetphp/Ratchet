@@ -8,6 +8,11 @@ CHANGELOG
 
 ---
 
+* 0.3.0 (2013-xx-xx)
+
+ * BC: Added Routing to HTTP allowing for a single Ratchet server to handle multiple apps
+ * BC: Decoupled HTTP from WebSocket component
+
 * 0.2.5 (2013-04-01)
 
  * Fixed Hixie-76 handshake bug
