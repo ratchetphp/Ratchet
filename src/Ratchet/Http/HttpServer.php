@@ -74,7 +74,6 @@ class HttpServer implements MessageComponentInterface {
             }
 
             $from->Http->headers    = true;
-            $from->Http->request    = $request;
             $from->Http->controller = $route['_controller'];
 
             return $from->Http->controller->onOpen($from, $request);
