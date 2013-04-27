@@ -4,7 +4,7 @@
 
     $loop = new React\EventLoop\StreamSelectLoop;
     $sock = new React\Socket\Server($loop);
-    $web  = new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer)
+    $web  = new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer);
     $app  = new Ratchet\Http\HttpServer($web);
     $web->setEncodingChecks(false);
 

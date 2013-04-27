@@ -3,13 +3,10 @@ namespace Ratchet\Http;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\Response;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
+/**
+ * @todo Detect HTTP proxy header IP, re-map remoteAddress
+ */
 class HttpServer implements MessageComponentInterface {
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
@@ -26,8 +23,8 @@ class HttpServer implements MessageComponentInterface {
     /**
      * @param HttpServerInterface
      */
-    public function __construct(HttpServerInterface $server) {
-        $this->_httpServer = $server;
+    public function __construct(HttpServerInterface $component) {
+        $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
     }
 
@@ -83,7 +80,7 @@ class HttpServer implements MessageComponentInterface {
      * Close a connection with an HTTP response
      * @param \Ratchet\ConnectionInterface $conn
      * @param int                          $code HTTP status code
-     * @return void
+     * @return null
      */
     protected function close(ConnectionInterface $conn, $code = 400) {
         $response = new Response($code, array(
