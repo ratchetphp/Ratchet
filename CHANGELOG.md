@@ -10,6 +10,7 @@ CHANGELOG
 
 * 0.3.0 (2013-xx-xx)
 
+ * BC: Requre hostname and do Origin HTTP header check against it, disabling CORS by default for security reasons
  * BC: Added Routing to HTTP allowing for a single Ratchet server to handle multiple apps
  * BC: Decoupled HTTP from WebSocket component
 

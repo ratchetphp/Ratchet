@@ -19,12 +19,33 @@ class HttpServer implements MessageComponentInterface {
     protected $_reqParser;
 
     /**
-     * @var Symfony\Component\Routing\RouteCollection
+     * @var \Symfony\Component\Routing\RouteCollection A collection with \Ratchet\MessageComponentInterface controllers
      */
     protected $_routes;
 
-    public function __construct() {
-        $this->_routes    = new RouteCollection;
+    /**
+     * @param string          $host
+     * @param RouteCollection $collection
+     * @throws \UnexpectedValueException If a Route Controller does not map to a \Ratchet\MessageComponentInterface
+     */
+    public function __construct($host, RouteCollection $collection = null) {
+        if (null === $collection) {
+            $collection = new RouteCollection;
+        } else {
+            foreach ($collection as $routeName => $route) {
+                if (is_string($route['_controller']) && class_exists($route['_controller'])) {
+                    $route['_controller'] = new $route['_controller'];
+                }
+
+                if (!($route['_controller'] instanceof HttpServerInterface)) {
+                    throw new \UnexpectedValueException('All routes must implement Ratchet\MessageComponentInterface');
+                }
+            }
+        }
+
+        $collection->setHost($host);
+
+        $this->_routes    = $collection;
         $this->_reqParser = new HttpRequestParser;
     }
 
@@ -34,10 +55,9 @@ class HttpServer implements MessageComponentInterface {
      * @param Ratchet\Http\HttpServerInterface
      * @param array
      */
-    public function addRoute($name, $path, HttpServerInterface $controller, $allowedOrigins = array()) {
+    public function addRoute($name, $path, HttpServerInterface $controller) {
         $this->_routes->add($name, new Route($path, array(
-            '_controller'    => $controller
-          , 'allowedOrigins' => $allowedOrigins
+            '_controller' => $controller
         )));
     }
 
