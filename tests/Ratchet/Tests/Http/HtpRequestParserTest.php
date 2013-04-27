@@ -3,7 +3,7 @@ namespace Ratchet\Tests\Http;
 use Ratchet\Http\HttpRequestParser;
 
 /**
- * @covers Ratchet\WebSocket\HttpRequestParser
+ * @covers Ratchet\Http\HttpRequestParser
  */
 class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
     protected $parser;

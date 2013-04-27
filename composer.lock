@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b51075c0a68acb956c32e59869790571",
+    "hash": "6006ea344879ef78bf1a490e630a74fc",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -244,17 +244,17 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.2.7",
+            "version": "v0.3.1",
             "target-dir": "React/EventLoop",
             "source": {
                 "type": "git",
-                "url": "https://github.com/reactphp/event-loop",
-                "reference": "v0.2.7"
+                "url": "https://github.com/reactphp/event-loop.git",
+                "reference": "v0.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/event-loop/archive/v0.2.7.zip",
-                "reference": "v0.2.7",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/v0.3.1",
+                "reference": "v0.3.1",
                 "shasum": ""
             },
             "require": {
@@ -267,7 +267,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
@@ -283,33 +283,33 @@
             "keywords": [
                 "event-loop"
             ],
-            "time": "2013-01-05 11:41:26"
+            "time": "2013-01-14 23:11:47"
         },
         {
             "name": "react/socket",
-            "version": "v0.2.7",
+            "version": "v0.3.1",
             "target-dir": "React/Socket",
             "source": {
                 "type": "git",
-                "url": "https://github.com/reactphp/socket",
-                "reference": "v0.2.7"
+                "url": "https://github.com/reactphp/socket.git",
+                "reference": "v0.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/socket/archive/v0.2.7.zip",
-                "reference": "v0.2.7",
+                "url": "https://api.github.com/repos/reactphp/socket/zipball/v0.3.1",
+                "reference": "v0.3.1",
                 "shasum": ""
             },
             "require": {
                 "evenement/evenement": "1.0.*",
                 "php": ">=5.3.3",
-                "react/event-loop": "0.2.*",
-                "react/stream": "0.2.*"
+                "react/event-loop": "0.3.*",
+                "react/stream": "0.3.*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
@@ -325,21 +325,21 @@
             "keywords": [
                 "Socket"
             ],
-            "time": "2012-12-14 00:58:14"
+            "time": "2013-04-20 14:53:10"
         },
         {
             "name": "react/stream",
-            "version": "v0.2.7",
+            "version": "v0.3.1",
             "target-dir": "React/Stream",
             "source": {
                 "type": "git",
-                "url": "https://github.com/reactphp/stream",
-                "reference": "v0.2.7"
+                "url": "https://github.com/reactphp/stream.git",
+                "reference": "v0.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/reactphp/stream/archive/v0.2.7.zip",
-                "reference": "v0.2.7",
+                "url": "https://api.github.com/repos/reactphp/stream/zipball/v0.3.1",
+                "reference": "v0.3.1",
                 "shasum": ""
             },
             "require": {
@@ -347,13 +347,13 @@
                 "php": ">=5.3.3"
             },
             "suggest": {
-                "react/event-loop": "0.2.*",
-                "react/promise": "1.0.*"
+                "react/event-loop": "0.3.*",
+                "react/promise": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
@@ -370,7 +370,7 @@
                 "pipe",
                 "stream"
             ],
-            "time": "2012-12-14 00:58:14"
+            "time": "2013-04-21 13:25:49"
         },
         {
             "name": "symfony/event-dispatcher",

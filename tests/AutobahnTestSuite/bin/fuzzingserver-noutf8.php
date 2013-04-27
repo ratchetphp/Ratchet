@@ -4,8 +4,9 @@
 
     $loop = new React\EventLoop\StreamSelectLoop;
     $sock = new React\Socket\Server($loop);
-    $app  = new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer);
-    $app->setEncodingChecks(false);
+    $web  = new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer)
+    $app  = new Ratchet\Http\HttpServer($web);
+    $web->setEncodingChecks(false);
 
     $port = $argc > 1 ? $argv[1] : 8000;
     $sock->listen($port, '0.0.0.0');

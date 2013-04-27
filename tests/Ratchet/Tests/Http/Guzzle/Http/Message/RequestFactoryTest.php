@@ -3,7 +3,7 @@ namespace Ratchet\Tests\Http\Guzzle\Http\Message;
 use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
 
 /**
- * @covers Ratchet\WebSocket\Guzzle\Http\Message\RequestFactory
+ * @covers Ratchet\Http\Guzzle\Http\Message\RequestFactory
  */
 class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
     protected $factory;
