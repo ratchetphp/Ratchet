@@ -38,9 +38,15 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 <?php
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
+use Ratchet\Http\Router;
 use Ratchet\WebSocket\WsServer;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RequestContext;
 
     require __DIR__ . '/vendor/autoload.php';
 
@@ -77,7 +83,12 @@ class Chat implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 8080
-    $server = IoServer::factory(new HttpServer(new WsServer(new Chat)), 8080);
+    // This will be made easier soon, routing currently in development
+    $routes->add('chatRoute', new Route('/chat', array(
+        '_controller' => new WsServer(new Chat)
+    )));
+
+    $server = IoServer::factory(new HttpServer(new Router(new UrlMatcher($routes, new RequestContext))), 8080);
     $server->run();
 ```
 

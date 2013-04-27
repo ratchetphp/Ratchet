@@ -73,9 +73,9 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $headers = null) {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         $conn->WebSocket              = new \StdClass;
-        $conn->WebSocket->request     = $headers;
+        $conn->WebSocket->request     = $request;
         $conn->WebSocket->established = false;
 
         $this->attemptUpgrade($conn);
