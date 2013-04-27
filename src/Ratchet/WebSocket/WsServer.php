@@ -110,7 +110,6 @@ class WsServer implements HttpServerInterface {
             return;
         }
 
-        // This needs to be refactored later on, incorporated with routing
         if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($conn->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
             $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
         }

@@ -54,16 +54,13 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         return $headers;
     }
 
-/* @todo Re-enable and fix these tests later - bad functional tests atm, break into units
     public function testNoUpgradeBeforeBody() {
         $headers = $this->headerProvider();
-        $body    = base64_decode($this->_body);
 
-        $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
+        $mockConn = $this->getMock('\Ratchet\ConnectionInterface');
+        $mockApp  = $this->getMock('\Ratchet\MessageComponentInterface');
 
-        $server = new HttpServer;
-        $server->addRoute('test', '/', new WsServer($mockApp));
+        $server = new HttpServer(new WsServer($mockApp));
         $server->onOpen($mockConn);
         $mockApp->expects($this->exactly(0))->method('onOpen');
         $server->onMessage($mockConn, $headers);
@@ -73,16 +70,14 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $headers = $this->headerProvider();
         $body    = base64_decode($this->_body);
 
-        $mockConn = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $mockApp = $this->getMock('\\Ratchet\\MessageComponentInterface');
+        $mockConn = $this->getMock('\Ratchet\ConnectionInterface');
+        $mockApp  = $this->getMock('\Ratchet\MessageComponentInterface');
 
-        $server = new HttpServer;
-        $server->addRoute('test', '/', new WsServer($mockApp));
+        $server = new HttpServer(new WsServer($mockApp));
         $server->onOpen($mockConn);
         $server->onMessage($mockConn, $headers);
 
         $mockApp->expects($this->once())->method('onOpen');
         $server->onMessage($mockConn, $body . $this->_crlf . $this->_crlf);
     }
-*/
 }
