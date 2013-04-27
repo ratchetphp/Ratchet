@@ -34,9 +34,9 @@ class HttpServer implements MessageComponentInterface {
      * @param Ratchet\Http\HttpServerInterface
      * @param array
      */
-    public function addRoute($name, $path, MessageComponentInterface $controller, $allowedOrigins = array()) {
+    public function addRoute($name, $path, HttpServerInterface $controller, $allowedOrigins = array()) {
         $this->_routes->add($name, new Route($path, array(
-            '_controller' => $controller
+            '_controller'    => $controller
           , 'allowedOrigins' => $allowedOrigins
         )));
     }
@@ -87,7 +87,7 @@ class HttpServer implements MessageComponentInterface {
      */
     public function onClose(ConnectionInterface $conn) {
         if ($conn->Http->headers) {
-            $this->_decorating->onClose($conn);
+            $conn->Http->controller->onClose($conn);
         }
     }
 
@@ -96,7 +96,7 @@ class HttpServer implements MessageComponentInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($conn->Http->headers) {
-            $this->_decorating->onError($conn, $e);
+            $conn->Http->controller->onError($conn, $e);
         } else {
             $conn->close();
         }
