@@ -26,7 +26,7 @@ class WsServer implements HttpServerInterface {
      * Decorated component
      * @var \Ratchet\MessageComponentInterface
      */
-    protected $_decorating;
+    public $component;
 
     /**
      * @var \SplObjectStorage
@@ -34,9 +34,7 @@ class WsServer implements HttpServerInterface {
     protected $connections;
 
     /**
-     * For now, array_push accepted subprotocols to this array
-     * @deprecated
-     * @temporary
+     * Holder of accepted protocols, implement through WampServerInterface
      */
     protected $acceptedSubProtocols = array();
 
@@ -66,7 +64,7 @@ class WsServer implements HttpServerInterface {
             ->enableVersion(new Version\Hixie76)
         ;
 
-        $this->_decorating = $component;
+        $this->component   = $component;
         $this->connections = new \SplObjectStorage;
     }
 
@@ -74,6 +72,10 @@ class WsServer implements HttpServerInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+        if (null === $request) {
+            throw new \UnexpectedValueException('$request can not be null');
+        }
+
         $conn->WebSocket              = new \StdClass;
         $conn->WebSocket->request     = $request;
         $conn->WebSocket->established = false;
@@ -100,7 +102,6 @@ class WsServer implements HttpServerInterface {
                 return $this->close($conn);
             }
 
-            $conn->WebSocket->request = $conn->WebSocket->request;
             $conn->WebSocket->version = $this->versioner->getVersion($conn->WebSocket->request);
         }
 
@@ -121,13 +122,13 @@ class WsServer implements HttpServerInterface {
             return $conn->close();
         }
 
-        $upgraded = $conn->WebSocket->version->upgradeConnection($conn, $this->_decorating);
+        $upgraded = $conn->WebSocket->version->upgradeConnection($conn, $this->component);
 
         $this->connections->attach($conn, $upgraded);
 
         $upgraded->WebSocket->established = true;
 
-        return $this->_decorating->onOpen($upgraded);
+        return $this->component->onOpen($upgraded);
     }
 
     /**
@@ -138,7 +139,7 @@ class WsServer implements HttpServerInterface {
             $decor = $this->connections[$conn];
             $this->connections->detach($conn);
 
-            $this->_decorating->onClose($decor);
+            $this->component->onClose($decor);
         }
     }
 
@@ -147,7 +148,7 @@ class WsServer implements HttpServerInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($conn->WebSocket->established) {
-            $this->_decorating->onError($this->connections[$conn], $e);
+            $this->component->onError($this->connections[$conn], $e);
         } else {
             $conn->close();
         }
@@ -181,8 +182,8 @@ class WsServer implements HttpServerInterface {
      */
     public function isSubProtocolSupported($name) {
         if (!$this->isSpGenerated) {
-            if ($this->_decorating instanceof WsServerInterface) {
-                $this->acceptedSubProtocols = array_flip($this->_decorating->getSubProtocols());
+            if ($this->component instanceof WsServerInterface) {
+                $this->acceptedSubProtocols = array_flip($this->component->getSubProtocols());
             }
 
             $this->isSpGenerated = true;
