@@ -42,7 +42,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
-     * @throws \RuntimeExcpetion
+     * @throws \RuntimeException
      */
     public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;

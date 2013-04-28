@@ -216,7 +216,6 @@ class WsServer implements HttpServerInterface {
      * Close a connection with an HTTP response
      * @param \Ratchet\ConnectionInterface $conn
      * @param int                          $code HTTP status code
-     * @return void
      */
     protected function close(ConnectionInterface $conn, $code = 400) {
         $response = new Response($code, array(

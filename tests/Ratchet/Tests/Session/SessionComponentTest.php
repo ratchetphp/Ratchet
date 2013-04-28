@@ -22,6 +22,10 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->_serv = new SessionProvider($this->_app, new NullSessionHandler);
     }
 
+    public function tearDown() {
+        ini_set('session.serialize_handler', 'php');
+    }
+
     public function getConnectionClassString() {
         return '\Ratchet\ConnectionInterface';
     }
@@ -89,15 +93,21 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     }
 
     protected function newConn() {
-        $conn = $this->getMock('Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('Ratchet\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
+        $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
         $conn->WebSocket          = new \StdClass;
         $conn->WebSocket->request = $headers;
 
         return $conn;
+    }
+
+    public function testOnMessageDecorator() {
+        $message = "Database calls are usually blocking  :(";
+        $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $message);
+        $this->_serv->onMessage($this->_conn, $message);
     }
 
     public function testGetSubProtocolsReturnsArray() {
@@ -113,5 +123,11 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
         $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
+    }
+
+    public function testRejectInvalidSeralizers() {
+        ini_set('session.serialize_handler', 'wddx');
+        $this->setExpectedException('\RuntimeException');
+        new SessionProvider($this->getMock('\Ratchet\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
     }
 }

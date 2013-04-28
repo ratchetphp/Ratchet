@@ -31,7 +31,7 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBufferOverflowResponse() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
 
         $this->parser->maxSize = 20;
 
@@ -40,5 +40,12 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
         $this->setExpectedException('OverflowException');
 
         $this->parser->onMessage($conn, "Header-Is: Too Big");
+    }
+
+    public function testReturnTypeIsRequest() {
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $return = $this->parser->onMessage($conn, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n");
+
+        $this->assertInstanceOf('\Guzzle\Http\Message\RequestInterface', $return);
     }
 }

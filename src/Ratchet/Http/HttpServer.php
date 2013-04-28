@@ -29,14 +29,14 @@ class HttpServer implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
         $conn->httpHeadersReceived = false;
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->httpHeadersReceived) {
@@ -57,7 +57,7 @@ class HttpServer implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
         if ($conn->httpHeadersReceived) {
@@ -66,7 +66,7 @@ class HttpServer implements MessageComponentInterface {
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($conn->httpHeadersReceived) {
