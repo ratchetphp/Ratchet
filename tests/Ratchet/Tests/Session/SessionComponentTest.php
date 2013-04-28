@@ -126,6 +126,10 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     }
 
     public function testRejectInvalidSeralizers() {
+        if (!function_exists('wddx_serialize_value')) {
+            $this->markTestSkipped();
+        }
+
         ini_set('session.serialize_handler', 'wddx');
         $this->setExpectedException('\RuntimeException');
         new SessionProvider($this->getMock('\Ratchet\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
