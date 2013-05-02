@@ -137,4 +137,16 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
 
         $this->_policy->onMessage($conn, ' ');
     }
+
+    public function testOnOpenExists() {
+        $this->assertTrue(method_exists($this->_policy, 'onOpen'));
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_policy->onOpen($conn);
+    }
+
+    public function testOnCloseExists() {
+        $this->assertTrue(method_exists($this->_policy, 'onClose'));
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_policy->onClose($conn);
+    }
 }

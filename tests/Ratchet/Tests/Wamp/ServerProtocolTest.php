@@ -38,7 +38,7 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider invalidMessageProvider
      */
     public function testInvalidMessages($type) {
-        $this->setExpectedException('\\Ratchet\\Wamp\\Exception');
+        $this->setExpectedException('\Ratchet\Wamp\Exception');
 
         $conn = $this->newConn();
         $this->_comp->onOpen($conn);
