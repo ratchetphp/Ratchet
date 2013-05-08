@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Tests\Session;
+use Ratchet\Tests\AbstractMessageComponentTestCase;
 use Ratchet\Session\SessionProvider;
 use Ratchet\Tests\Mock\MemorySessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
@@ -11,11 +12,30 @@ use Guzzle\Http\Message\Request;
  * @covers Ratchet\Session\Storage\VirtualSessionStorage
  * @covers Ratchet\Session\Storage\Proxy\VirtualProxy
  */
-class SessionProviderTest extends \PHPUnit_Framework_TestCase {
+class SessionProviderTest extends AbstractMessageComponentTestCase {
     public function setUp() {
-        if (!class_exists('Symfony\\Component\\HttpFoundation\\Session\\Session')) {
+        if (!class_exists('Symfony\Component\HttpFoundation\Session\Session')) {
             return $this->markTestSkipped('Dependency of Symfony HttpFoundation failed');
         }
+
+        parent::setUp();
+        $this->_serv = new SessionProvider($this->_app, new NullSessionHandler);
+    }
+
+    public function tearDown() {
+        ini_set('session.serialize_handler', 'php');
+    }
+
+    public function getConnectionClassString() {
+        return '\Ratchet\ConnectionInterface';
+    }
+
+    public function getDecoratorClassString() {
+        return '\Ratchet\Tests\Mock\NullComponent';
+    }
+
+    public function getComponentClassString() {
+        return '\Ratchet\MessageComponentInterface';
     }
 
     public function classCaseProvider() {
@@ -33,7 +53,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), new MemorySessionHandler);
+        $component = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
         $this->assertEquals($out, $method->invokeArgs($component, array($in)));
     }
 
@@ -73,9 +93,9 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function newConn() {
-        $conn = $this->getMock('Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('Ratchet\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
+        $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
         $conn->WebSocket          = new \StdClass;
@@ -84,46 +104,10 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         return $conn;
     }
 
-    public function testOnOpenBubbles() {
-        $conn = $this->newConn();
-        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
-        $comp = new SessionProvider($mock, new NullSessionHandler);
-
-        $mock->expects($this->once())->method('onOpen')->with($conn);
-        $comp->onOpen($conn);
-    }
-
-    protected function getOpenConn() {
-        $conn = $this->newConn();
-        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
-        $prov = new SessionProvider($mock, new NullSessionHandler);
-
-        $prov->onOpen($conn);
-
-        return array($conn, $mock, $prov);
-    }
-
-    public function testOnMessageBubbles() {
-        list($conn, $mock, $prov) = $this->getOpenConn();
-        $msg = 'No sessions here';
-
-        $mock->expects($this->once())->method('onMessage')->with($conn, $msg);
-        $prov->onMessage($conn, $msg);
-    }
-
-    public function testOnCloseBubbles() {
-        list($conn, $mock, $prov) = $this->getOpenConn();
-
-        $mock->expects($this->once())->method('onClose')->with($conn);
-        $prov->onClose($conn);
-    }
-
-    public function testOnErrorBubbles() {
-        list($conn, $mock, $prov) = $this->getOpenConn();
-        $e = new \Exception('I made a boo boo');
-
-        $mock->expects($this->once())->method('onError')->with($conn, $e);
-        $prov->onError($conn, $e);
+    public function testOnMessageDecorator() {
+        $message = "Database calls are usually blocking  :(";
+        $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $message);
+        $this->_serv->onMessage($this->_conn, $message);
     }
 
     public function testGetSubProtocolsReturnsArray() {
@@ -139,5 +123,15 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase {
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
         $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
+    }
+
+    public function testRejectInvalidSeralizers() {
+        if (!function_exists('wddx_serialize_value')) {
+            $this->markTestSkipped();
+        }
+
+        ini_set('session.serialize_handler', 'wddx');
+        $this->setExpectedException('\RuntimeException');
+        new SessionProvider($this->getMock('\Ratchet\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
     }
 }

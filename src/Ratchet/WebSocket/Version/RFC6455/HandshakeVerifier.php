@@ -114,22 +114,6 @@ class HandshakeVerifier {
     }
 
     /**
-     * Verify Origin matches RFC6454 IF it is set
-     * Origin is an optional field
-     * @param string|null
-     * @return bool
-     * @todo Implement verification functionality - see section 4.2.1.7
-     */
-    public function verifyOrigin($val) {
-        if (null === $val) {
-            return true;
-        }
-
-        // logic here
-        return true;
-    }
-
-    /**
      * Verify the version passed matches this RFC
      * @param string|int MUST equal 13|"13"
      * @return bool
