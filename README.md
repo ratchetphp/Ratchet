@@ -17,10 +17,10 @@ Shell access is required and root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access. 
 In order to do this, along with your sync web stack, you can either use a proxy or two separate machines. You can find more details in the [server conf docs](http://socketo.me/docs/deploy#sconf).
 
-PHP 5.3.3 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements. 
 
 Cookies from your domain will be passed to the socket server, allowing you to identify users.
 Accessing your website's session data in Ratchet requires you to use [Symfony2 Sessions](http://symfony.com/doc/master/components/http_foundation/sessions.html) on your website. 
+PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements.
 
 ### Documentation
 

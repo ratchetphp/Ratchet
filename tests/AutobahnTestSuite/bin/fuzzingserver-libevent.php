@@ -4,7 +4,7 @@
 
     $loop = new React\EventLoop\LibEventLoop;
     $sock = new React\Socket\Server($loop);
-    $app  = new Ratchet\Http\HttpServer(new Ratchet\WebSocket\WsServer(new Ratchet\Tests\AbFuzzyServer));
+    $app  = new Ratchet\Http\HttpServer(new Ratchet\WebSocket\WsServer(new Ratchet\Server\EchoServer));
 
     $port = $argc > 1 ? $argv[1] : 8000;
     $sock->listen($port, '0.0.0.0');

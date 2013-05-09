@@ -1,9 +1,9 @@
 <?php
-namespace Ratchet\Tests;
+namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-class AbFuzzyServer implements MessageComponentInterface {
+class EchoServer implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn) {
     }
 

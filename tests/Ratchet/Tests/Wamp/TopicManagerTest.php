@@ -7,12 +7,20 @@ use Ratchet\Wamp\TopicManager;
  */
 class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     private $mock;
+
+    /**
+     * @var \Ratchet\Wamp\TopicManager
+     */
     private $mngr;
+
+    /**
+     * @var \Ratchet\ConnectionInterface
+     */
     private $conn;
 
     public function setUp() {
-        $this->conn = $this->getMock('Ratchet\\ConnectionInterface');
-        $this->mock = $this->getMock('Ratchet\\Wamp\\WampServerInterface');
+        $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->getMock('\Ratchet\Wamp\\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);
 
         $this->conn->WAMP = new \StdClass;
