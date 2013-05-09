@@ -3,23 +3,21 @@
 [![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png?branch=master)](http://travis-ci.org/cboden/Ratchet)
 
 A PHP 5.3 library for asynchronously serving WebSockets.
-Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components. 
+Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 26, Firefox 6 - 19, Safari 5.0.1 - 6, iOS 4.2 - 6
+* Tested on Chrome 13 - 26, Firefox 6 - 20, Safari 5.0.1 - 6, iOS 4.2 - 6
 * Ratchet [passes](http://socketo.me/reports/ab/) the [Autobahn Testsuite](http://autobahn.ws/testsuite) (non-binary messages)
 
 ##Requirements
 
 Shell access is required and root access is recommended.
-To avoid proxy/firewall blockage it's recommended WebSockets are run on port 80, which requires root access. 
-In order to do this, along with your sync web stack, you can either use a proxy or two separate machines. You can find more details in the [server conf docs](http://socketo.me/docs/deploy#sconf).
+To avoid proxy/firewall blockage it's recommended WebSockets are requested on port 80 or 443 (SSL), which requires root access.
+In order to do this, along with your sync web stack, you can either use a reverse proxy or two separate machines.
+You can find more details in the [server conf docs](http://socketo.me/docs/deploy#serverconfiguration).
 
-
-Cookies from your domain will be passed to the socket server, allowing you to identify users.
-Accessing your website's session data in Ratchet requires you to use [Symfony2 Sessions](http://symfony.com/doc/master/components/http_foundation/sessions.html) on your website. 
 PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements.
 
 ### Documentation
