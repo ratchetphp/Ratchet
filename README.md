@@ -36,9 +36,6 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 <?php
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\Http\RoutedHttpServer;
-use Ratchet\Server\IoServer;
-use Ratchet\Tests\AbFuzzyServer;
 
     require __DIR__ . '/vendor/autoload.php';
 
@@ -75,12 +72,10 @@ class Chat implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 8080
-    $router = new RoutedHttpServer;
-    $router->addRoute('/echo', new AbFuzzyServer);
-    $router->addRoute('/chat', new Chat);
-
-    $server = IoServer::factory($router, 8000);
-    $server->run();
+    $app = new Ratchet\App('example.com', 8080);
+    $app->route('/chat', new Chat);
+    $app->route('/echo', new Ratchet\Server\EchoServer);
+    $app->run();
 ```
 
     $ php chat.php

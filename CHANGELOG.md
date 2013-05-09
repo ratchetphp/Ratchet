@@ -10,6 +10,7 @@ CHANGELOG
 
 * 0.3.0 (2013-xx-xx)
 
+ * Sugar and spice and everything nice: Added the Ratchet\App class for ease of use
  * Added Symfony/2.2 based HTTP Router component to allowing for a single Ratchet server to handle multiple apps -> Ratchet\Http\Router
  * BC: Decoupled HTTP from WebSocket component -> Ratchet\Http\HttpServer
  * Updated dependency to React/0.3
@@ -79,4 +80,5 @@ CHANGELOG
 * 0.1 (2012-05-11)
 
  * First release with components: IoServer, WsServer, SessionProvider, WampServer, FlashPolicy, IpBlackList
- * I/O now handled by React, making Ratchet fully asynchronous 
+ * I/O now handled by React, making Ratchet fully asynchronous
+
