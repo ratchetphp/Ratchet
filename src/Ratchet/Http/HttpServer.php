@@ -50,10 +50,6 @@ class HttpServer implements MessageComponentInterface {
 
             $from->httpHeadersReceived = true;
 
-            if (isset($from->remoteAddress) && '127.0.0.1' == $from->remoteAddress && $request->hasHeader('X-Forwarded-For')) {
-                $from->remoteAddress = $request->getHeader('X-Forwarded-For', true);
-            }
-
             return $this->_httpServer->onOpen($from, $request);
         }
 
