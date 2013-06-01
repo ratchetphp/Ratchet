@@ -50,7 +50,7 @@ class RFC6455 implements VersionInterface {
      * {@inheritdoc}
      */
     public function isProtocol(RequestInterface $request) {
-        $version = (int)$request->getHeader('Sec-WebSocket-Version', -1);
+        $version = (int)((string)($request->getHeader('Sec-WebSocket-Version', -1)));
 
         return ($this->getVersionNumber() === $version);
     }
