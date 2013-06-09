@@ -16,9 +16,6 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 
-/**
- * @todo Security - same origin by default
- */
 class App {
     /**
      * @var \Symfony\Component\Routing\RouteCollection
@@ -36,6 +33,12 @@ class App {
     protected $_server;
 
     /**
+     * The Host passed in construct used for same origin policy
+     * @var string
+     */
+    protected $httpHost;
+
+    /**
      * @param string        $httpHost
      * @param int           $port
      * @param string        $address
@@ -49,6 +52,8 @@ class App {
         if (null === $loop) {
             $loop = LoopFactory::create();
         }
+
+        $this->httpHost = $httpHost;
 
         $socket = new Reactor($loop);
         $socket->listen($port, $address);
@@ -72,7 +77,7 @@ class App {
     /**
      * @param string             $path
      * @param ComponentInterface $controller
-     * @return ComponentInterface
+     * @return Symfony\Component\Routing\Route
      */
     public function route($path, ComponentInterface $controller) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
@@ -85,7 +90,7 @@ class App {
             $decorated = $controller;
         }
 
-        $this->routes->add(uniqid(), new Route($path, array('_controller' => $decorated)));
+        $this->routes->add(uniqid(), new Route($path, array('_controller' => $decorated), array(), array(), $this->httpHost));
 
         return $decorated;
     }

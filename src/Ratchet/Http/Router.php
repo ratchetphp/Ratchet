@@ -26,6 +26,10 @@ class Router implements HttpServerInterface {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
+        $context = $this->_matcher->getContext();
+        $context->setMethod($request->getMethod());
+        $context->setHost($request->getHost());
+
         try {
             $route = $this->_matcher->match($request->getPath());
         } catch (MethodNotAllowedException $nae) {
@@ -57,14 +61,18 @@ class Router implements HttpServerInterface {
      * {@inheritdoc}
      */
     function onClose(ConnectionInterface $conn) {
-        $conn->controller->onClose($conn);
+        if (isset($conn->controller)) {
+            $conn->controller->onClose($conn);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
     function onError(ConnectionInterface $conn, \Exception $e) {
-        $conn->controller->onError($conn, $e);
+        if (isset($conn->controller)) {
+            $conn->controller->onError($conn, $e);
+        }
     }
 
     /**
