@@ -69,6 +69,7 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
+        $this->clients->detach($conn);
         $conn->close();
     }
 }
