@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.2.7 (2013-06-09)
+
+ * BF: Sub-protocol negotation with Guzzle 3.6
+
 * 0.2.6 (2013-06-01)
 
  * Guzzle 3.6 support
