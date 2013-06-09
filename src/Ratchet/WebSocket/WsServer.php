@@ -111,8 +111,10 @@ class WsServer implements HttpServerInterface {
             return;
         }
 
-        if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($conn->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
-            $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
+        if (null !== ($subHeader = $conn->WebSocket->request->getHeader('Sec-WebSocket-Protocol'))) {
+            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($subHeader->normalize()))) {
+                $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
+            }
         }
 
         $response->setHeader('X-Powered-By', \Ratchet\VERSION);

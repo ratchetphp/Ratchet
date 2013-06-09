@@ -7,7 +7,7 @@ class RequestFactory extends GuzzleRequestFactory {
     /**
      * {@inheritdoc}
      */
-    public function create($method, $url, $headers = null, $body = '') {
+    public function create($method, $url, $headers = null, $body = '', array $options = array()) {
         $c = $this->entityEnclosingRequestClass;
         $request = new $c($method, $url, $headers);
         $request->setBody(EntityBody::factory($body));
