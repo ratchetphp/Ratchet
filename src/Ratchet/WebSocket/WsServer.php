@@ -117,9 +117,10 @@ class WsServer implements MessageComponentInterface {
             return;
         }
 
-        // This needs to be refactored later on, incorporated with routing
-        if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($from->WebSocket->request->getTokenizedHeader('Sec-WebSocket-Protocol', ',')))) {
-            $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
+        if (null !== ($subHeader = $from->WebSocket->request->getHeader('Sec-WebSocket-Protocol'))) {
+            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($subHeader->normalize()))) {
+                $response->setHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
+            }
         }
 
         $response->setHeader('X-Powered-By', \Ratchet\VERSION);
