@@ -38,6 +38,8 @@ class App {
      */
     protected $httpHost;
 
+    protected $_routeCounter = 0;
+
     /**
      * @param string        $httpHost
      * @param int           $port
@@ -90,7 +92,7 @@ class App {
             $decorated = $controller;
         }
 
-        $this->routes->add(uniqid(), new Route($path, array('_controller' => $decorated), array(), array(), $this->httpHost));
+        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array(), array(), $this->httpHost));
 
         return $decorated;
     }
