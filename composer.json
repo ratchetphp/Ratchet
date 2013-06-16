@@ -20,8 +20,7 @@
     }
   , "autoload": {
         "psr-0": {
-            "Ratchet\\Tests": "tests"
-          , "Ratchet": "src"
+            "Ratchet": "src"
         }
     }
   , "require": {
