@@ -16,6 +16,12 @@
         </testsuite>
     </testsuites>
 
+    <testsuites>
+        <testsuite name="integration">
+            <directory>./tests/integration/</directory>
+        </testsuite>
+    </testsuites>
+
     <filter>
         <whitelist>
             <directory>./src/</directory>
