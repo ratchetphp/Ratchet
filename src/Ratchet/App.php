@@ -79,7 +79,7 @@ class App {
     /**
      * @param string             $path
      * @param ComponentInterface $controller
-     * @return Symfony\Component\Routing\Route
+     * @return \Symfony\Component\Routing\Route
      */
     public function route($path, ComponentInterface $controller) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {

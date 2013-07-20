@@ -2,7 +2,7 @@
 <phpunit
     forceCoversAnnotation="true"
     mapTestClassNameToCoveredClassName="true"
-    bootstrap="vendor/autoload.php"
+    bootstrap="tests/bootstrap.php"
     colors="true"
     backupGlobals="false"
     backupStaticAttributes="false"
@@ -11,15 +11,20 @@
 >
 
     <testsuites>
-        <testsuite name="Ratchet Test Suite">
-            <directory>./tests/Ratchet/</directory>
+        <testsuite name="unit">
+            <directory>./tests/unit/</directory>
+        </testsuite>
+    </testsuites>
+
+    <testsuites>
+        <testsuite name="integration">
+            <directory>./tests/integration/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <blacklist>
-            <directory>./tests/</directory>
-            <directory>./vendor/</directory>
-        </blacklist>
+        <whitelist>
+            <directory>./src/</directory>
+        </whitelist>
     </filter>
 </phpunit>
