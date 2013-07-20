@@ -4,6 +4,7 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
 use Ratchet\Http\HttpServerInterface;
+use Ratchet\Http\OriginCheck;
 use Ratchet\Wamp\WampServerInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\Server\FlashPolicy;
@@ -77,11 +78,13 @@ class App {
     }
 
     /**
-     * @param string             $path
+     * @param                    $path
      * @param ComponentInterface $controller
-     * @return \Symfony\Component\Routing\Route
+     * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), [*] for any
+     * @param string             $httpHost Override the $httpHost variable provided in the __construct
+     * @return ComponentInterface|WsServer
      */
-    public function route($path, ComponentInterface $controller) {
+    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
@@ -92,7 +95,17 @@ class App {
             $decorated = $controller;
         }
 
-        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array(), array(), $this->httpHost));
+        $httpHost = $httpHost ?: $this->httpHost;
+
+        if (0 === count($allowedOrigins)) {
+            $allowedOrigins[] = $httpHost;
+        }
+        $allowedOrigins = array_values($allowedOrigins);
+        if ('*' !== $allowedOrigins[0]) {
+            $decorated = new OriginCheck($decorated, $allowedOrigins);
+        }
+
+        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost));
 
         return $decorated;
     }

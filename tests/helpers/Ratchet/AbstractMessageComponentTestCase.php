@@ -16,7 +16,11 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
         $this->_serv = new $decorator($this->_app);
         $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
 
-        $this->_serv->onOpen($this->_conn);
+        $this->doOpen($this->_conn);
+    }
+
+    protected function doOpen($conn) {
+        $this->_serv->onOpen($conn);
     }
 
     public function isExpectedConnection() {
@@ -25,7 +29,7 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
 
     public function testOpen() {
         $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->_serv->onOpen($this->getMock('\Ratchet\ConnectionInterface'));
+        $this->doOpen($this->getMock('\Ratchet\ConnectionInterface'));
     }
 
     public function testOnClose() {
@@ -37,5 +41,10 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
         $e = new \Exception('Whoops!');
         $this->_app->expects($this->once())->method('onError')->with($this->isExpectedConnection(), $e);
         $this->_serv->onError($this->_conn, $e);
+    }
+
+    public function passthroughMessageTest($value) {
+        $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $value);
+        $this->_serv->onMessage($this->_conn, $value);
     }
 }

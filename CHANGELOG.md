@@ -10,10 +10,13 @@ CHANGELOG
 
 * 0.3.0 (2013-xx-xx)
 
- * Sugar and spice and everything nice: Added the Ratchet\App class for ease of use
+ * Added the `App` class to help making Ratchet so easy to use it's silly
+ * BC: Require hostname to do HTTP Host header match and do Origin HTTP header check, verify same name by default, helping prevent CSRF attacks
  * Added Symfony/2.2 based HTTP Router component to allowing for a single Ratchet server to handle multiple apps -> Ratchet\Http\Router
  * BC: Decoupled HTTP from WebSocket component -> Ratchet\Http\HttpServer
  * Updated dependency to React/0.3
+ * BF: Single sub-protocol selection to conform with RFC6455
+ * BF: Sanity checks on WAMP protocol to prevent errors
 
 * 0.2.7 (2013-06-09)
 
