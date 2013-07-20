@@ -8,7 +8,7 @@ Build up your application through simple interfaces and re-use your application 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 27, Firefox 6 - 21, Safari 5.0.1 - 6, iOS 4.2 - 6
+* Tested on Chrome 13 - 28, Firefox 6 - 22, Safari 5.0.1 - 6, iOS 4.2 - 7
 * Ratchet [passes](http://socketo.me/reports/ab/) the [Autobahn Testsuite](http://autobahn.ws/testsuite) (non-binary messages)
 
 ##Requirements

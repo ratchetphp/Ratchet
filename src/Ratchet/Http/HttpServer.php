@@ -4,9 +4,6 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\Response;
 
-/**
- * @todo Detect HTTP proxy header IP, re-map remoteAddress
- */
 class HttpServer implements MessageComponentInterface {
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
