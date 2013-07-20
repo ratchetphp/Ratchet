@@ -7,10 +7,6 @@ use Ratchet\AbstractMessageComponentTestCase;
  * @covers Ratchet\Wamp\WampServer
  */
 class WampServerTest extends AbstractMessageComponentTestCase {
-    private $serv;
-    private $mock;
-    private $conn;
-
     public function getConnectionClassString() {
         return '\Ratchet\Wamp\WampConnection';
     }
@@ -40,5 +36,15 @@ class WampServerTest extends AbstractMessageComponentTestCase {
     public function testGetSubProtocols() {
         // todo: could expand on this
         $this->assertInternalType('array', $this->_serv->getSubProtocols());
+    }
+
+    public function testConnectionClosesOnInvalidJson() {
+        $this->_conn->expects($this->once())->method('close');
+        $this->_serv->onMessage($this->_conn, 'invalid json');
+    }
+
+    public function testConnectionClosesOnProtocolError() {
+        $this->_conn->expects($this->once())->method('close');
+        $this->_serv->onMessage($this->_conn, json_encode(array('valid' => 'json', 'invalid' => 'protocol')));
     }
 }

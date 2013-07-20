@@ -247,4 +247,23 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertContains('wamp', $wamp->getSubProtocols());
     }
+
+    public function badFormatProvider() {
+        return array(
+            array(json_encode(true))
+          , array('{"valid":"json", "invalid": "message"}')
+          , array('{"0": "fail", "hello": "world"}')
+        );
+    }
+
+    /**
+     * @dataProvider badFormatProvider
+     */
+    public function testValidJsonButInvalidProtocol($message) {
+        $this->setExpectedException('\UnexpectedValueException');
+
+        $conn = $this->newConn();
+        $this->_comp->onOpen($conn);
+        $this->_comp->onMessage($conn, $message);
+    }
 }
