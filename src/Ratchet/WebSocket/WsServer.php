@@ -199,19 +199,15 @@ class WsServer implements HttpServerInterface {
      * @return string
      */
     protected function getSubProtocolString(\Traversable $requested = null) {
-        if (null === $requested) {
-            return '';
-        }
-
-        $result = array();
-
-        foreach ($requested as $sub) {
-            if ($this->isSubProtocolSupported($sub)) {
-                $result[] = $sub;
+        if (null !== $requested) {
+            foreach ($requested as $sub) {
+                if ($this->isSubProtocolSupported($sub)) {
+                    return $sub;
+                }
             }
         }
 
-        return implode(',', $result);
+        return '';
     }
 
     /**

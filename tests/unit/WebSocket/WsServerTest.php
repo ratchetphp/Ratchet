@@ -27,10 +27,11 @@ class WsServerTest extends \PHPUnit_Framework_TestCase {
 
     public function protocolProvider() {
         return array(
-            array('hello,world', array('hello', 'world'), array('hello', 'world'))
+            array('hello', array('hello', 'world'), array('hello', 'world'))
           , array('', array('hello', 'world'), array('wamp'))
           , array('', array(), null)
           , array('wamp', array('hello', 'wamp', 'world'), array('herp', 'derp', 'wamp'))
+          , array('wamp', array('wamp'), array('wamp'))
         );
     }
 
