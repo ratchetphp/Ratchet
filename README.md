@@ -30,20 +30,21 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 
 ---
 
-###A quick server example
+###A quick example
 
 ```php
 <?php
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
+    // Make sure composer dependencies have been installed
     require __DIR__ . '/vendor/autoload.php';
 
 /**
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements MessageComponentInterface {
+class MyChat implements MessageComponentInterface {
     protected $clients;
 
     public function __construct() {
@@ -72,10 +73,17 @@ class Chat implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 8080
-    $app = new Ratchet\App('example.com', 8080);
-    $app->route('/chat', new Chat);
-    $app->route('/echo', new Ratchet\Server\EchoServer);
+    $app = new Ratchet\App('localhost', 8080);
+    $app->route('/chat', new MyChat);
+    $app->route('/echo', new Ratchet\Server\EchoServer, array(*));
     $app->run();
 ```
 
     $ php chat.php
+
+```javascript
+    // Then some JavaScript in the browser:
+    var conn = new WebSocket('ws://localhost/echo');
+    conn.onmessage = function(e) { console.log(e.data); };
+    conn.send('Hello Me!');
+```

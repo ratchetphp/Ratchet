@@ -97,10 +97,10 @@ class App {
 
         $httpHost = $httpHost ?: $this->httpHost;
 
+        $allowedOrigins = array_values($allowedOrigins);
         if (0 === count($allowedOrigins)) {
             $allowedOrigins[] = $httpHost;
         }
-        $allowedOrigins = array_values($allowedOrigins);
         if ('*' !== $allowedOrigins[0]) {
             $decorated = new OriginCheck($decorated, $allowedOrigins);
         }
