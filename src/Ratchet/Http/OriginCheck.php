@@ -5,6 +5,11 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Guzzle\Http\Message\Response;
 
+/**
+ * A middleware to ensure JavaScript clients connecting are from the expected domain.
+ * This protects other websites from open WebSocket connections to your application.
+ * Note: This can be spoofed from non-web browser clients
+ */
 class OriginCheck implements HttpServerInterface {
     /**
      * @var \Ratchet\MessageComponentInterface
@@ -13,6 +18,10 @@ class OriginCheck implements HttpServerInterface {
 
     public $allowedOrigins = array();
 
+    /**
+     * @param MessageComponentInterface $component Component/Application to decorate
+     * @param array                     $allowed An array of allowed domains that are allowed to connect from
+     */
     public function __construct(MessageComponentInterface $component, array $allowed = array()) {
         $this->_component = $component;
         $this->allowedOrigins += $allowed;
