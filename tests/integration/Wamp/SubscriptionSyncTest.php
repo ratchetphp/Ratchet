@@ -4,38 +4,70 @@ use Ratchet\Wamp\WampServer;
 use Ratchet\ConnectionInterface;
 
 class SubscriptionSyncTest extends \PHPUnit_Framework_TestCase {
-    public function testRemoveFromTopicRemovesFromManager() {
-        $conn  = $this->getMock('Ratchet\ConnectionInterface');
-        $app   = $this->getMock('Ratchet\Wamp\WampServerInterface');
+    protected $_conn;
+    protected $_app;
+    protected $_wamp;
 
-        $wamp = new WampServer($app);
-        $wamp->onOpen($conn);
+    protected $_tmPropRef;
+    protected $_topicManager;
 
-        $wampRef = new \ReflectionClass($wamp);
+    public function setUp() {
+        $this->_conn  = $this->getMock('Ratchet\ConnectionInterface');
+        $this->_app   = $this->getMock('Ratchet\Wamp\WampServerInterface');
+
+        $this->_wamp = new WampServer($this->_app);
+        $this->_wamp->onOpen($this->_conn);
+
+        $wampRef = new \ReflectionClass($this->_wamp);
         $protoPropRef= $wampRef->getProperty('wampProtocol');
         $protoPropRef->setAccessible(true);
-        $proto = $protoPropRef->getValue($wamp);
+        $proto = $protoPropRef->getValue($this->_wamp);
         $protoRef = new \ReflectionClass($proto);
-        $tmPropRef = $protoRef->getProperty('_decorating');
-        $tmPropRef->setAccessible(true);
-        $topicManager = $tmPropRef->getValue($proto);
-        $tmRef = new \ReflectionClass($topicManager);
-        $tmPropRef = $tmRef->getProperty('topicLookup');
-        $tmPropRef->setAccessible(true);
+        $this->_tmPropRef = $protoRef->getProperty('_decorating');
+        $this->_tmPropRef->setAccessible(true);
+        $this->_topicManager = $this->_tmPropRef->getValue($proto);
+        $tmRef = new \ReflectionClass($this->_topicManager);
+        $this->_tmPropRef = $tmRef->getProperty('topicLookup');
+        $this->_tmPropRef->setAccessible(true);
 
-        $wamp->onMessage($conn, json_encode(array('5', 'topic1')));
-        $wamp->onMessage($conn, json_encode(array('5', 'topic2')));
+        $this->_wamp->onMessage($this->_conn, json_encode(array('5', 'topic1')));
+        $this->_wamp->onMessage($this->_conn, json_encode(array('5', 'topic2')));
+    }
 
-        $self = $this;
-        $app->expects($this->any())->method('onSubscribe')->will($this->returnCallback(
+    public function testRemoveFromTopicRemovesFromManager() {
+        $self         = $this;
+        $tmPropRef    = $this->_tmPropRef;
+        $topicManager = $this->_topicManager;
+
+        $this->_app->expects($this->any())->method('onSubscribe')->will($this->returnCallback(
             function(ConnectionInterface $conn, $topic) use ($self, $tmPropRef, $topicManager) {
                 $topic->remove($conn);
 
+
                 $topics = $tmPropRef->getValue($topicManager);
                 $self->assertEquals(2, count($topics));
+
             }
         ));
 
-        $wamp->onMessage($conn, json_encode(array('5', 'testTopic')));
+        $this->_wamp->onMessage($this->_conn, json_encode(array('5', 'testTopic')));
+    }
+
+    public function testRemoveFromConnectionRemovesFromManager() {
+        $self         = $this;
+        $tmPropRef    = $this->_tmPropRef;
+        $topicManager = $this->_topicManager;
+
+        $this->_app->expects($this->any())->method('onSubscribe')->will($this->returnCallback(
+            function(ConnectionInterface $conn, $topic) use ($self, $tmPropRef, $topicManager) {
+                $conn->WAMP->subscriptions->detach($topic);
+
+                $topics = $tmPropRef->getValue($topicManager);
+                $self->assertEquals(2, count($topics));
+
+            }
+        ));
+
+        $this->_wamp->onMessage($this->_conn, json_encode(array('5', 'testTopic')));
     }
 }
