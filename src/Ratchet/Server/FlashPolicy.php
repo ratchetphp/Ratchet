@@ -108,6 +108,7 @@ class FlashPolicy implements MessageComponentInterface {
         }
 
         $from->send($this->_cache . "\0");
+        $from->close();
     }
 
     /**
