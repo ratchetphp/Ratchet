@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.2.8 (2013-09-19)
+
+ * React 0.3 support
+
 * 0.2.7 (2013-06-09)
 
  * BF: Sub-protocol negotation with Guzzle 3.6
