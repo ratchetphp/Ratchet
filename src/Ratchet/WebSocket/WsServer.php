@@ -150,7 +150,9 @@ class WsServer implements HttpServerInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($conn->WebSocket->established) {
-            $this->component->onError($this->connections[$conn], $e);
+            if ($this->connections->contains($conn)) {
+                $this->component->onError($this->connections[$conn], $e);
+            }
         } else {
             $conn->close();
         }
