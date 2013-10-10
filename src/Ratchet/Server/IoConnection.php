@@ -24,7 +24,7 @@ class IoConnection implements ConnectionInterface {
      * {@inheritdoc}
      */
     public function send($data) {
-        $this->conn->write($data);
+        $this->conn->write((string) $data);
 
         return $this;
     }

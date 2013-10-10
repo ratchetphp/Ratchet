@@ -118,7 +118,7 @@ class WsServer implements HttpServerInterface {
         }
 
         $response->setHeader('X-Powered-By', \Ratchet\VERSION);
-        $conn->send((string)$response);
+        $conn->send($response);
 
         if (101 != $response->getStatusCode()) {
             return $conn->close();
@@ -223,7 +223,7 @@ class WsServer implements HttpServerInterface {
           , 'X-Powered-By'          => \Ratchet\VERSION
         ));
 
-        $conn->send((string)$response);
+        $conn->send($response);
         $conn->close();
     }
 }

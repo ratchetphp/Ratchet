@@ -13,7 +13,7 @@ class Connection extends AbstractConnectionDecorator {
             $msg = new Frame($msg);
         }
 
-        $this->getConnection()->send($msg->getContents());
+        $this->getConnection()->send($msg);
 
         return $this;
     }
