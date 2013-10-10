@@ -27,6 +27,7 @@
         "php": ">=5.3.9"
       , "react/socket": "0.3.*"
       , "guzzle/http": ">=3.6.0,<3.8.0-dev"
+      , "guzzle/plugin": ">=3.6.0,<3.8.0-dev"
       , "symfony/http-foundation": "~2.2"
       , "symfony/routing": "~2.2"
     }
