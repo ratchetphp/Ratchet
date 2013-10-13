@@ -4,6 +4,23 @@ use Guzzle\Http\Message\RequestFactory as GuzzleRequestFactory;
 use Guzzle\Http\EntityBody;
 
 class RequestFactory extends GuzzleRequestFactory {
+
+    protected static $ratchetInstance;
+    
+    /**
+     * {@inheritdoc}
+     */
+    public static function getInstance()
+    {
+        // @codeCoverageIgnoreStart
+        if (!static::$ratchetInstance) {
+            static::$ratchetInstance = new static();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return static::$ratchetInstance;
+    }
+		
     /**
      * {@inheritdoc}
      */
