@@ -14,7 +14,6 @@ CHANGELOG
  * BC: Require hostname to do HTTP Host header match and do Origin HTTP header check, verify same name by default, helping prevent CSRF attacks
  * Added Symfony/2.2 based HTTP Router component to allowing for a single Ratchet server to handle multiple apps -> Ratchet\Http\Router
  * BC: Decoupled HTTP from WebSocket component -> Ratchet\Http\HttpServer
- * Updated dependency to React/0.3
  * BF: Single sub-protocol selection to conform with RFC6455
  * BF: Sanity checks on WAMP protocol to prevent errors
 
@@ -95,9 +94,4 @@ CHANGELOG
 * 0.1 (2012-05-11)
 
  * First release with components: IoServer, WsServer, SessionProvider, WampServer, FlashPolicy, IpBlackList
-<<<<<<< HEAD
  * I/O now handled by React, making Ratchet fully asynchronous
-
-=======
- * I/O now handled by React, making Ratchet fully asynchronous 
->>>>>>> refs/heads/master

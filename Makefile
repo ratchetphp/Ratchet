@@ -30,5 +30,5 @@ apidocs:
 		-s vendor/react \
 		-s vendor/guzzle \
 		-s vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Session \
-		-s vendor/symfony/http-foundation/Symfony/Component/Routing \
+		-s vendor/symfony/routing/Symfony/Component/Routing \
 		-s vendor/evenement/evenement/src/Evenement
