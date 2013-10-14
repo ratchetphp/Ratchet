@@ -6,7 +6,7 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
 
 /**
  * A ConnectionInterface object wrapper that is passed to your WAMP application
- * representing a client. Methods on this Connection are therefore different. 
+ * representing a client. Methods on this Connection are therefore different.
  * @property \stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {
@@ -96,7 +96,7 @@ class WampConnection extends AbstractConnectionDecorator {
     /**
      * {@inheritdoc}
      */
-    public function close() {
-        $this->getConnection()->close();
+    public function close($opt = null) {
+        $this->getConnection()->close($opt);
     }
 }

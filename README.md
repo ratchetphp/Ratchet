@@ -3,22 +3,22 @@
 [![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png?branch=master)](http://travis-ci.org/cboden/Ratchet)
 
 A PHP 5.3 library for asynchronously serving WebSockets.
-Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components. 
+Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 27, Firefox 6 - 21, Safari 5.0.1 - 6, iOS 4.2 - 6
+* Tested on Chrome 13 - 30, Firefox 6 - 24, Safari 5.0.1 - 6, iOS 4.2 - 7
 * Ratchet [passes](http://socketo.me/reports/ab/) the [Autobahn Testsuite](http://autobahn.ws/testsuite) (non-binary messages)
 
 ##Requirements
 
 Shell access is required and root access is recommended.
-To avoid proxy/firewall blockage it's recommended WebSockets are requested on port 80, which requires root access.
+To avoid proxy/firewall blockage it's recommended WebSockets are requested on port 80 or 443 (SSL), which requires root access.
 In order to do this, along with your sync web stack, you can either use a reverse proxy or two separate machines.
 You can find more details in the [server conf docs](http://socketo.me/docs/deploy#serverconfiguration).
 
-PHP 5.3.3 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements.
+PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements.
 
 ### Documentation
 
@@ -30,22 +30,21 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 
 ---
 
-###A quick server example
+###A quick example
 
 ```php
 <?php
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\Server\IoServer;
-use Ratchet\WebSocket\WsServer;
 
+    // Make sure composer dependencies have been installed
     require __DIR__ . '/vendor/autoload.php';
 
 /**
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class Chat implements MessageComponentInterface {
+class MyChat implements MessageComponentInterface {
     protected $clients;
 
     public function __construct() {
@@ -74,8 +73,17 @@ class Chat implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 8080
-    $server = IoServer::factory(new WsServer(new Chat), 8080);
-    $server->run();
+    $app = new Ratchet\App('localhost', 8080);
+    $app->route('/chat', new MyChat);
+    $app->route('/echo', new Ratchet\Server\EchoServer, array(*));
+    $app->run();
 ```
 
     $ php chat.php
+
+```javascript
+    // Then some JavaScript in the browser:
+    var conn = new WebSocket('ws://localhost:8080/echo');
+    conn.onmessage = function(e) { console.log(e.data); };
+    conn.send('Hello Me!');
+```

@@ -42,7 +42,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
-     * @throws \RuntimeExcpetion
+     * @throws \RuntimeException
      */
     public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;
@@ -71,7 +71,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
      * {@inheritdoc}
      */
     function onOpen(ConnectionInterface $conn) {
-        if (null === ($id = $conn->WebSocket->request->getCookie(ini_get('session.name')))) {
+        if (!isset($conn->WebSocket) || null === ($id = $conn->WebSocket->request->getCookie(ini_get('session.name')))) {
             $saveHandler = $this->_null;
             $id = '';
         } else {
