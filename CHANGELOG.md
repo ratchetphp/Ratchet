@@ -8,7 +8,7 @@ CHANGELOG
 
 ---
 
-* 0.3.0 (2013-xx-xx)
+* 0.3.0 (2013-10-14)
 
  * Added the `App` class to help making Ratchet so easy to use it's silly
  * BC: Require hostname to do HTTP Host header match and do Origin HTTP header check, verify same name by default, helping prevent CSRF attacks
