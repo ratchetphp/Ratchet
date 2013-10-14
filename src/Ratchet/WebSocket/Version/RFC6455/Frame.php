@@ -447,4 +447,12 @@ class Frame implements FrameInterface {
 
         return '';
     }
+
+    /**
+     * To string
+     * @return string
+     */
+    public function __toString() {
+        return $this->getContents();
+    }
 }

@@ -73,7 +73,7 @@ class OriginCheck implements HttpServerInterface {
             'X-Powered-By' => \Ratchet\VERSION
         ));
 
-        $conn->send((string)$response);
+        $conn->send($response);
         $conn->close();
     }
 }
