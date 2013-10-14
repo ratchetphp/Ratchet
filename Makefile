@@ -8,23 +8,21 @@ cover:
 	phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php 8002 &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php 8001 &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libev.php 8004 &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-libuv.php 8005 &
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-noutf8.php 8003 &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-libevent.php 8001 &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-stream.php 8002 &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-noutf8.php 8003 &
 	wstest -m testeeserver -w ws://localhost:8000 &
-	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-all.json
+	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-all.json
 	killall php wstest
 
 abtest:
-	ulimit -n 2048 && php tests/AutobahnTestSuite/bin/fuzzingserver-stream.php &
-	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-quick.json
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-stream.php &
+	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-quick.json
 	killall php
 
 profile:
-	php -d 'xdebug.profiler_enable=1' tests/AutobahnTestSuite/bin/fuzzingserver-libevent.php &
-	wstest -m fuzzingclient -s tests/AutobahnTestSuite/fuzzingclient-profile.json
+	php -d 'xdebug.profiler_enable=1' tests/autobahn/bin/fuzzingserver-libevent.php &
+	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-profile.json
 	killall php
 
 apidocs:
@@ -32,4 +30,5 @@ apidocs:
 		-s vendor/react \
 		-s vendor/guzzle \
 		-s vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Session \
+		-s vendor/symfony/routing/Symfony/Component/Routing \
 		-s vendor/evenement/evenement/src/Evenement

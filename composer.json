@@ -20,14 +20,14 @@
     }
   , "autoload": {
         "psr-0": {
-            "Ratchet": "src",
-            "Ratchet\\Tests": "tests"
+            "Ratchet": "src"
         }
     }
   , "require": {
-        "php": ">=5.3.3"
-      , "react/socket": ">=0.2.0,<0.4.0-dev"
+        "php": ">=5.3.9"
+      , "react/socket": "0.3.*"
       , "guzzle/http": ">=3.6.0,<3.8.0-dev"
-      , "symfony/http-foundation": "~2.1"
+      , "symfony/http-foundation": "~2.2"
+      , "symfony/routing": "~2.2"
     }
 }

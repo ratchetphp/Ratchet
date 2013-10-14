@@ -6,7 +6,7 @@ use Ratchet\ConnectionInterface;
 
 /**
  * WebSocket Application Messaging Protocol
- * 
+ *
  * @link http://wamp.ws/spec
  * @link https://github.com/oberstet/AutobahnJS
  *
@@ -87,6 +87,10 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
         if (null === ($json = @json_decode($msg, true))) {
             throw new JsonException;
+        }
+
+        if (!is_array($json) || $json !== array_values($json)) {
+            throw new \UnexpectedValueException("Invalid WAMP message format");
         }
 
         switch ($json[0]) {

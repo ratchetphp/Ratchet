@@ -1,0 +1,15 @@
+{
+    "options": {"failByDrop": false}
+  , "outdir": "reports/ab"
+
+  , "servers": [
+        {"agent": "Ratchet/0.3 libevent", "url": "ws://localhost:8001", "options": {"version": 18}}
+      , {"agent": "Ratchet/0.3 streams", "url": "ws://localhost:8002", "options": {"version": 18}}
+      , {"agent": "Ratchet/0.3 -utf8", "url": "ws://localhost:8003", "options": {"version": 18}}
+      , {"agent": "AutobahnTestSuite/0.5.9", "url": "ws://localhost:8000", "options": {"version": 18}}
+    ]
+
+  , "cases": ["*"]
+  , "exclude-cases": ["1.2.*", "2.3", "2.4", "2.6", "9.2.*", "9.4.*", "9.6.*", "9.8.*"]
+  , "exclude-agent-cases": {}
+}
