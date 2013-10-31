@@ -93,7 +93,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
      * {@inheritdoc}
      */
     public function getSubProtocols() {
-        if ($this->app instanceof WsServerInterface) {
+        if ($this->app instanceof WampServerInterface) {
             return $this->app->getSubProtocols();
         }
 
