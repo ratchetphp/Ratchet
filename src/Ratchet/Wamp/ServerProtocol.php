@@ -57,7 +57,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
      * {@inheritdoc}
      */
     public function getSubProtocols() {
-        if ($this->_decorating instanceof WsServerInterface) {
+        if ($this->_decorating instanceof WsServerInterface || $this->_decorating instanceof TopicManager) {
             $subs   = $this->_decorating->getSubProtocols();
             $subs[] = 'wamp';
 
