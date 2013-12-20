@@ -61,8 +61,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
      * I think I have severely butchered this test...it's not so much of a unit test as it is a full-fledged component test
      */
     public function testConnectionValueFromPdo() {
-        if (!extension_loaded('PDO')) {
-            return $this->markTestSkipped('Session test requires PDO');
+        if (!extension_loaded('PDO') || !extension_loaded('pdo_sqlite')) {
+            return $this->markTestSkipped('Session test requires PDO and pdo_sqlite');
         }
 
         $sessionId = md5('testSession');
