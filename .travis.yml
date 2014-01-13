@@ -4,7 +4,11 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: hhvm
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev --prefer-source
+  - composer install --dev --prefer-source
