@@ -8,20 +8,21 @@ cover:
 	phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:
-	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-libevent.php 8001 &
-	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-stream.php 8002 &
-	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-noutf8.php 8003 &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8001 LibEvent &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8002 StreamSelect &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-noutf8.php 8003 StreamSelect &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8004 LibEv &
 	wstest -m testeeserver -w ws://localhost:8000 &
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-all.json
 	killall php wstest
 
 abtest:
-	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-stream.php &
+	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8000 StreamSelect &
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-quick.json
 	killall php
 
 profile:
-	php -d 'xdebug.profiler_enable=1' tests/autobahn/bin/fuzzingserver-libevent.php &
+	php -d 'xdebug.profiler_enable=1' tests/autobahn/bin/fuzzingserver.php 8000 LibEvent &
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-profile.json
 	killall php
 

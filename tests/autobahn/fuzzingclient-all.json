@@ -4,6 +4,7 @@
 
   , "servers": [
         {"agent": "Ratchet/0.3 libevent", "url": "ws://localhost:8001", "options": {"version": 18}}
+      , {"agent": "Ratchet/0.3 libev", "url": "ws://localhost:8004", "options": {"version": 18}}
       , {"agent": "Ratchet/0.3 streams", "url": "ws://localhost:8002", "options": {"version": 18}}
       , {"agent": "Ratchet/0.3 -utf8", "url": "ws://localhost:8003", "options": {"version": 18}}
       , {"agent": "AutobahnTestSuite/0.5.9", "url": "ws://localhost:8000", "options": {"version": 18}}
