@@ -59,6 +59,10 @@ class App {
             trigger_error("XDebug extension detected. Remember to disable this if performance testing or going live!", E_USER_WARNING);
         }
 
+        if (3 !== strlen('✓')) {
+            throw new \DomainException('Bad encoding, length of unicode character ✓ should be 3. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
+        }
+
         if (null === $loop) {
             $loop = LoopFactory::create();
         }
