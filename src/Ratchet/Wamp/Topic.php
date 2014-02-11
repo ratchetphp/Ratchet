@@ -32,10 +32,21 @@ class Topic implements \IteratorAggregate, \Countable {
     /**
       * Send a message to all the connections in this topic
       * @param string $msg
+      * @param array $exclude
+      * @param array $eligible
       * @return Topic
       */
-    public function broadcast($msg) {
+    public function broadcast($msg, array $exclude = array(), array $eligible = array()) {
+        $useEligible = count($eligible);
         foreach ($this->subscribers as $client) {
+            if(in_array($client->WAMP->sessionId, $exclude)) {
+                continue;
+            }
+
+            if($useEligible && !in_array($client->WAMP->sessionId, $eligible)) {
+                continue;
+            }
+
             $client->event($this->id, $msg);
         }
 

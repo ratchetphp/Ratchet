@@ -99,4 +99,5 @@ class WampConnection extends AbstractConnectionDecorator {
     public function close($opt = null) {
         $this->getConnection()->close($opt);
     }
+
 }
