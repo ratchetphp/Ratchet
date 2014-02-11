@@ -57,7 +57,7 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         $topic->add($first);
         $topic->add($second);
 
-        $topic->broadcast($msg, array(), array());
+        $topic->broadcast($msg);
     }
 
     public function testIterator() {

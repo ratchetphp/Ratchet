@@ -100,10 +100,4 @@ class WampConnection extends AbstractConnectionDecorator {
         $this->getConnection()->close($opt);
     }
 
-	/**
-	 * Get session ID
-	 */
-	public function getSessionId() {
-		return $this->WAMP->sessionId;
-	}
 }
