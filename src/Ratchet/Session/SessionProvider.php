@@ -2,7 +2,8 @@
 namespace Ratchet\Session;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\WebSocket\WsServerInterface;
+use Ratchet\Http\HttpServerInterface;
+use Guzzle\Http\Message\RequestInterface;
 use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  * Your website must also use Symfony HttpFoundation Sessions to read your sites session data
  * If your are not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer)
  */
-class SessionProvider implements MessageComponentInterface, WsServerInterface {
+class SessionProvider implements HttpServerInterface {
     /**
      * @var \Ratchet\MessageComponentInterface
      */
@@ -76,8 +77,8 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onOpen(ConnectionInterface $conn) {
-        if (!isset($conn->WebSocket) || null === ($id = $conn->WebSocket->request->getCookie(ini_get('session.name')))) {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+        if (null === $request || null === ($id = $request->getCookie(ini_get('session.name')))) {
             $saveHandler = $this->_null;
             $id = '';
         } else {
@@ -114,17 +115,6 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
      */
     function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubProtocols() {
-        if ($this->_app instanceof WsServerInterface) {
-            return $this->_app->getSubProtocols();
-        } else {
-            return array();
-        }
     }
 
     /**

@@ -1,11 +1,9 @@
 <?php
 namespace Ratchet\Session;
 use Ratchet\AbstractMessageComponentTestCase;
-use Ratchet\Session\SessionProvider;
 use Ratchet\Mock\MemorySessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
-use Guzzle\Http\Message\Request;
 
 /**
  * @covers Ratchet\Session\SessionProvider
@@ -85,10 +83,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue($sessionId));
 
-        $connection->WebSocket          = new \StdClass;
-        $connection->WebSocket->request = $headers;
-
-        $component->onOpen($connection);
+        $component->onOpen($connection, $headers);
 
         $this->assertEquals('world', $connection->Session->get('hello'));
     }
@@ -99,9 +94,6 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
-        $conn->WebSocket          = new \StdClass;
-        $conn->WebSocket->request = $headers;
-
         return $conn;
     }
 
@@ -109,21 +101,6 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $message = "Database calls are usually blocking  :(";
         $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $message);
         $this->_serv->onMessage($this->_conn, $message);
-    }
-
-    public function testGetSubProtocolsReturnsArray() {
-        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
-        $comp = new SessionProvider($mock, new NullSessionHandler);
-
-        $this->assertInternalType('array', $comp->getSubProtocols());
-    }
-
-    public function testGetSubProtocolsGetFromApp() {
-        $mock = $this->getMock('Ratchet\WebSocket\Stub\WsMessageComponentInterface');
-        $mock->expects($this->once())->method('getSubProtocols')->will($this->returnValue(array('hello', 'world')));
-        $comp = new SessionProvider($mock, new NullSessionHandler);
-
-        $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
     }
 
     public function testRejectInvalidSeralizers() {
