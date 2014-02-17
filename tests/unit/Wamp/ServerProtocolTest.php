@@ -1,7 +1,5 @@
 <?php
 namespace Ratchet\Wamp;
-use Ratchet\Wamp\ServerProtocol;
-use Ratchet\Wamp\WampConnection;
 use Ratchet\Mock\Connection;
 use Ratchet\Mock\WampComponent as TestComponent;
 
