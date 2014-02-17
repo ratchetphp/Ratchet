@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Wamp;
-use Ratchet\Wamp\WampConnection;
 
 /**
  * @covers Ratchet\Wamp\WampConnection
@@ -30,6 +29,15 @@ class WampConnectionTest extends \PHPUnit_Framework_TestCase {
         $this->mock->expects($this->once())->method('send')->with(json_encode(array(4, $callId, $uri, '')));
 
         $this->conn->callError($callId, $uri);
+    }
+
+    public function testCallErrorWithTopic() {
+        $callId = uniqid();
+        $uri    = 'http://example.com/end/point';
+
+        $this->mock->expects($this->once())->method('send')->with(json_encode(array(4, $callId, $uri, '')));
+
+        $this->conn->callError($callId, new Topic($uri));
     }
 
     public function testDetailedCallError() {

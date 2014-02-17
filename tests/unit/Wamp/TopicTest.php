@@ -1,7 +1,5 @@
 <?php
 namespace Ratchet\Wamp;
-use Ratchet\Wamp\Topic;
-use Ratchet\Wamp\WampConnection;
 
 /**
  * @covers Ratchet\Wamp\Topic
@@ -58,6 +56,60 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         $topic->add($second);
 
         $topic->broadcast($msg);
+    }
+
+    public function testBroadcastWithExclude() {
+        $msg  = 'Hello odd numbers';
+        $name = 'Excluding';
+        $protocol = json_encode(array(8, $name, $msg));
+
+        $first  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+        $second = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+        $third  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+
+        $first->expects($this->once())
+            ->method('send')
+            ->with($this->equalTo($protocol));
+
+        $second->expects($this->never())->method('send');
+
+        $third->expects($this->once())
+            ->method('send')
+            ->with($this->equalTo($protocol));
+
+        $topic = new Topic($name);
+        $topic->add($first);
+        $topic->add($second);
+        $topic->add($third);
+
+        $topic->broadcast($msg, array($second->WAMP->sessionId));
+    }
+
+    public function testBroadcastWithEligible() {
+        $msg  = 'Hello white list';
+        $name = 'Eligible';
+        $protocol = json_encode(array(8, $name, $msg));
+
+        $first  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+        $second = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+        $third  = $this->getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->getMock('\\Ratchet\\ConnectionInterface')));
+
+        $first->expects($this->once())
+            ->method('send')
+            ->with($this->equalTo($protocol));
+
+        $second->expects($this->never())->method('send');
+
+        $third->expects($this->once())
+            ->method('send')
+            ->with($this->equalTo($protocol));
+
+        $topic = new Topic($name);
+        $topic->add($first);
+        $topic->add($second);
+        $topic->add($third);
+
+        $topic->broadcast($msg, array(), array($first->WAMP->sessionId, $third->WAMP->sessionId));
     }
 
     public function testIterator() {
