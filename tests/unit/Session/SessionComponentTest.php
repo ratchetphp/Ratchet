@@ -33,7 +33,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     }
 
     public function getComponentClassString() {
-        return '\Ratchet\MessageComponentInterface';
+        return '\Ratchet\Http\HttpServerInterface';
     }
 
     public function classCaseProvider() {
@@ -51,7 +51,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
+        $component = new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
         $this->assertEquals($out, $method->invokeArgs($component, array($in)));
     }
 
@@ -77,7 +77,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $pdo->exec(vsprintf("CREATE TABLE %s (%s VARCHAR(255) PRIMARY KEY, %s TEXT, %s INTEGER)", $dbOptions));
         $pdo->prepare(vsprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", $dbOptions))->execute(array($sessionId, base64_encode('_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}'), time()));
 
-        $component  = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), new PdoSessionHandler($pdo, $dbOptions), array('auto_start' => 1));
+        $component  = new SessionProvider($this->getMock($this->getComponentClassString()), new PdoSessionHandler($pdo, $dbOptions), array('auto_start' => 1));
         $connection = $this->getMock('Ratchet\\ConnectionInterface');
 
         $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
@@ -110,6 +110,6 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
 
         ini_set('session.serialize_handler', 'wddx');
         $this->setExpectedException('\RuntimeException');
-        new SessionProvider($this->getMock('\Ratchet\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
+        new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
     }
 }

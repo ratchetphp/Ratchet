@@ -39,13 +39,13 @@ class SessionProvider implements HttpServerInterface {
     protected $_serializer;
 
     /**
-     * @param \Ratchet\MessageComponentInterface          $app
+     * @param \Ratchet\HttpServerInterface                $app
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      * @throws \RuntimeException
      */
-    public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
+    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
         $this->_app     = $app;
         $this->_handler = $handler;
         $this->_null    = new NullSessionHandler;
@@ -91,7 +91,7 @@ class SessionProvider implements HttpServerInterface {
             $conn->Session->start();
         }
 
-        return $this->_app->onOpen($conn);
+        return $this->_app->onOpen($conn, $request);
     }
 
     /**
