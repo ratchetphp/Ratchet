@@ -73,7 +73,7 @@ class App {
         $socket->listen($port, $address);
 
         $this->routes  = new RouteCollection;
-        $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
+        $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext), $this->routes)), $socket, $loop);
 
         $policy = new FlashPolicy;
         $policy->addAllowedAccess($httpHost, 80);

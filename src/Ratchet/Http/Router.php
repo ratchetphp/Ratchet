@@ -46,8 +46,24 @@ class Router implements HttpServerInterface {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
 
+        $conn->parameters = $this->extractParameters($route['_route'], $request);
         $conn->controller = $route['_controller'];
         $conn->controller->onOpen($conn, $request);
+    }
+
+    /**
+     * @param string                                $route
+     * @param \Guzzle\Http\Message\RequestInterface $request
+     *
+     * @return array
+     */
+    protected function extractParameters($route, RequestInterface $request) {
+        /** @var $routes Route[] */
+        $routes   = $this->routes->getIterator();
+        $compiled = $routes[$route]->compile();
+        preg_match($compiled->getRegex(), $request->getPath(), $matches);
+
+        return array_intersect_key($matches, array_flip($compiled->getVariables()));
     }
 
     /**
