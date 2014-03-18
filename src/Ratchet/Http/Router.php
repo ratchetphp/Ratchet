@@ -46,10 +46,10 @@ class Router implements HttpServerInterface {
         if (!($route['_controller'] instanceof HttpServerInterface)) {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
-        
+
         $parameters = array();
         foreach($route as $key => $value) {
-            if (!in_array($key, array('_controller', '_route'))) {
+            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
                 $parameters[$key] = $value;
             }
         }
