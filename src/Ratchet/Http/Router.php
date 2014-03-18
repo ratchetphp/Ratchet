@@ -15,8 +15,7 @@ class Router implements HttpServerInterface
      */
     protected $_matcher;
 
-    public function __construct(UrlMatcherInterface $matcher)
-    {
+    public function __construct(UrlMatcherInterface $matcher) {
         $this->_matcher = $matcher;
     }
 
@@ -24,8 +23,7 @@ class Router implements HttpServerInterface
      * {@inheritdoc}
      * @throws \UnexpectedValueException If a controller is not \Ratchet\Http\HttpServerInterface
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
-    {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
@@ -61,8 +59,7 @@ class Router implements HttpServerInterface
      *
      * @return array
      */
-    protected function extractParameters($route, RequestInterface $request)
-    {
+    protected function extractParameters($route, RequestInterface $request) {
         /** @var $routes Route[] */
         $routes   = $this->routes->getIterator();
         $compiled = $routes[$route]->compile();
@@ -74,16 +71,14 @@ class Router implements HttpServerInterface
     /**
      * {@inheritdoc}
      */
-    function onMessage(ConnectionInterface $from, $msg)
-    {
+    function onMessage(ConnectionInterface $from, $msg) {
         $from->controller->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onClose(ConnectionInterface $conn)
-    {
+    function onClose(ConnectionInterface $conn) {
         if (isset($conn->controller)) {
             $conn->controller->onClose($conn);
         }
@@ -92,8 +87,7 @@ class Router implements HttpServerInterface
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e)
-    {
+    function onError(ConnectionInterface $conn, \Exception $e) {
         if (isset($conn->controller)) {
             $conn->controller->onError($conn, $e);
         }
@@ -105,8 +99,7 @@ class Router implements HttpServerInterface
      * @param int                          $code HTTP status code
      * @return null
      */
-    protected function close(ConnectionInterface $conn, $code = 400)
-    {
+    protected function close(ConnectionInterface $conn, $code = 400) {
         $response = new Response($code, array(
             'X-Powered-By' => \Ratchet\VERSION
         ));
