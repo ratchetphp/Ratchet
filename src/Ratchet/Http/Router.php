@@ -1,15 +1,13 @@
 <?php
 namespace Ratchet\Http;
-
+use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
-use Ratchet\ConnectionInterface;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 
-class Router implements HttpServerInterface
-{
+class Router implements HttpServerInterface {
     /**
      * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
      */
