@@ -98,7 +98,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         );
         $conn = $this->getMock('Ratchet\Mock\Connection');
 
-        $request = $this->getMock('Guzzle\Http\Message\Request', array('getPath'), ['GET', 'ws://random.url'], '', false);
+        $request = $this->getMock('Guzzle\Http\Message\Request', array('getPath'), array('GET', 'ws://random.url'), '', false);
         $request->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
 
         $request->setHeaderFactory($this->getMock('Guzzle\Http\Message\Header\HeaderFactoryInterface'));
