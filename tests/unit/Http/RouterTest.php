@@ -1,7 +1,9 @@
 <?php
 namespace Ratchet\Http;
 use Ratchet\Http\Router;
+use Ratchet\WebSocket\WsServerInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 
 /**
  * @covers Ratchet\Http\Router
@@ -84,5 +86,28 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->_conn->controller = $controller;
 
         $this->_router->onError($this->_conn, $e);
+    }
+
+    public function testRouterGeneratesRouteParameters()
+    {
+        /** @var $controller WsServerInterface */
+        $controller = $this->getMockBuilder('\Ratchet\WebSocket\WsServer')->disableOriginalConstructor()->getMock();
+        /** @var $matcher UrlMatcherInterface */
+        $this->_matcher->expects($this->any())->method('match')->will(
+            $this->returnValue(array('_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'))
+        );
+        $conn = $this->getMock('Ratchet\Mock\Connection');
+
+        $request = $this->getMock('Guzzle\Http\Message\Request', array('getPath'), array('GET', 'ws://random.url'), '', false);
+        $request->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
+
+        $request->setHeaderFactory($this->getMock('Guzzle\Http\Message\Header\HeaderFactoryInterface'));
+        $request->setUrl('ws://doesnt.matter/');
+
+        $router = new Router($this->_matcher);
+
+        $router->onOpen($conn, $request);
+
+        $this->assertEquals(array('foo' => 'bar', 'baz' => 'qux'), $request->getQuery()->getAll());
     }
 }

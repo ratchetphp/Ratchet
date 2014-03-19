@@ -3,6 +3,7 @@ namespace Ratchet\Http;
 use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
+use Guzzle\Http\Url;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -45,6 +46,16 @@ class Router implements HttpServerInterface {
         if (!($route['_controller'] instanceof HttpServerInterface)) {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
+
+        $parameters = array();
+        foreach($route as $key => $value) {
+            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
+                $parameters[$key] = $value;
+            }
+        }
+        $url = Url::factory($request->getPath());
+        $url->setQuery($parameters);
+        $request->setUrl($url);
 
         $conn->controller = $route['_controller'];
         $conn->controller->onOpen($conn, $request);
