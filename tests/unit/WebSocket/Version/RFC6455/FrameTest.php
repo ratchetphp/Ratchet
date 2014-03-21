@@ -29,7 +29,7 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
 
             while (strlen($in) >= 8) {
                 $out .= static::encode(substr($in, 0, 8));
-                $in   = substr($in, 8); 
+                $in   = substr($in, 8);
             }
 
             return $out;

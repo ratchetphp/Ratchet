@@ -6,7 +6,7 @@ use Guzzle\Http\EntityBody;
 class RequestFactory extends GuzzleRequestFactory {
 
     protected static $ratchetInstance;
-    
+
     /**
      * {@inheritdoc}
      */
@@ -20,7 +20,7 @@ class RequestFactory extends GuzzleRequestFactory {
 
         return static::$ratchetInstance;
     }
-		
+
     /**
      * {@inheritdoc}
      */
