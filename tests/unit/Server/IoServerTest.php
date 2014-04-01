@@ -89,18 +89,18 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     public function testNoLoopProvidedError() {
         $this->setExpectedException('RuntimeException');
 
-        $io   = new IoServer($this->app, $this->reactor);
+        $io = new IoServer($this->app, $this->reactor);
         $io->run();
     }
 
     public function testOnErrorPassesException() {
         $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $conn->decor = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $decor = $this->getMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
-        $this->app->expects($this->once())->method('onError')->with($conn->decor, $err);
+        $this->app->expects($this->once())->method('onError')->with($decor, $err);
 
-        $this->server->handleError($err, $conn);
+        $this->server->handleError($err, $conn, $decor);
     }
 
     public function onErrorCalledWhenExceptionThrown() {

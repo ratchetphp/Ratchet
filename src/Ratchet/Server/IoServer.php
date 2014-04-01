@@ -22,12 +22,6 @@ class IoServer {
     public $app;
 
     /**
-     * Array of React event handlers
-     * @var \SplFixedArray
-     */
-    protected $handlers;
-
-    /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
      * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
      * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
@@ -44,11 +38,6 @@ class IoServer {
         $this->app  = $app;
 
         $socket->on('connection', array($this, 'handleConnect'));
-
-        $this->handlers = new \SplFixedArray(3);
-        $this->handlers[0] = array($this, 'handleData');
-        $this->handlers[1] = array($this, 'handleEnd');
-        $this->handlers[2] = array($this, 'handleError');
     }
 
     /**
@@ -84,26 +73,34 @@ class IoServer {
      * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn);
+        $decor = new IoConnection($conn);
 
-        $conn->decor->resourceId    = (int)$conn->stream;
-        $conn->decor->remoteAddress = $conn->getRemoteAddress();
+        $decor->resourceId    = (int)$conn->stream;
+        $decor->remoteAddress = $conn->getRemoteAddress();
 
-        $this->app->onOpen($conn->decor);
+        $this->app->onOpen($decor);
 
-        $conn->on('data', $this->handlers[0]);
-        $conn->on('end', $this->handlers[1]);
-        $conn->on('error', $this->handlers[2]);
+        $that = $this;
+        $conn->on('data', function($data, $conn) use ($that, $decor) {
+            $that->handleData($data, $conn, $decor);
+        });
+        $conn->on('end', function($conn) use ($that, $decor) {
+            $that->handleEnd($conn, $decor);
+        });
+        $conn->on('error', function(\Exception $e, $conn) use ($that, $decor) {
+            $that->handleError($e, $conn, $decor);
+        });
     }
 
     /**
      * Data has been received from React
      * @param string                            $data
      * @param \React\Socket\ConnectionInterface $conn
+     * @param IoConnection                      $decor
      */
-    public function handleData($data, $conn) {
+    public function handleData($data, $conn, $decor) {
         try {
-            $this->app->onMessage($conn->decor, $data);
+            $this->app->onMessage($decor, $data);
         } catch (\Exception $e) {
             $this->handleError($e, $conn);
         }
@@ -112,23 +109,23 @@ class IoServer {
     /**
      * A connection has been closed by React
      * @param \React\Socket\ConnectionInterface $conn
+     * @param IoConnection                      $decor
      */
-    public function handleEnd($conn) {
+    public function handleEnd($conn, $decor) {
         try {
-            $this->app->onClose($conn->decor);
+            $this->app->onClose($decor);
         } catch (\Exception $e) {
             $this->handleError($e, $conn);
         }
-
-        unset($conn->decor);
     }
 
     /**
      * An error has occurred, let the listening application know
      * @param \Exception                        $e
      * @param \React\Socket\ConnectionInterface $conn
+     * @param IoConnection                      $decor
      */
-    public function handleError(\Exception $e, $conn) {
-        $this->app->onError($conn->decor, $e);
+    public function handleError(\Exception $e, $conn, $decor) {
+        $this->app->onError($decor, $e);
     }
 }
