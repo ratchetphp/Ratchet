@@ -1,10 +1,9 @@
 {
-    "name": "cboden/Ratchet"
+    "name": "cboden/ratchet"
   , "type": "library"
   , "description": "PHP WebSocket library"
   , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
   , "homepage": "http://socketo.me"
-  , "repository": "https://github.com/cboden/Ratchet"
   , "license": "MIT"
   , "authors": [
         {
