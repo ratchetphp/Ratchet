@@ -49,15 +49,15 @@ class App {
     protected $_routeCounter = 0;
 
     /**
-     * @param string        $httpHost           HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost');`
-     * @param int           $port               Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
-     * @param string        $address            IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
-     * @param array         $flashAllowedHosts  associative array with ports as key and hostnames as value. These domains are the domains the fhlash websocket fallback may connect from
+     * @param string        $httpHost           HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost')
+     * @param int           $port               Port to listen on
+     * @param string        $address            IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine
+     * @param array         $flashAllowedHosts  associative array with hostnames as key and ports as value. These domains are the domains the flash websocket fallback may connect from
      * @param int           $flashPort          the port the flash cross-domain-policy file will be hosted on
-     * @param string        $flashHost          the host the flash cross-domain-policy file will be hosted on
+     * @param string        $flashAddress          the IP address the flash cross-domain-policy server will bind to
      * @param LoopInterface $loop     Specific React\EventLoop to bind the application to. null will create one for you.
      */
-    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', $flashAllowedHosts = false, $flashPort = 8843, $flashHost = '0.0.0.0', LoopInterface $loop = null) {
+    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', $flashAllowedHosts = false, $flashPort = 8843, $flashAddress = '0.0.0.0', LoopInterface $loop = null) {
         
         if (extension_loaded('xdebug')) {
             trigger_error("XDebug extension detected. Remember to disable this if performance testing or going live!", E_USER_WARNING);
@@ -85,14 +85,14 @@ class App {
         
         $policy = new FlashPolicy();
         
-        foreach ($flashAllowedHosts as $flashAllowedPort => $flashAllowedHost) {            
+        foreach ($flashAllowedHosts as $flashAllowedHost => $flashAllowedPort) {            
             $policy->addAllowedAccess($flashAllowedHost, $flashAllowedPort);
         }
         
         $flashSock = new Reactor($loop);
         
         $this->flashServer = new IoServer($policy, $flashSock);
-        $flashSock->listen($flashPort, $flashHost);
+        $flashSock->listen($flashPort, $flashAddress);
     }
 
     /**
