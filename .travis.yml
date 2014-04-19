@@ -11,4 +11,5 @@ matrix:
     - php: hhvm
 
 before_script:
+  - phpenv config-add tests/config.ini
   - composer install --dev --prefer-source
