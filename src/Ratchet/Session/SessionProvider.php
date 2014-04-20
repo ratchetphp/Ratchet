@@ -59,6 +59,7 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
             // Temporarily fixing HHVM issue w/ reading ini values
             $handler_name = ini_get('session.serialize_handler');
             if ('' === $handler_name) {
+                trigger_error('ini value session.seralize_handler was empty, assuming "php" - tmp hack/fix, bad things might happen', E_USER_WARNING);
                 $handler_name = 'php';
             }
 

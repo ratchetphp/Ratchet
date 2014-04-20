@@ -56,7 +56,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
         // get the data from the bags?
         // serialize the data
         // save the data using the saveHandler
-//        $this->saveHandler->write($this->saveHandler->getId(), 
+//        $this->saveHandler->write($this->saveHandler->getId(),
 
         if (!$this->saveHandler->isWrapper() && !$this->getSaveHandler()->isSessionHandlerInterface()) {
             $this->saveHandler->setActive(false);
