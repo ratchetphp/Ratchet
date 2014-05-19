@@ -80,7 +80,7 @@ class App {
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
 
         if ($flashAllowedHosts === false) {
-            $flashAllowedHosts = [ 80 => $httpHost ];
+            $flashAllowedHosts = array( 80 => $httpHost );
         }
         
         $policy = new FlashPolicy();
