@@ -54,8 +54,8 @@ class App {
      * @param string        $address            IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine
      * @param array         $flashAllowedHosts  associative array with hostnames as key and ports as value. These domains are the domains the flash websocket fallback may connect from
      * @param int           $flashPort          the port the flash cross-domain-policy file will be hosted on
-     * @param string        $flashAddress          the IP address the flash cross-domain-policy server will bind to
-     * @param LoopInterface $loop     Specific React\EventLoop to bind the application to. null will create one for you.
+     * @param string        $flashAddress       the IP address the flash cross-domain-policy server will bind to
+     * @param LoopInterface $loop               Specific React\EventLoop to bind the application to. null will create one for you.
      */
     public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', $flashAllowedHosts = false, $flashPort = 8843, $flashAddress = '0.0.0.0', LoopInterface $loop = null) {
         
