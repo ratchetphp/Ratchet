@@ -118,7 +118,9 @@ class App {
             $decorated = $controller;
         }
 
-        $httpHost = $httpHost ?: $this->httpHost;
+        if ($httpHost === null) {
+            $httpHost = $this->httpHost;
+        }
 
         $allowedOrigins = array_values($allowedOrigins);
         if (0 === count($allowedOrigins)) {
