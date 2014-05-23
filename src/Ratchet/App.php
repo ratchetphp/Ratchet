@@ -91,12 +91,21 @@ class App {
     }
     
     /**
-     * Returns the FlashPolicy running in the FlashServer. Modifications of this object take effect immediately!
+     * Returns the FlashPolicy running in the flash server. Modifications of this object take effect immediately!
      * 
      * @return FlashPolicy
      */
     public function getFlashPolicy() {
         return $this->flashServer->getApp();
+    }
+    
+    /**
+     * Returns the FlashSocket of the flash server.
+     * 
+     * @return \React\Socket\ServerInterface
+     */
+    public function getFlashSocket() {
+        return $this->flashServer->getSocket();
     }
 
     /**
