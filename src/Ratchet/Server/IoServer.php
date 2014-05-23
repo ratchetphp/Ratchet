@@ -1,5 +1,7 @@
 <?php
+
 namespace Ratchet\Server;
+
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
@@ -26,6 +28,12 @@ class IoServer {
      * @var \SplFixedArray
      */
     protected $handlers;
+    
+    /**
+     * The socket server the Ratchet Application is run off of
+     * @var \React\Socket\ServerInterface
+     */
+    protected $socket;
 
     /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
@@ -42,6 +50,7 @@ class IoServer {
 
         $this->loop = $loop;
         $this->app  = $app;
+        $this->socket = $socket;
 
         $socket->on('connection', array($this, 'handleConnect'));
 
@@ -49,6 +58,24 @@ class IoServer {
         $this->handlers[0] = array($this, 'handleData');
         $this->handlers[1] = array($this, 'handleEnd');
         $this->handlers[2] = array($this, 'handleError');
+    }
+    
+    /**
+     * Returns the Ratchet App
+     * 
+     * @return \Ratchet\MessageComponentInterface
+     */
+    public function getApp() {
+        return $this->app;
+    }
+    
+    /**
+     * Returns the Socket
+     * 
+     * @return \React\Socket\ServerInterface
+     */
+    public function getSocket() {
+        return $this->socket;
     }
 
     /**
