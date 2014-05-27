@@ -8,6 +8,15 @@ CHANGELOG
 
 ---
 
+* 0.3.1 (2014-05-26)
+
+ * Added query parameter support to Router, set in HTTP request (ws://server?hello=world)
+ * HHVM compatibility
+ * BF: React/0.4 support; CPU starvation bug fixes
+ * BF: Allow App::route to ignore Host header
+ * Added expected filters to WAMP Topic broadcast method
+ * Resource cleanup in WAMP TopicManager
+
 * 0.3.0 (2013-10-14)
 
  * Added the `App` class to help making Ratchet so easy to use it's silly

@@ -9,7 +9,7 @@ Build up your application through simple interfaces and re-use your application 
 ##WebSocket Compliance
 
 * Supports the RFC6455, HyBi-10+, and Hixie76 protocol versions (at the same time)
-* Tested on Chrome 13 - 31, Firefox 6 - 26, Safari 5.0.1 - 6.1, iOS 4.2 - 7
+* Tested on Chrome 13+, Firefox 6+, Safari 5+, iOS 4.2+, IE 8+
 * Ratchet [passes](http://socketo.me/reports/ab/) the [Autobahn Testsuite](http://autobahn.ws/testsuite) (non-binary messages)
 
 ##Requirements
@@ -19,7 +19,7 @@ To avoid proxy/firewall blockage it's recommended WebSockets are requested on po
 In order to do this, along with your sync web stack, you can either use a reverse proxy or two separate machines.
 You can find more details in the [server conf docs](http://socketo.me/docs/deploy#serverconfiguration).
 
-PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 is *highly* recommended for its performance improvements.
+PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 (or higher) is *highly* recommended for its performance improvements.
 
 ### Documentation
 
