@@ -33,7 +33,7 @@ class IoServer {
      * The socket server the Ratchet Application is run off of
      * @var \React\Socket\ServerInterface
      */
-    protected $socket;
+    public $socket;
 
     /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
@@ -58,24 +58,6 @@ class IoServer {
         $this->handlers[0] = array($this, 'handleData');
         $this->handlers[1] = array($this, 'handleEnd');
         $this->handlers[2] = array($this, 'handleError');
-    }
-    
-    /**
-     * Returns the Ratchet App
-     * 
-     * @return \Ratchet\MessageComponentInterface
-     */
-    public function getApp() {
-        return $this->app;
-    }
-    
-    /**
-     * Returns the Socket
-     * 
-     * @return \React\Socket\ServerInterface
-     */
-    public function getSocket() {
-        return $this->socket;
     }
 
     /**
