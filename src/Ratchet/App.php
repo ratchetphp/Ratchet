@@ -96,7 +96,7 @@ class App {
      * @return FlashPolicy
      */
     public function getFlashPolicy() {
-        return $this->flashServer->getApp();
+        return $this->flashServer->app;
     }
     
     /**
@@ -105,7 +105,7 @@ class App {
      * @return \React\Socket\ServerInterface
      */
     public function getFlashSocket() {
-        return $this->flashServer->getSocket();
+        return $this->flashServer->socket;
     }
 
     /**
