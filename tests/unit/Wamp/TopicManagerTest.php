@@ -170,6 +170,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $attribute->setAccessible(true);
 
         $topic = $method->invokeArgs($this->mngr, array($name));
+        $topic->autoDelete = true;
 
         $this->assertCount(1, $attribute->getValue($this->mngr));
 
