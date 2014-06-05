@@ -166,12 +166,19 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $method = $class->getMethod('getTopic');
         $method->setAccessible(true);
 
+        $attribute = $class->getProperty('topicLookup');
+        $attribute->setAccessible(true);
+
         $topic = $method->invokeArgs($this->mngr, array($name));
+
+        $this->assertCount(1, $attribute->getValue($this->mngr));
 
         $this->mngr->onSubscribe($this->conn, $name);
         $this->mngr->onClose($this->conn);
 
         $this->assertFalse($topic->has($this->conn));
+
+        $this->assertCount(0, $attribute->getValue($this->mngr));
     }
 
     public function testOnErrorBubbles() {
