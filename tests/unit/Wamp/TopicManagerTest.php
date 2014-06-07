@@ -159,9 +159,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onClose($this->conn);
     }
 
-    public function testConnIsRemovedFromTopicOnClose() {
-        $name = 'State testing';
-
+    protected function topicProvider($name) {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
         $method->setAccessible(true);
@@ -170,7 +168,13 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $attribute->setAccessible(true);
 
         $topic = $method->invokeArgs($this->mngr, array($name));
-        $topic->autoDelete = true;
+
+        return array($topic, $attribute);
+    }
+
+    public function testConnIsRemovedFromTopicOnClose() {
+        $name = 'State Testing';
+        list($topic, $attribute) = $this->topicProvider($name);
 
         $this->assertCount(1, $attribute->getValue($this->mngr));
 
@@ -178,8 +182,29 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onClose($this->conn);
 
         $this->assertFalse($topic->has($this->conn));
+    }
 
-        $this->assertCount(0, $attribute->getValue($this->mngr));
+    public static function topicConnExpectationProvider() {
+        return array(
+            array(true, 'onClose', 0)
+          , array(true, 'onUnsubscribe', 0)
+          , array(false, 'onClose', 1)
+          , array(false, 'onUnsubscribe', 1)
+        );
+    }
+
+    /**
+     * @dataProvider topicConnExpectationProvider
+     */
+    public function testTopicRetentionFromLeavingConnections($autoDelete, $methodCall, $expectation) {
+        $topicName = 'checkTopic';
+        list($topic, $attribute) = $this->topicProvider($topicName);
+        $topic->autoDelete = $autoDelete;
+
+        $this->mngr->onSubscribe($this->conn, $topicName);
+        call_user_func_array(array($this->mngr, $methodCall), array($this->conn, $topicName));
+
+        $this->assertCount($expectation, $attribute->getValue($this->mngr));
     }
 
     public function testOnErrorBubbles() {
