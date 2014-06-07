@@ -1,7 +1,5 @@
 <?php
-
 namespace Ratchet\Server;
-
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
@@ -28,7 +26,7 @@ class IoServer {
      * @var \SplFixedArray
      */
     protected $handlers;
-    
+
     /**
      * The socket server the Ratchet Application is run off of
      * @var \React\Socket\ServerInterface

@@ -1,7 +1,5 @@
 <?php
-
 namespace Ratchet;
-
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
@@ -77,7 +75,7 @@ class App {
         $this->routes  = new RouteCollection;
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
 
-        $policy = new FlashPolicy();
+        $policy = new FlashPolicy;
         $policy->addAllowedAccess($httpHost, 80);
         $policy->addAllowedAccess($httpHost, $port);
         $flashSock = new Reactor($loop);
@@ -88,24 +86,6 @@ class App {
         } else {
             $flashSock->listen(8843);
         }
-    }
-    
-    /**
-     * Returns the FlashPolicy running in the flash server. Modifications of this object take effect immediately!
-     * 
-     * @return FlashPolicy
-     */
-    public function getFlashPolicy() {
-        return $this->flashServer->app;
-    }
-    
-    /**
-     * Returns the FlashSocket of the flash server.
-     * 
-     * @return \React\Socket\ServerInterface
-     */
-    public function getFlashSocket() {
-        return $this->flashServer->socket;
     }
 
     /**
@@ -151,4 +131,3 @@ class App {
         $this->_server->run();
     }
 }
-
