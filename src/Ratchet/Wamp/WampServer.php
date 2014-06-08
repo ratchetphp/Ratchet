@@ -39,9 +39,9 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
     public function onMessage(ConnectionInterface $conn, $msg) {
         try {
             $this->wampProtocol->onMessage($conn, $msg);
-        } catch (JsonException $je) {
+        } catch (Exception $we) {
             $conn->close(1007);
-        } catch (\UnexpectedValueException $uve) {
+        } catch (JsonException $je) {
             $conn->close(1007);
         }
     }

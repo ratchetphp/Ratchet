@@ -8,6 +8,23 @@ CHANGELOG
 
 ---
 
+* 0.3.2 (2014-06-08)
+
+ * BF: No messages after closing handshake (fixed rare race condition causing 100% CPU)
+ * BF: Fixed accidental BC break from v0.3.1
+ * Added autoDelete parameter to Topic to destroy when empty of connections
+ * Exposed React Socket on IoServer (allowing FlashPolicy shutdown in App)
+ * Normalized Exceptions in WAMP
+
+* 0.3.1 (2014-05-26)
+
+ * Added query parameter support to Router, set in HTTP request (ws://server?hello=world)
+ * HHVM compatibility
+ * BF: React/0.4 support; CPU starvation bug fixes
+ * BF: Allow App::route to ignore Host header
+ * Added expected filters to WAMP Topic broadcast method
+ * Resource cleanup in WAMP TopicManager
+
 * 0.3.0 (2013-10-14)
 
  * Added the `App` class to help making Ratchet so easy to use it's silly

@@ -6,6 +6,13 @@ use Ratchet\ConnectionInterface;
  * A topic/channel containing connections that have subscribed to it
  */
 class Topic implements \IteratorAggregate, \Countable {
+    /**
+     * If true the TopicManager will destroy this object if it's ever empty of connections
+     * @deprecated in v0.4
+     * @type bool
+     */
+    public $autoDelete = false;
+
     private $id;
 
     private $subscribers;

@@ -8,12 +8,17 @@ use Ratchet\WebSocket\Version\DataInterface;
  * @property \StdClass $WebSocket
  */
 class Connection extends AbstractConnectionDecorator {
+    /**
+     * {@inheritdoc}
+     */
     public function send($msg) {
-        if (!($msg instanceof DataInterface)) {
-            $msg = new Frame($msg);
-        }
+        if (!$this->WebSocket->closing) {
+            if (!($msg instanceof DataInterface)) {
+                $msg = new Frame($msg);
+            }
 
-        $this->getConnection()->send($msg->getContents());
+            $this->getConnection()->send($msg->getContents());
+        }
 
         return $this;
     }
@@ -22,6 +27,10 @@ class Connection extends AbstractConnectionDecorator {
      * {@inheritdoc}
      */
     public function close($code = 1000) {
+        if ($this->WebSocket->closing) {
+            return;
+        }
+
         if ($code instanceof DataInterface) {
             $this->send($code);
         } else {
@@ -29,5 +38,7 @@ class Connection extends AbstractConnectionDecorator {
         }
 
         $this->getConnection()->close();
+
+        $this->WebSocket->closing = true;
     }
 }

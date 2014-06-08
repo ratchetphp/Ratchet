@@ -79,8 +79,8 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
     /**
      * {@inheritdoc}
-     * @throws \Exception
-     * @throws JsonException
+     * @throws \Ratchet\Wamp\Exception
+     * @throws \Ratchet\Wamp\JsonException
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         $from = $this->connections[$from];
@@ -90,7 +90,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
         }
 
         if (!is_array($json) || $json !== array_values($json)) {
-            throw new \UnexpectedValueException("Invalid WAMP message format");
+            throw new Exception("Invalid WAMP message format");
         }
 
         switch ($json[0]) {
@@ -134,7 +134,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
             break;
 
             default:
-                throw new Exception('Invalid message type');
+                throw new Exception('Invalid WAMP message type');
         }
     }
 

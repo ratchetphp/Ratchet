@@ -28,6 +28,12 @@ class IoServer {
     protected $handlers;
 
     /**
+     * The socket server the Ratchet Application is run off of
+     * @var \React\Socket\ServerInterface
+     */
+    public $socket;
+
+    /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
      * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
      * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
@@ -42,6 +48,7 @@ class IoServer {
 
         $this->loop = $loop;
         $this->app  = $app;
+        $this->socket = $socket;
 
         $socket->on('connection', array($this, 'handleConnect'));
 
