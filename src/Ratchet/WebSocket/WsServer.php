@@ -79,6 +79,7 @@ class WsServer implements HttpServerInterface {
         $conn->WebSocket              = new \StdClass;
         $conn->WebSocket->request     = $request;
         $conn->WebSocket->established = false;
+        $conn->WebSocket->closing     = false;
 
         $this->attemptUpgrade($conn);
     }
@@ -87,6 +88,10 @@ class WsServer implements HttpServerInterface {
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
+        if ($from->WebSocket->closing) {
+            return;
+        }
+
         if (true === $from->WebSocket->established) {
             return $from->WebSocket->version->onMessage($this->connections[$from], $msg);
         }
