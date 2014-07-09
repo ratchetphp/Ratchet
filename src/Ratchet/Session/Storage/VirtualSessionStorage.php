@@ -30,7 +30,17 @@ class VirtualSessionStorage extends NativeSessionStorage {
             return true;
         }
 
+        /** 
+         * Open the sessionfile first to avoid a PHP warning
+         * PHP Warning:  SessionHandler::read(): Parent session handler is not open
+         */
+        $this->saveHandler->open(ini_get('session.save_path'), $this->saveHandler->getId());
+        // Read the data from the file
         $rawData     = $this->saveHandler->read($this->saveHandler->getId());
+        /** Close the file so we wont have a write lock
+         * This would hang every other request of the client when not using the websocket server
+         */
+        $this->saveHandler->close();
         $sessionData = $this->_serializer->unserialize($rawData);
 
         $this->loadSession($sessionData);
