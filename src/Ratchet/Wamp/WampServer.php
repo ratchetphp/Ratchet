@@ -15,7 +15,7 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
     /**
      * @var ServerProtocol
      */
-    private $wampProtocol;
+    protected $wampProtocol;
 
     /**
      * This class just makes it 1 step easier to use Topic objects in WAMP
