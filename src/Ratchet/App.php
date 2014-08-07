@@ -42,6 +42,12 @@ class App {
      * @var string
      */
     protected $httpHost;
+    
+    /***
+     * The port the socket is listening
+     * @var int
+     */
+    protected $port;    
 
     /**
      * @var int
@@ -68,6 +74,7 @@ class App {
         }
 
         $this->httpHost = $httpHost;
+        $this->port = $port;
 
         $socket = new Reactor($loop);
         $socket->listen($port, $address);
@@ -81,10 +88,20 @@ class App {
         $flashSock = new Reactor($loop);
         $this->flashServer = new IoServer($policy, $flashSock);
 
-        if (80 == $port) {
-            $flashSock->listen(843, '0.0.0.0');
-        } else {
-            $flashSock->listen(8843);
+        //check if another App is already running a flash policy server on 843
+        $test = @fsockopen('127.0.0.1', 843, $errno, $errstr, 5);
+        
+        //if not start a flash policy serever
+        if(is_resource($test) === false){
+          $policy = new FlashPolicy;
+          $policy->addAllowedAccess($httpHost, 80);
+          $policy->addAllowedAccess($httpHost, $port);
+          $flashSock = new Reactor($loop);
+          $this->flashServer = new IoServer($policy, $flashSock);
+          
+          $flashSock->listen(843, '0.0.0.0');
+        }else{
+          fclose($test);
         }
     }
 
@@ -117,6 +134,13 @@ class App {
         }
         if ('*' !== $allowedOrigins[0]) {
             $decorated = new OriginCheck($decorated, $allowedOrigins);
+        }
+        
+        //allow origins in flash policy server
+        if(empty($this->flashServer) === false){
+          foreach($allowedOrigins as $allowedOrgin){
+            $this->flashServer->app->addAllowedAccess($allowedOrgin, $this->port);
+          }
         }
 
         $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost));

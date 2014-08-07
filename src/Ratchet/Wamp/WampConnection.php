@@ -26,10 +26,10 @@ class WampConnection extends AbstractConnectionDecorator {
     /**
      * Successfully respond to a call made by the client
      * @param string $id   The unique ID given by the client to respond to
-     * @param array  $data An array of data to return to the client
+     * @param array $data an object or array
      * @return WampConnection
      */
-    public function callResult($id, array $data = array()) {
+    public function callResult($id, $data = array()) {
         return $this->send(json_encode(array(WAMP::MSG_CALL_RESULT, $id, $data)));
     }
 
@@ -77,11 +77,23 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * Get the full request URI from the connection object if a prefix has been established for it
+     * Compliant with WAMP Spec for curie URIs
      * @param string $uri
      * @return string
      */
     public function getUri($uri) {
-        return (array_key_exists($uri, $this->WAMP->prefixes) ? $this->WAMP->prefixes[$uri] : $uri);
+      $seperator = ':';
+      
+      if(preg_match('/http(s*)\:\/\//', $uri) === false){      
+        if(strpos($uri, $seperator) !== false){
+          list($prefix, $action) = explode(':', $uri);
+          $expandedPrefix = isset($this->WAMP->prefixes[$prefix]) ? $this->WAMP->prefixes[$prefix] : $prefix;
+
+          return $expandedPrefix . '#' . $action;
+        }
+      }
+      
+      return $uri;
     }
 
     /**
