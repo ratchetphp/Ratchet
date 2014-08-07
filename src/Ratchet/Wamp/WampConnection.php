@@ -82,14 +82,15 @@ class WampConnection extends AbstractConnectionDecorator {
      * @return string
      */
     public function getUri($uri) {
-      $seperator = ':';
+      $curieSeperator = ':';
+      $fullSeperator = '#';
       
-      if(preg_match('/http(s*)\:\/\//', $uri) === false){      
-        if(strpos($uri, $seperator) !== false){
-          list($prefix, $action) = explode(':', $uri);
+      if(preg_match('/http(s*)\:\/\//', $uri) == false){        
+        if(strpos($uri, $curieSeperator) !== false){
+          list($prefix, $action) = explode($curieSeperator, $uri);
           $expandedPrefix = isset($this->WAMP->prefixes[$prefix]) ? $this->WAMP->prefixes[$prefix] : $prefix;
 
-          return $expandedPrefix . '#' . $action;
+          return $expandedPrefix . $fullSeperator . $action;
         }
       }
       
