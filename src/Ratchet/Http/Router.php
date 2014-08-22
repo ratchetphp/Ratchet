@@ -54,7 +54,7 @@ class Router implements HttpServerInterface {
             }
         }
         $url = Url::factory($request->getPath());
-        $url->setQuery($parameters);
+        $url->setQuery($parameters + $request->getQuery()->getAll());
         $request->setUrl($url);
 
         $conn->controller = $route['_controller'];
