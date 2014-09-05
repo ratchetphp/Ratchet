@@ -160,6 +160,9 @@ class RFC6455 implements VersionInterface {
                         $from->send($this->newFrame($frame->getPayload(), true, $frame::OP_PONG));
                     break;
                     case $frame::OP_PONG:
+                        if (method_exists($from->WebSocket->coalescedCallback, 'onPong')) {
+                            $from->WebSocket->coalescedCallback->onPong($from, $frame);
+                        }
                     break;
                     default:
                         return $from->close($frame::CLOSE_PROTOCOL);
