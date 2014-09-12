@@ -62,7 +62,7 @@ class App {
      */
     public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null) {
         if (extension_loaded('xdebug')) {
-            trigger_error("XDebug extension detected. Remember to disable this if performance testing or going live!", E_USER_WARNING);
+            echo("XDebug extension detected. Remember to disable this if performance testing or going live!" . PHP_EOL);
         }
 
         if (3 !== strlen('✓')) {
@@ -102,6 +102,7 @@ class App {
           $flashSock->listen(843, '0.0.0.0');
         }else{
           fclose($test);
+          echo('flash socket server already running on 843' . PHP_EOL);
         }
     }
 
