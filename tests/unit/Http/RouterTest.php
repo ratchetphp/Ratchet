@@ -15,8 +15,18 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     protected $_req;
 
     public function setUp() {
+        $queryMock = $this->getMock('Guzzle\Http\QueryString');
+        $queryMock
+            ->expects($this->any())
+            ->method('getAll')
+            ->will($this->returnValue(array()));
+
         $this->_conn    = $this->getMock('\Ratchet\ConnectionInterface');
         $this->_req     = $this->getMock('\Guzzle\Http\Message\RequestInterface');
+        $this->_req
+            ->expects($this->any())
+            ->method('getQuery')
+            ->will($this->returnValue($queryMock));
         $this->_matcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
         $this->_matcher
             ->expects($this->any())
