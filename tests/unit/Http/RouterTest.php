@@ -98,8 +98,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->_router->onError($this->_conn, $e);
     }
 
-    public function testRouterGeneratesRouteParameters()
-    {
+    public function testRouterGeneratesRouteParameters() {
         /** @var $controller WsServerInterface */
         $controller = $this->getMockBuilder('\Ratchet\WebSocket\WsServer')->disableOriginalConstructor()->getMock();
         /** @var $matcher UrlMatcherInterface */
@@ -119,5 +118,23 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $router->onOpen($conn, $request);
 
         $this->assertEquals(array('foo' => 'bar', 'baz' => 'qux'), $request->getQuery()->getAll());
+    }
+
+    public function testQueryParams() {
+        $controller = $this->getMockBuilder('\Ratchet\WebSocket\WsServer')->disableOriginalConstructor()->getMock();
+        $this->_matcher->expects($this->any())->method('match')->will(
+            $this->returnValue(array('_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'))
+        );
+
+        $conn    = $this->getMock('Ratchet\Mock\Connection');
+        $request = $this->getMock('Guzzle\Http\Message\Request', array('getPath'), array('GET', ''), '', false);
+
+        $request->setHeaderFactory($this->getMock('Guzzle\Http\Message\Header\HeaderFactoryInterface'));
+        $request->setUrl('ws://doesnt.matter?hello=world&foo=nope');
+
+        $router = new Router($this->_matcher);
+        $router->onOpen($conn, $request);
+
+        $this->assertEquals(array('foo' => 'nope', 'baz' => 'qux', 'hello' => 'world'), $request->getQuery()->getAll());
     }
 }
