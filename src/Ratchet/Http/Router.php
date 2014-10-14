@@ -61,6 +61,8 @@ class Router implements HttpServerInterface {
 
         $conn->controller = $route['_controller'];
         $conn->controller->onOpen($conn, $request);
+
+        return null;
     }
 
     /**

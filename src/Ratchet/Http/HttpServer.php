@@ -39,7 +39,7 @@ class HttpServer implements MessageComponentInterface {
         if (true !== $from->httpHeadersReceived) {
             try {
                 if (null === ($request = $this->_reqParser->onMessage($from, $msg))) {
-                    return;
+                    return null;
                 }
             } catch (\OverflowException $oe) {
                 return $this->close($from, 413);
@@ -51,6 +51,7 @@ class HttpServer implements MessageComponentInterface {
         }
 
         $this->_httpServer->onMessage($from, $msg);
+        return null;
     }
 
     /**

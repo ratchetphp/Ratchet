@@ -1,5 +1,9 @@
 <?php
+
 namespace Ratchet;
+
+use Ratchet\Http\HttpServerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * The version of Ratchet being used
@@ -10,6 +14,11 @@ const VERSION = 'Ratchet/0.3.2';
 /**
  * A proxy object representing a connection to the application
  * This acts as a container to store data (in memory) about the connection
+ * @property Session $Session
+ * @property bool $httpHeadersReceived
+ * @property HttpServerInterface $controller
+ * @property string $remoteAddress
+ * @property mixed $WAMP
  */
 interface ConnectionInterface {
     /**

@@ -43,6 +43,8 @@ class HttpRequestParser implements MessageInterface {
 
             return $request;
         }
+
+        return null;
     }
 
     /**

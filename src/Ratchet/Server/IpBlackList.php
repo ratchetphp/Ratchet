@@ -67,7 +67,7 @@ class IpBlackList implements MessageComponentInterface {
      */
     public function filterAddress($address) {
         if (strstr($address, ':') && substr_count($address, '.') == 3) {
-            list($address, $port) = explode(':', $address);
+            $address = explode(':', $address)[0];
         }
 
         return $address;
