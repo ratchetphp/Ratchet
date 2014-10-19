@@ -1,9 +1,9 @@
 <?php
 namespace Ratchet\WebSocket\Version\RFC6455;
-use Ratchet\WebSocket\Version\MessageInterface;
+use Ratchet\WebSocket\Version\MessageDataInterface;
 use Ratchet\WebSocket\Version\FrameInterface;
 
-class Message implements MessageInterface, \Countable {
+class Message implements MessageDataInterface, \Countable {
     /**
      * @var \SplDoublyLinkedList
      */
