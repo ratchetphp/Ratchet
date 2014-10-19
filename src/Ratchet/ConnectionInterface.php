@@ -18,7 +18,8 @@ const VERSION = 'Ratchet/0.3.2';
  * @property bool $httpHeadersReceived
  * @property HttpServerInterface $controller
  * @property string $remoteAddress
- * @property mixed $WAMP
+ * @property $WAMP
+ * @property $WebSocket
  */
 interface ConnectionInterface {
     /**

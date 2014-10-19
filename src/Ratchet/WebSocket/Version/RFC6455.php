@@ -95,8 +95,9 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
-     * @param \Ratchet\WebSocket\Version\RFC6455\Connection $from
-     * @param string                                        $data
+     * @param ConnectionInterface $from
+     * @param string $data
+     * @return mixed
      */
     public function onMessage(ConnectionInterface $from, $data) {
         $overflow = '';
@@ -112,6 +113,7 @@ class RFC6455 implements VersionInterface {
 
         $from->WebSocket->frame->addBuffer($data);
         if ($from->WebSocket->frame->isCoalesced()) {
+            /** @var Frame $frame */
             $frame = $from->WebSocket->frame;
 
             if (false !== $frame->getRsv1() ||
@@ -174,7 +176,7 @@ class RFC6455 implements VersionInterface {
                     $this->onMessage($from, $overflow);
                 }
 
-                return;
+                return null;
             }
 
             $overflow = $from->WebSocket->frame->extractOverflow();
@@ -205,6 +207,8 @@ class RFC6455 implements VersionInterface {
         if (strlen($overflow) > 0) {
             $this->onMessage($from, $overflow);
         }
+
+        return null;
     }
 
     /**

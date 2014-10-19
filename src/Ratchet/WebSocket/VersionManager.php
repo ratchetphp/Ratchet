@@ -27,6 +27,7 @@ class VersionManager {
      * @return \Ratchet\WebSocket\Version\VersionInterface
      */
     public function getVersion(RequestInterface $request) {
+        /** @var VersionInterface $version */
         foreach ($this->versions as $version) {
             if ($version->isProtocol($request)) {
                 return $version;
@@ -41,6 +42,7 @@ class VersionManager {
      * @return bool
      */
     public function isVersionEnabled(RequestInterface $request) {
+        /** @var VersionInterface $version */
         foreach ($this->versions as $version) {
             if ($version->isProtocol($request)) {
                 return true;
