@@ -119,7 +119,10 @@ class App {
             $decorated = new OriginCheck($decorated, $allowedOrigins);
         }
 
-        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost));
+        $routeRequirements = '*' !== $this->httpHost ? array('Origin' => $this->httpHost) : array();
+        $routeHost = '*' !== $httpHost ? $httpHost : null;
+
+        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), $routeRequirements, array(), $routeHost));
 
         return $decorated;
     }
