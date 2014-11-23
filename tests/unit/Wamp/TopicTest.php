@@ -81,7 +81,7 @@ class TopicTest extends \PHPUnit_Framework_TestCase {
         $topic->add($first);
         $topic->add($second);
         $topic->add($third);
-        
+
         $topic->broadcast($msg, array($second->WAMP->sessionId));
     }
 

@@ -107,7 +107,6 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
                     $json = $json[0];
                 }
 
-                //procURI should be un prefixed
                 $this->_decorating->onCall($from, $callID, $from->getUri($procURI), $json);
             break;
 

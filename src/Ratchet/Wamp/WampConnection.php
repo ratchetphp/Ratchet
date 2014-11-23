@@ -17,7 +17,7 @@ class WampConnection extends AbstractConnectionDecorator {
         parent::__construct($conn);
 
         $this->WAMP            = new \StdClass;
-        $this->WAMP->sessionId = str_replace('.','',uniqid(mt_rand(), true));
+        $this->WAMP->sessionId = str_replace('.', '', uniqid(mt_rand(), true));
         $this->WAMP->prefixes  = array();
 
         $this->send(json_encode(array(WAMP::MSG_WELCOME, $this->WAMP->sessionId, 1, \Ratchet\VERSION)));
@@ -77,24 +77,23 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * Get the full request URI from the connection object if a prefix has been established for it
-     * Compliant with WAMP Spec for curie URIs
      * @param string $uri
      * @return string
      */
     public function getUri($uri) {
-      $curieSeperator = ':';
-      $fullSeperator = '#';
-      
-      if(preg_match('/http(s*)\:\/\//', $uri) == false){        
-        if(strpos($uri, $curieSeperator) !== false){
-          list($prefix, $action) = explode($curieSeperator, $uri);
-          $expandedPrefix = isset($this->WAMP->prefixes[$prefix]) ? $this->WAMP->prefixes[$prefix] : $prefix;
+        $curieSeperator = ':';
+        $fullSeperator = '#';
 
-          return $expandedPrefix . $fullSeperator . $action;
+        if (preg_match('/http(s*)\:\/\//', $uri) == false) {
+            if (strpos($uri, $curieSeperator) !== false) {
+                list($prefix, $action) = explode($curieSeperator, $uri);
+                $expandedPrefix = isset($this->WAMP->prefixes[$prefix]) ? $this->WAMP->prefixes[$prefix] : $prefix;
+
+                return $expandedPrefix . $fullSeperator . $action;
+            }
         }
-      }
-      
-      return $uri;
+
+        return $uri;
     }
 
     /**
