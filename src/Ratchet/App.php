@@ -43,6 +43,12 @@ class App {
      */
     protected $httpHost;
 
+    /***
+     * The port the socket is listening
+     * @var int
+     */
+    protected $port;
+
     /**
      * @var int
      */
@@ -56,7 +62,7 @@ class App {
      */
     public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null) {
         if (extension_loaded('xdebug')) {
-            trigger_error("XDebug extension detected. Remember to disable this if performance testing or going live!", E_USER_WARNING);
+            trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
         }
 
         if (3 !== strlen('✓')) {
@@ -68,6 +74,7 @@ class App {
         }
 
         $this->httpHost = $httpHost;
+        $this->port = $port;
 
         $socket = new Reactor($loop);
         $socket->listen($port, $address);
@@ -80,7 +87,6 @@ class App {
         $policy->addAllowedAccess($httpHost, $port);
         $flashSock = new Reactor($loop);
         $this->flashServer = new IoServer($policy, $flashSock);
-
         if (80 == $port) {
             $flashSock->listen(843, '0.0.0.0');
         } else {
@@ -117,6 +123,13 @@ class App {
         }
         if ('*' !== $allowedOrigins[0]) {
             $decorated = new OriginCheck($decorated, $allowedOrigins);
+        }
+
+        //allow origins in flash policy server
+        if(empty($this->flashServer) === false) {
+            foreach($allowedOrigins as $allowedOrgin) {
+                $this->flashServer->app->addAllowedAccess($allowedOrgin, $this->port);
+            }
         }
 
         $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost));
