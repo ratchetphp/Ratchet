@@ -72,6 +72,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
           , 'db_id_col'   => 'sess_id'
           , 'db_data_col' => 'sess_data'
           , 'db_time_col' => 'sess_time'
+          , 'db_lifetime_col' => 'sess_lifetime'
         );
 
         $pdo = new \PDO("sqlite::memory:");
