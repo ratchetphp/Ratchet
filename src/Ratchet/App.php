@@ -95,7 +95,7 @@ class App {
     }
 
     /**
-     * Add an endpiont/application to the server
+     * Add an endpoint/application to the server
      * @param string             $path The URI the client will connect to
      * @param ComponentInterface $controller Your application to server for the route. If not specified, assumed to be for a WebSocket
      * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), ['*'] for any
