@@ -79,8 +79,9 @@ class Validator {
         }
 
         $state = static::UTF8_ACCEPT;
-
-        for ($i = 0, $len   = strlen($str); $i < $len; $i++) {
+        $len   = strlen($str);
+        
+        for ($i = 0, $len; $i < $len; $i++) {
             $state = static::$dfa[256 + ($state << 4) + static::$dfa[ord($str[$i])]];
 
             if (static::UTF8_REJECT === $state) {
