@@ -1,5 +1,5 @@
 {
-    "name": "cboden/ratchet"
+    "name": "acidjazz/ratchet"
   , "type": "library"
   , "description": "PHP WebSocket library"
   , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
@@ -19,7 +19,8 @@
     }
   , "autoload": {
         "psr-0": {
-            "Ratchet": "src"
+            "Ratchet": "src",
+            "Myapp": "src"
         }
     }
   , "require": {
