@@ -1,5 +1,5 @@
 {
-    "name": "cboden/ratchet"
+    "name": "acidjazz/ratchet"
   , "type": "library"
   , "description": "PHP WebSocket library"
   , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
@@ -19,13 +19,14 @@
     }
   , "autoload": {
         "psr-0": {
-            "Ratchet": "src"
+            "Ratchet": "src",
+            "Myapp": "src"
         }
     }
   , "require": {
         "php": ">=5.3.9"
       , "react/socket": "0.3.*|0.4.*"
-      , "guzzle/http": "~3.6"
+      , "guzzle/guzzle": ">=3.6"
       , "symfony/http-foundation": "~2.2"
       , "symfony/routing": "~2.2"
     }
