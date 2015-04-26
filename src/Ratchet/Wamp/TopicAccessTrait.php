@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Wamp;
 
-trait TopicAccess
+trait TopicAccessTrait
 {
     
     /**
