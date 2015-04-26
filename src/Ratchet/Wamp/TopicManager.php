@@ -43,7 +43,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
             return;
         }
 
-        $this->topicLookup[$topic]->add($conn);
+        $topicObj->add($conn);
         $conn->WAMP->subscriptions->attach($topicObj);
         $this->app->onSubscribe($conn, $topicObj);
     }
