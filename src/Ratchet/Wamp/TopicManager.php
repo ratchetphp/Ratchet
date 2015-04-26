@@ -16,6 +16,10 @@ class TopicManager implements WsServerInterface, WampServerInterface {
 
     public function __construct(WampServerInterface $app) {
         $this->app = $app;
+        
+        if (in_array('TopicAccess', class_uses($app))) {
+            $this->app->setTopics($this->topicLookup);
+        }
     }
 
     /**
