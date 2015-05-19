@@ -7,6 +7,7 @@ use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 
 /**
  * This component will allow access to session data from your website for each user connected
@@ -33,6 +34,12 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
     protected $_null;
 
     /**
+     * Attribute Bag for optional session attribute storage
+     * @var \AttributeBag
+     */
+    protected $_bag;
+
+    /**
      * @var \Ratchet\Session\Serialize\HandlerInterface
      */
     protected $_serializer;
@@ -42,12 +49,14 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
+     * @param \Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag $bag
      * @throws \RuntimeException
      */
-    public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
+    public function __construct(MessageComponentInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null,AttributeBag $bag = null) {
         $this->_app     = $app;
         $this->_handler = $handler;
         $this->_null    = new NullSessionHandler;
+        $this->_bag     = $bag;
 
         ini_set('session.auto_start', 0);
         ini_set('session.cache_limiter', '');
@@ -79,6 +88,10 @@ class SessionProvider implements MessageComponentInterface, WsServerInterface {
         }
 
         $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id, $this->_serializer));
+
+        if($this->_bag !== null) {
+            $conn->Session->registerBag($this->_bag);   
+        }
 
         if (ini_get('session.auto_start')) {
             $conn->Session->start();
