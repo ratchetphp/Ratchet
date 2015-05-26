@@ -500,4 +500,44 @@ class FrameTest extends \PHPUnit_Framework_TestCase {
 
         return $randomString;
     }
+
+    /**
+     * There was a frame boundary issue when the first 3 bytes of a frame with a payload greater than
+     * 126 was added to the frame buffer and then Frame::getPayloadLength was called. It would cause the frame
+     * to set the payload length to 126 and then not recalculate it once the full length information was available.
+     *
+     * This is fixed by setting the defPayLen back to -1 before the underflow exception is thrown.
+     *
+     * @covers Ratchet\WebSocket\Version\RFC6455\Frame::getPayloadLength
+     * @covers Ratchet\WebSocket\Version\RFC6455\Frame::extractOverflow
+     */
+    public function testFrameDeliveredOneByteAtATime() {
+        $startHeader = "\x01\x7e\x01\x00"; // header for a text frame of 256 - non-final
+        $framePayload = str_repeat("*", 256);
+        $rawOverflow = "xyz";
+        $rawFrame = $startHeader . $framePayload . $rawOverflow;
+
+        $frame = new Frame();
+        $payloadLen = 256;
+
+        for ($i = 0; $i < strlen($rawFrame); $i++) {
+            $frame->addBuffer($rawFrame[$i]);
+
+            try {
+                // payloadLen will
+                $payloadLen = $frame->getPayloadLength();
+            } catch (\UnderflowException $e) {
+                if ($i > 2) { // we should get an underflow on 0,1,2
+                    $this->fail("Underflow exception when the frame length should be available");
+                }
+            }
+
+            if ($payloadLen !== 256) {
+                $this->fail("Payload length of " . $payloadLen . " should have been 256.");
+            }
+        }
+
+        // make sure the overflow is good
+        $this->assertEquals($rawOverflow, $frame->extractOverflow());
+    }
 }
