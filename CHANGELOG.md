@@ -8,6 +8,14 @@ CHANGELOG
 
 ---
 
+* 0.3.3 (2015-05-26)
+
+* BF: Framing bug on large messages upon TCP fragmentation
+* BF: Symfony Router query parameter defaults applied to Request
+* BF: WAMP CURIE on all URIs
+* OriginCheck rules applied to FlashPolicy
+* Switched from PSR-0 to PSR-4
+
 * 0.3.2 (2014-06-08)
 
  * BF: No messages after closing handshake (fixed rare race condition causing 100% CPU)

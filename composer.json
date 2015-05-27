@@ -18,8 +18,8 @@
       , "irc":    "irc://irc.freenode.org/reactphp"
     }
   , "autoload": {
-        "psr-0": {
-            "Ratchet": "src"
+        "psr-4": {
+            "Ratchet\\": "src/Ratchet"
         }
     }
   , "require": {
