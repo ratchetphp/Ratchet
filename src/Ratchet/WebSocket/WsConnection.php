@@ -1,13 +1,14 @@
 <?php
-namespace Ratchet\WebSocket\Version\RFC6455;
+namespace Ratchet\WebSocket;
 use Ratchet\AbstractConnectionDecorator;
-use Ratchet\WebSocket\Version\DataInterface;
+use Ratchet\RFC6455\Messaging\Protocol\DataInterface;
+use Ratchet\RFC6455\Messaging\Protocol\Frame;
 
 /**
  * {@inheritdoc}
  * @property \StdClass $WebSocket
  */
-class Connection extends AbstractConnectionDecorator {
+class WsConnection extends AbstractConnectionDecorator {
     /**
      * {@inheritdoc}
      */

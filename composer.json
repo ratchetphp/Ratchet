@@ -25,7 +25,8 @@
   , "require": {
         "php": ">=5.3.9"
       , "react/socket": "^0.3 || ^0.4"
-      , "guzzle/http": "^3.6"
+      , "guzzlehttp/psr7": "^1.0"
+      , "ratchet/rfc6455": "dev-psr7"
       , "symfony/http-foundation": "^2.2"
       , "symfony/routing": "^2.2"
     }

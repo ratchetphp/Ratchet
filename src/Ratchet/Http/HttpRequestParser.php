@@ -2,7 +2,7 @@
 namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
+use GuzzleHttp\Psr7 as g7;
 
 /**
  * This class receives streaming data from a client request
@@ -22,7 +22,7 @@ class HttpRequestParser implements MessageInterface {
     /**
      * @param \Ratchet\ConnectionInterface $context
      * @param string                       $data Data stream to buffer
-     * @return \Guzzle\Http\Message\RequestInterface|null
+     * @return \Psr\Http\Message\RequestInterface
      * @throws \OverflowException If the message buffer has become too large
      */
     public function onMessage(ConnectionInterface $context, $data) {
@@ -37,7 +37,7 @@ class HttpRequestParser implements MessageInterface {
         }
 
         if ($this->isEom($context->httpBuffer)) {
-            $request = RequestFactory::getInstance()->fromMessage($context->httpBuffer);
+            $request = g7\parse_request($context->httpBuffer);
 
             unset($context->httpBuffer);
 

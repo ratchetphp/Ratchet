@@ -13,16 +13,19 @@ abtests:
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-noutf8.php 8003 StreamSelect &
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8004 LibEv &
 	wstest -m testeeserver -w ws://localhost:8000 &
+	sleep 1
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-all.json
 	killall php wstest
 
 abtest:
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8000 StreamSelect &
+	sleep 1
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-quick.json
 	killall php
 
 profile:
 	php -d 'xdebug.profiler_enable=1' tests/autobahn/bin/fuzzingserver.php 8000 LibEvent &
+	sleep 1
 	wstest -m fuzzingclient -s tests/autobahn/fuzzingclient-profile.json
 	killall php
 
