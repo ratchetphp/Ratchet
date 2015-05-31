@@ -2,11 +2,11 @@
 namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
-use GuzzleHttp\Psr7 as g7;
+use GuzzleHttp\Psr7 as gPsr;
 
 /**
  * This class receives streaming data from a client request
- * and parses HTTP headers, returning a Guzzle Request object
+ * and parses HTTP headers, returning a PSR-7 Request object
  * once it's been buffered
  */
 class HttpRequestParser implements MessageInterface {
@@ -37,7 +37,7 @@ class HttpRequestParser implements MessageInterface {
         }
 
         if ($this->isEom($context->httpBuffer)) {
-            $request = g7\parse_request($context->httpBuffer);
+            $request = $this->parse($context->httpBuffer);
 
             unset($context->httpBuffer);
 
@@ -52,5 +52,25 @@ class HttpRequestParser implements MessageInterface {
      */
     public function isEom($message) {
         return (boolean)strpos($message, static::EOM);
+    }
+
+    /**
+     * @param string $headers
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function parse($headers) {
+        if (function_exists('http_parse_message')) {
+            $parts = http_parse_message($headers);
+
+            return new gPsr\Request(
+                $parts->requestMethod
+              , $parts->requestUrl
+              , $parts->headers
+              , null
+              , $parts->httpVersion
+            );
+        } else {
+            return gPsr\parse_request($headers);
+        }
     }
 }

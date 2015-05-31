@@ -2,6 +2,7 @@
 namespace Ratchet\WebSocket;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Ratchet\RFC6455\Messaging\Protocol\Frame;
 use Ratchet\RFC6455\Messaging\Protocol\FrameInterface;
 use Ratchet\RFC6455\Messaging\Protocol\MessageInterface;
 use Ratchet\RFC6455\Messaging\Streaming\ContextInterface;
@@ -36,6 +37,8 @@ class ConnectionContext implements ContextInterface {
 
     public function setFrame(FrameInterface $frame = null) {
         $this->frame = $frame;
+
+        return $frame;
     }
 
     /**
@@ -47,6 +50,8 @@ class ConnectionContext implements ContextInterface {
 
     public function setMessage(MessageInterface $message = null) {
         $this->message = $message;
+
+        return $message;
     }
 
     /**
@@ -61,7 +66,7 @@ class ConnectionContext implements ContextInterface {
     }
 
     public function onPing(FrameInterface $frame) {
-        $pong = new \Ratchet\RFC6455\Messaging\Protocol\Frame($frame->getPayload(), true, $frame::OP_PONG);
+        $pong = new Frame($frame->getPayload(), true, Frame::OP_PONG);
 
         $this->conn->send($pong);
     }
