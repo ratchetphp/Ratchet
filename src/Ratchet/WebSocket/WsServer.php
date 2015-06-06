@@ -52,6 +52,10 @@ class WsServer implements HttpServerInterface {
         $encodingValidator         = new \Ratchet\RFC6455\Encoding\Validator;
         $this->handshakeNegotiator = new \Ratchet\RFC6455\Handshake\Negotiator($encodingValidator);
         $this->messageStreamer     = new \Ratchet\RFC6455\Messaging\Streaming\MessageStreamer($encodingValidator);
+
+        if ($component instanceof WsServerInterface) {
+            $this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
+        }
     }
 
     /**
@@ -69,14 +73,6 @@ class WsServer implements HttpServerInterface {
         $conn->WebSocket->request     = $request; // deprecated
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
-
-//        Probably moved to RFC lib
-//        $subHeader = $conn->WebSocket->request->getHeader('Sec-WebSocket-Protocol');
-//        if (count($subHeader) > 0) {
-//            if ('' !== ($agreedSubProtocols = $this->getSubProtocolString($subHeader))) {
-//                $response = $response->withHeader('Sec-WebSocket-Protocol', $agreedSubProtocols);
-//            }
-//        }
 
         $conn->send(gPsr\str($response));
 
@@ -141,35 +137,7 @@ class WsServer implements HttpServerInterface {
         return $this;
     }
 
-    /**
-     * @param string
-     * @return boolean
-     */
-    public function isSubProtocolSupported($name) {
-        if (!$this->isSpGenerated) {
-            if ($this->component instanceof WsServerInterface) {
-                $this->acceptedSubProtocols = array_flip($this->component->getSubProtocols());
-            }
-
-            $this->isSpGenerated = true;
-        }
-
-        return array_key_exists($name, $this->acceptedSubProtocols);
-    }
-
-    /**
-     * @param  \Traversable|null $requested
-     * @return string
-     */
-    protected function getSubProtocolString(\Traversable $requested = null) {
-        if (null !== $requested) {
-            foreach ($requested as $sub) {
-                if ($this->isSubProtocolSupported($sub)) {
-                    return $sub;
-                }
-            }
-        }
-
-        return '';
+    public function setStrictSubProtocolCheck($enable) {
+        $this->handshakeNegotiator->setStrictSubProtocolCheck($enable);
     }
 }
