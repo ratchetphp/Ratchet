@@ -84,10 +84,12 @@ class WampConnection extends AbstractConnectionDecorator {
         $curieSeperator = ':';
 
         if (preg_match('/http(s*)\:\/\//', $uri) == false) {
-            if (strpos($uri, $curieSeperator) !== false && isset($this->WAMP->prefixes[$prefix]) === true) {
+            if (strpos($uri, $curieSeperator) !== false) {
                 list($prefix, $action) = explode($curieSeperator, $uri);
-
-                return $this->WAMP->prefixes[$prefix] . '#' . $action;
+                
+                if(isset($this->WAMP->prefixes[$prefix]) === true){
+                  return $this->WAMP->prefixes[$prefix] . '#' . $action;
+                }
             }
         }
 
