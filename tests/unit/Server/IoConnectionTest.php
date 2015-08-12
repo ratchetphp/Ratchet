@@ -29,4 +29,10 @@ class IoConnectionTest extends \PHPUnit_Framework_TestCase {
     public function testSendReturnsSelf() {
         $this->assertSame($this->conn, $this->conn->send('fluent interface'));
     }
+
+    public function testGetId() {
+        $this->sock->stream = "123";
+
+        $this->assertEquals($this->sock->stream, $this->conn->getId());
+    }
 }
