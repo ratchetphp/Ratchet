@@ -35,4 +35,12 @@ class IoConnection implements ConnectionInterface {
     public function close() {
         $this->conn->end();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getId()
+    {
+        return (int)$this->conn->stream;
+    }
 }

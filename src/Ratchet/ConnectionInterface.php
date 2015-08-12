@@ -23,4 +23,10 @@ interface ConnectionInterface {
      * Close the connection
      */
     function close();
+
+    /**
+     * Unique identifier of the connection
+     * @return mixed
+     */
+    function getId();
 }
