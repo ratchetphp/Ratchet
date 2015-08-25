@@ -30,6 +30,12 @@ class VirtualSessionStorage extends NativeSessionStorage {
             return true;
         }
 
+        // You have to call Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler::open() to use
+        // pdo_sqlite (and possible pdo_*) as session storage, if you are using a DSN string instead of a \PDO object
+        // in the constructor. The method arguments are filled with the values, which are also used by the symfony
+        // framework in this case. This must not be the best choice, but it works.
+        $this->saveHandler->open(session_save_path(), session_name());
+
         $rawData     = $this->saveHandler->read($this->saveHandler->getId());
         $sessionData = $this->_serializer->unserialize($rawData);
 
