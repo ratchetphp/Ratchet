@@ -54,30 +54,18 @@ class Validator {
      * @return bool
      */
     public function checkEncoding($str, $against) {
-        if ('UTF-8' == $against) {
-            return $this->isUtf8($str);
-        }
-
         if ($this->hasMbString) {
             return mb_check_encoding($str, $against);
         } elseif ($this->hasIconv) {
             return ($str == iconv($against, "{$against}//IGNORE", $str));
+        } elseif ('UTF-8' == $against) {
+            return $this->isUtf8($str);
         }
 
         return true;
     }
 
     protected function isUtf8($str) {
-        if ($this->hasMbString) {
-            if (false === mb_check_encoding($str, 'UTF-8')) {
-                return false;
-            }
-        } elseif ($this->hasIconv) {
-            if ($str != iconv('UTF-8', 'UTF-8//IGNORE', $str)) {
-                return false;
-            }
-        }
-
         $state = static::UTF8_ACCEPT;
 
         for ($i = 0, $len   = strlen($str); $i < $len; $i++) {
