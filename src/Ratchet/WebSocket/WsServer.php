@@ -102,13 +102,13 @@ class WsServer implements HttpServerInterface {
     protected function attemptUpgrade(ConnectionInterface $conn, $data = '') {
         if ('' !== $data) {
             $conn->WebSocket->request->getBody()->write($data);
-        } else {
-            if (!$this->versioner->isVersionEnabled($conn->WebSocket->request)) {
-                return $this->close($conn);
-            }
-
-            $conn->WebSocket->version = $this->versioner->getVersion($conn->WebSocket->request);
         }
+
+        if (!$this->versioner->isVersionEnabled($conn->WebSocket->request)) {
+            return $this->close($conn);
+        }
+
+        $conn->WebSocket->version = $this->versioner->getVersion($conn->WebSocket->request);
 
         try {
             $response = $conn->WebSocket->version->handshake($conn->WebSocket->request);
