@@ -91,7 +91,11 @@ $ php chat.php
 
 ```javascript
 // Then some JavaScript in the browser:
-var conn = new WebSocket('ws://localhost:8080/echo');
-conn.onmessage = function(e) { console.log(e.data); };
-conn.send('Hello Me!');
+var connection = new WebSocket('ws://localhost:8080/echo');
+
+connection.onmessage = function(event) {
+  console.log(event.data);
+};
+
+connection.send('Hello Me!');
 ```
