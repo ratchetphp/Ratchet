@@ -26,7 +26,7 @@
         "php": ">=5.3.9"
       , "react/socket": "^0.3 || ^0.4"
       , "guzzle/http": "^3.6"
-      , "symfony/http-foundation": "^2.2"
-      , "symfony/routing": "^2.2"
+      , "symfony/http-foundation": "^2.2|^3.0"
+      , "symfony/routing": "^2.2|^3.0"
     }
 }
