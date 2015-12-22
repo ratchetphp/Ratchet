@@ -21,7 +21,15 @@ You can find more details in the [server conf docs](http://socketo.me/docs/deplo
 
 PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 (or higher) is *highly* recommended for its performance improvements.
 
-### Documentation
+###Installation
+
+Package is available on Packagist, you can install it using Composer.
+
+```shell
+composer require cboden/ratchet
+```
+
+###Documentation
 
 User and API documentation is available on Ratchet's website: http://socketo.me
 
@@ -85,7 +93,7 @@ $app->route('/echo', new Ratchet\Server\EchoServer, array('*'));
 $app->run();
 ```
 
-```
+```shell
 $ php chat.php
 ```
 
