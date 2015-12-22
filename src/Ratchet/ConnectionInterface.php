@@ -11,16 +11,17 @@ const VERSION = 'Ratchet/0.3.3';
  * A proxy object representing a connection to the application
  * This acts as a container to store data (in memory) about the connection
  */
-interface ConnectionInterface {
+interface ConnectionInterface
+{
     /**
      * Send data to the connection
-     * @param  string $data
+     * @param  string                       $data
      * @return \Ratchet\ConnectionInterface
      */
-    function send($data);
+    public function send($data);
 
     /**
      * Close the connection
      */
-    function close();
+    public function close();
 }

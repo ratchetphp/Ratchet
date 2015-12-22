@@ -1,7 +1,8 @@
 <?php
 use Guzzle\Http\Message\Request;
 
-class GuzzleTest extends \PHPUnit_Framework_TestCase {
+class GuzzleTest extends \PHPUnit_Framework_TestCase
+{
     protected $_request;
 
     protected $_headers = array(
@@ -14,26 +15,31 @@ class GuzzleTest extends \PHPUnit_Framework_TestCase {
       , 'Sec-WebSocket-Version' => '13'
     );
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->_request = new Request('GET', 'http://localhost', $this->_headers);
     }
 
-    public function testGetHeaderString() {
-        $this->assertEquals('Upgrade', (string)$this->_request->getHeader('connection'));
-        $this->assertEquals('9bnXNp3ae6FbFFRtPdiPXA==', (string)$this->_request->getHeader('Sec-Websocket-Key'));
+    public function testGetHeaderString()
+    {
+        $this->assertEquals('Upgrade', (string) $this->_request->getHeader('connection'));
+        $this->assertEquals('9bnXNp3ae6FbFFRtPdiPXA==', (string) $this->_request->getHeader('Sec-Websocket-Key'));
     }
 
-    public function testGetHeaderInteger() {
-        $this->assertSame('13', (string)$this->_request->getHeader('Sec-Websocket-Version'));
-        $this->assertSame(13, (int)(string)$this->_request->getHeader('Sec-WebSocket-Version'));
+    public function testGetHeaderInteger()
+    {
+        $this->assertSame('13', (string) $this->_request->getHeader('Sec-Websocket-Version'));
+        $this->assertSame(13, (int) (string) $this->_request->getHeader('Sec-WebSocket-Version'));
     }
 
-    public function testGetHeaderObject() {
+    public function testGetHeaderObject()
+    {
         $this->assertInstanceOf('Guzzle\Http\Message\Header', $this->_request->getHeader('Origin'));
         $this->assertNull($this->_request->getHeader('Non-existant-header'));
     }
 
-    public function testHeaderObjectNormalizeValues() {
+    public function testHeaderObjectNormalizeValues()
+    {
         $expected  = 1 + substr_count($this->_headers['Sec-WebSocket-Protocol'], ',');
         $protocols = $this->_request->getHeader('Sec-WebSocket-Protocol')->normalize();
         $count     = 0;
@@ -46,7 +52,8 @@ class GuzzleTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, count($protocols));
     }
 
-    public function testRequestFactoryCreateSignature() {
+    public function testRequestFactoryCreateSignature()
+    {
         $ref = new \ReflectionMethod('Guzzle\Http\Message\RequestFactory', 'create');
         $this->assertEquals(2, $ref->getNumberOfRequiredParameters());
     }

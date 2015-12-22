@@ -1,8 +1,6 @@
 <?php
 namespace Ratchet\Session;
 use Ratchet\AbstractMessageComponentTestCase;
-use Ratchet\Session\SessionProvider;
-use Ratchet\Mock\MemorySessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 use Guzzle\Http\Message\Request;
@@ -12,8 +10,10 @@ use Guzzle\Http\Message\Request;
  * @covers Ratchet\Session\Storage\VirtualSessionStorage
  * @covers Ratchet\Session\Storage\Proxy\VirtualProxy
  */
-class SessionProviderTest extends AbstractMessageComponentTestCase {
-    public function setUp() {
+class SessionComponentTest extends AbstractMessageComponentTestCase
+{
+    public function setUp()
+    {
         if (!class_exists('Symfony\Component\HttpFoundation\Session\Session')) {
             return $this->markTestSkipped('Dependency of Symfony HttpFoundation failed');
         }
@@ -22,23 +22,28 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->_serv = new SessionProvider($this->_app, new NullSessionHandler);
     }
 
-    public function tearDown() {
+    public function tearDown()
+    {
         ini_set('session.serialize_handler', 'php');
     }
 
-    public function getConnectionClassString() {
+    public function getConnectionClassString()
+    {
         return '\Ratchet\ConnectionInterface';
     }
 
-    public function getDecoratorClassString() {
+    public function getDecoratorClassString()
+    {
         return '\Ratchet\NullComponent';
     }
 
-    public function getComponentClassString() {
+    public function getComponentClassString()
+    {
         return '\Ratchet\MessageComponentInterface';
     }
 
-    public function classCaseProvider() {
+    public function classCaseProvider()
+    {
         return array(
             array('php', 'Php')
           , array('php_binary', 'PhpBinary')
@@ -48,7 +53,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     /**
      * @dataProvider classCaseProvider
      */
-    public function testToClassCase($in, $out) {
+    public function testToClassCase($in, $out)
+    {
         $ref = new \ReflectionClass('\\Ratchet\\Session\\SessionProvider');
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
@@ -60,7 +66,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     /**
      * I think I have severely butchered this test...it's not so much of a unit test as it is a full-fledged component test
      */
-    public function testConnectionValueFromPdo() {
+    public function testConnectionValueFromPdo()
+    {
         if (!extension_loaded('PDO') || !extension_loaded('pdo_sqlite')) {
             return $this->markTestSkipped('Session test requires PDO and pdo_sqlite');
         }
@@ -96,7 +103,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->assertEquals('world', $connection->Session->get('hello'));
     }
 
-    protected function newConn() {
+    protected function newConn()
+    {
         $conn = $this->getMock('Ratchet\ConnectionInterface');
 
         $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
@@ -108,20 +116,23 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         return $conn;
     }
 
-    public function testOnMessageDecorator() {
+    public function testOnMessageDecorator()
+    {
         $message = "Database calls are usually blocking  :(";
         $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $message);
         $this->_serv->onMessage($this->_conn, $message);
     }
 
-    public function testGetSubProtocolsReturnsArray() {
+    public function testGetSubProtocolsReturnsArray()
+    {
         $mock = $this->getMock('Ratchet\\MessageComponentInterface');
         $comp = new SessionProvider($mock, new NullSessionHandler);
 
         $this->assertInternalType('array', $comp->getSubProtocols());
     }
 
-    public function testGetSubProtocolsGetFromApp() {
+    public function testGetSubProtocolsGetFromApp()
+    {
         $mock = $this->getMock('Ratchet\WebSocket\Stub\WsMessageComponentInterface');
         $mock->expects($this->once())->method('getSubProtocols')->will($this->returnValue(array('hello', 'world')));
         $comp = new SessionProvider($mock, new NullSessionHandler);
@@ -129,7 +140,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
     }
 
-    public function testRejectInvalidSeralizers() {
+    public function testRejectInvalidSeralizers()
+    {
         if (!function_exists('wddx_serialize_value')) {
             $this->markTestSkipped();
         }

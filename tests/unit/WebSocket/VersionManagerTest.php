@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\WebSocket;
-use Ratchet\WebSocket\VersionManager;
 use Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\HyBi10;
 use Ratchet\WebSocket\Version\Hixie76;
@@ -9,21 +8,25 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 /**
  * @covers Ratchet\WebSocket\VersionManager
  */
-class VersionManagerTest extends \PHPUnit_Framework_TestCase {
+class VersionManagerTest extends \PHPUnit_Framework_TestCase
+{
     protected $vm;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->vm = new VersionManager;
     }
 
-    public function testFluentInterface() {
+    public function testFluentInterface()
+    {
         $rfc = new RFC6455;
 
         $this->assertSame($this->vm, $this->vm->enableVersion($rfc));
         $this->assertSame($this->vm, $this->vm->disableVersion(13));
     }
 
-    public function testGetVersion() {
+    public function testGetVersion()
+    {
         $rfc = new RFC6455;
         $this->vm->enableVersion($rfc);
 
@@ -35,7 +38,8 @@ class VersionManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($rfc, $this->vm->getVersion($req));
     }
 
-    public function testGetNopeVersionAndDisable() {
+    public function testGetNopeVersionAndDisable()
+    {
         $req = new EntityEnclosingRequest('get', '/', array(
             'Host' => 'socketo.me'
           , 'Sec-WebSocket-Version' => 13
@@ -46,7 +50,8 @@ class VersionManagerTest extends \PHPUnit_Framework_TestCase {
         $this->vm->getVersion($req);
     }
 
-    public function testYesIsVersionEnabled() {
+    public function testYesIsVersionEnabled()
+    {
         $this->vm->enableVersion(new RFC6455);
 
         $this->assertTrue($this->vm->isVersionEnabled(new EntityEnclosingRequest('get', '/', array(
@@ -55,14 +60,16 @@ class VersionManagerTest extends \PHPUnit_Framework_TestCase {
         ))));
     }
 
-    public function testNoIsVersionEnabled() {
+    public function testNoIsVersionEnabled()
+    {
         $this->assertFalse($this->vm->isVersionEnabled(new EntityEnclosingRequest('get', '/', array(
             'Host' => 'socketo.me'
           , 'Sec-WebSocket-Version' => 9000
         ))));
     }
 
-    public function testGetSupportedVersionString() {
+    public function testGetSupportedVersionString()
+    {
         $v1 = new RFC6455;
         $v2 = new HyBi10;
 
@@ -76,7 +83,8 @@ class VersionManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains($v2->getVersionNumber(), $values);
     }
 
-    public function testGetSupportedVersionAfterRemoval() {
+    public function testGetSupportedVersionAfterRemoval()
+    {
         $this->vm->enableVersion(new RFC6455);
         $this->vm->enableVersion(new HyBi10);
         $this->vm->enableVersion(new Hixie76);

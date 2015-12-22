@@ -6,23 +6,28 @@ use Ratchet\WebSocket\Version\RFC6455\Frame;
 /**
  * @covers Ratchet\WebSocket\Version\RFC6455\Message
  */
-class MessageTest extends \PHPUnit_Framework_TestCase {
+class MessageTest extends \PHPUnit_Framework_TestCase
+{
     protected $message;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->message = new Message;
     }
 
-    public function testNoFrames() {
+    public function testNoFrames()
+    {
         $this->assertFalse($this->message->isCoalesced());
     }
 
-    public function testNoFramesOpCode() {
+    public function testNoFramesOpCode()
+    {
         $this->setExpectedException('UnderflowException');
         $this->message->getOpCode();
     }
 
-    public function testFragmentationPayload() {
+    public function testFragmentationPayload()
+    {
         $a = 'Hello ';
         $b = 'World!';
 
@@ -35,14 +40,16 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($a . $b, $this->message->getPayload());
     }
 
-    public function testUnbufferedFragment() {
+    public function testUnbufferedFragment()
+    {
         $this->message->addFrame(new Frame('The quick brow', false));
 
         $this->setExpectedException('UnderflowException');
         $this->message->getPayload();
     }
 
-    public function testGetOpCode() {
+    public function testGetOpCode()
+    {
         $this->message
             ->addFrame(new Frame('The quick brow', false, Frame::OP_TEXT))
             ->addFrame(new Frame('n fox jumps ov', false, Frame::OP_CONTINUE))
@@ -52,7 +59,8 @@ class MessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Frame::OP_TEXT, $this->message->getOpCode());
     }
 
-    public function testGetUnBufferedPayloadLength() {
+    public function testGetUnBufferedPayloadLength()
+    {
         $this->message
             ->addFrame(new Frame('The quick brow', false, Frame::OP_TEXT))
             ->addFrame(new Frame('n fox jumps ov', false, Frame::OP_CONTINUE))

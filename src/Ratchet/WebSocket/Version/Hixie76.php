@@ -18,39 +18,43 @@ use Ratchet\WebSocket\Version\Hixie76\Frame;
  * The Hixie76 is currently implemented by Safari
  * @link http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
  */
-class Hixie76 implements VersionInterface {
+class Hixie76 implements VersionInterface
+{
     /**
      * {@inheritdoc}
      */
-    public function isProtocol(RequestInterface $request) {
+    public function isProtocol(RequestInterface $request)
+    {
         return !(null === $request->getHeader('Sec-WebSocket-Key2'));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVersionNumber() {
+    public function getVersionNumber()
+    {
         return 0;
     }
 
     /**
      * @param  \Guzzle\Http\Message\RequestInterface $request
      * @return \Guzzle\Http\Message\Response
-     * @throws \UnderflowException If there hasn't been enough data received
+     * @throws \UnderflowException                   If there hasn't been enough data received
      */
-    public function handshake(RequestInterface $request) {
+    public function handshake(RequestInterface $request)
+    {
         $body = substr($request->getBody(), 0, 8);
         if (8 !== strlen($body)) {
             throw new \UnderflowException("Not enough data received to issue challenge response");
         }
 
-        $challenge = $this->sign((string)$request->getHeader('Sec-WebSocket-Key1'), (string)$request->getHeader('Sec-WebSocket-Key2'), $body);
+        $challenge = $this->sign((string) $request->getHeader('Sec-WebSocket-Key1'), (string) $request->getHeader('Sec-WebSocket-Key2'), $body);
 
         $headers = array(
             'Upgrade'                => 'WebSocket'
           , 'Connection'             => 'Upgrade'
-          , 'Sec-WebSocket-Origin'   => (string)$request->getHeader('Origin')
-          , 'Sec-WebSocket-Location' => 'ws://' . (string)$request->getHeader('Host') . $request->getPath()
+          , 'Sec-WebSocket-Origin'   => (string) $request->getHeader('Origin')
+          , 'Sec-WebSocket-Location' => 'ws://' . (string) $request->getHeader('Host') . $request->getPath()
         );
 
         $response = new Response(101, $headers, $challenge);
@@ -62,7 +66,8 @@ class Hixie76 implements VersionInterface {
     /**
      * {@inheritdoc}
      */
-    public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback) {
+    public function upgradeConnection(ConnectionInterface $conn, MessageInterface $coalescedCallback)
+    {
         $upgraded = new Connection($conn);
 
         if (!isset($upgraded->WebSocket)) {
@@ -74,7 +79,8 @@ class Hixie76 implements VersionInterface {
         return $upgraded;
     }
 
-    public function onMessage(ConnectionInterface $from, $data) {
+    public function onMessage(ConnectionInterface $from, $data)
+    {
         $overflow = '';
 
         if (!isset($from->WebSocket->frame)) {
@@ -98,11 +104,13 @@ class Hixie76 implements VersionInterface {
         }
     }
 
-    public function newFrame() {
+    public function newFrame()
+    {
         return new Frame;
     }
 
-    public function generateKeyNumber($key) {
+    public function generateKeyNumber($key)
+    {
         if (0 === substr_count($key, ' ')) {
             return 0;
         }
@@ -110,7 +118,8 @@ class Hixie76 implements VersionInterface {
         return preg_replace('[\D]', '', $key) / substr_count($key, ' ');
     }
 
-    protected function sign($key1, $key2, $code) {
+    protected function sign($key1, $key2, $code)
+    {
         return md5(
             pack('N', $this->generateKeyNumber($key1))
           . pack('N', $this->generateKeyNumber($key2))

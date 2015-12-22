@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\WebSocket\Version;
-use Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\RFC6455\Frame;
 use Guzzle\Http\Message\RequestFactory;
 use Guzzle\Http\Message\EntityEnclosingRequest;
@@ -8,21 +7,25 @@ use Guzzle\Http\Message\EntityEnclosingRequest;
 /**
  * @covers Ratchet\WebSocket\Version\RFC6455
  */
-class RFC6455Test extends \PHPUnit_Framework_TestCase {
+class RFC6455Test extends \PHPUnit_Framework_TestCase
+{
     protected $version;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->version = new RFC6455;
     }
 
     /**
      * @dataProvider handshakeProvider
      */
-    public function testKeySigningForHandshake($key, $accept) {
+    public function testKeySigningForHandshake($key, $accept)
+    {
         $this->assertEquals($accept, $this->version->sign($key));
     }
 
-    public static function handshakeProvider() {
+    public static function handshakeProvider()
+    {
         return array(
             array('x3JJHMbDL1EzLkh9GBhXDw==', 'HSmrc0sMlYUkAGmm5OPpG2HaGWk=')
           , array('dGhlIHNhbXBsZSBub25jZQ==', 's3pPLMBiTxaQ9kYGzzhZRbK+xOo=')
@@ -32,14 +35,16 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider UnframeMessageProvider
      */
-    public function testUnframeMessage($message, $framed) {
+    public function testUnframeMessage($message, $framed)
+    {
         $frame = new Frame;
         $frame->addBuffer(base64_decode($framed));
 
         $this->assertEquals($message, $frame->getPayload());
     }
 
-    public static function UnframeMessageProvider() {
+    public static function UnframeMessageProvider()
+    {
         return array(
             array('Hello World!',                'gYydAIfa1WXrtvIg0LXvbOP7')
           , array('!@#$%^&*()-=_+[]{}\|/.,<>`~', 'gZv+h96r38f9j9vZ+IHWrvOWoayF9oX6gtfRqfKXwOeg')
@@ -48,7 +53,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testUnframeMatchesPreFraming() {
+    public function testUnframeMatchesPreFraming()
+    {
         $string = 'Hello World!';
         $framed = $this->version->newFrame($string)->getContents();
 
@@ -70,7 +76,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
       , 'Sec-WebSocket-Version'  => 13
     );
 
-    public function caseVariantProvider() {
+    public function caseVariantProvider()
+    {
         return array(
             array('Sec-Websocket-Version')
           , array('sec-websocket-version')
@@ -82,7 +89,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider caseVariantProvider
      */
-    public function testIsProtocolWithCaseInsensitivity($headerName) {
+    public function testIsProtocolWithCaseInsensitivity($headerName)
+    {
         $header = static::$good_header;
         unset($header['Sec-WebSocket-Version']);
         $header[$headerName] = 13;
@@ -94,7 +102,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
      * A helper function to try and quickly put together a valid WebSocket HTTP handshake
      * but optionally replace a piece to an invalid value for failure testing
      */
-    public static function getAndSpliceHeader($key = null, $val = null) {
+    public static function getAndSpliceHeader($key = null, $val = null)
+    {
         $headers = static::$good_header;
 
         if (null !== $key && null !== $val) {
@@ -114,7 +123,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
         return $header;
     }
 
-    public static function headerHandshakeProvider() {
+    public static function headerHandshakeProvider()
+    {
         return array(
             array(false, "GET /test HTTP/1.0\r\n" . static::getAndSpliceHeader())
           , array(true,  static::$good_rest . "\r\n" . static::getAndSpliceHeader())
@@ -128,7 +138,8 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider headerHandshakeProvider
      */
-    public function testVariousHeadersToCheckHandshakeTolerance($pass, $header) {
+    public function testVariousHeadersToCheckHandshakeTolerance($pass, $header)
+    {
         $request  = RequestFactory::getInstance()->fromMessage($header);
         $response = $this->version->handshake($request);
 
@@ -141,11 +152,13 @@ class RFC6455Test extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testNewMessage() {
+    public function testNewMessage()
+    {
         $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Message', $this->version->newMessage());
     }
 
-    public function testNewFrame() {
+    public function testNewFrame()
+    {
         $this->assertInstanceOf('\\Ratchet\\WebSocket\\Version\\RFC6455\\Frame', $this->version->newFrame());
     }
 }

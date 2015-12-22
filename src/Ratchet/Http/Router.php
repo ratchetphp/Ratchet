@@ -8,13 +8,15 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
-class Router implements HttpServerInterface {
+class Router implements HttpServerInterface
+{
     /**
      * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
      */
     protected $_matcher;
 
-    public function __construct(UrlMatcherInterface $matcher) {
+    public function __construct(UrlMatcherInterface $matcher)
+    {
         $this->_matcher = $matcher;
     }
 
@@ -22,7 +24,8 @@ class Router implements HttpServerInterface {
      * {@inheritdoc}
      * @throws \UnexpectedValueException If a controller is not \Ratchet\Http\HttpServerInterface
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
+    {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
@@ -48,7 +51,7 @@ class Router implements HttpServerInterface {
         }
 
         $parameters = array();
-        foreach($route as $key => $value) {
+        foreach ($route as $key => $value) {
             if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
                 $parameters[$key] = $value;
             }
@@ -66,14 +69,16 @@ class Router implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         $from->controller->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         if (isset($conn->controller)) {
             $conn->controller->onClose($conn);
         }
@@ -82,7 +87,8 @@ class Router implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         if (isset($conn->controller)) {
             $conn->controller->onError($conn, $e);
         }
@@ -90,16 +96,17 @@ class Router implements HttpServerInterface {
 
     /**
      * Close a connection with an HTTP response
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param int                          $code HTTP status code
+     * @param  \Ratchet\ConnectionInterface $conn
+     * @param  int                          $code HTTP status code
      * @return null
      */
-    protected function close(ConnectionInterface $conn, $code = 400) {
+    protected function close(ConnectionInterface $conn, $code = 400)
+    {
         $response = new Response($code, array(
             'X-Powered-By' => \Ratchet\VERSION
         ));
 
-        $conn->send((string)$response);
+        $conn->send((string) $response);
         $conn->close();
     }
 }

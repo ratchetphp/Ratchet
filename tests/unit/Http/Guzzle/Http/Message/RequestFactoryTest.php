@@ -1,18 +1,20 @@
 <?php
 namespace Ratchet\Http\Guzzle\Http\Message;
-use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
 
 /**
  * @covers Ratchet\Http\Guzzle\Http\Message\RequestFactory
  */
-class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
+class RequestFactoryTest extends \PHPUnit_Framework_TestCase
+{
     protected $factory;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->factory = RequestFactory::getInstance();
     }
 
-    public function testMessageProvider() {
+    public function testMessageProvider()
+    {
         return array(
             'status' => 'GET / HTTP/1.1'
           , 'headers' => array(
@@ -26,7 +28,8 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
-    public function combineMessage($status, array $headers, $body = '') {
+    public function combineMessage($status, array $headers, $body = '')
+    {
         $message = $status . "\r\n";
 
         foreach ($headers as $key => $val) {
@@ -38,7 +41,8 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
         return $message;
     }
 
-    public function testExpectedDataFromGuzzleHeaders() {
+    public function testExpectedDataFromGuzzleHeaders()
+    {
         $parts   = $this->testMessageProvider();
         $message = $this->combineMessage($parts['status'], $parts['headers'], $parts['body']);
         $object  = $this->factory->fromMessage($message);
@@ -48,7 +52,8 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testExpectedDataFromNonGuzzleHeaders() {
+    public function testExpectedDataFromNonGuzzleHeaders()
+    {
         $parts   = $this->testMessageProvider();
         $message = $this->combineMessage($parts['status'], $parts['headers'], $parts['body']);
         $object  = $this->factory->fromMessage($message);
@@ -57,11 +62,12 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($object->getHeader('Nope'));
     }
 
-    public function testExpectedDataFromNonGuzzleBody() {
+    public function testExpectedDataFromNonGuzzleBody()
+    {
         $parts   = $this->testMessageProvider();
         $message = $this->combineMessage($parts['status'], $parts['headers'], $parts['body']);
         $object  = $this->factory->fromMessage($message);
 
-        $this->assertEquals($parts['body'], (string)$object->getBody());
+        $this->assertEquals($parts['body'], (string) $object->getBody());
     }
 }

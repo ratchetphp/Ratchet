@@ -1,18 +1,20 @@
 <?php
 namespace Ratchet\Http;
-use Ratchet\Http\HttpRequestParser;
 
 /**
  * @covers Ratchet\Http\HttpRequestParser
  */
-class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
+class HttpRequestParserTest extends \PHPUnit_Framework_TestCase
+{
     protected $parser;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->parser = new HttpRequestParser;
     }
 
-    public function headersProvider() {
+    public function headersProvider()
+    {
         return array(
             array(false, "GET / HTTP/1.1\r\nHost: socketo.me\r\n")
           , array(true,  "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n")
@@ -26,11 +28,13 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider headersProvider
      */
-    public function testIsEom($expected, $message) {
+    public function testIsEom($expected, $message)
+    {
         $this->assertEquals($expected, $this->parser->isEom($message));
     }
 
-    public function testBufferOverflowResponse() {
+    public function testBufferOverflowResponse()
+    {
         $conn = $this->getMock('\Ratchet\ConnectionInterface');
 
         $this->parser->maxSize = 20;
@@ -42,7 +46,8 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
         $this->parser->onMessage($conn, "Header-Is: Too Big");
     }
 
-    public function testReturnTypeIsRequest() {
+    public function testReturnTypeIsRequest()
+    {
         $conn = $this->getMock('\Ratchet\ConnectionInterface');
         $return = $this->parser->onMessage($conn, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n");
 
