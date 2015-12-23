@@ -1,11 +1,10 @@
 <?php
 namespace Ratchet;
-use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\Wamp\WampServerInterface;
 
-class NullComponent implements MessageComponentInterface, WsServerInterface, WampServerInterface {
+class NullComponent implements MessageComponentInterface, WsServerInterface, WampServerInterface
+{
     public function onOpen(ConnectionInterface $conn) {}
 
     public function onMessage(ConnectionInterface $conn, $msg) {}
@@ -22,7 +21,8 @@ class NullComponent implements MessageComponentInterface, WsServerInterface, Wam
 
     public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array()) {}
 
-    public function getSubProtocols() {
+    public function getSubProtocols()
+    {
         return array();
     }
 }

@@ -21,7 +21,15 @@ You can find more details in the [server conf docs](http://socketo.me/docs/deplo
 
 PHP 5.3.9 (or higher) is required. If you have access, PHP 5.4 (or higher) is *highly* recommended for its performance improvements.
 
-### Documentation
+###Installation
+
+Package is available on Packagist, you can install it using Composer.
+
+```shell
+composer require cboden/ratchet
+```
+
+###Documentation
 
 User and API documentation is available on Ratchet's website: http://socketo.me
 
@@ -38,25 +46,28 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-    // Make sure composer dependencies have been installed
-    require __DIR__ . '/vendor/autoload.php';
+// Make sure composer dependencies have been installed
+require __DIR__ . '/vendor/autoload.php';
 
 /**
- * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class MyChat implements MessageComponentInterface {
-    protected $clients;
+class MyChat implements MessageComponentInterface
+{
+    private $clients;
 
-    public function __construct() {
-        $this->clients = new \SplObjectStorage;
+    public function __construct()
+    {
+        $this->clients = new \SplObjectStorage();
     }
 
-    public function onOpen(ConnectionInterface $conn) {
+    public function onOpen(ConnectionInterface $conn)
+    {
         $this->clients->attach($conn);
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         foreach ($this->clients as $client) {
             if ($from != $client) {
                 $client->send($msg);
@@ -64,27 +75,35 @@ class MyChat implements MessageComponentInterface {
         }
     }
 
-    public function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         $this->clients->detach($conn);
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         $conn->close();
     }
 }
 
-    // Run the server application through the WebSocket protocol on port 8080
-    $app = new Ratchet\App('localhost', 8080);
-    $app->route('/chat', new MyChat);
-    $app->route('/echo', new Ratchet\Server\EchoServer, array('*'));
-    $app->run();
+// Run the server application through the WebSocket protocol on port 8080
+$app = new Ratchet\App('localhost', 8080);
+$app->route('/chat', new MyChat);
+$app->route('/echo', new Ratchet\Server\EchoServer, array('*'));
+$app->run();
 ```
 
-    $ php chat.php
+```shell
+$ php chat.php
+```
 
 ```javascript
-    // Then some JavaScript in the browser:
-    var conn = new WebSocket('ws://localhost:8080/echo');
-    conn.onmessage = function(e) { console.log(e.data); };
-    conn.send('Hello Me!');
+// Then some JavaScript in the browser:
+var connection = new WebSocket('ws://localhost:8080/echo');
+
+connection.onmessage = function(event) {
+  console.log(event.data);
+};
+
+connection.send('Hello Me!');
 ```

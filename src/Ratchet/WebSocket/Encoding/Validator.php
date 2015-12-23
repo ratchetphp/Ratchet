@@ -4,7 +4,8 @@ namespace Ratchet\WebSocket\Encoding;
 /**
  * This class handled encoding validation
  */
-class Validator {
+class Validator
+{
     const UTF8_ACCEPT = 0;
     const UTF8_REJECT = 1;
 
@@ -43,7 +44,8 @@ class Validator {
       */
      private $hasIconv = false;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->hasMbString = extension_loaded('mbstring');
         $this->hasIconv    = extension_loaded('iconv');
     }
@@ -53,7 +55,8 @@ class Validator {
      * @param  string $against The type of encoding to check against
      * @return bool
      */
-    public function checkEncoding($str, $against) {
+    public function checkEncoding($str, $against)
+    {
         if ('UTF-8' == $against) {
             return $this->isUtf8($str);
         }
@@ -67,7 +70,8 @@ class Validator {
         return true;
     }
 
-    protected function isUtf8($str) {
+    protected function isUtf8($str)
+    {
         if ($this->hasMbString) {
             if (false === mb_check_encoding($str, 'UTF-8')) {
                 return false;

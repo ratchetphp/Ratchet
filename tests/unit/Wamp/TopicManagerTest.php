@@ -4,7 +4,8 @@ namespace Ratchet\Wamp;
 /**
  * @covers Ratchet\Wamp\TopicManager
  */
-class TopicManagerTest extends \PHPUnit_Framework_TestCase {
+class TopicManagerTest extends \PHPUnit_Framework_TestCase
+{
     private $mock;
 
     /**
@@ -17,7 +18,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
      */
     private $conn;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);
@@ -26,7 +28,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onOpen($this->conn);
     }
 
-    public function testGetTopicReturnsTopicObject() {
+    public function testGetTopicReturnsTopicObject()
+    {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
         $method->setAccessible(true);
@@ -36,7 +39,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('Ratchet\Wamp\Topic', $topic);
     }
 
-    public function testGetTopicCreatesTopicWithSameName() {
+    public function testGetTopicCreatesTopicWithSameName()
+    {
         $name = 'The Topic';
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
@@ -48,7 +52,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($name, $topic->getId());
     }
 
-    public function testGetTopicReturnsSameObject() {
+    public function testGetTopicReturnsSameObject()
+    {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
         $method->setAccessible(true);
@@ -59,12 +64,14 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($topic, $again);
     }
 
-    public function testOnOpen() {
+    public function testOnOpen()
+    {
         $this->mock->expects($this->once())->method('onOpen');
         $this->mngr->onOpen($this->conn);
     }
 
-    public function testOnCall() {
+    public function testOnCall()
+    {
         $id = uniqid();
 
         $this->mock->expects($this->once())->method('onCall')->with(
@@ -77,7 +84,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onCall($this->conn, $id, 'new topic', array());
     }
 
-    public function testOnSubscribeCreatesTopicObject() {
+    public function testOnSubscribeCreatesTopicObject()
+    {
         $this->mock->expects($this->once())->method('onSubscribe')->with(
             $this->conn, $this->isInstanceOf('Ratchet\Wamp\Topic')
         );
@@ -85,7 +93,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onSubscribe($this->conn, 'new topic');
     }
 
-    public function testTopicIsInConnectionOnSubscribe() {
+    public function testTopicIsInConnectionOnSubscribe()
+    {
         $name = 'New Topic';
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
@@ -99,14 +108,16 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($this->conn->WAMP->subscriptions->contains($topic));
     }
 
-    public function testDoubleSubscriptionFiresOnce() {
+    public function testDoubleSubscriptionFiresOnce()
+    {
         $this->mock->expects($this->exactly(1))->method('onSubscribe');
 
         $this->mngr->onSubscribe($this->conn, 'same topic');
         $this->mngr->onSubscribe($this->conn, 'same topic');
     }
 
-    public function testUnsubscribeEvent() {
+    public function testUnsubscribeEvent()
+    {
         $name = 'in and out';
         $this->mock->expects($this->once())->method('onUnsubscribe')->with(
             $this->conn, $this->isInstanceOf('Ratchet\Wamp\Topic')
@@ -116,7 +127,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onUnsubscribe($this->conn, $name);
     }
 
-    public function testUnsubscribeFiresOnce() {
+    public function testUnsubscribeFiresOnce()
+    {
         $name = 'getting sleepy';
         $this->mock->expects($this->exactly(1))->method('onUnsubscribe');
 
@@ -125,7 +137,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onUnsubscribe($this->conn, $name);
     }
 
-    public function testUnsubscribeRemovesTopicFromConnection() {
+    public function testUnsubscribeRemovesTopicFromConnection()
+    {
         $name = 'Bye Bye Topic';
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
@@ -140,7 +153,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($this->conn->WAMP->subscriptions->contains($topic));
     }
 
-    public function testOnPublishBubbles() {
+    public function testOnPublishBubbles()
+    {
         $msg = 'Cover all the code!';
 
         $this->mock->expects($this->once())->method('onPublish')->with(
@@ -154,12 +168,14 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->mngr->onPublish($this->conn, 'topic coverage', $msg, array(), array());
     }
 
-    public function testOnCloseBubbles() {
+    public function testOnCloseBubbles()
+    {
         $this->mock->expects($this->once())->method('onClose')->with($this->conn);
         $this->mngr->onClose($this->conn);
     }
 
-    protected function topicProvider($name) {
+    protected function topicProvider($name)
+    {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
         $method->setAccessible(true);
@@ -172,7 +188,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         return array($topic, $attribute);
     }
 
-    public function testConnIsRemovedFromTopicOnClose() {
+    public function testConnIsRemovedFromTopicOnClose()
+    {
         $name = 'State Testing';
         list($topic, $attribute) = $this->topicProvider($name);
 
@@ -184,7 +201,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($topic->has($this->conn));
     }
 
-    public static function topicConnExpectationProvider() {
+    public static function topicConnExpectationProvider()
+    {
         return array(
             array(true, 'onClose', 0)
           , array(true, 'onUnsubscribe', 0)
@@ -196,7 +214,8 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider topicConnExpectationProvider
      */
-    public function testTopicRetentionFromLeavingConnections($autoDelete, $methodCall, $expectation) {
+    public function testTopicRetentionFromLeavingConnections($autoDelete, $methodCall, $expectation)
+    {
         $topicName = 'checkTopic';
         list($topic, $attribute) = $this->topicProvider($topicName);
         $topic->autoDelete = $autoDelete;
@@ -207,18 +226,21 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
         $this->assertCount($expectation, $attribute->getValue($this->mngr));
     }
 
-    public function testOnErrorBubbles() {
+    public function testOnErrorBubbles()
+    {
         $e = new \Exception('All work and no play makes Chris a dull boy');
         $this->mock->expects($this->once())->method('onError')->with($this->conn, $e);
 
         $this->mngr->onError($this->conn, $e);
     }
 
-    public function testGetSubProtocolsReturnsArray() {
+    public function testGetSubProtocolsReturnsArray()
+    {
         $this->assertInternalType('array', $this->mngr->getSubProtocols());
     }
 
-    public function testGetSubProtocolsBubbles() {
+    public function testGetSubProtocolsBubbles()
+    {
         $subs = array('hello', 'world');
         $app  = $this->getMock('Ratchet\Wamp\Stub\WsWampServerInterface');
         $app->expects($this->once())->method('getSubProtocols')->will($this->returnValue($subs));

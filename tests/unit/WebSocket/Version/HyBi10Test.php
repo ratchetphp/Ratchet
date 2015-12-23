@@ -1,22 +1,24 @@
 <?php
 namespace Ratchet\WebSocket\Version;
-use Ratchet\WebSocket\Version\HyBi10;
 use Ratchet\WebSocket\Version\RFC6455\Frame;
 
 /**
  * @covers Ratchet\WebSocket\Version\Hybi10
  */
-class HyBi10Test extends \PHPUnit_Framework_TestCase {
+class HyBi10Test extends \PHPUnit_Framework_TestCase
+{
     protected $_version;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->_version = new HyBi10();
     }
 
     /**
      * Is this useful?
      */
-    public function testClassImplementsVersionInterface() {
+    public function testClassImplementsVersionInterface()
+    {
         $constraint = $this->isInstanceOf('\\Ratchet\\WebSocket\\Version\\VersionInterface');
         $this->assertThat($this->_version, $constraint);
     }
@@ -24,11 +26,13 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider HandshakeProvider
      */
-    public function testKeySigningForHandshake($key, $accept) {
+    public function testKeySigningForHandshake($key, $accept)
+    {
         $this->assertEquals($accept, $this->_version->sign($key));
     }
 
-    public static function HandshakeProvider() {
+    public static function HandshakeProvider()
+    {
         return array(
             array('x3JJHMbDL1EzLkh9GBhXDw==', 'HSmrc0sMlYUkAGmm5OPpG2HaGWk=')
           , array('dGhlIHNhbXBsZSBub25jZQ==', 's3pPLMBiTxaQ9kYGzzhZRbK+xOo=')
@@ -38,7 +42,8 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider UnframeMessageProvider
      */
-    public function testUnframeMessage($message, $framed) {
+    public function testUnframeMessage($message, $framed)
+    {
 //        $decoded = $this->_version->unframe(base64_decode($framed));
         $frame = new Frame;
         $frame->addBuffer(base64_decode($framed));
@@ -46,7 +51,8 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($message, $frame->getPayload());
     }
 
-    public static function UnframeMessageProvider() {
+    public static function UnframeMessageProvider()
+    {
         return array(
             array('Hello World!',                'gYydAIfa1WXrtvIg0LXvbOP7')
           , array('!@#$%^&*()-=_+[]{}\|/.,<>`~', 'gZv+h96r38f9j9vZ+IHWrvOWoayF9oX6gtfRqfKXwOeg')
@@ -55,7 +61,8 @@ class HyBi10Test extends \PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testUnframeMatchesPreFraming() {
+    public function testUnframeMatchesPreFraming()
+    {
         $string   = 'Hello World!';
         $framed   = $this->_version->newFrame($string)->getContents();
 

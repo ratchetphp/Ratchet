@@ -4,7 +4,8 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Guzzle\Http\Message\Response;
 
-class HttpServer implements MessageComponentInterface {
+class HttpServer implements MessageComponentInterface
+{
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
      * @var HttpRequestParser
@@ -20,7 +21,8 @@ class HttpServer implements MessageComponentInterface {
     /**
      * @param HttpServerInterface
      */
-    public function __construct(HttpServerInterface $component) {
+    public function __construct(HttpServerInterface $component)
+    {
         $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
     }
@@ -28,14 +30,16 @@ class HttpServer implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn) {
+    public function onOpen(ConnectionInterface $conn)
+    {
         $conn->httpHeadersReceived = false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         if (true !== $from->httpHeadersReceived) {
             try {
                 if (null === ($request = $this->_reqParser->onMessage($from, $msg))) {
@@ -56,7 +60,8 @@ class HttpServer implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onClose($conn);
         }
@@ -65,7 +70,8 @@ class HttpServer implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onError($conn, $e);
         } else {
@@ -75,16 +81,17 @@ class HttpServer implements MessageComponentInterface {
 
     /**
      * Close a connection with an HTTP response
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param int                          $code HTTP status code
+     * @param  \Ratchet\ConnectionInterface $conn
+     * @param  int                          $code HTTP status code
      * @return null
      */
-    protected function close(ConnectionInterface $conn, $code = 400) {
+    protected function close(ConnectionInterface $conn, $code = 400)
+    {
         $response = new Response($code, array(
             'X-Powered-By' => \Ratchet\VERSION
         ));
 
-        $conn->send((string)$response);
+        $conn->send((string) $response);
         $conn->close();
     }
 }

@@ -5,20 +5,25 @@ use Ratchet\AbstractMessageComponentTestCase;
 /**
  * @covers Ratchet\Wamp\WampServer
  */
-class WampServerTest extends AbstractMessageComponentTestCase {
-    public function getConnectionClassString() {
+class WampServerTest extends AbstractMessageComponentTestCase
+{
+    public function getConnectionClassString()
+    {
         return '\Ratchet\Wamp\WampConnection';
     }
 
-    public function getDecoratorClassString() {
+    public function getDecoratorClassString()
+    {
         return 'Ratchet\Wamp\WampServer';
     }
 
-    public function getComponentClassString() {
+    public function getComponentClassString()
+    {
         return '\Ratchet\Wamp\WampServerInterface';
     }
 
-    public function testOnMessageToEvent() {
+    public function testOnMessageToEvent()
+    {
         $published = 'Client published this message';
 
         $this->_app->expects($this->once())->method('onPublish')->with(
@@ -32,17 +37,20 @@ class WampServerTest extends AbstractMessageComponentTestCase {
         $this->_serv->onMessage($this->_conn, json_encode(array(7, 'topic', $published)));
     }
 
-    public function testGetSubProtocols() {
+    public function testGetSubProtocols()
+    {
         // todo: could expand on this
         $this->assertInternalType('array', $this->_serv->getSubProtocols());
     }
 
-    public function testConnectionClosesOnInvalidJson() {
+    public function testConnectionClosesOnInvalidJson()
+    {
         $this->_conn->expects($this->once())->method('close');
         $this->_serv->onMessage($this->_conn, 'invalid json');
     }
 
-    public function testConnectionClosesOnProtocolError() {
+    public function testConnectionClosesOnProtocolError()
+    {
         $this->_conn->expects($this->once())->method('close');
         $this->_serv->onMessage($this->_conn, json_encode(array('valid' => 'json', 'invalid' => 'protocol')));
     }

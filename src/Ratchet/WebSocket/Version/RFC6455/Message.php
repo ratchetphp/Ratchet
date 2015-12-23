@@ -3,27 +3,31 @@ namespace Ratchet\WebSocket\Version\RFC6455;
 use Ratchet\WebSocket\Version\MessageInterface;
 use Ratchet\WebSocket\Version\FrameInterface;
 
-class Message implements MessageInterface, \Countable {
+class Message implements MessageInterface, \Countable
+{
     /**
      * @var \SplDoublyLinkedList
      */
     protected $_frames;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->_frames = new \SplDoublyLinkedList;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function count() {
+    public function count()
+    {
         return count($this->_frames);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isCoalesced() {
+    public function isCoalesced()
+    {
         if (count($this->_frames) == 0) {
             return false;
         }
@@ -37,7 +41,8 @@ class Message implements MessageInterface, \Countable {
      * {@inheritdoc}
      * @todo Also, I should perhaps check the type...control frames (ping/pong/close) are not to be considered part of a message
      */
-    public function addFrame(FrameInterface $fragment) {
+    public function addFrame(FrameInterface $fragment)
+    {
         $this->_frames->push($fragment);
 
         return $this;
@@ -46,7 +51,8 @@ class Message implements MessageInterface, \Countable {
     /**
      * {@inheritdoc}
      */
-    public function getOpcode() {
+    public function getOpcode()
+    {
         if (count($this->_frames) == 0) {
             throw new \UnderflowException('No frames have been added to this message');
         }
@@ -57,7 +63,8 @@ class Message implements MessageInterface, \Countable {
     /**
      * {@inheritdoc}
      */
-    public function getPayloadLength() {
+    public function getPayloadLength()
+    {
         $len = 0;
 
         foreach ($this->_frames as $frame) {
@@ -74,7 +81,8 @@ class Message implements MessageInterface, \Countable {
     /**
      * {@inheritdoc}
      */
-    public function getPayload() {
+    public function getPayload()
+    {
         if (!$this->isCoalesced()) {
             throw new \UnderflowException('Message has not been put back together yet');
         }
@@ -91,7 +99,8 @@ class Message implements MessageInterface, \Countable {
     /**
      * {@inheritdoc}
      */
-    public function getContents() {
+    public function getContents()
+    {
         if (!$this->isCoalesced()) {
             throw new \UnderflowException("Message has not been put back together yet");
         }

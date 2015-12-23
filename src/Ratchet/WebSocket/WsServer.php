@@ -5,7 +5,6 @@ use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
-use Ratchet\WebSocket\Version;
 use Ratchet\WebSocket\Encoding\ToggleableValidator;
 
 /**
@@ -14,7 +13,8 @@ use Ratchet\WebSocket\Encoding\ToggleableValidator;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
-class WsServer implements HttpServerInterface {
+class WsServer implements HttpServerInterface
+{
     /**
      * Manage the various WebSocket versions to support
      * @var VersionManager
@@ -52,9 +52,10 @@ class WsServer implements HttpServerInterface {
 
     /**
      * @param \Ratchet\MessageComponentInterface $component Your application to run with WebSockets
-     * If you want to enable sub-protocols have your component implement WsServerInterface as well
+     *                                                      If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
-    public function __construct(MessageComponentInterface $component) {
+    public function __construct(MessageComponentInterface $component)
+    {
         $this->versioner = new VersionManager;
         $this->validator = new ToggleableValidator;
 
@@ -71,7 +72,8 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
+    {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
@@ -87,7 +89,8 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         if ($from->WebSocket->closing) {
             return;
         }
@@ -99,7 +102,8 @@ class WsServer implements HttpServerInterface {
         $this->attemptUpgrade($from, $msg);
     }
 
-    protected function attemptUpgrade(ConnectionInterface $conn, $data = '') {
+    protected function attemptUpgrade(ConnectionInterface $conn, $data = '')
+    {
         if ('' !== $data) {
             $conn->WebSocket->request->getBody()->write($data);
         }
@@ -123,7 +127,7 @@ class WsServer implements HttpServerInterface {
         }
 
         $response->setHeader('X-Powered-By', \Ratchet\VERSION);
-        $conn->send((string)$response);
+        $conn->send((string) $response);
 
         if (101 != $response->getStatusCode()) {
             return $conn->close();
@@ -141,7 +145,8 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         if ($this->connections->contains($conn)) {
             $decor = $this->connections[$conn];
             $this->connections->detach($conn);
@@ -153,7 +158,8 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         if ($conn->WebSocket->established && $this->connections->contains($conn)) {
             $this->component->onError($this->connections[$conn], $e);
         } else {
@@ -163,10 +169,11 @@ class WsServer implements HttpServerInterface {
 
     /**
      * Disable a specific version of the WebSocket protocol
-     * @param int $versionId Version ID to disable
+     * @param  int      $versionId Version ID to disable
      * @return WsServer
      */
-    public function disableVersion($versionId) {
+    public function disableVersion($versionId)
+    {
         $this->versioner->disableVersion($versionId);
 
         return $this;
@@ -177,8 +184,9 @@ class WsServer implements HttpServerInterface {
      * @param bool
      * @return WsServer
      */
-    public function setEncodingChecks($opt) {
-        $this->validator->on = (boolean)$opt;
+    public function setEncodingChecks($opt)
+    {
+        $this->validator->on = (boolean) $opt;
 
         return $this;
     }
@@ -187,7 +195,8 @@ class WsServer implements HttpServerInterface {
      * @param string
      * @return boolean
      */
-    public function isSubProtocolSupported($name) {
+    public function isSubProtocolSupported($name)
+    {
         if (!$this->isSpGenerated) {
             if ($this->component instanceof WsServerInterface) {
                 $this->acceptedSubProtocols = array_flip($this->component->getSubProtocols());
@@ -203,7 +212,8 @@ class WsServer implements HttpServerInterface {
      * @param  \Traversable|null $requested
      * @return string
      */
-    protected function getSubProtocolString(\Traversable $requested = null) {
+    protected function getSubProtocolString(\Traversable $requested = null)
+    {
         if (null !== $requested) {
             foreach ($requested as $sub) {
                 if ($this->isSubProtocolSupported($sub)) {
@@ -220,13 +230,14 @@ class WsServer implements HttpServerInterface {
      * @param \Ratchet\ConnectionInterface $conn
      * @param int                          $code HTTP status code
      */
-    protected function close(ConnectionInterface $conn, $code = 400) {
+    protected function close(ConnectionInterface $conn, $code = 400)
+    {
         $response = new Response($code, array(
             'Sec-WebSocket-Version' => $this->versioner->getSupportedVersionString()
           , 'X-Powered-By'          => \Ratchet\VERSION
         ));
 
-        $conn->send((string)$response);
+        $conn->send((string) $response);
         $conn->close();
     }
 }

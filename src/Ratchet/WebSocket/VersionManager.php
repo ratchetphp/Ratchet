@@ -7,7 +7,8 @@ use Guzzle\Http\Message\RequestInterface;
  * Manage the various versions of the WebSocket protocol
  * This accepts interfaces of versions to enable/disable
  */
-class VersionManager {
+class VersionManager
+{
     /**
      * The header string to let clients know which versions are supported
      * @var string
@@ -22,11 +23,12 @@ class VersionManager {
 
     /**
      * Get the protocol negotiator for the request, if supported
-     * @param  \Guzzle\Http\Message\RequestInterface $request
+     * @param  \Guzzle\Http\Message\RequestInterface       $request
      * @throws \InvalidArgumentException
      * @return \Ratchet\WebSocket\Version\VersionInterface
      */
-    public function getVersion(RequestInterface $request) {
+    public function getVersion(RequestInterface $request)
+    {
         foreach ($this->versions as $version) {
             if ($version->isProtocol($request)) {
                 return $version;
@@ -40,7 +42,8 @@ class VersionManager {
      * @param  \Guzzle\Http\Message\RequestInterface
      * @return bool
      */
-    public function isVersionEnabled(RequestInterface $request) {
+    public function isVersionEnabled(RequestInterface $request)
+    {
         foreach ($this->versions as $version) {
             if ($version->isProtocol($request)) {
                 return true;
@@ -55,11 +58,12 @@ class VersionManager {
      * @param  \Ratchet\WebSocket\Version\VersionInterface $version
      * @return VersionManager
      */
-    public function enableVersion(VersionInterface $version) {
+    public function enableVersion(VersionInterface $version)
+    {
         $this->versions[$version->getVersionNumber()] = $version;
 
         if (empty($this->versionString)) {
-            $this->versionString = (string)$version->getVersionNumber();
+            $this->versionString = (string) $version->getVersionNumber();
         } else {
             $this->versionString .= ", {$version->getVersionNumber()}";
         }
@@ -69,10 +73,11 @@ class VersionManager {
 
     /**
      * Disable support for a specific WebSocket protocol version
-     * @param  int $versionId The version ID to un-support
+     * @param  int            $versionId The version ID to un-support
      * @return VersionManager
      */
-    public function disableVersion($versionId) {
+    public function disableVersion($versionId)
+    {
         unset($this->versions[$versionId]);
 
         $this->versionString = implode(',', array_keys($this->versions));
@@ -84,7 +89,8 @@ class VersionManager {
      * Get a string of version numbers supported (comma delimited)
      * @return string
      */
-    public function getSupportedVersionString() {
+    public function getSupportedVersionString()
+    {
         return $this->versionString;
     }
 }
