@@ -42,6 +42,14 @@ class WsServer implements HttpServerInterface {
      */
     private $handshakeNegotiator;
 
+    /**
+     * @var \Closure
+     */
+    private $ueFlowFactory;
+
+    /**
+     * @var \Closure
+     */
     private $pongReceiver;
 
     /**
@@ -52,7 +60,6 @@ class WsServer implements HttpServerInterface {
         $this->delegate    = $component;
         $this->connections = new \SplObjectStorage;
 
-//        $this->encodingValidator   = new \Ratchet\RFC6455\Encoding\Validator;
         $this->closeFrameChecker   = new \Ratchet\RFC6455\Messaging\CloseFrameChecker;
         $this->handshakeNegotiator = new \Ratchet\RFC6455\Handshake\ServerNegotiator;
 
@@ -61,6 +68,11 @@ class WsServer implements HttpServerInterface {
         }
 
         $this->pongReceiver = function() {};
+
+        $reusableUnderflowException = new \UnderflowException;
+        $this->ueFlowFactory = function() use ($reusableUnderflowException) {
+            return $reusableUnderflowException;
+        };
     }
 
     /**
@@ -94,7 +106,9 @@ class WsServer implements HttpServerInterface {
             },
             function(FrameInterface $frame) use ($wsConn) {
                 $this->onControlFrame($frame, $wsConn);
-            }
+            },
+            true,
+            $this->ueFlowFactory
         );
 
         $this->connections->attach($conn, [$wsConn, $streamer]);
