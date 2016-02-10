@@ -29,7 +29,7 @@
         "php": ">=5.3.9"
       , "react/socket": "^0.3 || ^0.4"
       , "guzzlehttp/psr7": "^1.0"
-      , "ratchet/rfc6455": "dev-psr7"
+      , "ratchet/rfc6455": "dev-psr7-multi-streamer"
       , "symfony/http-foundation": "^2.2"
       , "symfony/routing": "^2.2"
     }
