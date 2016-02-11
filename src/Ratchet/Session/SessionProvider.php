@@ -38,7 +38,7 @@ class SessionProvider implements HttpServerInterface {
     protected $_serializer;
 
     /**
-     * @param \Ratchet\HttpServerInterface                $app
+     * @param \Ratchet\Http\HttpServerInterface           $app
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
@@ -80,7 +80,7 @@ class SessionProvider implements HttpServerInterface {
 
             $crumbs = $this->parseCookie($cookie);
 
-            return isset($crumbs[$sessionName]) ? $crumbs[$sessionName] : false;
+            return isset($crumbs['cookies'][$sessionName]) ? $crumbs['cookies'][$sessionName] : false;
         }, false);
 
         if (null === $request || false === $id) {
