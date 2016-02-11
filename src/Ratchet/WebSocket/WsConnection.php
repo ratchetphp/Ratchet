@@ -25,7 +25,7 @@ class WsConnection extends AbstractConnectionDecorator {
     }
 
     /**
-     * @param int|\Ratchet\RFC6455\Messaging\Protocol\DataInterface
+     * @param int|\Ratchet\RFC6455\Messaging\DataInterface
      */
     public function close($code = 1000) {
         if ($this->WebSocket->closing) {

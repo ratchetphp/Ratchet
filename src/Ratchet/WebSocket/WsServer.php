@@ -38,7 +38,7 @@ class WsServer implements HttpServerInterface {
     private $closeFrameChecker;
 
     /**
-     * @var \Ratchet\RFC6455\Handshake\Negotiator
+     * @var \Ratchet\RFC6455\Handshake\ServerNegotiator
      */
     private $handshakeNegotiator;
 
