@@ -5,6 +5,7 @@ use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use GuzzleHttp\Psr7 as gPsr;
 
 class Router implements HttpServerInterface {
     use CloseResponseTrait;
@@ -49,18 +50,15 @@ class Router implements HttpServerInterface {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
 
-//        TODO: Apply Symfony default params to request
-//        $parameters = [];
-//        foreach($route as $key => $value) {
-//            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
-//                $parameters[$key] = $value;
-//            }
-//        }
-//        $parameters = array_merge($parameters, gPsr\parse_query($uri->getQuery()));
-//
-//        $url = Url::factory($request->getPath());
-//        $url->setQuery($parameters);
-//        $request->setUrl($url);
+        $parameters = [];
+        foreach($route as $key => $value) {
+            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
+                $parameters[$key] = $value;
+            }
+        }
+        $parameters = array_merge($parameters, gPsr\parse_query($uri->getQuery() ?: ''));
+
+        $request = $request->withUri($uri->withQuery(gPsr\build_query($parameters)));
 
         $conn->controller = $route['_controller'];
         $conn->controller->onOpen($conn, $request);
