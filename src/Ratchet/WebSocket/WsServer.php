@@ -5,12 +5,15 @@ use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\CloseResponseTrait;
 use Psr\Http\Message\RequestInterface;
-use GuzzleHttp\Psr7 as gPsr;
-use Ratchet\RFC6455\Messaging\FrameInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
-use Ratchet\RFC6455\Messaging\MessageBuffer;
-use React\EventLoop\LoopInterface;
+use Ratchet\RFC6455\Messaging\FrameInterface;
 use Ratchet\RFC6455\Messaging\Frame;
+use Ratchet\RFC6455\Messaging\MessageBuffer;
+use Ratchet\RFC6455\Messaging\CloseFrameChecker;
+use Ratchet\RFC6455\Handshake\ServerNegotiator;
+use Ratchet\RFC6455\Handshake\RequestVerifier;
+use React\EventLoop\LoopInterface;
+use GuzzleHttp\Psr7 as gPsr;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -60,8 +63,8 @@ class WsServer implements HttpServerInterface {
         $this->delegate    = $component;
         $this->connections = new \SplObjectStorage;
 
-        $this->closeFrameChecker   = new \Ratchet\RFC6455\Messaging\CloseFrameChecker;
-        $this->handshakeNegotiator = new \Ratchet\RFC6455\Handshake\ServerNegotiator;
+        $this->closeFrameChecker   = new CloseFrameChecker;
+        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
 
         if ($component instanceof WsServerInterface) {
             $this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
