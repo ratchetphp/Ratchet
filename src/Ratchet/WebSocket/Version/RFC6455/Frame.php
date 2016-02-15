@@ -379,6 +379,7 @@ class Frame implements FrameInterface {
 
         $byte_length = $this->getNumPayloadBytes();
         if ($this->bytesRecvd < 1 + $byte_length) {
+            $this->defPayLen = -1;
             throw new \UnderflowException('Not enough data buffered to determine payload length');
         }
 

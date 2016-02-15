@@ -70,14 +70,17 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
           , 'db_id_col'   => 'sess_id'
           , 'db_data_col' => 'sess_data'
           , 'db_time_col' => 'sess_time'
+          , 'db_lifetime_col' => 'sess_lifetime'
         );
 
         $pdo = new \PDO("sqlite::memory:");
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $pdo->exec(vsprintf("CREATE TABLE %s (%s VARCHAR(255) PRIMARY KEY, %s TEXT, %s INTEGER)", $dbOptions));
-        $pdo->prepare(vsprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", $dbOptions))->execute(array($sessionId, base64_encode('_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}'), time()));
+        $pdo->exec(vsprintf("CREATE TABLE %s (%s TEXT NOT NULL PRIMARY KEY, %s BLOB NOT NULL, %s INTEGER NOT NULL, %s INTEGER)", $dbOptions));
 
-        $component  = new SessionProvider($this->getMock($this->getComponentClassString()), new PdoSessionHandler($pdo, $dbOptions), array('auto_start' => 1));
+        $pdoHandler = new PdoSessionHandler($pdo, $dbOptions);
+        $pdoHandler->write($sessionId, '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}');
+
+        $component  = new SessionProvider($this->getMock($this->getComponentClassString()), $pdoHandler, array('auto_start' => 1));
         $connection = $this->getMock('Ratchet\\ConnectionInterface');
 
         $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
