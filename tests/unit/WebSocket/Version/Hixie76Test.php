@@ -80,4 +80,24 @@ class Hixie76Test extends \PHPUnit_Framework_TestCase {
         $mockApp->expects($this->once())->method('onOpen');
         $server->onMessage($mockConn, $body . $this->_crlf . $this->_crlf);
     }
+
+    public function testTcpFragmentedBodyUpgrade() {
+        $headers = $this->headerProvider();
+        $body    = base64_decode($this->_body);
+        $body1   = substr($body, 0, 4);
+        $body2   = substr($body, 4);
+
+        $mockConn = $this->getMock('\Ratchet\ConnectionInterface');
+        $mockApp  = $this->getMock('\Ratchet\MessageComponentInterface');
+
+        $server = new HttpServer(new WsServer($mockApp));
+        $server->onOpen($mockConn);
+        $server->onMessage($mockConn, $headers);
+
+        $mockApp->expects($this->once())->method('onOpen');
+
+        $server->onMessage($mockConn, $body1);
+        $server->onMessage($mockConn, $body2);
+        $server->onMessage($mockConn, $this->_crlf . $this->_crlf);
+    }
 }

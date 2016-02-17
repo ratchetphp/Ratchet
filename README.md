@@ -1,7 +1,7 @@
 #Ratchet
 
-[![Build Status](https://secure.travis-ci.org/cboden/Ratchet.png?branch=master)](http://travis-ci.org/cboden/Ratchet)
-[![Latest Stable Version](https://poser.pugx.org/cboden/Ratchet/v/stable.png)](https://packagist.org/packages/cboden/Ratchet)
+[![Build Status](https://secure.travis-ci.org/ratchetphp/Ratchet.png?branch=master)](http://travis-ci.org/ratchetphp/Ratchet)
+[![Latest Stable Version](https://poser.pugx.org/cboden/ratchet/v/stable.png)](https://packagist.org/packages/cboden/ratchet)
 
 A PHP 5.3 library for asynchronously serving WebSockets.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
