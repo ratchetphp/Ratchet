@@ -65,6 +65,7 @@ class WsServer implements HttpServerInterface {
 
         $this->closeFrameChecker   = new CloseFrameChecker;
         $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
+        $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
 
         if ($component instanceof WsServerInterface) {
             $this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
