@@ -1,7 +1,6 @@
 <?php
 namespace Ratchet\Session;
 use Ratchet\AbstractMessageComponentTestCase;
-use Ratchet\Mock\MemorySessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
@@ -83,8 +82,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $component  = new SessionProvider($this->getMock($this->getComponentClassString()), $pdoHandler, array('auto_start' => 1));
         $connection = $this->getMock('Ratchet\\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
-        $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue($sessionId));
+        $headers = $this->getMock('Psr\Http\Message\RequestInterface');
+        $headers->expects($this->once())->method('getHeader')->will($this->returnValue([ini_get('session.name') . "={$sessionId};"]));
 
         $component->onOpen($connection, $headers);
 
@@ -94,7 +93,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     protected function newConn() {
         $conn = $this->getMock('Ratchet\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
+        $headers = $this->getMock('Psr\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
         return $conn;
@@ -114,5 +113,12 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         ini_set('session.serialize_handler', 'wddx');
         $this->setExpectedException('\RuntimeException');
         new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
+    }
+
+    protected function doOpen($conn) {
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $request->expects($this->any())->method('getHeader')->will($this->returnValue([]));
+
+        $this->_serv->onOpen($conn, $request);
     }
 }

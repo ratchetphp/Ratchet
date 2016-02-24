@@ -2,7 +2,7 @@
     "name": "cboden/ratchet"
   , "type": "library"
   , "description": "PHP WebSocket library"
-  , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets"]
+  , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets", "WebSocket"]
   , "homepage": "http://socketo.me"
   , "license": "MIT"
   , "authors": [
@@ -22,10 +22,14 @@
             "Ratchet\\": "src/Ratchet"
         }
     }
+  , "suggest": {
+      "ext-pecl_http": "^2.0"
+    }
   , "require": {
-        "php": ">=5.3.9"
+        "php": ">=5.4.2"
+      , "ratchet/rfc6455": "^0.2"
       , "react/socket": "^0.3 || ^0.4"
-      , "guzzle/http": "^3.6"
+      , "guzzlehttp/psr7": "^1.0"
       , "symfony/http-foundation": "^2.2|^3.0"
       , "symfony/routing": "^2.2|^3.0"
     }

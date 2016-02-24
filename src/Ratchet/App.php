@@ -113,6 +113,10 @@ class App {
             $decorated = $controller;
         }
 
+        if ($decorated instanceof WsServer) {
+            $decorated->enableKeepAlive($this->_server->loop, 30);
+        }
+
         if ($httpHost === null) {
             $httpHost = $this->httpHost;
         }
