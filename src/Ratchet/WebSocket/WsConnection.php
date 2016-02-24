@@ -12,10 +12,10 @@ class WsConnection extends AbstractConnectionDecorator {
     /**
      * {@inheritdoc}
      */
-    public function send($msg) {
+    public function send($msg, $isBinary = false) {
         if (!$this->WebSocket->closing) {
             if (!($msg instanceof DataInterface)) {
-                $msg = new Frame($msg);
+                $msg = new Frame($msg, true, ((boolean)$isBinary ? Frame::OP_TEXT : Frame::OP_BINARY));
             }
 
             $this->getConnection()->send($msg->getContents());
