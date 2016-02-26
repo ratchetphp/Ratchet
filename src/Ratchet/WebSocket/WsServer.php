@@ -115,7 +115,7 @@ class WsServer implements HttpServerInterface {
             $this->ueFlowFactory
         );
 
-        $this->connections->attach($conn, [$wsConn, $streamer]);
+        $this->connections->attach($conn, new ConnContext($wsConn, $streamer));
 
         return $this->delegate->onOpen($wsConn);
     }
@@ -129,7 +129,7 @@ class WsServer implements HttpServerInterface {
         }
 
         $context = $this->connections[$from];
-        $context[1]->onData($msg);
+        $context->streamer->onData($msg);
     }
 
     /**
@@ -140,7 +140,7 @@ class WsServer implements HttpServerInterface {
             $context = $this->connections[$conn];
             $this->connections->detach($conn);
 
-            $this->delegate->onClose($context[0]);
+            $this->delegate->onClose($context->conn);
         }
     }
 
@@ -150,7 +150,7 @@ class WsServer implements HttpServerInterface {
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($this->connections->contains($conn)) {
             $context = $this->connections[$conn];
-            $this->delegate->onError($context[0], $e);
+            $this->delegate->onError($context->connection, $e);
         } else {
             $conn->close();
         }
@@ -196,7 +196,7 @@ class WsServer implements HttpServerInterface {
 
             foreach ($this->connections as $key => $conn) {
                 $context = $this->connections[$conn];
-                $wsConn  = $context[0];
+                $wsConn  = $context->connection;
 
                 $wsConn->send($lastPing);
                 $pingedConnections->attach($wsConn);
