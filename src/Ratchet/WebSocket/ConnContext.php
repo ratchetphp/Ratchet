@@ -11,10 +11,10 @@ class ConnContext {
     /**
      * @var \Ratchet\RFC6455\Messaging\MessageBuffer;
      */
-    public $streamer;
+    public $buffer;
 
-    public function __construct(WsConnection $conn, MessageBuffer $streamer) {
+    public function __construct(WsConnection $conn, MessageBuffer $buffer) {
         $this->connection = $conn;
-        $this->streamer   = $streamer;
+        $this->buffer = $buffer;
     }
 }

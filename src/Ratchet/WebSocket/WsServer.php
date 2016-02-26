@@ -127,8 +127,7 @@ class WsServer implements HttpServerInterface {
             return;
         }
 
-        $context = $this->connections[$from];
-        $context->streamer->onData($msg);
+        $this->connections[$from]->buffer->onData($msg);
     }
 
     /**
@@ -139,7 +138,7 @@ class WsServer implements HttpServerInterface {
             $context = $this->connections[$conn];
             $this->connections->detach($conn);
 
-            $this->delegate->onClose($context->conn);
+            $this->delegate->onClose($context->connection);
         }
     }
 
@@ -148,8 +147,7 @@ class WsServer implements HttpServerInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($this->connections->contains($conn)) {
-            $context = $this->connections[$conn];
-            $this->delegate->onError($context->connection, $e);
+            $this->delegate->onError($this->connections[$from]->connection, $e);
         } else {
             $conn->close();
         }
@@ -194,8 +192,7 @@ class WsServer implements HttpServerInterface {
             $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
 
             foreach ($this->connections as $key => $conn) {
-                $context = $this->connections[$conn];
-                $wsConn  = $context->connection;
+                $wsConn  = $this->connections[$from]->connection;
 
                 $wsConn->send($lastPing);
                 $pingedConnections->attach($wsConn);
