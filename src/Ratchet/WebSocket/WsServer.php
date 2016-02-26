@@ -87,11 +87,10 @@ class WsServer implements HttpServerInterface {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
-        $conn->httpRequest = $request; // This will replace ->WebSocket->request
+        $conn->httpRequest = $request;
 
         $conn->WebSocket            = new \StdClass;
         $conn->WebSocket->closing   = false;
-        $conn->WebSocket->request   = $request; // deprecated
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
 
