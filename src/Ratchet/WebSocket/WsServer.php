@@ -106,7 +106,7 @@ class WsServer implements HttpServerInterface {
         $streamer = new MessageBuffer(
             $this->closeFrameChecker,
             function(MessageInterface $msg) use ($wsConn) {
-                $this->delegate->onMessage($wsConn, $msg);
+                $this->delegate->onMessage($wsConn, $msg->getPayload(), $msg->isBinary());
             },
             function(FrameInterface $frame) use ($wsConn) {
                 $this->onControlFrame($frame, $wsConn);
