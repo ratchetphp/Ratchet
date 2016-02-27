@@ -87,11 +87,10 @@ class WsServer implements HttpServerInterface {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
-        $conn->httpRequest = $request; // This will replace ->WebSocket->request
+        $conn->httpRequest = $request;
 
         $conn->WebSocket            = new \StdClass;
         $conn->WebSocket->closing   = false;
-        $conn->WebSocket->request   = $request; // deprecated
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
 
@@ -115,7 +114,7 @@ class WsServer implements HttpServerInterface {
             $this->ueFlowFactory
         );
 
-        $this->connections->attach($conn, [$wsConn, $streamer]);
+        $this->connections->attach($conn, new ConnContext($wsConn, $streamer));
 
         return $this->delegate->onOpen($wsConn);
     }
@@ -128,8 +127,7 @@ class WsServer implements HttpServerInterface {
             return;
         }
 
-        $context = $this->connections[$from];
-        $context[1]->onData($msg);
+        $this->connections[$from]->buffer->onData($msg);
     }
 
     /**
@@ -140,7 +138,7 @@ class WsServer implements HttpServerInterface {
             $context = $this->connections[$conn];
             $this->connections->detach($conn);
 
-            $this->delegate->onClose($context[0]);
+            $this->delegate->onClose($context->connection);
         }
     }
 
@@ -149,8 +147,7 @@ class WsServer implements HttpServerInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($this->connections->contains($conn)) {
-            $context = $this->connections[$conn];
-            $this->delegate->onError($context[0], $e);
+            $this->delegate->onError($this->connections[$from]->connection, $e);
         } else {
             $conn->close();
         }
@@ -195,8 +192,7 @@ class WsServer implements HttpServerInterface {
             $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
 
             foreach ($this->connections as $key => $conn) {
-                $context = $this->connections[$conn];
-                $wsConn  = $context[0];
+                $wsConn  = $this->connections[$from]->connection;
 
                 $wsConn->send($lastPing);
                 $pingedConnections->attach($wsConn);
