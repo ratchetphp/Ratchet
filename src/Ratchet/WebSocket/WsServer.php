@@ -1,7 +1,8 @@
 <?php
 namespace Ratchet\WebSocket;
-use Ratchet\MessageComponentInterface;
+use Ratchet\ComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface as DataComponentInterface;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\CloseResponseTrait;
 use Psr\Http\Message\RequestInterface;
@@ -26,7 +27,7 @@ class WsServer implements HttpServerInterface {
 
     /**
      * Decorated component
-     * @var \Ratchet\MessageComponentInterface
+     * @var \Ratchet\ComponentInterface
      */
     private $delegate;
 
@@ -56,10 +57,27 @@ class WsServer implements HttpServerInterface {
     private $pongReceiver;
 
     /**
-     * @param \Ratchet\MessageComponentInterface $component Your application to run with WebSockets
-     *                                                      If you want to enable sub-protocols have your component implement WsServerInterface as well
+     * @var \Closure
      */
-    public function __construct(MessageComponentInterface $component) {
+    private $msgCb;
+
+    /**
+     * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
+     * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
+     */
+    public function __construct(ComponentInterface $component) {
+        if ($component instanceof MessageComponentInterface) {
+            $this->msgCb = function(ConnectionInterface $conn, MessageInterface $msg) {
+                $this->delegate->onMessage($conn, $msg);
+            };
+        } elseif ($component instanceof DataComponentInterface) {
+            $this->msgCb = function(ConnectionInterface $conn, MessageInterface $msg) {
+                $this->delegate->onMessage($conn, $msg->getPayload());
+            };
+        } else {
+            throw new \UnexpectedValueException('Expected instance of \Ratchet\WebSocket\MessageComponentInterface or \Ratchet\MessageComponentInterface');
+        }
+
         $this->delegate    = $component;
         $this->connections = new \SplObjectStorage;
 
@@ -105,7 +123,8 @@ class WsServer implements HttpServerInterface {
         $streamer = new MessageBuffer(
             $this->closeFrameChecker,
             function(MessageInterface $msg) use ($wsConn) {
-                $this->delegate->onMessage($wsConn, $msg);
+                $cb = $this->msgCb;
+                $cb($wsConn, $msg);
             },
             function(FrameInterface $frame) use ($wsConn) {
                 $this->onControlFrame($frame, $wsConn);
