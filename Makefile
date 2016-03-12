@@ -10,7 +10,6 @@ cover:
 abtests:
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8001 LibEvent &
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8002 StreamSelect &
-	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver-noutf8.php 8003 StreamSelect &
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8004 LibEv &
 	wstest -m testeeserver -w ws://localhost:8000 &
 	sleep 1
