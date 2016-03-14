@@ -8,6 +8,17 @@ CHANGELOG
 
 ---
 
+* 0.4 (2016-)
+
+ * BC: $conn->WebSocket->request replaced with $conn->httpRequest which is a PSR-7 object
+ * Binary messages now supported via Ratchet\WebSocket\MessageComponentInterface
+ * Added heartbeat support via ping/pong in WsServer
+ * BC: No longer support old (and insecure) Hixie76 and Hybi protocols
+ * BC: No longer support disabling UTF-8 checks
+ * BC: The Session component implements HttpServerInterface instead of WsServerInterface
+ * BC: PHP 5.3 no longer supported
+ * Significant performance enhancements
+
 * 0.3.4 (2015-12-23)
 
  * BF: Edge case where version check wasn't run on message coalesce
