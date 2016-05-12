@@ -7,7 +7,7 @@ class PhpHandler implements HandlerInterface {
      * {@inheritdoc}
      */
     function serialize(array $data) {
-        $preSerialized = [];
+        $preSerialized = array();
         $serialized = '';
         
         if (count($data)) {
