@@ -211,7 +211,7 @@ class WsServer implements HttpServerInterface {
             $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
 
             foreach ($this->connections as $key => $conn) {
-                $wsConn  = $this->connections[$from]->connection;
+                $wsConn  = $this->connections[$conn]->connection;
 
                 $wsConn->send($lastPing);
                 $pingedConnections->attach($wsConn);
