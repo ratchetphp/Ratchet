@@ -166,7 +166,7 @@ class WsServer implements HttpServerInterface {
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($this->connections->contains($conn)) {
-            $this->delegate->onError($this->connections[$from]->connection, $e);
+            $this->delegate->onError($this->connections[$conn]->connection, $e);
         } else {
             $conn->close();
         }
