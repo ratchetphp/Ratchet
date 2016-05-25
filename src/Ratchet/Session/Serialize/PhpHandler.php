@@ -3,10 +3,21 @@ namespace Ratchet\Session\Serialize;
 
 class PhpHandler implements HandlerInterface {
     /**
+     * Simply reverse behaviour of unserialize method.
      * {@inheritdoc}
      */
     function serialize(array $data) {
-        throw new \RuntimeException("Serialize PhpHandler:serialize code not written yet, write me!");
+        $preSerialized = array();
+        $serialized = '';
+
+        if (count($data)) {
+            foreach ($data as $bucket => $bucketData) {
+                $preSerialized[] = $bucket . '|' . serialize($bucketData);
+            }
+            $serialized = implode('', $preSerialized);
+        }
+
+        return $serialized;
     }
 
     /**
