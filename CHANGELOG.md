@@ -8,6 +8,11 @@ CHANGELOG
 
 ---
 
+* 0.3.5 (2016-05-25)
+
+ * BF: Unmask responding close frame
+ * Added write handler for PHP session serializer
+
 * 0.3.4 (2015-12-23)
 
  * BF: Edge case where version check wasn't run on message coalesce
