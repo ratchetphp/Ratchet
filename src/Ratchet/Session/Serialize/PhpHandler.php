@@ -9,14 +9,14 @@ class PhpHandler implements HandlerInterface {
     function serialize(array $data) {
         $preSerialized = array();
         $serialized = '';
-        
+
         if (count($data)) {
             foreach ($data as $bucket => $bucketData) {
                 $preSerialized[] = $bucket . '|' . serialize($bucketData);
             }
-            $serialized = implode('',$preSerialized);
+            $serialized = implode('', $preSerialized);
         }
-        
+
         return $serialized;
     }
 
