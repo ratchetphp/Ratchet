@@ -192,7 +192,7 @@ class WsServer implements HttpServerInterface {
     }
 
     public function enableKeepAlive(LoopInterface $loop, $interval = 30) {
-        $lastPing = null;
+        $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
         $pingedConnections = new \SplObjectStorage;
         $splClearer = new \SplObjectStorage;
 
