@@ -34,7 +34,7 @@ class Router implements HttpServerInterface {
         try {
             $route = $this->_matcher->match($request->getPath());
         } catch (MethodNotAllowedException $nae) {
-            return $this->close($conn, 403);
+            return $this->close($conn, 405);
         } catch (ResourceNotFoundException $nfe) {
             return $this->close($conn, 404);
         }
