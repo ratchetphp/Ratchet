@@ -55,7 +55,7 @@ class Router implements HttpServerInterface {
         }
         $parameters = array_merge($parameters, $request->getQuery()->getAll());
 
-        $url = Url::factory($request->getPath());
+        $url = Url::factory($request->getUrl());
         $url->setQuery($parameters);
         $request->setUrl($url);
 
