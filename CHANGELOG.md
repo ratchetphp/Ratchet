@@ -8,7 +8,7 @@ CHANGELOG
 
 ---
 
-* 0.3.6 (2015-12-30)
+* 0.3.6 (2017-01-06)
  * BF: Keep host and scheme in HTTP request object attatched to connection
  * BF: Return correct HTTP response (405) when non-GET request made
 
