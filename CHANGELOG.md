@@ -8,6 +8,10 @@ CHANGELOG
 
 ---
 
+* 0.3.6 (2017-01-06)
+ * BF: Keep host and scheme in HTTP request object attatched to connection
+ * BF: Return correct HTTP response (405) when non-GET request made
+
 * 0.3.5 (2016-05-25)
 
  * BF: Unmask responding close frame
