@@ -76,8 +76,7 @@ class App {
         $this->httpHost = $httpHost;
         $this->port = $port;
 
-        $socket = new Reactor($loop);
-        $socket->listen($port, $address);
+        $socket = new Reactor($address . ':' . $port, $loop);
 
         $this->routes  = new RouteCollection;
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
@@ -85,13 +84,14 @@ class App {
         $policy = new FlashPolicy;
         $policy->addAllowedAccess($httpHost, 80);
         $policy->addAllowedAccess($httpHost, $port);
-        $flashSock = new Reactor($loop);
-        $this->flashServer = new IoServer($policy, $flashSock);
+
         if (80 == $port) {
-            $flashSock->listen(843, '0.0.0.0');
+            $flashUri = '0.0.0.0:843';
         } else {
-            $flashSock->listen(8843);
+            $flashUri = 8843;
         }
+        $flashSock = new Reactor($flashUri, $loop);
+        $this->flashServer = new IoServer($policy, $flashSock);
     }
 
     /**
