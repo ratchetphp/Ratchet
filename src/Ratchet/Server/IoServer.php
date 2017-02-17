@@ -66,8 +66,7 @@ class IoServer {
      */
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
         $loop   = LoopFactory::create();
-        $socket = new Reactor($loop);
-        $socket->listen($port, $address);
+        $socket = new Reactor($address . ':' . $port, $loop);
 
         return new static($component, $socket, $loop);
     }
@@ -94,7 +93,10 @@ class IoServer {
         $conn->decor = new IoConnection($conn);
 
         $conn->decor->resourceId    = (int)$conn->stream;
-        $conn->decor->remoteAddress = $conn->getRemoteAddress();
+        $conn->decor->remoteAddress = trim(
+            parse_url('tcp://' . $conn->getRemoteAddress(), PHP_URL_HOST),
+            '[]'
+        );
 
         $this->app->onOpen($conn->decor);
 
