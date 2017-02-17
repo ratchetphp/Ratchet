@@ -17,6 +17,7 @@ CHANGELOG
  * BC: No longer support disabling UTF-8 checks
  * BC: The Session component implements HttpServerInterface instead of WsServerInterface
  * BC: PHP 5.3 no longer supported
+ * BC: Use react/socket 0.5
  * Significant performance enhancements
 
 * 0.3.6 (2017-01-06)
