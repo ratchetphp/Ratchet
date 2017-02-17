@@ -139,5 +139,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $router->onOpen($conn, $request);
 
         $this->assertEquals('foo=nope&baz=qux&hello=world', $request->getUri()->getQuery());
+        $this->assertEquals('ws', $request->getUri()->getScheme());
+        $this->assertEquals('doesnt.matter', $request->getUri()->getHost());
     }
 }
