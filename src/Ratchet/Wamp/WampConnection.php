@@ -20,7 +20,7 @@ class WampConnection extends AbstractConnectionDecorator {
         $this->WAMP->sessionId = str_replace('.', '', uniqid(mt_rand(), true));
         $this->WAMP->prefixes  = array();
 
-        $this->send(json_encode(array(WAMP::MSG_WELCOME, $this->WAMP->sessionId, 1, \Ratchet\VERSION)));
+        #$this->send(json_encode(array(WAMP::MSG_WELCOME, $this->WAMP->sessionId, 1, \Ratchet\VERSION)));
     }
 
     /**
