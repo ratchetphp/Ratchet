@@ -8,7 +8,7 @@ use Ratchet\ConnectionInterface;
  * Enable support for the official WAMP sub-protocol in your application
  * WAMP allows for Pub/Sub and RPC
  * @link http://wamp.ws The WAMP specification
- * @link https://github.com/oberstet/AutobahnJS Souce for client side library
+ * @link https://github.com/oberstet/autobahn-js Souce for client side library
  * @link http://autobahn.s3.amazonaws.com/js/autobahn.min.js Minified client side library
  */
 class WampServer implements MessageComponentInterface, WsServerInterface {
