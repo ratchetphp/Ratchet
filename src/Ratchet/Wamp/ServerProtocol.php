@@ -8,7 +8,7 @@ use Ratchet\ConnectionInterface;
  * WebSocket Application Messaging Protocol
  *
  * @link http://wamp.ws/spec
- * @link https://github.com/oberstet/AutobahnJS
+ * @link https://github.com/oberstet/autobahn-js
  *
  * +--------------+----+------------------+
  * | Message Type | ID | DIRECTION        |
