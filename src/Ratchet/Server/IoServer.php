@@ -98,15 +98,14 @@ class IoServer {
 
         $this->app->onOpen($conn->decor);
 
-        $that = $this;
         $conn->on('data', function ($data) use ($conn) {
-            $that->handleData($data, $conn);
+            $this->handleData($data, $conn);
         });
-        $conn->on('close', function () use ($conn, $that) {
-            $that->handleEnd($conn);
+        $conn->on('close', function () use ($conn) {
+            $this->handleEnd($conn);
         });
-        $conn->on('error', function (\Exception $e) use ($conn, $that) {
-            $that->handleError($e, $conn);
+        $conn->on('error', function (\Exception $e) use ($conn) {
+            $this->handleError($e, $conn);
         });
     }
 
