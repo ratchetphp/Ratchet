@@ -24,6 +24,7 @@ class IoServer {
     /**
      * Array of React event handlers
      * @var \SplFixedArray
+     * @deprecated exists BC only, now unused
      */
     protected $handlers;
 
@@ -53,9 +54,6 @@ class IoServer {
         $socket->on('connection', array($this, 'handleConnect'));
 
         $this->handlers = new \SplFixedArray(3);
-        $this->handlers[0] = array($this, 'handleData');
-        $this->handlers[1] = array($this, 'handleEnd');
-        $this->handlers[2] = array($this, 'handleError');
     }
 
     /**
@@ -100,9 +98,16 @@ class IoServer {
 
         $this->app->onOpen($conn->decor);
 
-        $conn->on('data', $this->handlers[0]);
-        $conn->on('end', $this->handlers[1]);
-        $conn->on('error', $this->handlers[2]);
+        $that = $this;
+        $conn->on('data', function ($data) use ($conn, $that) {
+            $that->handleData($data, $conn);
+        });
+        $conn->on('close', function () use ($conn, $that) {
+            $that->handleEnd($conn);
+        });
+        $conn->on('error', function (\Exception $e) use ($conn, $that) {
+            $that->handleError($e, $conn);
+        });
     }
 
     /**
