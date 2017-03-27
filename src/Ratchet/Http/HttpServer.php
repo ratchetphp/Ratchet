@@ -47,7 +47,11 @@ class HttpServer implements MessageComponentInterface {
 
             $from->httpHeadersReceived = true;
 
-            return $this->_httpServer->onOpen($from, $request);
+            $userReturn = $this->_httpServer->onOpen($from, $request);
+
+            $from->httpHeadersReceived = false;
+
+            return $userReturn;
         }
 
         $this->_httpServer->onMessage($from, $msg);
