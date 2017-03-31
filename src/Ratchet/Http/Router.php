@@ -47,7 +47,7 @@ class Router implements HttpServerInterface {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
 
-        $parameters = array();
+        $parameters = $request->getUrl(true)->getQuery()->toArray();
         foreach($route as $key => $value) {
             if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
                 $parameters[$key] = $value;
