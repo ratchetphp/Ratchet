@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * The version of Ratchet being used
@@ -10,6 +11,8 @@ const VERSION = 'Ratchet/0.3.6';
 /**
  * A proxy object representing a connection to the application
  * This acts as a container to store data (in memory) about the connection
+ * @property Session $Session
+ * @property int $resourceId
  */
 interface ConnectionInterface {
     /**
