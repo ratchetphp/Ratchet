@@ -7,6 +7,9 @@ use React\Socket\ConnectionInterface as ReactConn;
  * {@inheritdoc}
  */
 class IoConnection implements ConnectionInterface {
+    public $resourceId;
+    public $remoteAddress;
+
     /**
      * @var \React\Socket\ConnectionInterface
      */
