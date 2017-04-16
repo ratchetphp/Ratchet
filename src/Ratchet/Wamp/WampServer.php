@@ -21,6 +21,7 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
      * This class just makes it 1 step easier to use Topic objects in WAMP
      * If you're looking at the source code, look in the __construct of this
      *  class and use that to make your application instead of using this
+     * @param WampServerInterface $app
      */
     public function __construct(WampServerInterface $app) {
         $this->wampProtocol = new ServerProtocol(new TopicManager($app));

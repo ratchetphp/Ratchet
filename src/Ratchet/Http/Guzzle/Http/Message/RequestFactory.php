@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Http\Guzzle\Http\Message;
+use Guzzle\Http\Message\EntityEnclosingRequestInterface;
 use Guzzle\Http\Message\RequestFactory as GuzzleRequestFactory;
 use Guzzle\Http\EntityBody;
 
@@ -26,6 +27,8 @@ class RequestFactory extends GuzzleRequestFactory {
      */
     public function create($method, $url, $headers = null, $body = '', array $options = array()) {
         $c = $this->entityEnclosingRequestClass;
+
+        /** @var EntityEnclosingRequestInterface $request */
         $request = new $c($method, $url, $headers);
         $request->setBody(EntityBody::factory($body));
 

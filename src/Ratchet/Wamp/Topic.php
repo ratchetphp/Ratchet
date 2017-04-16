@@ -61,16 +61,16 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * @param  WampConnection $conn
-     * @return boolean
+     * @param ConnectionInterface $conn
+     * @return bool
      */
     public function has(ConnectionInterface $conn) {
         return $this->subscribers->contains($conn);
     }
 
     /**
-     * @param WampConnection $conn
-     * @return Topic
+     * @param ConnectionInterface $conn
+     * @return $this
      */
     public function add(ConnectionInterface $conn) {
         $this->subscribers->attach($conn);
@@ -79,8 +79,8 @@ class Topic implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * @param WampConnection $conn
-     * @return Topic
+     * @param ConnectionInterface $conn
+     * @return $this
      */
     public function remove(ConnectionInterface $conn) {
         if ($this->subscribers->contains($conn)) {

@@ -98,6 +98,8 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * @internal
+     * @param string $data
+     * @return $this
      */
     public function send($data) {
         $this->getConnection()->send($data);

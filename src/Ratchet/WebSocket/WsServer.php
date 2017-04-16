@@ -89,7 +89,7 @@ class WsServer implements HttpServerInterface {
      */
     public function onMessage(ConnectionInterface $from, $msg) {
         if ($from->WebSocket->closing) {
-            return;
+            return null;
         }
 
         if (true === $from->WebSocket->established) {
@@ -97,6 +97,7 @@ class WsServer implements HttpServerInterface {
         }
 
         $this->attemptUpgrade($from, $msg);
+        return null;
     }
 
     protected function attemptUpgrade(ConnectionInterface $conn, $data = '') {
@@ -113,7 +114,7 @@ class WsServer implements HttpServerInterface {
         try {
             $response = $conn->WebSocket->version->handshake($conn->WebSocket->request);
         } catch (\UnderflowException $e) {
-            return;
+            return null;
         }
 
         if (null !== ($subHeader = $conn->WebSocket->request->getHeader('Sec-WebSocket-Protocol'))) {

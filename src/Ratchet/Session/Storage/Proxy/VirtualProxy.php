@@ -47,6 +47,7 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * DO NOT CALL THIS METHOD
      * @internal
+     * @param string $name
      */
     public function setName($name) {
         throw new \RuntimeException("Can not change session name in VirtualProxy");

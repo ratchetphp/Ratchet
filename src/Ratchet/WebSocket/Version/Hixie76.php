@@ -74,6 +74,10 @@ class Hixie76 implements VersionInterface {
         return $upgraded;
     }
 
+    /**
+     * @param ConnectionInterface $from
+     * @param string $data
+     */
     public function onMessage(ConnectionInterface $from, $data) {
         $overflow = '';
 
@@ -98,10 +102,17 @@ class Hixie76 implements VersionInterface {
         }
     }
 
+    /**
+     * @return Frame
+     */
     public function newFrame() {
         return new Frame;
     }
 
+    /**
+     * @param $key
+     * @return float|int
+     */
     public function generateKeyNumber($key) {
         if (0 === substr_count($key, ' ')) {
             return 0;
@@ -110,6 +121,12 @@ class Hixie76 implements VersionInterface {
         return preg_replace('[\D]', '', $key) / substr_count($key, ' ');
     }
 
+    /**
+     * @param $key1
+     * @param $key2
+     * @param $code
+     * @return string
+     */
     protected function sign($key1, $key2, $code) {
         return md5(
             pack('N', $this->generateKeyNumber($key1))

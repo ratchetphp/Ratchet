@@ -125,12 +125,14 @@ class HandshakeVerifier {
 
     /**
      * @todo Write logic for this method.  See section 4.2.1.8
+     * @param $val
      */
     public function verifyProtocol($val) {
     }
 
     /**
      * @todo Write logic for this method.  See section 4.2.1.9
+     * @param $val
      */
     public function verifyExtensions($val) {
     }
