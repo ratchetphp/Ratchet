@@ -7,6 +7,7 @@ use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Ratchet\WebSocket\Version;
 use Ratchet\WebSocket\Encoding\ToggleableValidator;
+use Ratchet\JavaScript\Connect;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -76,6 +77,19 @@ class WsServer implements HttpServerInterface {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
+		if($request->getPath() == "/connect.js"){
+		
+			$jsconn = new Connect();
+
+			$response = new Response($code=200, array(
+				'Content-Type'          => "text/javascript",
+				'X-Powered-By'          => \Ratchet\VERSION
+			),$jsconn->get($request));
+
+			$conn->send((string)$response);
+			$conn->close();
+			return;
+		}
         $conn->WebSocket              = new \StdClass;
         $conn->WebSocket->request     = $request;
         $conn->WebSocket->established = false;
