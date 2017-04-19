@@ -5,6 +5,7 @@ use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
+use React\Socket\SecureServer as SecureReactor;
 
 /**
  * Creates an open-ended socket to listen on a port for incoming connections.
@@ -62,9 +63,12 @@ class IoServer {
      * @param  string                             $address   The address to receive sockets on (0.0.0.0 means receive connections from any)
      * @return IoServer
      */
-    public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
+    public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0', $sslconf = null) {
         $loop   = LoopFactory::create();
         $socket = new Reactor($address . ':' . $port, $loop);
+        if (is_array($sslconf)) {
+            $socket = new SecureReactor($socket, $loop, $sslconf);
+        }
 
         return new static($component, $socket, $loop);
     }
