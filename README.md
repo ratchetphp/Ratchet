@@ -4,7 +4,7 @@
 [![Autobahn Testsuite](https://img.shields.io/badge/Autobahn-passing-brightgreen.svg)](http://socketo.me/reports/ab/index.html)
 [![Latest Stable Version](https://poser.pugx.org/cboden/ratchet/v/stable.png)](https://packagist.org/packages/cboden/ratchet)
 
-A PHP 5.4 library for asynchronously serving WebSockets.
+A PHP library for asynchronously serving WebSockets.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
 
 ##Requirements
@@ -79,5 +79,5 @@ class MyChat implements MessageComponentInterface {
     // Then some JavaScript in the browser:
     var conn = new WebSocket('ws://localhost:8080/echo');
     conn.onmessage = function(e) { console.log(e.data); };
-    conn.send('Hello Me!');
+    conn.onopen = function(e) { conn.send('Hello Me!'); };
 ```
