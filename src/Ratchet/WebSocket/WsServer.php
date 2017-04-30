@@ -133,7 +133,7 @@ class WsServer implements HttpServerInterface {
 
         $this->connections->attach($conn, $upgraded);
 
-        $upgraded->WebSocket->established = true;
+        $from->WebSocket->established = true;
 
         return $this->component->onOpen($upgraded);
     }
