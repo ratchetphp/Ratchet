@@ -110,6 +110,10 @@ class HandshakeVerifier {
      * @todo Check the spec to see what the encoding of the key could be
      */
     public function verifyKey($val) {
+        if (function_exists('mb_strlen')) {
+            return (16 === mb_strlen(base64_decode((string) $val), 'UTF-8'));
+        }
+        
         return (16 === strlen(base64_decode((string)$val)));
     }
 
