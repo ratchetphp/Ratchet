@@ -17,10 +17,10 @@ interface ConnectionInterface {
      * @param  string $data
      * @return \Ratchet\ConnectionInterface
      */
-    function send($data);
+    public function send($data);
 
     /**
      * Close the connection
      */
-    function close();
+    public function close();
 }
