@@ -61,10 +61,6 @@ class App {
      * @param LoopInterface $loop     Specific React\EventLoop to bind the application to. null will create one for you.
      */
     public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null) {
-        if (extension_loaded('xdebug')) {
-            trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
-        }
-
         if (3 !== strlen('✓')) {
             throw new \DomainException('Bad encoding, length of unicode character ✓ should be 3. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
         }
