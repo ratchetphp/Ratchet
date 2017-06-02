@@ -1,10 +1,10 @@
 <?php
 namespace Ratchet\WebSocket\Version;
 
-interface MessageInterface extends DataInterface {
+interface MessageDataInterface extends DataInterface {
     /**
      * @param FrameInterface $fragment
-     * @return MessageInterface
+     * @return MessageDataInterface
      */
     function addFrame(FrameInterface $fragment);
 
