@@ -22,7 +22,8 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $loop = new StreamSelectLoop;
         $this->reactor = new Server(0, $loop);
 
-        $this->port   = parse_url('tcp://' . $this->reactor->getAddress(), PHP_URL_PORT);
+        $uri = $this->reactor->getAddress();
+        $this->port   = parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_PORT);
         $this->server = new IoServer($this->app, $this->reactor, $loop);
     }
 

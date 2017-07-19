@@ -89,10 +89,11 @@ class IoServer {
      */
     public function handleConnect($conn) {
         $conn->decor = new IoConnection($conn);
-
         $conn->decor->resourceId    = (int)$conn->stream;
+
+        $uri = $conn->getRemoteAddress();
         $conn->decor->remoteAddress = trim(
-            parse_url('tcp://' . $conn->getRemoteAddress(), PHP_URL_HOST),
+            parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_HOST),
             '[]'
         );
 
