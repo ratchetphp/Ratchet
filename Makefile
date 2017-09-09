@@ -29,9 +29,14 @@ profile:
 	killall php
 
 apidocs:
-	apigen --title Ratchet -d reports/api -s src/ \
-		-s vendor/react \
-		-s vendor/guzzle \
-		-s vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Session \
-		-s vendor/symfony/routing/Symfony/Component/Routing \
-		-s vendor/evenement/evenement/src/Evenement
+	apigen --title Ratchet -d reports/api \
+		-s src/ \
+		-s vendor/ratchet/rfc6455/src \
+		-s vendor/react/event-loop/src \
+		-s vendor/react/socket/src \
+		-s vendor/react/stream/src \
+		-s vendor/psr/http-message/src \
+		-s vendor/symfony/http-foundation/Session \
+		-s vendor/symfony/routing \
+		-s vendor/evenement/evenement/src/Evenement \
+		--exclude=vendor/symfony/routing/Tests \

@@ -1,4 +1,4 @@
-#Ratchet
+# Ratchet
 
 [![Build Status](https://secure.travis-ci.org/ratchetphp/Ratchet.png?branch=master)](http://travis-ci.org/ratchetphp/Ratchet)
 [![Autobahn Testsuite](https://img.shields.io/badge/Autobahn-passing-brightgreen.svg)](http://socketo.me/reports/ab/index.html)
@@ -7,7 +7,7 @@
 A PHP library for asynchronously serving WebSockets.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
 
-##Requirements
+## Requirements
 
 Shell access is required and root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are requested on port 80 or 443 (SSL), which requires root access.
@@ -24,7 +24,7 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 
 ---
 
-###A quick example
+### A quick example
 
 ```php
 <?php
