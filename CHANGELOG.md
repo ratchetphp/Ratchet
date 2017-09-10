@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-###Legend
+### Legend
 
 * "BC": Backwards compatibility break (from public component APIs)
 * "BF": Bug fix
