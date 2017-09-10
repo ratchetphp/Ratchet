@@ -3,6 +3,7 @@ namespace Ratchet;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
+use React\Socket\SecureServer as SecureReactor;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\OriginCheck;
 use Ratchet\Wamp\WampServerInterface;
@@ -60,7 +61,7 @@ class App {
      * @param string        $address  IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
      * @param LoopInterface $loop     Specific React\EventLoop to bind the application to. null will create one for you.
      */
-    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null) {
+    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, array $sslContext = null) {
         if (extension_loaded('xdebug')) {
             trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
         }
@@ -73,6 +74,10 @@ class App {
         $this->port = $port;
 
         $socket = new Reactor($address . ':' . $port, $loop);
+
+        if (is_array($sslContext)) {
+            $socket = new SecureReactor($socket, $loop, $sslContext);
+        }
 
         $this->routes  = new RouteCollection;
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
