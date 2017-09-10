@@ -56,10 +56,11 @@ class App {
     protected $_routeCounter = 0;
 
     /**
-     * @param string        $httpHost HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost');`
-     * @param int           $port     Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
-     * @param string        $address  IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
-     * @param LoopInterface $loop     Specific React\EventLoop to bind the application to. null will create one for you.
+     * @param string        $httpHost   HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost');`
+     * @param int           $port       Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
+     * @param string        $address    IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
+     * @param LoopInterface $loop       Specific React\EventLoop to bind the application to. null will create one for you.
+     * @param array         $sslContext An array of PHP stream context options in order to support SSL
      */
     public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, array $sslContext = null) {
         if (extension_loaded('xdebug')) {

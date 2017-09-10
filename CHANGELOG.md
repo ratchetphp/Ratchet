@@ -13,7 +13,7 @@ CHANGELOG
  * BC: $conn->WebSocket->request replaced with $conn->httpRequest which is a PSR-7 object
  * Binary messages now supported via Ratchet\WebSocket\MessageComponentInterface
  * Added heartbeat support via ping/pong in WsServer
- * SSL now supported
+ * TLS now supported
  * BC: No longer support old (and insecure) Hixie76 and Hybi protocols
  * BC: No longer support disabling UTF-8 checks
  * BC: The Session component implements HttpServerInterface instead of WsServerInterface
