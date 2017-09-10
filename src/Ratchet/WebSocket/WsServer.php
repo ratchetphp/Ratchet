@@ -78,8 +78,8 @@ class WsServer implements HttpServerInterface {
             throw new \UnexpectedValueException('Expected instance of \Ratchet\WebSocket\MessageComponentInterface or \Ratchet\MessageComponentInterface');
         }
 
-        if (bin2hex('✓') === 'e29c93') {
-            throw new \DomainException('Bad encoding, length of unicode character ✓ should be 3. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
+        if (bin2hex('✓') !== 'e29c93') {
+            throw new \DomainException('Bad encoding, unicode character ✓ did not match expected value. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
         }
 
         $this->delegate    = $component;
