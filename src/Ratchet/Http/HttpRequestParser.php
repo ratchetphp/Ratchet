@@ -59,18 +59,6 @@ class HttpRequestParser implements MessageInterface {
      * @return \Psr\Http\Message\RequestInterface
      */
     public function parse($headers) {
-        if (function_exists('http_parse_message')) {
-            $parts = http_parse_message($headers);
-
-            return new gPsr\Request(
-                $parts->requestMethod
-              , $parts->requestUrl
-              , $parts->headers
-              , null
-              , $parts->httpVersion
-            );
-        } else {
-            return gPsr\parse_request($headers);
-        }
+        return gPsr\parse_request($headers);
     }
 }
