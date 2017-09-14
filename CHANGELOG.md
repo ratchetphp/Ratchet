@@ -19,6 +19,7 @@ CHANGELOG
  * BC: The Session component implements HttpServerInterface instead of WsServerInterface
  * BC: PHP 5.3 no longer supported
  * BC: Update to newer version of react/socket dependency
+ * BC: WAMP topics reduced to 0 subscriptions are deleted, new subs to same name will result in new Topic instance
  * Significant performance enhancements
 
 * 0.3.6 (2017-01-06)
