@@ -2,11 +2,11 @@
 namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\Http\Guzzle\Http\Message\RequestFactory;
+use GuzzleHttp\Psr7 as gPsr;
 
 /**
  * This class receives streaming data from a client request
- * and parses HTTP headers, returning a Guzzle Request object
+ * and parses HTTP headers, returning a PSR-7 Request object
  * once it's been buffered
  */
 class HttpRequestParser implements MessageInterface {
@@ -22,7 +22,7 @@ class HttpRequestParser implements MessageInterface {
     /**
      * @param \Ratchet\ConnectionInterface $context
      * @param string                       $data Data stream to buffer
-     * @return \Guzzle\Http\Message\RequestInterface|null
+     * @return \Psr\Http\Message\RequestInterface
      * @throws \OverflowException If the message buffer has become too large
      */
     public function onMessage(ConnectionInterface $context, $data) {
@@ -37,7 +37,7 @@ class HttpRequestParser implements MessageInterface {
         }
 
         if ($this->isEom($context->httpBuffer)) {
-            $request = RequestFactory::getInstance()->fromMessage($context->httpBuffer);
+            $request = $this->parse($context->httpBuffer);
 
             unset($context->httpBuffer);
 
@@ -52,5 +52,13 @@ class HttpRequestParser implements MessageInterface {
      */
     public function isEom($message) {
         return (boolean)strpos($message, static::EOM);
+    }
+
+    /**
+     * @param string $headers
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function parse($headers) {
+        return gPsr\parse_request($headers);
     }
 }

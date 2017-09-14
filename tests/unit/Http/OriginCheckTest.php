@@ -9,8 +9,8 @@ class OriginCheckTest extends AbstractMessageComponentTestCase {
     protected $_reqStub;
 
     public function setUp() {
-        $this->_reqStub = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $this->_reqStub->expects($this->any())->method('getHeader')->will($this->returnValue('localhost'));
+        $this->_reqStub = $this->getMock('Psr\Http\Message\RequestInterface');
+        $this->_reqStub->expects($this->any())->method('getHeader')->will($this->returnValue(['localhost']));
 
         parent::setUp();
 
@@ -34,7 +34,7 @@ class OriginCheckTest extends AbstractMessageComponentTestCase {
     }
 
     public function testCloseOnNonMatchingOrigin() {
-        $this->_serv->allowedOrigins = array('socketo.me');
+        $this->_serv->allowedOrigins = ['socketo.me'];
         $this->_conn->expects($this->once())->method('close');
 
         $this->_serv->onOpen($this->_conn, $this->_reqStub);

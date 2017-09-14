@@ -1,12 +1,25 @@
 CHANGELOG
 =========
 
-###Legend
+### Legend
 
 * "BC": Backwards compatibility break (from public component APIs)
 * "BF": Bug fix
 
 ---
+
+* 0.4 (2017-09-14)
+
+ * BC: $conn->WebSocket->request replaced with $conn->httpRequest which is a PSR-7 object
+ * Binary messages now supported via Ratchet\WebSocket\MessageComponentInterface
+ * Added heartbeat support via ping/pong in WsServer
+ * BC: No longer support old (and insecure) Hixie76 and Hybi protocols
+ * BC: No longer support disabling UTF-8 checks
+ * BC: The Session component implements HttpServerInterface instead of WsServerInterface
+ * BC: PHP 5.3 no longer supported
+ * BC: Update to newer version of react/socket dependency
+ * BC: WAMP topics reduced to 0 subscriptions are deleted, new subs to same name will result in new Topic instance
+ * Significant performance enhancements
 
 * 0.3.6 (2017-01-06)
  * BF: Keep host and scheme in HTTP request object attatched to connection

@@ -1,11 +1,8 @@
 <?php
 namespace Ratchet\Session;
 use Ratchet\AbstractMessageComponentTestCase;
-use Ratchet\Session\SessionProvider;
-use Ratchet\Mock\MemorySessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
-use Guzzle\Http\Message\Request;
 
 /**
  * @covers Ratchet\Session\SessionProvider
@@ -35,7 +32,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     }
 
     public function getComponentClassString() {
-        return '\Ratchet\MessageComponentInterface';
+        return '\Ratchet\Http\HttpServerInterface';
     }
 
     public function classCaseProvider() {
@@ -53,7 +50,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
+        $component = new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
         $this->assertEquals($out, $method->invokeArgs($component, array($in)));
     }
 
@@ -82,16 +79,13 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $pdoHandler = new PdoSessionHandler($pdo, $dbOptions);
         $pdoHandler->write($sessionId, '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}');
 
-        $component  = new SessionProvider($this->getMock('Ratchet\\MessageComponentInterface'), $pdoHandler, array('auto_start' => 1));
+        $component  = new SessionProvider($this->getMock($this->getComponentClassString()), $pdoHandler, array('auto_start' => 1));
         $connection = $this->getMock('Ratchet\\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\\Http\\Message\\Request', array('getCookie'), array('POST', '/', array()));
-        $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue($sessionId));
+        $headers = $this->getMock('Psr\Http\Message\RequestInterface');
+        $headers->expects($this->once())->method('getHeader')->will($this->returnValue([ini_get('session.name') . "={$sessionId};"]));
 
-        $connection->WebSocket          = new \StdClass;
-        $connection->WebSocket->request = $headers;
-
-        $component->onOpen($connection);
+        $component->onOpen($connection, $headers);
 
         $this->assertEquals('world', $connection->Session->get('hello'));
     }
@@ -99,11 +93,8 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     protected function newConn() {
         $conn = $this->getMock('Ratchet\ConnectionInterface');
 
-        $headers = $this->getMock('Guzzle\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
+        $headers = $this->getMock('Psr\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
-
-        $conn->WebSocket          = new \StdClass;
-        $conn->WebSocket->request = $headers;
 
         return $conn;
     }
@@ -114,21 +105,6 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->_serv->onMessage($this->_conn, $message);
     }
 
-    public function testGetSubProtocolsReturnsArray() {
-        $mock = $this->getMock('Ratchet\\MessageComponentInterface');
-        $comp = new SessionProvider($mock, new NullSessionHandler);
-
-        $this->assertInternalType('array', $comp->getSubProtocols());
-    }
-
-    public function testGetSubProtocolsGetFromApp() {
-        $mock = $this->getMock('Ratchet\WebSocket\Stub\WsMessageComponentInterface');
-        $mock->expects($this->once())->method('getSubProtocols')->will($this->returnValue(array('hello', 'world')));
-        $comp = new SessionProvider($mock, new NullSessionHandler);
-
-        $this->assertGreaterThanOrEqual(2, count($comp->getSubProtocols()));
-    }
-
     public function testRejectInvalidSeralizers() {
         if (!function_exists('wddx_serialize_value')) {
             $this->markTestSkipped();
@@ -136,6 +112,13 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
 
         ini_set('session.serialize_handler', 'wddx');
         $this->setExpectedException('\RuntimeException');
-        new SessionProvider($this->getMock('\Ratchet\MessageComponentInterface'), $this->getMock('\SessionHandlerInterface'));
+        new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
+    }
+
+    protected function doOpen($conn) {
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $request->expects($this->any())->method('getHeader')->will($this->returnValue([]));
+
+        $this->_serv->onOpen($conn, $request);
     }
 }

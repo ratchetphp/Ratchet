@@ -11,9 +11,6 @@ php:
 dist: trusty
 
 matrix:
-  include:
-    - php: 5.3
-      dist: precise
   allow_failures:
     - php: hhvm
 
