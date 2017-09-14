@@ -52,15 +52,11 @@ class IoServer {
      * @param  \Ratchet\MessageComponentInterface $component  The application that I/O will call when events are received
      * @param  int                                $port       The port to server sockets on
      * @param  string                             $address    The address to receive sockets on (0.0.0.0 means receive connections from any)
-     * @param  array                              $sslContext An array of PHP stream context options in order to support SSL
      * @return IoServer
      */
-    public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0', array $sslContext = null) {
+    public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
         $loop   = LoopFactory::create();
         $socket = new Reactor($address . ':' . $port, $loop);
-        if (is_array($sslContext)) {
-            $socket = new SecureReactor($socket, $loop, $sslContext);
-        }
 
         return new static($component, $socket, $loop);
     }
