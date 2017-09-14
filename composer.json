@@ -22,9 +22,6 @@
             "Ratchet\\": "src/Ratchet"
         }
     }
-  , "suggest": {
-      "ext-pecl_http": "^2.0"
-    }
   , "require": {
         "php": ">=5.4.2"
       , "ratchet/rfc6455": "^0.2"
