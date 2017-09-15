@@ -81,3 +81,7 @@ class MyChat implements MessageComponentInterface {
     conn.onmessage = function(e) { console.log(e.data); };
     conn.onopen = function(e) { conn.send('Hello Me!'); };
 ```
+
+### Android Client Library
+```
+ https://github.com/geeckmc/WebSocketAndroidClient
