@@ -97,7 +97,7 @@ class App {
      * @param ComponentInterface $controller Your application to server for the route. If not specified, assumed to be for a WebSocket
      * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), ['*'] for any
      * @param string             $httpHost Override the $httpHost variable provided in the __construct
-     * @param int                $keepAliveInterval Seconds between ping calls
+     * @param int                $keepAliveInterval Seconds between ping calls. Works for WsServer only
      * @return ComponentInterface|WsServer
      */
     public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null, $keepAliveInterval = 30) {
