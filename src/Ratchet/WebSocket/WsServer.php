@@ -62,10 +62,21 @@ class WsServer implements HttpServerInterface {
     private $msgCb;
 
     /**
+     * @var bool
+     */
+    private $keepAliveEnabled;
+
+    /**
+     * @var int
+     */
+    private $keepAliveTimeout = 30;
+
+    /**
      * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
+     * @param int $keepAliveTimeout
      * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
-    public function __construct(ComponentInterface $component) {
+    public function __construct(ComponentInterface $component, $keepAliveTimeout = 30) {
         if ($component instanceof MessageComponentInterface) {
             $this->msgCb = function(ConnectionInterface $conn, MessageInterface $msg) {
                 $this->delegate->onMessage($conn, $msg);
@@ -88,6 +99,7 @@ class WsServer implements HttpServerInterface {
         $this->closeFrameChecker   = new CloseFrameChecker;
         $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
         $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
+        $this->keepAliveEnabled = false;
 
         if ($component instanceof WsServerInterface) {
             $this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
@@ -99,6 +111,7 @@ class WsServer implements HttpServerInterface {
         $this->ueFlowFactory = function() use ($reusableUnderflowException) {
             return $reusableUnderflowException;
         };
+        $this->keepAliveTimeout = $keepAliveTimeout;
     }
 
     /**
@@ -195,7 +208,11 @@ class WsServer implements HttpServerInterface {
         $this->handshakeNegotiator->setStrictSubProtocolCheck($enable);
     }
 
-    public function enableKeepAlive(LoopInterface $loop, $interval = 30) {
+    public function enableKeepAlive(LoopInterface $loop) {
+        if ($this->keepAliveEnabled) {
+            return;
+        }
+        $this->keepAliveEnabled = true;
         $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
         $pingedConnections = new \SplObjectStorage;
         $splClearer = new \SplObjectStorage;
@@ -206,7 +223,7 @@ class WsServer implements HttpServerInterface {
             }
         };
 
-        $loop->addPeriodicTimer((int)$interval, function() use ($pingedConnections, &$lastPing, $splClearer) {
+        $loop->addPeriodicTimer((int)$this->keepAliveTimeout, function() use ($pingedConnections, &$lastPing, $splClearer) {
             foreach ($pingedConnections as $wsConn) {
                 $wsConn->close();
             }

@@ -97,22 +97,19 @@ class App {
      * @param ComponentInterface $controller Your application to server for the route. If not specified, assumed to be for a WebSocket
      * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), ['*'] for any
      * @param string             $httpHost Override the $httpHost variable provided in the __construct
-     * @param int                $keepAliveInterval Seconds between ping calls. Works for WsServer only
      * @return ComponentInterface|WsServer
      */
-    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null, $keepAliveInterval = 30) {
+    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
             $decorated = new WsServer(new WampServer($controller));
+            $decorated->enableKeepAlive($this->_server->loop);
         } elseif ($controller instanceof MessageComponentInterface) {
             $decorated = new WsServer($controller);
+            $decorated->enableKeepAlive($this->_server->loop);
         } else {
             $decorated = $controller;
-        }
-
-        if ($decorated instanceof WsServer) {
-            $decorated->enableKeepAlive($this->_server->loop, $keepAliveInterval);
         }
 
         if ($httpHost === null) {
