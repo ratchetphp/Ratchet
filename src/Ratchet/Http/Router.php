@@ -15,8 +15,11 @@ class Router implements HttpServerInterface {
      */
     protected $_matcher;
 
+    private $_noopController;
+
     public function __construct(UrlMatcherInterface $matcher) {
         $this->_matcher = $matcher;
+        $this->_noopController = new NoOpHttpServerController;
     }
 
     /**
@@ -27,6 +30,8 @@ class Router implements HttpServerInterface {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
+
+        $conn->controller = $this->_noopController;
 
         $uri = $request->getUri();
 
@@ -67,14 +72,14 @@ class Router implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg) {
         $from->controller->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn) {
         if (isset($conn->controller)) {
             $conn->controller->onClose($conn);
         }
@@ -83,7 +88,7 @@ class Router implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e) {
         if (isset($conn->controller)) {
             $conn->controller->onError($conn, $e);
         }
