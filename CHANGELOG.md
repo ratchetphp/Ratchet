@@ -8,6 +8,9 @@ CHANGELOG
 
 ---
 
+* 0.4.1
+ * Only enableKeepAlive in App if no WsServer passed allowing user to set their own timeout duration
+
 * 0.4 (2017-09-14)
 
  * BC: $conn->WebSocket->request replaced with $conn->httpRequest which is a PSR-7 object
