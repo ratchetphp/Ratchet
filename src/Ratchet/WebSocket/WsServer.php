@@ -63,7 +63,6 @@ class WsServer implements HttpServerInterface {
 
     /**
      * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
-     * @param int $keepAliveTimeout
      * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
     public function __construct(ComponentInterface $component) {
@@ -100,7 +99,6 @@ class WsServer implements HttpServerInterface {
         $this->ueFlowFactory = function() use ($reusableUnderflowException) {
             return $reusableUnderflowException;
         };
-        $this->keepAliveTimeout = $keepAliveTimeout;
     }
 
     /**
@@ -198,7 +196,6 @@ class WsServer implements HttpServerInterface {
     }
 
     public function enableKeepAlive(LoopInterface $loop, $interval = 30) {
-        $this->keepAliveEnabled = true;
         $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
         $pingedConnections = new \SplObjectStorage;
         $splClearer = new \SplObjectStorage;
