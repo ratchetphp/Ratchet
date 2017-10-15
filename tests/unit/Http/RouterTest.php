@@ -148,6 +148,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testImpatientClientOverflow() {
+        $this->_conn->expects($this->once())->method('close');
+
         $header = "GET /nope HTTP/1.1
 Upgrade: websocket                                   
 Connection: upgrade                                  
