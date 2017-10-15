@@ -267,21 +267,29 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testBadClientInputFromNonStringTopic() {
+        $this->setExpectedException('\Ratchet\Wamp\Exception');
+
         $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
         $this->_comp->onMessage($conn, json_encode([5, ['hells', 'nope']]));
-
-        $this->assertEquals('["hells","nope"]', $this->_app->last['onSubscribe'][1]);
     }
 
     public function testBadPrefixWithNonStringTopic() {
+        $this->setExpectedException('\Ratchet\Wamp\Exception');
+
         $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
         $this->_comp->onMessage($conn, json_encode([1, ['hells', 'nope'], ['bad', 'input']]));
-        $this->_comp->onMessage($conn, json_encode([7, ['bad', 'input'], 'Hider']));
+    }
 
-        $this->assertEquals('["bad","input"]', $this->_app->last['onPublish'][1]);
+    public function testBadPublishWithNonStringTopic() {
+        $this->setExpectedException('\Ratchet\Wamp\Exception');
+
+        $conn = new WampConnection($this->newConn());
+        $this->_comp->onOpen($conn);
+
+        $this->_comp->onMessage($conn, json_encode([7, ['bad', 'input'], 'Hider']));
     }
 }

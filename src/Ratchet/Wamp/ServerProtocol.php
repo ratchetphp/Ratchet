@@ -94,7 +94,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
         }
 
         if (isset($json[1]) && !is_string($json[1])) {
-            $json[1] = json_encode($json[1]);
+            throw new Exception('Invalid Topic, must be a string');
         }
 
         switch ($json[0]) {
