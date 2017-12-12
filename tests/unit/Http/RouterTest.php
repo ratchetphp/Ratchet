@@ -3,6 +3,10 @@ namespace Ratchet\Http;
 use Ratchet\WebSocket\WsServerInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+
 
 /**
  * @covers Ratchet\Http\Router
@@ -141,5 +145,21 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo=nope&baz=qux&hello=world', $request->getUri()->getQuery());
         $this->assertEquals('ws', $request->getUri()->getScheme());
         $this->assertEquals('doesnt.matter', $request->getUri()->getHost());
+    }
+
+    public function testImpatientClientOverflow() {
+        $this->_conn->expects($this->once())->method('close');
+
+        $header = "GET /nope HTTP/1.1
+Upgrade: websocket                                   
+Connection: upgrade                                  
+Host: localhost                                 
+Origin: http://localhost                        
+Sec-WebSocket-Version: 13\r\n\r\n";
+
+        $app = new HttpServer(new Router(new UrlMatcher(new RouteCollection, new RequestContext)));
+        $app->onOpen($this->_conn);
+        $app->onMessage($this->_conn, $header);
+        $app->onMessage($this->_conn, 'Silly body');
     }
 }
