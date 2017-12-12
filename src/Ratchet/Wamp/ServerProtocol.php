@@ -93,7 +93,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
             throw new Exception("Invalid WAMP message format");
         }
 
-        if (isset($json[1]) && !is_string($json[1])) {
+        if (isset($json[1]) && !(is_string($json[1]) || is_numeric($json[1]))) {
             throw new Exception('Invalid Topic, must be a string');
         }
 
