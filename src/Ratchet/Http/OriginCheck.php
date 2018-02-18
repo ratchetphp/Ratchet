@@ -1,5 +1,7 @@
 <?php
+
 namespace Ratchet\Http;
+
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Psr\Http\Message\RequestInterface;
@@ -7,9 +9,10 @@ use Psr\Http\Message\RequestInterface;
 /**
  * A middleware to ensure JavaScript clients connecting are from the expected domain.
  * This protects other websites from open WebSocket connections to your application.
- * Note: This can be spoofed from non-web browser clients
+ * Note: This can be spoofed from non-web browser clients.
  */
-class OriginCheck implements HttpServerInterface {
+class OriginCheck implements HttpServerInterface
+{
     use CloseResponseTrait;
 
     /**
@@ -23,7 +26,8 @@ class OriginCheck implements HttpServerInterface {
      * @param MessageComponentInterface $component Component/Application to decorate
      * @param array                     $allowed   An array of allowed domains that are allowed to connect from
      */
-    public function __construct(MessageComponentInterface $component, array $allowed = []) {
+    public function __construct(MessageComponentInterface $component, array $allowed = [])
+    {
         $this->_component = $component;
         $this->allowedOrigins += $allowed;
     }
@@ -31,8 +35,9 @@ class OriginCheck implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
-        $header = (string)$request->getHeader('Origin')[0];
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
+    {
+        $header = (string) $request->getHeader('Origin')[0];
         $origin = parse_url($header, PHP_URL_HOST) ?: $header;
 
         if (!in_array($origin, $this->allowedOrigins)) {
@@ -45,21 +50,24 @@ class OriginCheck implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         return $this->_component->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         return $this->_component->onClose($conn);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         return $this->_component->onError($conn, $e);
     }
 }

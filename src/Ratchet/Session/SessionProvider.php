@@ -1,5 +1,7 @@
 <?php
+
 namespace Ratchet\Session;
+
 use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -12,22 +14,25 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  * This component will allow access to session data from your website for each user connected
  * Symfony HttpFoundation is required for this component to work
  * Your website must also use Symfony HttpFoundation Sessions to read your sites session data
- * If your are not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer)
+ * If your are not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer).
  */
-class SessionProvider implements HttpServerInterface {
+class SessionProvider implements HttpServerInterface
+{
     /**
      * @var \Ratchet\MessageComponentInterface
      */
     protected $_app;
 
     /**
-     * Selected handler storage assigned by the developer
+     * Selected handler storage assigned by the developer.
+     *
      * @var \SessionHandlerInterface
      */
     protected $_handler;
 
     /**
-     * Null storage handler if no previous session was found
+     * Null storage handler if no previous session was found.
+     *
      * @var \SessionHandlerInterface
      */
     protected $_null;
@@ -42,12 +47,14 @@ class SessionProvider implements HttpServerInterface {
      * @param \SessionHandlerInterface                    $handler
      * @param array                                       $options
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
+     *
      * @throws \RuntimeException
      */
-    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
-        $this->_app     = $app;
+    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null)
+    {
+        $this->_app = $app;
         $this->_handler = $handler;
-        $this->_null    = new NullSessionHandler;
+        $this->_null = new NullSessionHandler();
 
         ini_set('session.auto_start', 0);
         ini_set('session.cache_limiter', '');
@@ -56,12 +63,12 @@ class SessionProvider implements HttpServerInterface {
         $this->setOptions($options);
 
         if (null === $serializer) {
-            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
+            $serialClass = __NAMESPACE__."\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
             if (!class_exists($serialClass)) {
                 throw new \RuntimeException('Unable to parse session serialize handler');
             }
 
-            $serializer = new $serialClass;
+            $serializer = new $serialClass();
         }
 
         $this->_serializer = $serializer;
@@ -70,10 +77,11 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
+    {
         $sessionName = ini_get('session.name');
 
-        $id = array_reduce($request->getHeader('Cookie'), function($accumulator, $cookie) use ($sessionName) {
+        $id = array_reduce($request->getHeader('Cookie'), function ($accumulator, $cookie) use ($sessionName) {
             if ($accumulator) {
                 return $accumulator;
             }
@@ -102,14 +110,16 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         return $this->_app->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
-    function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         // "close" session for Connection
 
         return $this->_app->onClose($conn);
@@ -118,17 +128,21 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         return $this->_app->onError($conn, $e);
     }
 
     /**
      * Set all the php session. ini options
-     * © Symfony
+     * © Symfony.
+     *
      * @param array $options
+     *
      * @return array
      */
-    protected function setOptions(array $options) {
+    protected function setOptions(array $options)
+    {
         $all = array(
             'auto_start', 'cache_limiter', 'cookie_domain', 'cookie_httponly',
             'cookie_lifetime', 'cookie_path', 'cookie_secure',
@@ -138,7 +152,7 @@ class SessionProvider implements HttpServerInterface {
             'serialize_handler', 'use_cookies',
             'use_only_cookies', 'use_trans_sid', 'upload_progress.enabled',
             'upload_progress.cleanup', 'upload_progress.prefix', 'upload_progress.name',
-            'upload_progress.freq', 'upload_progress.min-freq', 'url_rewriter.tags'
+            'upload_progress.freq', 'upload_progress.min-freq', 'url_rewriter.tags',
         );
 
         foreach ($all as $key) {
@@ -154,33 +168,36 @@ class SessionProvider implements HttpServerInterface {
 
     /**
      * @param string $langDef Input to convert
+     *
      * @return string
      */
-    protected function toClassCase($langDef) {
+    protected function toClassCase($langDef)
+    {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $langDef)));
     }
 
     /**
-     * Taken from Guzzle3
+     * Taken from Guzzle3.
      */
     private static $cookieParts = array(
-        'domain'      => 'Domain',
-        'path'        => 'Path',
-        'max_age'     => 'Max-Age',
-        'expires'     => 'Expires',
-        'version'     => 'Version',
-        'secure'      => 'Secure',
-        'port'        => 'Port',
-        'discard'     => 'Discard',
-        'comment'     => 'Comment',
+        'domain' => 'Domain',
+        'path' => 'Path',
+        'max_age' => 'Max-Age',
+        'expires' => 'Expires',
+        'version' => 'Version',
+        'secure' => 'Secure',
+        'port' => 'Port',
+        'discard' => 'Discard',
+        'comment' => 'Comment',
         'comment_url' => 'Comment-Url',
-        'http_only'   => 'HttpOnly'
+        'http_only' => 'HttpOnly',
     );
 
     /**
-     * Taken from Guzzle3
+     * Taken from Guzzle3.
      */
-    private function parseCookie($cookie, $host = null, $path = null, $decode = false) {
+    private function parseCookie($cookie, $host = null, $path = null, $decode = false)
+    {
         // Explode the cookie string using a series of semicolons
         $pieces = array_filter(array_map('trim', explode(';', $cookie)));
 
@@ -191,22 +208,21 @@ class SessionProvider implements HttpServerInterface {
 
         // Create the default return array
         $data = array_merge(array_fill_keys(array_keys(self::$cookieParts), null), array(
-            'cookies'   => array(),
-            'data'      => array(),
-            'path'      => $path ?: '/',
+            'cookies' => array(),
+            'data' => array(),
+            'path' => $path ?: '/',
             'http_only' => false,
-            'discard'   => false,
-            'domain'    => $host
+            'discard' => false,
+            'domain' => $host,
         ));
         $foundNonCookies = 0;
 
         // Add the cookie pieces into the parsed data array
         foreach ($pieces as $part) {
-
             $cookieParts = explode('=', $part, 2);
             $key = trim($cookieParts[0]);
 
-            if (count($cookieParts) == 1) {
+            if (1 == count($cookieParts)) {
                 // Can be a single value (e.g. secure, httpOnly)
                 $value = true;
             } else {
@@ -221,8 +237,8 @@ class SessionProvider implements HttpServerInterface {
             if (!empty($data['cookies'])) {
                 foreach (self::$cookieParts as $mapValue => $search) {
                     if (!strcasecmp($search, $key)) {
-                        $data[$mapValue] = $mapValue == 'port' ? array_map('trim', explode(',', $value)) : $value;
-                        $foundNonCookies++;
+                        $data[$mapValue] = 'port' == $mapValue ? array_map('trim', explode(',', $value)) : $value;
+                        ++$foundNonCookies;
                         continue 2;
                     }
                 }
