@@ -1,8 +1,11 @@
 <?php
+
 namespace Ratchet\Wamp;
 
-class JsonException extends Exception {
-    public function __construct() {
+class JsonException extends Exception
+{
+    public function __construct()
+    {
         $code = json_last_error();
 
         switch ($code) {
