@@ -8,7 +8,7 @@ use Ratchet\ConnectionInterface;
  * WebSocket Application Messaging Protocol
  *
  * @link http://wamp.ws/spec
- * @link https://github.com/oberstet/AutobahnJS
+ * @link https://github.com/oberstet/autobahn-js
  *
  * +--------------+----+------------------+
  * | Message Type | ID | DIRECTION        |
@@ -62,9 +62,9 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
             $subs[] = 'wamp';
 
             return $subs;
-        } else {
-            return array('wamp');
         }
+
+        return ['wamp'];
     }
 
     /**
@@ -91,6 +91,10 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
         if (!is_array($json) || $json !== array_values($json)) {
             throw new Exception("Invalid WAMP message format");
+        }
+
+        if (isset($json[1]) && !(is_string($json[1]) || is_numeric($json[1]))) {
+            throw new Exception('Invalid Topic, must be a string');
         }
 
         switch ($json[0]) {
@@ -122,13 +126,13 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
                 $exclude  = (array_key_exists(3, $json) ? $json[3] : null);
                 if (!is_array($exclude)) {
                     if (true === (boolean)$exclude) {
-                        $exclude = array($from->WAMP->sessionId);
+                        $exclude = [$from->WAMP->sessionId];
                     } else {
-                        $exclude = array();
+                        $exclude = [];
                     }
                 }
 
-                $eligible = (array_key_exists(4, $json) ? $json[4] : array());
+                $eligible = (array_key_exists(4, $json) ? $json[4] : []);
 
                 $this->_decorating->onPublish($from, $from->getUri($json[1]), $json[2], $exclude, $eligible);
             break;

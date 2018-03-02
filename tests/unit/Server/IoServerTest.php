@@ -20,10 +20,10 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;
-        $this->reactor = new Server($loop);
-        $this->reactor->listen(0);
+        $this->reactor = new Server(0, $loop);
 
-        $this->port   = $this->reactor->getPort();
+        $uri = $this->reactor->getAddress();
+        $this->port   = parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_PORT);
         $this->server = new IoServer($this->app, $this->reactor, $loop);
     }
 

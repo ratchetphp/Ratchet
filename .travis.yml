@@ -1,13 +1,20 @@
 language: php
 
 php:
-  - 5.3
   - 5.4
   - 5.5
   - 5.6
-  - 7
+  - 7.0
+  - 7.1
   - hhvm
+
+dist: trusty
+
+matrix:
+  allow_failures:
+    - php: hhvm
 
 before_script:
   - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then echo "session.serialize_handler = php" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;'
+  - php -m
   - composer install --dev --prefer-source

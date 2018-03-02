@@ -185,21 +185,18 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public static function topicConnExpectationProvider() {
-        return array(
-            array(true, 'onClose', 0)
-          , array(true, 'onUnsubscribe', 0)
-          , array(false, 'onClose', 1)
-          , array(false, 'onUnsubscribe', 1)
-        );
+        return [
+            [ 'onClose', 0]
+          , ['onUnsubscribe', 0]
+        ];
     }
 
     /**
      * @dataProvider topicConnExpectationProvider
      */
-    public function testTopicRetentionFromLeavingConnections($autoDelete, $methodCall, $expectation) {
+    public function testTopicRetentionFromLeavingConnections($methodCall, $expectation) {
         $topicName = 'checkTopic';
         list($topic, $attribute) = $this->topicProvider($topicName);
-        $topic->autoDelete = $autoDelete;
 
         $this->mngr->onSubscribe($this->conn, $topicName);
         call_user_func_array(array($this->mngr, $methodCall), array($this->conn, $topicName));
