@@ -2,10 +2,10 @@
 # Users do not need to use `make`; Ratchet does not need to be compiled
 
 test:
-	phpunit
+	vendor/bin/phpunit
 
 cover:
-	phpunit --coverage-text --coverage-html=reports/coverage
+	vendor/bin/phpunit --coverage-text --coverage-html=reports/coverage
 
 abtests:
 	ulimit -n 2048 && php tests/autobahn/bin/fuzzingserver.php 8001 LibEvent &
