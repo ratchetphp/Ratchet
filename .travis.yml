@@ -6,6 +6,7 @@ php:
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
   - hhvm
 
 dist: trusty
@@ -18,3 +19,6 @@ before_script:
   - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then echo "session.serialize_handler = php" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi;'
   - php -m
   - composer install --dev --prefer-source
+  # Check the code style
+  - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then IFS=$'\n'; COMMIT_SCA_FILES=($(git diff --name-only --diff-filter=ACMRTUXB "${TRAVIS_COMMIT_RANGE}")); unset IFS; fi
+  - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then composer require "friendsofphp/php-cs-fixer:^2.8" && ./vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=no -- "${COMMIT_SCA_FILES[@]}";fi
