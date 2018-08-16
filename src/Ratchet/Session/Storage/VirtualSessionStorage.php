@@ -11,14 +11,26 @@ class VirtualSessionStorage extends NativeSessionStorage {
     protected $_serializer;
 
     /**
+     * @var string
+     */
+    protected $sessionName;
+
+    /**
      * @param \SessionHandlerInterface                    $handler
      * @param string                                      $sessionId The ID of the session to retrieve
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
+     * @param string|null                                 $sessionName
      */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
+    public function __construct(
+        \SessionHandlerInterface $handler,
+        $sessionId,
+        HandlerInterface $serializer,
+        $sessionName = null
+    ) {
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);
         $this->_serializer = $serializer;
+        $this->sessionName = $sessionName ?: session_name();
         $this->setMetadataBag(null);
     }
 
@@ -34,7 +46,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
         // pdo_sqlite (and possible pdo_*) as session storage, if you are using a DSN string instead of a \PDO object
         // in the constructor. The method arguments are filled with the values, which are also used by the symfony
         // framework in this case. This must not be the best choice, but it works.
-        $this->saveHandler->open(session_save_path(), session_name());
+        $this->saveHandler->open(session_save_path(), $this->sessionName);
 
         $rawData     = $this->saveHandler->read($this->saveHandler->getId());
         $sessionData = $this->_serializer->unserialize($rawData);
