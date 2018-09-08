@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\Server;
-use Ratchet\Server\IpBlackList;
 
+use Ratchet\Server\IpBlackList;
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Server\IpBlackList
  */
-class IpBlackListTest extends \PHPUnit_Framework_TestCase {
+class IpBlackListTest extends TestCase {
     protected $blocker;
     protected $mock;
 

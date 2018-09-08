@@ -1,11 +1,13 @@
 <?php
 namespace Ratchet\Session\Storage;
+
 use Ratchet\Session\Serialize\PhpHandler;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+use PHPUnit\Framework\TestCase;
 
-class VirtualSessionStoragePDOTest extends \PHPUnit_Framework_TestCase {
+class VirtualSessionStoragePDOTest extends TestCase {
     /**
      * @var VirtualSessionStorage
      */

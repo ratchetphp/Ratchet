@@ -1,13 +1,14 @@
 <?php
 namespace Ratchet\Server;
+
 use Ratchet\Server\IoServer;
 use React\EventLoop\StreamSelectLoop;
 use React\Socket\Server;
-
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Server\IoServer
  */
-class IoServerTest extends \PHPUnit_Framework_TestCase {
+class IoServerTest extends TestCase {
     protected $server;
 
     protected $app;

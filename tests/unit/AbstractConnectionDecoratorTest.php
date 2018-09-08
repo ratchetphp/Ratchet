@@ -1,12 +1,13 @@
 <?php
 namespace Ratchet;
-use Ratchet\Mock\ConnectionDecorator;
 
+use Ratchet\Mock\ConnectionDecorator;
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\AbstractConnectionDecorator
  * @covers Ratchet\ConnectionInterface
  */
-class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
+class AbstractConnectionDecoratorTest extends TestCase {
     protected $mock;
     protected $l1;
     protected $l2;

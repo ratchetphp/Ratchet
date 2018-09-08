@@ -1,10 +1,11 @@
 <?php
 namespace Ratchet\Wamp;
 
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Wamp\TopicManager
  */
-class TopicManagerTest extends \PHPUnit_Framework_TestCase {
+class TopicManagerTest extends TestCase {
     private $mock;
 
     /**

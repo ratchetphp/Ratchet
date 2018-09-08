@@ -1,8 +1,10 @@
 <?php
 namespace Ratchet\Server;
-use Ratchet\Server\EchoServer;
 
-class EchoServerTest extends \PHPUnit_Framework_TestCase {
+use Ratchet\Server\EchoServer;
+use PHPUnit\Framework\TestCase;
+
+class EchoServerTest extends TestCase {
     protected $_conn;
     protected $_comp;
 

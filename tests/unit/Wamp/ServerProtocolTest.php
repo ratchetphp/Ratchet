@@ -1,14 +1,15 @@
 <?php
 namespace Ratchet\Wamp;
+
 use Ratchet\Mock\Connection;
 use Ratchet\Mock\WampComponent as TestComponent;
-
+use PHPUnit\Framework\TestCase;
 /**
  * @covers \Ratchet\Wamp\ServerProtocol
  * @covers \Ratchet\Wamp\WampServerInterface
  * @covers \Ratchet\Wamp\WampConnection
  */
-class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
+class ServerProtocolTest extends TestCase {
     protected $_comp;
 
     protected $_app;

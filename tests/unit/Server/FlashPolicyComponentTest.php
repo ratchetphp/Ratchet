@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\Application\Server;
-use Ratchet\Server\FlashPolicy;
 
+use Ratchet\Server\FlashPolicy;
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Server\FlashPolicy
  */
-class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
+class FlashPolicyTest extends TestCase {
 
     protected $_policy;
 
