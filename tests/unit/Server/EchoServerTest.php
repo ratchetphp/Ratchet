@@ -9,7 +9,7 @@ class EchoServerTest extends TestCase {
     protected $_comp;
 
     public function setUp() {
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
         $this->_comp = new EchoServer;
     }
 

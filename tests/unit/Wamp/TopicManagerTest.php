@@ -19,8 +19,8 @@ class TopicManagerTest extends TestCase {
     private $conn;
 
     public function setUp() {
-        $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
-        $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
+        $this->conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
+        $this->mock = $this->getMockBuilder('\Ratchet\Wamp\WampServerInterface')->getMock();
         $this->mngr = new TopicManager($this->mock);
 
         $this->conn->WAMP = new \StdClass;
@@ -218,7 +218,7 @@ class TopicManagerTest extends TestCase {
 
     public function testGetSubProtocolsBubbles() {
         $subs = array('hello', 'world');
-        $app  = $this->getMock('Ratchet\Wamp\Stub\WsWampServerInterface');
+        $app  = $this->getMockBuilder('Ratchet\Wamp\Stub\WsWampServerInterface')->getMock();
         $app->expects($this->once())->method('getSubProtocols')->will($this->returnValue($subs));
         $mngr = new TopicManager($app);
 

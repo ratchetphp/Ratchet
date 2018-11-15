@@ -13,7 +13,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
     protected $l2;
 
     public function setUp() {
-        $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);
     }
@@ -131,18 +131,24 @@ class AbstractConnectionDecoratorTest extends TestCase {
         $this->assertSame($this->l2, $this->l2->decorator->conn->decorator->conn->decorator->conn);
     }
 
+    /**
+     * @expectedException \PHPUnit\Framework\Error\Notice
+     */
     public function testWarningGettingNothing() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->mock->nonExistant;
     }
 
+    /**
+     * @expectedException \PHPUnit\Framework\Error\Notice
+     */
     public function testWarningGettingNothingLevel1() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l1->nonExistant;
     }
 
+    /**
+     * @expectedException \PHPUnit\Framework\Error\Notice
+     */
     public function testWarningGettingNothingLevel2() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l2->nonExistant;
     }
 }
