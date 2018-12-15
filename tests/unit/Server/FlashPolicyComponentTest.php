@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\Application\Server;
-use Ratchet\Server\FlashPolicy;
 
+use Ratchet\Server\FlashPolicy;
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Server\FlashPolicy
  */
-class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
+class FlashPolicyTest extends TestCase {
 
     protected $_policy;
 
@@ -21,13 +22,17 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('SimpleXMLElement', $this->_policy->renderPolicy());
     }
 
+    /**
+     * @expectedException \UnexpectedValueException
+     */
     public function testInvalidPolicyReader() {
-        $this->setExpectedException('UnexpectedValueException');
         $this->_policy->renderPolicy();
     }
 
+    /**
+     * @expectedException \UnexpectedValueException
+     */
     public function testInvalidDomainPolicyReader() {
-        $this->setExpectedException('UnexpectedValueException');
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('dev.example.*', '*');
         $this->_policy->renderPolicy();
@@ -110,20 +115,22 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    /**
+     * @expectedException \UnexpectedValueException
+     */
     public function testAddAllowedAccessOnlyAcceptsValidPorts() {
-        $this->setExpectedException('UnexpectedValueException');
-
         $this->_policy->addAllowedAccess('*', 'nope');
     }
 
+    /**
+     * @expectedException \UnexpectedValueException
+     */
     public function testSetSiteControlThrowsException() {
-        $this->setExpectedException('UnexpectedValueException');
-
         $this->_policy->setSiteControl('nope');
     }
 
     public function testErrorClosesConnection() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock();
         $conn->expects($this->once())->method('close');
 
         $this->_policy->onError($conn, new \Exception);
@@ -132,7 +139,7 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
     public function testOnMessageSendsString() {
         $this->_policy->addAllowedAccess('*', '*');
 
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock();
         $conn->expects($this->once())->method('send')->with($this->isType('string'));
 
         $this->_policy->onMessage($conn, ' ');
@@ -140,13 +147,13 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
 
     public function testOnOpenExists() {
         $this->assertTrue(method_exists($this->_policy, 'onOpen'));
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
         $this->_policy->onOpen($conn);
     }
 
     public function testOnCloseExists() {
         $this->assertTrue(method_exists($this->_policy, 'onClose'));
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
         $this->_policy->onClose($conn);
     }
 }

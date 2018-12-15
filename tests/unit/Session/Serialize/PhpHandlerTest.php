@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\Session\Serialize;
-use Ratchet\Session\Serialize\PhpHandler;
 
+use Ratchet\Session\Serialize\PhpHandler;
+use PHPUnit\Framework\TestCase;
 /**
  * @covers Ratchet\Session\Serialize\PhpHandler
  */
-class PhpHandlerTest extends \PHPUnit_Framework_TestCase {
+class PhpHandlerTest extends TestCase {
     protected $_handler;
 
     public function setUp() {

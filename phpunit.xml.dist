@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     forceCoversAnnotation="true"
-    mapTestClassNameToCoveredClassName="true"
     bootstrap="tests/bootstrap.php"
     colors="true"
     backupGlobals="false"
     backupStaticAttributes="false"
-    syntaxCheck="false"
     stopOnError="false"
 >
 
@@ -14,9 +12,6 @@
         <testsuite name="unit">
             <directory>./tests/unit/</directory>
         </testsuite>
-    </testsuites>
-
-    <testsuites>
         <testsuite name="integration">
             <directory>./tests/integration/</directory>
         </testsuite>

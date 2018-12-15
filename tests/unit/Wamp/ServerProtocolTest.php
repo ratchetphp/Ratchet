@@ -1,14 +1,15 @@
 <?php
 namespace Ratchet\Wamp;
+
 use Ratchet\Mock\Connection;
 use Ratchet\Mock\WampComponent as TestComponent;
-
+use PHPUnit\Framework\TestCase;
 /**
  * @covers \Ratchet\Wamp\ServerProtocol
  * @covers \Ratchet\Wamp\WampServerInterface
  * @covers \Ratchet\Wamp\WampConnection
  */
-class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
+class ServerProtocolTest extends TestCase {
     protected $_comp;
 
     protected $_app;
@@ -34,10 +35,9 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider invalidMessageProvider
+     * @expectedException \Ratchet\Wamp\Exception
      */
     public function testInvalidMessages($type) {
-        $this->setExpectedException('\Ratchet\Wamp\Exception');
-
         $conn = $this->newConn();
         $this->_comp->onOpen($conn);
         $this->_comp->onMessage($conn, json_encode([$type]));
@@ -221,9 +221,10 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("$fullURI#$method", $conn->getUri("$prefix:$method"));
     }
 
+    /**
+     * @expectedException \Ratchet\Wamp\JsonException
+     */
     public function testMessageMustBeJson() {
-        $this->setExpectedException('\\Ratchet\\Wamp\\JsonException');
-
         $conn = new Connection;
 
         $this->_comp->onOpen($conn);
@@ -241,7 +242,7 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testWampOnMessageApp() {
-        $app = $this->getMock('\\Ratchet\\Wamp\\WampServerInterface');
+        $app = $this->getMockBuilder('\\Ratchet\\Wamp\\WampServerInterface')->getMock();
         $wamp = new ServerProtocol($app);
 
         $this->assertContains('wamp', $wamp->getSubProtocols());
@@ -257,36 +258,38 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider badFormatProvider
+     * @expectedException \Ratchet\Wamp\Exception
      */
     public function testValidJsonButInvalidProtocol($message) {
-        $this->setExpectedException('\Ratchet\Wamp\Exception');
-
         $conn = $this->newConn();
         $this->_comp->onOpen($conn);
         $this->_comp->onMessage($conn, $message);
     }
 
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
     public function testBadClientInputFromNonStringTopic() {
-        $this->setExpectedException('\Ratchet\Wamp\Exception');
-
         $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
         $this->_comp->onMessage($conn, json_encode([5, ['hells', 'nope']]));
     }
 
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
     public function testBadPrefixWithNonStringTopic() {
-        $this->setExpectedException('\Ratchet\Wamp\Exception');
-
         $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
         $this->_comp->onMessage($conn, json_encode([1, ['hells', 'nope'], ['bad', 'input']]));
     }
 
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
     public function testBadPublishWithNonStringTopic() {
-        $this->setExpectedException('\Ratchet\Wamp\Exception');
-
         $conn = new WampConnection($this->newConn());
         $this->_comp->onOpen($conn);
 
