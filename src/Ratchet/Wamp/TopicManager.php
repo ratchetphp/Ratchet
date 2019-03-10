@@ -22,7 +22,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        $conn->WAMP->subscriptions = new \SplObjectStorage;
+        $conn->WAMP->subscriptions = $conn->get('WAMP.subscriptions'); // @deprecated
         $this->app->onOpen($conn);
     }
 
@@ -39,28 +39,28 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     public function onSubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->subscriptions->contains($topicObj)) {
+        if ($conn->get('WAMP.subscriptions')->contains($topicObj)) {
             return;
         }
 
         $this->topicLookup[$topic]->add($conn);
-        $conn->WAMP->subscriptions->attach($topicObj);
+        $conn->get('WAMP.subscriptions')->attach($topicObj);
         $this->app->onSubscribe($conn, $topicObj);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function onUnsubscribe(ConnectionInterface $conn, $topic) {
+    public function onUnSubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if (!$conn->WAMP->subscriptions->contains($topicObj)) {
+        if (!$conn->get('WAMP.subscriptions')->contains($topicObj)) {
             return;
         }
 
         $this->cleanTopic($topicObj, $conn);
 
-        $this->app->onUnsubscribe($conn, $topicObj);
+        $this->app->onUnSubscribe($conn, $topicObj);
     }
 
     /**
@@ -96,7 +96,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
             return $this->app->getSubProtocols();
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -112,8 +112,8 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     }
 
     protected function cleanTopic(Topic $topic, ConnectionInterface $conn) {
-        if ($conn->WAMP->subscriptions->contains($topic)) {
-            $conn->WAMP->subscriptions->detach($topic);
+        if ($conn->get('WAMP.subscriptions')->contains($topic)) {
+            $conn->get('WAMP.subscriptions')->detach($topic);
         }
 
         $this->topicLookup[$topic->getId()]->remove($conn);

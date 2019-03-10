@@ -3,7 +3,6 @@ namespace Ratchet;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
-use React\Socket\SecureServer as SecureReactor;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\OriginCheck;
 use Ratchet\Wamp\WampServerInterface;
@@ -100,7 +99,7 @@ class App {
      * @return ComponentInterface|WsServer
      */
     public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null) {
-        if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
+        if ($controller instanceof HttpServerInterface) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
             $decorated = new WsServer(new WampServer($controller));

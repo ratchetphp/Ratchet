@@ -208,17 +208,21 @@ class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testPrefix() {
-        $conn = new WampConnection($this->newConn());
+//        $conn = new WampConnection($this->newConn());
+        $conn = $this->newConn();
         $this->_comp->onOpen($conn);
+
+        $wampConn = $this->_app->last['onOpen'][0];
 
         $prefix  = 'incoming';
         $fullURI   = "http://example.com/$prefix";
         $method = 'call';
 
-        $this->_comp->onMessage($conn, json_encode(array(1, $prefix, $fullURI)));
+        $this->_comp->onMessage($conn, json_encode([1, $prefix, $fullURI]));
 
-        $this->assertEquals($fullURI, $conn->WAMP->prefixes[$prefix]);
-        $this->assertEquals("$fullURI#$method", $conn->getUri("$prefix:$method"));
+//        $this->assertEquals($fullURI, $conn->WAMP->prefixes[$prefix]);
+        $this->assertEquals($fullURI, $wampConn->get('WAMP.prefixes')[$prefix]);
+        $this->assertEquals("$fullURI#$method", $wampConn->getUri("$prefix:$method"));
     }
 
     public function testMessageMustBeJson() {

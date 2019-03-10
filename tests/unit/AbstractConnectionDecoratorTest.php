@@ -3,8 +3,8 @@ namespace Ratchet;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
- * @covers Ratchet\AbstractConnectionDecorator
- * @covers Ratchet\ConnectionInterface
+ * @covers \Ratchet\AbstractConnectionDecorator
+ * @covers \Ratchet\ConnectionInterface
  */
 class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
     protected $mock;

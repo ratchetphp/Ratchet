@@ -8,5 +8,5 @@ interface MessageInterface {
      * @param  string                       $msg  The message received
      * @throws \Exception
      */
-    function onMessage(ConnectionInterface $from, $msg);
+    public function onMessage(ConnectionInterface $from, $msg);
 }

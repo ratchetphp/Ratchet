@@ -41,7 +41,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
     protected $_decorating;
 
     /**
-     * @var \SplObjectStorage
+     * @var WampConnection[]
      */
     protected $connections;
 
@@ -83,7 +83,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
      * @throws \Ratchet\Wamp\JsonException
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        $from = $this->connections[$from];
+        $wampConn = $this->connections[$from];
 
         if (null === ($json = @json_decode($msg, true))) {
             throw new JsonException;
@@ -99,7 +99,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
         switch ($json[0]) {
             case static::MSG_PREFIX:
-                $from->WAMP->prefixes[$json[1]] = $json[2];
+                $wampConn->get('WAMP.prefixes')[$json[1]] = $json[2];
             break;
 
             case static::MSG_CALL:
@@ -111,22 +111,22 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
                     $json = $json[0];
                 }
 
-                $this->_decorating->onCall($from, $callID, $from->getUri($procURI), $json);
+                $this->_decorating->onCall($wampConn, $callID, $wampConn->getUri($procURI), $json);
             break;
 
             case static::MSG_SUBSCRIBE:
-                $this->_decorating->onSubscribe($from, $from->getUri($json[1]));
+                $this->_decorating->onSubscribe($wampConn, $wampConn->getUri($json[1]));
             break;
 
             case static::MSG_UNSUBSCRIBE:
-                $this->_decorating->onUnSubscribe($from, $from->getUri($json[1]));
+                $this->_decorating->onUnSubscribe($wampConn, $wampConn->getUri($json[1]));
             break;
 
             case static::MSG_PUBLISH:
                 $exclude  = (array_key_exists(3, $json) ? $json[3] : null);
                 if (!is_array($exclude)) {
                     if (true === (boolean)$exclude) {
-                        $exclude = [$from->WAMP->sessionId];
+                        $exclude = [$wampConn->get('WAMP.sessionId')];
                     } else {
                         $exclude = [];
                     }
@@ -134,7 +134,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
 
                 $eligible = (array_key_exists(4, $json) ? $json[4] : []);
 
-                $this->_decorating->onPublish($from, $from->getUri($json[1]), $json[2], $exclude, $eligible);
+                $this->_decorating->onPublish($wampConn, $wampConn->getUri($json[1]), $json[2], $exclude, $eligible);
             break;
 
             default:

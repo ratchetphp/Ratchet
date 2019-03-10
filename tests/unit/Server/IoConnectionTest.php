@@ -3,7 +3,7 @@ namespace Ratchet\Application\Server;
 use Ratchet\Server\IoConnection;
 
 /**
- * @covers Ratchet\Server\IoConnection
+ * @covers \Ratchet\Server\IoConnection
  */
 class IoConnectionTest extends \PHPUnit_Framework_TestCase {
     protected $sock;
@@ -11,7 +11,7 @@ class IoConnectionTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->sock = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $this->conn = new IoConnection($this->sock);
+        $this->conn = new IoConnection($this->sock, 1, '0.0.0.0');
     }
 
     public function testCloseBubbles() {

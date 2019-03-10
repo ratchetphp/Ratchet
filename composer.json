@@ -28,9 +28,23 @@
       , "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5"
       , "guzzlehttp/psr7": "^1.0"
       , "symfony/http-foundation": "^2.6|^3.0|^4.0"
-      , "symfony/routing": "^2.6|^3.0|^4.0"
+      , "symfony/routing": "^2.6|^3.0|^4.0",
+        "psr/container": "^1.0"
     }
   , "require-dev": {
         "phpunit/phpunit": "~4.8"
+    }
+  , "scripts": {
+        "test": "./vendor/bin/phpunit"
+      , "test:cover": "./vendor/bin/phpunit --coverage-text --coverage-html=reports/coverage"
+      , "abtests": [
+            "@php tests/autobahn/bin/fuzzingserver.php 8001 LibEvent &"
+        ]
+      , "abtest": [
+            "@php ./tests/autobahn/bin/fuzzingserver.php 8000 StreamSelect &"
+          , "sleep 1"
+          , "wstest -m fuzzingclient -s ./tests/autobahn/fuzzingclient-quick.json"
+          , "killall php"
+        ]
     }
 }

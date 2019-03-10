@@ -1,23 +1,28 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\ConnectionInterface;
+use Ratchet\ConnectionPropertyNotFoundException;
 use React\Socket\ConnectionInterface as ReactConn;
 
 /**
  * {@inheritdoc}
  */
-class IoConnection implements ConnectionInterface {
+final class IoConnection implements ConnectionInterface {
     /**
      * @var \React\Socket\ConnectionInterface
      */
-    protected $conn;
+    private $conn;
 
+    private $properties = [];
 
-    /**
-     * @param \React\Socket\ConnectionInterface $conn
-     */
     public function __construct(ReactConn $conn) {
         $this->conn = $conn;
+
+        $uri = $conn->getRemoteAddress();
+        $this->properties['Socket.remoteAddress'] = trim(
+            parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_HOST),
+            '[]'
+        );
     }
 
     /**
@@ -34,5 +39,15 @@ class IoConnection implements ConnectionInterface {
      */
     public function close() {
         $this->conn->end();
+    }
+
+    public function get($id) {
+        if (!$this->has($id)) {
+            throw new ConnectionPropertyNotFoundException("{$id} not found");
+        }
+    }
+
+    public function has($id) {
+        return array_key_exists($id, $this->properties);
     }
 }

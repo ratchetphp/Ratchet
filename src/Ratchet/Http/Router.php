@@ -19,19 +19,25 @@ class Router implements HttpServerInterface {
 
     public function __construct(UrlMatcherInterface $matcher) {
         $this->_matcher = $matcher;
-        $this->_noopController = new NoOpHttpServerController;
+        $this->_noopController = new NoOpHttpServerController; // @deprecated
     }
 
     /**
-     * {@inheritdoc}
+     * @param \Ratchet\Http\HttpConnection @conn
+     * @param \Psr\Http\Message\RequestInterface $request
      * @throws \UnexpectedValueException If a controller is not \Ratchet\Http\HttpServerInterface
+     * @return null
      */
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
-        $conn->controller = $this->_noopController;
+        if (!($conn instanceof HttpConnection)) {
+            throw new \UnexpectedValueException('Connection must be instance of HttpConnection');
+        }
+
+        $conn->controller = $this->_noopController; // @deprecated
 
         $uri = $request->getUri();
 
@@ -51,13 +57,14 @@ class Router implements HttpServerInterface {
             $route['_controller'] = new $route['_controller'];
         }
 
-        if (!($route['_controller'] instanceof HttpServerInterface)) {
+        $controller = $route['_controller'];
+        if (!($controller instanceof HttpServerInterface)) {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
 
         $parameters = [];
         foreach($route as $key => $value) {
-            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
+            if (is_string($key) && ('_' !== substr($key, 0, 1))) {
                 $parameters[$key] = $value;
             }
         }
@@ -65,23 +72,25 @@ class Router implements HttpServerInterface {
 
         $request = $request->withUri($uri->withQuery(gPsr\build_query($parameters)));
 
-        $conn->controller = $route['_controller'];
-        $conn->controller->onOpen($conn, $request);
+        $conn->setController($controller);
+        $conn->controller = $controller;
+
+        $controller->onOpen($conn, $request);
     }
 
     /**
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        $from->controller->onMessage($from, $msg);
+        $from->get('HTTP.controller')->onMessage($from, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
-        if (isset($conn->controller)) {
-            $conn->controller->onClose($conn);
+        if ($conn->has('controller')) {
+            $conn->get('controller')->onClose($conn);
         }
     }
 
@@ -89,8 +98,8 @@ class Router implements HttpServerInterface {
      * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        if (isset($conn->controller)) {
-            $conn->controller->onError($conn, $e);
+        if ($conn->has('controller')) {
+            $conn->get('controller')->onError($conn, $e);
         }
     }
 }

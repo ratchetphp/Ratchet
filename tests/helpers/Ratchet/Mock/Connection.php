@@ -17,4 +17,12 @@ class Connection implements ConnectionInterface {
     public function close() {
         $this->last[__FUNCTION__] = true;
     }
+
+    public function get($id) {
+        throw new \Ratchet\ConnectionPropertyNotFoundException('Mock has no properties');
+    }
+
+    public function has($id) {
+        return false;
+    }
 }

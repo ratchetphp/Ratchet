@@ -19,47 +19,62 @@ class HttpServer implements MessageComponentInterface {
     protected $_httpServer;
 
     /**
+     * @var HttpConnection[]
+     */
+    private $connections;
+
+    /**
      * @param HttpServerInterface
      */
     public function __construct(HttpServerInterface $component) {
         $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
+        $this->connections = new \SplObjectStorage;
     }
 
     /**
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn) {
-        $conn->httpHeadersReceived = false;
+        $this->connections->attach($conn, new HttpConnection($conn, new NoOpHttpServerController));
+        $conn->httpHeadersReceived = false; // @deprecated
     }
 
     /**
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        if (true !== $from->httpHeadersReceived) {
+        $httpConn = $this->connections[$from];
+
+//        if (true !== $from->get('HTTP.headersReceived')) {
+        if (!$httpConn->has('HTTP.request')) {
             try {
-                if (null === ($request = $this->_reqParser->onMessage($from, $msg))) {
+                if (null === ($request = $this->_reqParser->onMessage($httpConn, $msg))) {
                     return;
                 }
             } catch (\OverflowException $oe) {
                 return $this->close($from, 413);
             }
 
-            $from->httpHeadersReceived = true;
+            $from->httpHeadersReceived = true; // @deprecated
+            $httpConn->receivedHttpHeaders($request);
 
-            return $this->_httpServer->onOpen($from, $request);
+            return $this->_httpServer->onOpen($httpConn, $request);
         }
 
-        $this->_httpServer->onMessage($from, $msg);
+        $this->_httpServer->onMessage($httpConn, $msg);
     }
 
     /**
      * {@inheritdoc}
      */
     public function onClose(ConnectionInterface $conn) {
-        if ($conn->httpHeadersReceived) {
-            $this->_httpServer->onClose($conn);
+        $httpConn = $this->connections[$conn];
+
+        $this->connections->detach($conn);
+
+        if ($httpConn->has('HTTP.request')) {
+            $this->_httpServer->onClose($httpConn);
         }
     }
 
@@ -67,7 +82,7 @@ class HttpServer implements MessageComponentInterface {
      * {@inheritdoc}
      */
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        if ($conn->httpHeadersReceived) {
+        if ($conn->has('HTTP.request')) {
             $this->_httpServer->onError($conn, $e);
         } else {
             $this->close($conn, 500);

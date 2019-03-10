@@ -3,7 +3,7 @@ namespace Ratchet\Http;
 use Ratchet\AbstractMessageComponentTestCase;
 
 /**
- * @covers Ratchet\Http\HttpServer
+ * @covers \Ratchet\Http\HttpServer
  */
 class HttpServerTest extends AbstractMessageComponentTestCase {
     public function setUp() {
@@ -13,6 +13,7 @@ class HttpServerTest extends AbstractMessageComponentTestCase {
 
     public function getConnectionClassString() {
         return '\Ratchet\ConnectionInterface';
+//        return '\Ratchet\Http\HttpConnection';
     }
 
     public function getDecoratorClassString() {

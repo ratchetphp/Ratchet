@@ -12,9 +12,6 @@ use Psr\Http\Message\RequestInterface;
 class OriginCheck implements HttpServerInterface {
     use CloseResponseTrait;
 
-    /**
-     * @var \Ratchet\MessageComponentInterface
-     */
     protected $_component;
 
     public $allowedOrigins = [];
@@ -35,7 +32,7 @@ class OriginCheck implements HttpServerInterface {
         $header = (string)$request->getHeader('Origin')[0];
         $origin = parse_url($header, PHP_URL_HOST) ?: $header;
 
-        if (!in_array($origin, $this->allowedOrigins)) {
+        if (!in_array($origin, $this->allowedOrigins, true)) {
             return $this->close($conn, 403);
         }
 

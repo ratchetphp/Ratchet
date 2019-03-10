@@ -1,11 +1,10 @@
 <?php
 namespace Ratchet\Server;
-use Ratchet\Server\IoServer;
 use React\EventLoop\StreamSelectLoop;
 use React\Socket\Server;
 
 /**
- * @covers Ratchet\Server\IoServer
+ * @covers \Ratchet\Server\IoServer
  */
 class IoServerTest extends \PHPUnit_Framework_TestCase {
     protected $server;
@@ -94,11 +93,10 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnErrorPassesException() {
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $conn->decor = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
-        $this->app->expects($this->once())->method('onError')->with($conn->decor, $err);
+        $this->app->expects($this->once())->method('onError')->with($conn, $err);
 
         $this->server->handleError($err, $conn);
     }

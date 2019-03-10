@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Server;
+use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
-use React\Socket\SecureServer as SecureReactor;
 
 /**
  * Creates an open-ended socket to listen on a port for incoming connections.
@@ -29,12 +29,17 @@ class IoServer {
     public $socket;
 
     /**
+     * @var IoConnection[]
+     */
+    private $connections;
+
+    /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
      * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
      * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
      */
     public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop = null) {
-        if (false === strpos(PHP_VERSION, "hiphop")) {
+        if (false === strpos(PHP_VERSION, 'hiphop')) {
             gc_enable();
         }
 
@@ -44,8 +49,9 @@ class IoServer {
         $this->loop = $loop;
         $this->app  = $app;
         $this->socket = $socket;
+        $this->connections = new \SplObjectStorage;
 
-        $socket->on('connection', array($this, 'handleConnect'));
+        $socket->on('connection', [$this, 'handleConnect']);
     }
 
     /**
@@ -80,16 +86,16 @@ class IoServer {
      * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn);
-        $conn->decor->resourceId = (int)$conn->stream;
+        $connContainer = new IoConnection($conn);
+        $this->connections->attach($conn, $connContainer);
 
-        $uri = $conn->getRemoteAddress();
-        $conn->decor->remoteAddress = trim(
-            parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_HOST),
-            '[]'
-        );
+//        $conn->decor = new IoConnection($conn);
 
-        $this->app->onOpen($conn->decor);
+        // TODO: @deprecated
+        $connContainer->resourceId = (int)$conn->stream;
+        $connContainer->remoteAddress = $connContainer->get('Socket.remoteAddress');
+
+        $this->app->onOpen($connContainer); // TODO: Try/catch ->onError ?
 
         $conn->on('data', function ($data) use ($conn) {
             $this->handleData($data, $conn);
@@ -97,8 +103,8 @@ class IoServer {
         $conn->on('close', function () use ($conn) {
             $this->handleEnd($conn);
         });
-        $conn->on('error', function (\Exception $e) use ($conn) {
-            $this->handleError($e, $conn);
+        $conn->on('error', function (\Exception $e) use ($connContainer) {
+            $this->handleError($e, $connContainer);
         });
     }
 
@@ -109,9 +115,9 @@ class IoServer {
      */
     public function handleData($data, $conn) {
         try {
-            $this->app->onMessage($conn->decor, $data);
+            $this->app->onMessage($this->connections[$conn], $data);
         } catch (\Exception $e) {
-            $this->handleError($e, $conn);
+            $this->handleError($e, $this->connections[$conn]);
         }
     }
 
@@ -120,21 +126,23 @@ class IoServer {
      * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleEnd($conn) {
-        try {
-            $this->app->onClose($conn->decor);
-        } catch (\Exception $e) {
-            $this->handleError($e, $conn);
-        }
+        $connContainer = $this->connections[$conn];
 
-        unset($conn->decor);
+        $this->connections->detach($conn);
+
+        try {
+            $this->app->onClose($connContainer);
+        } catch (\Exception $e) {
+            $this->handleError($e, $connContainer);
+        }
     }
 
     /**
      * An error has occurred, let the listening application know
-     * @param \Exception                        $e
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Exception                     $e
+     * @param \Ratchet\ConnectionInterface $conn
      */
-    public function handleError(\Exception $e, $conn) {
-        $this->app->onError($conn->decor, $e);
+    public function handleError(\Exception $e, ConnectionInterface $conn) {
+        $this->app->onError($conn, $e); // TODO: Try/catch? log? Retry with limit?
     }
 }

@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 
 /**
- * @covers Ratchet\Http\Router
+ * @covers \Ratchet\Http\Router
  */
 class RouterTest extends \PHPUnit_Framework_TestCase {
     protected $_router;
@@ -19,7 +19,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     protected $_req;
 
     public function setUp() {
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_decoratedConn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = new HttpConnection($this->_decoratedConn, new NoOpHttpServerController);
         $this->_uri  = $this->getMock('Psr\Http\Message\UriInterface');
         $this->_req  = $this->getMock('\Psr\Http\Message\RequestInterface');
         $this->_req
@@ -44,7 +45,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFourOhFour() {
-        $this->_conn->expects($this->once())->method('close');
+        $this->_decoratedConn->expects($this->once())->method('close');
 
         $nope = new ResourceNotFoundException;
         $this->_matcher->expects($this->any())->method('match')->will($this->throwException($nope));
@@ -111,7 +112,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->_matcher->expects($this->any())->method('match')->will(
             $this->returnValue(['_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'])
         );
-        $conn = $this->getMock('Ratchet\Mock\Connection');
+        $conn = new HttpConnection($this->getMock('Ratchet\Mock\Connection'), new NoOpHttpServerController);
 
         $router = new Router($this->_matcher);
 
@@ -126,7 +127,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
             $this->returnValue(['_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'])
         );
 
-        $conn    = $this->getMock('Ratchet\Mock\Connection');
         $request = $this->getMock('Psr\Http\Message\RequestInterface');
         $uri = new \GuzzleHttp\Psr7\Uri('ws://doesnt.matter/endpoint?hello=world&foo=nope');
 
@@ -140,7 +140,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         }))->will($this->returnSelf());
 
         $router = new Router($this->_matcher);
-        $router->onOpen($conn, $request);
+        $router->onOpen($this->_conn, $request);
 
         $this->assertEquals('foo=nope&baz=qux&hello=world', $request->getUri()->getQuery());
         $this->assertEquals('ws', $request->getUri()->getScheme());
@@ -148,7 +148,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testImpatientClientOverflow() {
-        $this->_conn->expects($this->once())->method('close');
+        $this->_decoratedConn->expects($this->once())->method('close');
 
         $header = "GET /nope HTTP/1.1
 Upgrade: websocket                                   

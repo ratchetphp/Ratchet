@@ -19,4 +19,12 @@ class ConnectionDecorator extends AbstractConnectionDecorator {
 
         $this->getConnection()->close();
     }
+
+    public function get($id) {
+        throw new \Ratchet\ConnectionPropertyNotFoundException('Mock has no properties');
+    }
+
+    public function has($id) {
+        return false;
+    }
 }

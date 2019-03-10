@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Server;
-use Ratchet\Server\IpBlackList;
 
 /**
- * @covers Ratchet\Server\IpBlackList
+ * @covers \Ratchet\Server\IpBlackList
  */
 class IpBlackListTest extends \PHPUnit_Framework_TestCase {
+    /** @var \Ratchet\Server\IpBlackList */
     protected $blocker;
     protected $mock;
 
@@ -29,7 +29,7 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
     public function testBlockDoesNotTriggerOnOpen() {
         $conn = $this->newConn();
 
-        $this->blocker->blockAddress($conn->remoteAddress);
+        $this->blocker->blockAddress($conn->get('remoteAddress'));
 
         $this->mock->expects($this->never())->method('onOpen');
 
@@ -39,7 +39,7 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
     public function testBlockDoesNotTriggerOnClose() {
         $conn = $this->newConn();
 
-        $this->blocker->blockAddress($conn->remoteAddress);
+        $this->blocker->blockAddress($conn->get('remoteAddress'));
 
         $this->mock->expects($this->never())->method('onClose');
 
@@ -65,7 +65,7 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
 
     public function testBlockClosesConnection() {
         $conn = $this->newConn();
-        $this->blocker->blockAddress($conn->remoteAddress);
+        $this->blocker->blockAddress($conn->get('remoteAddress'));
 
         $conn->expects($this->once())->method('close');
 
@@ -118,7 +118,7 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
 
     protected function newConn() {
         $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $conn->remoteAddress = '127.0.0.1';
+        $conn->method('get')->with('remoteAddress')->willReturn('127.0.0.1');
 
         return $conn;
     }

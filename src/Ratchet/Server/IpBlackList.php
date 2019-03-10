@@ -7,7 +7,7 @@ class IpBlackList implements MessageComponentInterface {
     /**
      * @var array
      */
-    protected $_blacklist = array();
+    protected $_blacklist = [];
 
     /**
      * @var \Ratchet\MessageComponentInterface
@@ -50,7 +50,7 @@ class IpBlackList implements MessageComponentInterface {
      * @return bool
      */
     public function isBlocked($address) {
-        return (isset($this->_blacklist[$this->filterAddress($address)]));
+        return isset($this->_blacklist[$this->filterAddress($address)]);
     }
 
     /**
@@ -66,7 +66,7 @@ class IpBlackList implements MessageComponentInterface {
      * @return string
      */
     public function filterAddress($address) {
-        if (strstr($address, ':') && substr_count($address, '.') == 3) {
+        if (false !== strpos($address, ':') && substr_count($address, '.') === 3) {
             list($address, $port) = explode(':', $address);
         }
 
@@ -77,7 +77,7 @@ class IpBlackList implements MessageComponentInterface {
      * {@inheritdoc}
      */
     function onOpen(ConnectionInterface $conn) {
-        if ($this->isBlocked($conn->remoteAddress)) {
+        if ($this->isBlocked($conn->get('remoteAddress'))) {
             return $conn->close();
         }
 
@@ -95,7 +95,7 @@ class IpBlackList implements MessageComponentInterface {
      * {@inheritdoc}
      */
     function onClose(ConnectionInterface $conn) {
-        if (!$this->isBlocked($conn->remoteAddress)) {
+        if (!$this->isBlocked($conn->get('remoteAddress'))) {
             $this->_decorating->onClose($conn);
         }
     }
@@ -104,7 +104,7 @@ class IpBlackList implements MessageComponentInterface {
      * {@inheritdoc}
      */
     function onError(ConnectionInterface $conn, \Exception $e) {
-        if (!$this->isBlocked($conn->remoteAddress)) {
+        if (!$this->isBlocked($conn->get('remoteAddress'))) {
             $this->_decorating->onError($conn, $e);
         }
     }

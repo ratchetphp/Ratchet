@@ -23,7 +23,7 @@ use GuzzleHttp\Psr7 as gPsr;
  * @link http://dev.w3.org/html5/websockets/
  */
 class WsServer implements HttpServerInterface {
-    use CloseResponseTrait;
+    use CloseResponseTrait; // Is this even used?
 
     /**
      * Decorated component
@@ -109,10 +109,10 @@ class WsServer implements HttpServerInterface {
             throw new \UnexpectedValueException('$request can not be null');
         }
 
+        // @deprecated
         $conn->httpRequest = $request;
-
-        $conn->WebSocket            = new \StdClass;
-        $conn->WebSocket->closing   = false;
+        $conn->WebSocket = new \StdClass;
+        $conn->WebSocket->closing = false;
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
 
@@ -146,7 +146,7 @@ class WsServer implements HttpServerInterface {
      * {@inheritdoc}
      */
     public function onMessage(ConnectionInterface $from, $msg) {
-        if ($from->WebSocket->closing) {
+        if ($this->connections[$from]->connection->get('WebSocket.closing')) {
             return;
         }
 

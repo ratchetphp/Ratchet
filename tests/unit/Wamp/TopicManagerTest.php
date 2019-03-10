@@ -2,7 +2,7 @@
 namespace Ratchet\Wamp;
 
 /**
- * @covers Ratchet\Wamp\TopicManager
+ * @covers \Ratchet\Wamp\TopicManager
  */
 class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     private $mock;
@@ -18,11 +18,14 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     private $conn;
 
     public function setUp() {
-        $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->conn = $this->getMock('\Ratchet\ConnectionInterface'); // Test is failing because $mock->get('WAMP.subscriptions') is returning null
         $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);
 
         $this->conn->WAMP = new \StdClass;
+        $this->conn->method('get')->with('WAMP.subscriptions')->willReturn(new \SplObjectStorage);
+
+
         $this->mngr->onOpen($this->conn);
     }
 
