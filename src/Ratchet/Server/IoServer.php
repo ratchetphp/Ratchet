@@ -80,8 +80,7 @@ class IoServer {
      * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn);
-        $conn->decor->resourceId = (int)$conn->stream;
+        $conn->decor = new IoConnection($conn, (int)$conn->stream);
 
         $uri = $conn->getRemoteAddress();
         $conn->decor->remoteAddress = trim(

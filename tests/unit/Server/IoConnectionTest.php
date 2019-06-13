@@ -11,7 +11,7 @@ class IoConnectionTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->sock = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $this->conn = new IoConnection($this->sock);
+        $this->conn = new IoConnection($this->sock, 123);
     }
 
     public function testCloseBubbles() {
@@ -28,5 +28,9 @@ class IoConnectionTest extends \PHPUnit_Framework_TestCase {
 
     public function testSendReturnsSelf() {
         $this->assertSame($this->conn, $this->conn->send('fluent interface'));
+    }
+
+    public function testGetId() {
+        $this->assertEquals(123, $this->conn->getId());
     }
 }
