@@ -12,7 +12,7 @@ Build up your application through simple interfaces and re-use your application 
 Shell access is required and root access is recommended.
 To avoid proxy/firewall blockage it's recommended WebSockets are requested on port 80 or 443 (SSL), which requires root access.
 In order to do this, along with your sync web stack, you can either use a reverse proxy or two separate machines.
-You can find more details in the [server conf docs](http://socketo.me/docs/deploy#serverconfiguration).
+You can find more details in the [server conf docs](http://socketo.me/docs/deploy#server_configuration).
 
 ### Documentation
 
