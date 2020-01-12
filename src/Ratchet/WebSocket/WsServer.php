@@ -111,7 +111,7 @@ class WsServer implements HttpServerInterface {
 
         $conn->httpRequest = $request;
 
-        $conn->WebSocket            = new \StdClass;
+        $conn->WebSocket            = new \stdClass;
         $conn->WebSocket->closing   = false;
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
