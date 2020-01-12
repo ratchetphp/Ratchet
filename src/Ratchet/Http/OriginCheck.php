@@ -3,6 +3,7 @@ namespace Ratchet\Http;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 /**
  * A middleware to ensure JavaScript clients connecting are from the expected domain.
@@ -59,7 +60,7 @@ class OriginCheck implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    function onError(ConnectionInterface $conn, Throwable $e) {
         return $this->_component->onError($conn, $e);
     }
 }

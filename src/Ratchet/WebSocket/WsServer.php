@@ -15,6 +15,7 @@ use Ratchet\RFC6455\Handshake\ServerNegotiator;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
 use React\EventLoop\LoopInterface;
 use GuzzleHttp\Psr7 as gPsr;
+use Throwable;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -168,7 +169,7 @@ class WsServer implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         if ($this->connections->contains($conn)) {
             $this->delegate->onError($this->connections[$conn]->connection, $e);
         } else {

@@ -10,6 +10,7 @@ CHANGELOG
 * 0.5.0
   * PHP 7.2 is minimum supported version
   * BC: `Ratchet\Session\Storage\Proxy\VirtualSessionStorage` requires `Ratchet\Session\OptionsHandler`
+  * `ComponentInterface::onError()` now accepts `Throwable` instead of `Exception`
 
 * 0.4.1 (2017-12-11)
   * Only enableKeepAlive in App if no WsServer passed allowing user to set their own timeout duration

@@ -9,6 +9,7 @@ use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
+use Throwable;
 
 /**
  * This component will allow access to session data from your website for each user connected
@@ -125,7 +126,7 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    function onError(ConnectionInterface $conn, Throwable $e) {
         return $this->_app->onError($conn, $e);
     }
 
