@@ -173,6 +173,7 @@ class RFC6455 implements VersionInterface {
                 }
 
                 $overflow = $from->WebSocket->frame->extractOverflow();
+
                 if ($this->isStackOverflow($frames+1) && (strlen($overflow) > 0)){
                     $from->close($frame::CLOSE_PROTOCOL);
                 }
@@ -273,7 +274,7 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
-     * Determine if frames will cause stack overflow
+     * Determine if frames will cause a stack overflow
      * @param int $frames
      * @return bool
      */
@@ -300,6 +301,3 @@ class RFC6455 implements VersionInterface {
     }
 }
 
-class RecursiveData {
-
-}
