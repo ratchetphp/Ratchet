@@ -96,10 +96,16 @@ class RFC6455 implements VersionInterface {
 
     /**
      * @param \Ratchet\WebSocket\Version\RFC6455\Connection $from
-     * @param string                                        $data
+     * @param string|array                                  $dataOrDataArr
      */
-    public function onMessage(ConnectionInterface $from, $data) {
+    public function onMessage(ConnectionInterface $from, $dataOrDataArr) {
         $overflow = '';
+        $data = $dataOrDataArr;
+        $frames = 1;
+        if (is_array($dataOrDataArr) && key_exists("frames", $dataOrDataArr)){
+                $data = $dataOrDataArr["data"];
+                $frames = $dataOrDataArr["frames"];
+        }
 
         if (!isset($from->WebSocket->message)) {
             $from->WebSocket->message = $this->newMessage();
@@ -167,17 +173,28 @@ class RFC6455 implements VersionInterface {
                 }
 
                 $overflow = $from->WebSocket->frame->extractOverflow();
+                if ($this->isStackOverflow($frames+1) && (strlen($overflow) > 0)){
+                    $from->close($frame::CLOSE_PROTOCOL);
+                }
 
                 unset($from->WebSocket->frame, $frame, $opcode);
 
                 if (strlen($overflow) > 0) {
-                    $this->onMessage($from, $overflow);
+                    $dataWithFrames = array(
+                        "data" => $overflow,
+                        "frames" => $frames
+                    );
+                    $this->onMessage($from, $dataWithFrames);
                 }
 
                 return;
             }
 
             $overflow = $from->WebSocket->frame->extractOverflow();
+
+            if ($this->isStackOverflow($frames+1) && (strlen($overflow) > 0)){
+                $from->close($frame::CLOSE_PROTOCOL);
+            }
 
             if ($frame::OP_CONTINUE == $frame->getOpcode() && 0 == count($from->WebSocket->message)) {
                 return $from->close($frame::CLOSE_PROTOCOL);
@@ -203,7 +220,11 @@ class RFC6455 implements VersionInterface {
         }
 
         if (strlen($overflow) > 0) {
-            $this->onMessage($from, $overflow);
+            $dataWithFrames = array(
+                "data" => $overflow,
+                "frames" => $frames
+            );
+            $this->onMessage($from, $dataWithFrames);
         }
     }
 
@@ -252,6 +273,15 @@ class RFC6455 implements VersionInterface {
     }
 
     /**
+     * Determine if frames will cause stack overflow
+     * @param int $frames
+     * @return bool
+     */
+    private function isStackOverflow($frames){
+        return $frames > 2048;
+    }
+
+    /**
      * Creates a private lookup of valid, private close codes
      */
     protected function setCloseCodes() {
@@ -268,4 +298,8 @@ class RFC6455 implements VersionInterface {
         $this->closeCodes[Frame::CLOSE_SRV_ERR]     = true;
         //$this->closeCodes[Frame::CLOSE_TLS]         = true;
     }
+}
+
+class RecursiveData {
+
 }
