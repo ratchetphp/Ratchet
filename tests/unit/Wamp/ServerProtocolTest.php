@@ -6,7 +6,6 @@ use Ratchet\Mock\WampComponent as TestComponent;
 
 /**
  * @covers \Ratchet\Wamp\ServerProtocol
- * @covers \Ratchet\Wamp\WampServerInterface
  * @covers \Ratchet\Wamp\WampConnection
  */
 class ServerProtocolTest extends TestCase {

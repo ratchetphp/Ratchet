@@ -5,8 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
- * @covers Ratchet\AbstractConnectionDecorator
- * @covers Ratchet\ConnectionInterface
+ * @covers \Ratchet\AbstractConnectionDecorator
  */
 class AbstractConnectionDecoratorTest extends TestCase {
     protected $mock;
