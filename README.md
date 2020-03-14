@@ -28,11 +28,12 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 
 ```php
 <?php
+
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-    // Make sure composer dependencies have been installed
-    require __DIR__ . '/vendor/autoload.php';
+// Make sure composer dependencies have been installed
+require __DIR__ . '/vendor/autoload.php';
 
 /**
  * chat.php
