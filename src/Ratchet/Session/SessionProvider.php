@@ -111,7 +111,7 @@ class SessionProvider implements HttpServerInterface {
      */
     function onClose(ConnectionInterface $conn) {
         // "close" session for Connection
-
+        $this->_handler->close();
         return $this->_app->onClose($conn);
     }
 
