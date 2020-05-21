@@ -2,9 +2,9 @@
 
 namespace Ratchet\Tests\Session;
 
-use Ratchet\Session\OptionsHandler;
+use Ratchet\Session\OptionsHandlerInterface;
 
-final class InMemoryOptionsHandler implements OptionsHandler
+final class InMemoryOptionsHandler implements OptionsHandlerInterface
 {
     /** @var array<string, mixed> */
     private $options;

@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Session\Storage;
-use Ratchet\Session\OptionsHandler;
+use Ratchet\Session\OptionsHandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
 use Ratchet\Session\Serialize\HandlerInterface;
@@ -11,7 +11,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
      */
     protected $_serializer;
 
-    /** @var OptionsHandler */
+    /** @var OptionsHandlerInterface */
     private $optionsHandler;
 
     /**
@@ -19,7 +19,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
      * @param string                                      $sessionId The ID of the session to retrieve
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer, OptionsHandler $optionsHandler) {
+    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer, OptionsHandlerInterface $optionsHandler) {
         $this->optionsHandler = $optionsHandler;
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);

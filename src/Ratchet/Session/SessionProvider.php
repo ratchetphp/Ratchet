@@ -3,7 +3,7 @@ namespace Ratchet\Session;
 use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Psr\Http\Message\RequestInterface;
-use Ratchet\Session\OptionsHandler;
+use Ratchet\Session\OptionsHandlerInterface;
 use Ratchet\Session\PhpOptionsHandler;
 use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
@@ -39,14 +39,14 @@ class SessionProvider implements HttpServerInterface {
      */
     protected $_serializer;
 
-    /** @var OptionsHandler */
+    /** @var OptionsHandlerInterface */
     private $optionsHandler;
 
     /**
      * @param array<string, mixed> $options
      * @throws \RuntimeException
      */
-    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null, ?OptionsHandler $optionsHandler = null) {
+    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null, ?OptionsHandlerInterface $optionsHandler = null) {
         $this->_app           = $app;
         $this->_handler       = $handler;
         $this->_null          = new NullSessionHandler;

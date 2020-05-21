@@ -2,7 +2,7 @@
 
 namespace Ratchet\Session;
 
-interface OptionsHandler
+interface OptionsHandlerInterface
 {
     public function get(string $name) : string;
 
