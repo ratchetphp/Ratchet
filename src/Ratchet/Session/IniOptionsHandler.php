@@ -5,7 +5,7 @@ namespace Ratchet\Session;
 use function ini_get;
 use function ini_set;
 
-final class PhpOptionsHandler implements OptionsHandlerInterface
+final class IniOptionsHandler implements OptionsHandlerInterface
 {
     public function get(string $name) : string
     {

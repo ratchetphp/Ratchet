@@ -4,7 +4,7 @@ use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Psr\Http\Message\RequestInterface;
 use Ratchet\Session\OptionsHandlerInterface;
-use Ratchet\Session\PhpOptionsHandler;
+use Ratchet\Session\IniOptionsHandler;
 use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -53,7 +53,7 @@ class SessionProvider implements HttpServerInterface {
         $this->optionsHandler = $optionsHandler;
 
         if($optionsHandler === null){
-            $optionsHandler = new PhpOptionsHandler();
+            $optionsHandler = new IniOptionsHandler();
         }
 
         $optionsHandler->set('session.auto_start', 0);
