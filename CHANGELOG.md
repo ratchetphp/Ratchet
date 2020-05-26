@@ -9,8 +9,6 @@ CHANGELOG
 ---
 * 0.5.0
   * PHP 7.2 is minimum supported version
-  * BC: `Ratchet\Session\SessionProvider` requires `Ratchet\Session\OptionsHandler`
-  * BC: `Ratchet\Session\Storage\Proxy\SessionProvider` requires `Ratchet\Session\OptionsHandler`
   * BC: `Ratchet\Session\Storage\Proxy\VirtualSessionStorage` requires `Ratchet\Session\OptionsHandler`
 
 * 0.4.1 (2017-12-11)
