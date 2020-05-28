@@ -11,6 +11,7 @@ use Ratchet\Server\IoServer;
 use Ratchet\Server\FlashPolicy;
 use Ratchet\Http\HttpServer;
 use Ratchet\Http\Router;
+use Ratchet\WebSocket\MessageComponentInterface as WsMessageComponentInterface;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Wamp\WampServer;
 use Symfony\Component\Routing\RouteCollection;
@@ -105,7 +106,7 @@ class App {
         } elseif ($controller instanceof WampServerInterface) {
             $decorated = new WsServer(new WampServer($controller));
             $decorated->enableKeepAlive($this->_server->loop);
-        } elseif ($controller instanceof MessageComponentInterface) {
+        } elseif ($controller instanceof MessageComponentInterface || $controller instanceof WsMessageComponentInterface) {
             $decorated = new WsServer($controller);
             $decorated->enableKeepAlive($this->_server->loop);
         } else {
