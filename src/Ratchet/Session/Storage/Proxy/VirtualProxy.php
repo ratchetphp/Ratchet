@@ -1,5 +1,7 @@
 <?php
 namespace Ratchet\Session\Storage\Proxy;
+
+use Ratchet\Session\OptionsHandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy;
 
 class VirtualProxy extends SessionHandlerProxy {
@@ -16,11 +18,11 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * {@inheritdoc}
      */
-    public function __construct(\SessionHandlerInterface $handler) {
+    public function __construct(\SessionHandlerInterface $handler, OptionsHandlerInterface $optionsHandler) {
         parent::__construct($handler);
 
         $this->saveHandlerName = 'user';
-        $this->_sessionName    = ini_get('session.name');
+        $this->_sessionName    = $optionsHandler->get('session.name');
     }
 
     /**
