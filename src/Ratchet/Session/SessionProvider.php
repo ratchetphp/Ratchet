@@ -46,24 +46,20 @@ class SessionProvider implements HttpServerInterface {
      * @param array<string, mixed> $options
      * @throws \RuntimeException
      */
-    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null, ?OptionsHandlerInterface $optionsHandler = null) {
+    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), ?HandlerInterface $serializer = null, ?OptionsHandlerInterface $optionsHandler = null) {
         $this->_app           = $app;
         $this->_handler       = $handler;
         $this->_null          = new NullSessionHandler;
-        $this->optionsHandler = $optionsHandler;
+        $this->optionsHandler = $optionsHandler ?? new IniOptionsHandler();
 
-        if($optionsHandler === null){
-            $optionsHandler = new IniOptionsHandler();
-        }
-
-        $optionsHandler->set('session.auto_start', 0);
-        $optionsHandler->set('session.cache_limiter', '');
-        $optionsHandler->set('session.use_cookies', 0);
+        $this->optionsHandler->set('session.auto_start', 0);
+        $this->optionsHandler->set('session.cache_limiter', '');
+        $this->optionsHandler->set('session.use_cookies', 0);
 
         $this->setOptions($options);
 
         if (null === $serializer) {
-            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase($optionsHandler->get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
+            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase($this->optionsHandler->get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
             if (!class_exists($serialClass)) {
                 throw new \RuntimeException('Unable to parse session serialize handler');
             }
