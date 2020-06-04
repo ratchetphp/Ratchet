@@ -2,6 +2,7 @@
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 class IpBlackList implements MessageComponentInterface {
     /**
@@ -67,7 +68,7 @@ class IpBlackList implements MessageComponentInterface {
      */
     public function filterAddress($address) {
         if (strstr($address, ':') && substr_count($address, '.') == 3) {
-            list($address, $port) = explode(':', $address);
+            [$address, $port] = explode(':', $address);
         }
 
         return $address;
@@ -103,7 +104,7 @@ class IpBlackList implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    function onError(ConnectionInterface $conn, Throwable $e) {
         if (!$this->isBlocked($conn->remoteAddress)) {
             $this->_decorating->onError($conn, $e);
         }

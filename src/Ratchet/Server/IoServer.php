@@ -6,6 +6,7 @@ use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
 use React\Socket\SecureServer as SecureReactor;
+use Throwable;
 
 /**
  * Creates an open-ended socket to listen on a port for incoming connections.
@@ -97,7 +98,7 @@ class IoServer {
         $conn->on('close', function () use ($conn) {
             $this->handleEnd($conn);
         });
-        $conn->on('error', function (\Exception $e) use ($conn) {
+        $conn->on('error', function (Throwable $e) use ($conn) {
             $this->handleError($e, $conn);
         });
     }
@@ -110,7 +111,7 @@ class IoServer {
     public function handleData($data, $conn) {
         try {
             $this->app->onMessage($conn->decor, $data);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $this->handleError($e, $conn);
         }
     }
@@ -122,7 +123,7 @@ class IoServer {
     public function handleEnd($conn) {
         try {
             $this->app->onClose($conn->decor);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $this->handleError($e, $conn);
         }
 
@@ -131,10 +132,10 @@ class IoServer {
 
     /**
      * An error has occurred, let the listening application know
-     * @param \Exception                        $e
+     * @param Throwable                         $e
      * @param \React\Socket\ConnectionInterface $conn
      */
-    public function handleError(\Exception $e, $conn) {
+    public function handleError(Throwable $e, $conn) {
         $this->app->onError($conn->decor, $e);
     }
 }

@@ -2,6 +2,7 @@
 namespace Ratchet\Wamp;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\WsServerInterface;
+use Throwable;
 
 class TopicManager implements WsServerInterface, WampServerInterface {
     /**
@@ -84,7 +85,7 @@ class TopicManager implements WsServerInterface, WampServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         $this->app->onError($conn, $e);
     }
 

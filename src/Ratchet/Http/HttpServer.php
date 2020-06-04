@@ -2,6 +2,7 @@
 namespace Ratchet\Http;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 class HttpServer implements MessageComponentInterface {
     use CloseResponseTrait;
@@ -66,7 +67,7 @@ class HttpServer implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onError($conn, $e);
         } else {

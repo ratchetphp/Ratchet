@@ -14,7 +14,7 @@ class BinaryEcho implements \Ratchet\WebSocket\MessageComponentInterface {
     public function onClose(ConnectionInterface $conn) {
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
     }
 }
 
