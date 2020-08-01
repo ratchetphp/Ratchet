@@ -59,6 +59,11 @@ class WsServer implements HttpServerInterface {
     /**
      * @var \Closure
      */
+    private $pongReceiver2;
+
+    /**
+     * @var \Closure
+     */
     private $msgCb;
 
     /**
@@ -94,6 +99,7 @@ class WsServer implements HttpServerInterface {
         }
 
         $this->pongReceiver = function() {};
+        $this->pongReceiver2 = function() {};
 
         $reusableUnderflowException = new \UnderflowException;
         $this->ueFlowFactory = function() use ($reusableUnderflowException) {
@@ -127,12 +133,12 @@ class WsServer implements HttpServerInterface {
         $streamer = new MessageBuffer(
             $this->closeFrameChecker,
             function(MessageInterface $msg) use ($wsConn) {
-                $cb = $this->msgCb;
-                $cb($wsConn, $msg);
-            },
+            $cb = $this->msgCb;
+            $cb($wsConn, $msg);
+        },
             function(FrameInterface $frame) use ($wsConn) {
-                $this->onControlFrame($frame, $wsConn);
-            },
+            $this->onControlFrame($frame, $wsConn);
+        },
             true,
             $this->ueFlowFactory
         );
@@ -187,7 +193,9 @@ class WsServer implements HttpServerInterface {
             case Frame::OP_PONG:
                 $pongReceiver = $this->pongReceiver;
                 $pongReceiver($frame, $conn);
-            break;
+                $pongReceiver2 = $this->pongReceiver2;
+                $pongReceiver2($frame, $conn);
+                break;
         }
     }
 
@@ -221,5 +229,30 @@ class WsServer implements HttpServerInterface {
                 $pingedConnections->attach($wsConn);
             }
         });
-   }
+    }
+
+    /**
+     * sends pings periodically to each open connection (therefore also keeping the connections alive) and measures
+     * the response time to calculate the clients latency. Latency defaults to NAN while no pong is received.
+     * @param LoopInterface $loop
+     * @param type $updateInterval number of seconds between latency updates
+     * @param type $numBytes number of bytes to send with each ping
+     */
+    public function enableLatencyMeasuring(LoopInterface $loop, $updateInterval = 5, $numBytes = 8)
+    {
+        $this->pongReceiver2 = function(FrameInterface $frame, $wsConn) {
+            if ($frame->getPayload() === $wsConn->lastPingPayload) {
+                $wsConn->latency = microtime(true) - $wsConn->pingSendTime;
+            }
+        };
+        $loop->addPeriodicTimer((int)$updateInterval, function() use($numBytes) {
+            foreach ($this->connections as $conn) {
+                $wsConn = $this->connections[$conn]->connection;
+                $wsConn->pingSendTime = microtime(true);
+                $pingPayload = random_bytes($numBytes);
+                $wsConn->lastPingPayload = $pingPayload;
+                $wsConn->send(new Frame($pingPayload, true, Frame::OP_PING));
+            }
+        });
+    }
 }

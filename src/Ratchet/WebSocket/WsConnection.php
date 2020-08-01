@@ -10,6 +10,21 @@ use Ratchet\RFC6455\Messaging\Frame;
  */
 class WsConnection extends AbstractConnectionDecorator {
     /**
+     * @var int
+     */
+    public $pingSendTime = 0;
+
+    /**
+     * @var sting
+     */
+    public $lastPingPayload = '';
+
+    /**
+     * @var float
+     */
+    public $latency = NAN;
+
+    /**
      * {@inheritdoc}
      */
     public function send($msg) {
