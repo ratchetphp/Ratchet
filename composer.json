@@ -11,11 +11,14 @@
           , "email": "cboden@gmail.com"
           , "role": "Developer"
         }
+      , {
+            "name": "Matt Bonneau"
+          , "role": "Developer"
+        }
     ]
   , "support": {
-        "forum":  "https://groups.google.com/forum/#!forum/ratchet-php"
-      , "issues": "https://github.com/ratchetphp/Ratchet/issues"
-      , "irc":    "irc://irc.freenode.org/reactphp"
+        "issues": "https://github.com/ratchetphp/Ratchet/issues"
+      , "chat":    "https://gitter.im/reactphp/reactphp"
     }
   , "autoload": {
         "psr-4": {
@@ -29,7 +32,7 @@
     }
   , "require": {
         "php": "^7.2"
-      , "ratchet/rfc6455": "^0.2"
+      , "ratchet/rfc6455": "^0.3"
       , "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5"
       , "guzzlehttp/psr7": "^1.0"
       , "symfony/http-foundation": "^2.6|^3.0|^4.0|^5.0"
