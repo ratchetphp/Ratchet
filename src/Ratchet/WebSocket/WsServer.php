@@ -124,6 +124,9 @@ class WsServer implements HttpServerInterface {
 
         $wsConn = new WsConnection($conn);
 
+        $protocol = $response->getHeader('Sec-WebSocket-Protocol');
+        $wsConn->protocol = is_array($protocol) ? reset($protocol) : NULL;
+
         $streamer = new MessageBuffer(
             $this->closeFrameChecker,
             function(MessageInterface $msg) use ($wsConn) {
