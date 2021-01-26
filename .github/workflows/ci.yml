@@ -16,14 +16,13 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.2"
           - "7.3"
           - "7.4"
         dependencies:
           - "highest"
         include:
           - dependencies: "lowest"
-            php-version: "7.2"
+            php-version: "7.3"
 
     steps:
       - name: "Checkout"
