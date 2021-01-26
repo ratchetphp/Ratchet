@@ -1,6 +1,6 @@
 # Ratchet
 
-[![Build Status](https://secure.travis-ci.org/ratchetphp/Ratchet.png?branch=master)](http://travis-ci.org/ratchetphp/Ratchet)
+[![GitHub Actions][GA Image]][GA Link]
 [![Autobahn Testsuite](https://img.shields.io/badge/Autobahn-passing-brightgreen.svg)](http://socketo.me/reports/ab/index.html)
 [![Latest Stable Version](https://poser.pugx.org/cboden/ratchet/v/stable.png)](https://packagist.org/packages/cboden/ratchet)
 
@@ -81,3 +81,7 @@ class MyChat implements MessageComponentInterface {
     conn.onmessage = function(e) { console.log(e.data); };
     conn.onopen = function(e) { conn.send('Hello Me!'); };
 ```
+
+[GA Image]: https://github.com/ratchetphp/Ratchet/workflows/CI/badge.svg
+
+[GA Link]: https://github.com/ratchetphp/Ratchet/actions?query=workflow%3A%22CI%22+branch%3Amaster
