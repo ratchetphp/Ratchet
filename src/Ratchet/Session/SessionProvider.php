@@ -51,11 +51,12 @@ class SessionProvider implements HttpServerInterface {
         $this->_app           = $app;
         $this->_handler       = $handler;
         $this->_null          = new NullSessionHandler;
-        $this->optionsHandler = $optionsHandler;
 
         if($optionsHandler === null){
             $optionsHandler = new IniOptionsHandler();
         }
+
+        $this->optionsHandler = $optionsHandler;
 
         $optionsHandler->set('session.auto_start', 0);
         $optionsHandler->set('session.cache_limiter', '');
