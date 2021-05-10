@@ -61,9 +61,11 @@ class Router implements HttpServerInterface {
                 $parameters[$key] = $value;
             }
         }
-        $parameters = array_merge($parameters, gPsr\parse_query($uri->getQuery() ?: ''));
+        // $parameters = array_merge($parameters, gPsr\parse_query($uri->getQuery() ?: ''));
+        $parameters = array_merge($parameters, gPsr\Query::parse($uri->getQuery() ?: ''));
 
-        $request = $request->withUri($uri->withQuery(gPsr\build_query($parameters)));
+        // $request = $request->withUri($uri->withQuery(gPsr\build_query($parameters)));
+        $request = $request->withUri($uri->withQuery(gPsr\Query::build($parameters)));
 
         $conn->controller = $route['_controller'];
         $conn->controller->onOpen($conn, $request);
