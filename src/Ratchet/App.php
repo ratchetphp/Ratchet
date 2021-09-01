@@ -61,8 +61,9 @@ class App {
      * @param int           $port       Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
      * @param string        $address    IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
      * @param LoopInterface $loop       Specific React\EventLoop to bind the application to. null will create one for you.
+     * @param boolean       $fallback   Enable/Disable the Flash socket fallback.
      */
-    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null) {
+    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, $fallback = true) {
         if (extension_loaded('xdebug') && getenv('RATCHET_DISABLE_XDEBUG_WARN') === false) {
             trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
         }
@@ -83,13 +84,11 @@ class App {
         $policy->addAllowedAccess($httpHost, 80);
         $policy->addAllowedAccess($httpHost, $port);
 
-        if (80 == $port) {
-            $flashUri = '0.0.0.0:843';
-        } else {
-            $flashUri = 8843;
+        if ($fallback) {
+            $flashUri = (80 == $port) ? '0.0.0.0:843' : 8843;
+            $flashSock = new Reactor($flashUri, $loop);
+            $this->flashServer = new IoServer($policy, $flashSock);
         }
-        $flashSock = new Reactor($flashUri, $loop);
-        $this->flashServer = new IoServer($policy, $flashSock);
     }
 
     /**
