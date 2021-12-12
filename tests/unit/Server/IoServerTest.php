@@ -18,7 +18,7 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     protected $reactor;
 
     protected function tickLoop(LoopInterface $loop) {
-        $loop->futureTIck(function () use ($loop) {
+        $loop->futureTick(function () use ($loop) {
             $loop->stop();
         });
 
