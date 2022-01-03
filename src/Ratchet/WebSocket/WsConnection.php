@@ -1,14 +1,50 @@
 <?php
 namespace Ratchet\WebSocket;
 use Ratchet\AbstractConnectionDecorator;
+use Ratchet\ConnectionInterface;
+use Ratchet\RFC6455\Handshake\PermessageDeflateOptions;
+use Ratchet\RFC6455\Messaging\CloseFrameChecker;
 use Ratchet\RFC6455\Messaging\DataInterface;
 use Ratchet\RFC6455\Messaging\Frame;
+use Ratchet\RFC6455\Messaging\FrameInterface;
+use Ratchet\RFC6455\Messaging\MessageBuffer;
+use Ratchet\RFC6455\Messaging\MessageInterface;
 
 /**
  * {@inheritdoc}
  * @property \StdClass $WebSocket
  */
 class WsConnection extends AbstractConnectionDecorator {
+    /** @var MessageBuffer */
+    private $streamer;
+
+    public function __construct(ConnectionInterface $conn, callable $onMessage, callable $onControlFrame, PermessageDeflateOptions $pmdOptions = null) {
+        parent::__construct($conn);
+
+        $closeFrameChecker = new CloseFrameChecker();
+
+        $reusableUnderflowException = new \UnderflowException;
+
+        $this->streamer = new MessageBuffer(
+            $closeFrameChecker,
+            function(MessageInterface $msg) use ($onMessage) {
+                $onMessage($this, $msg);
+            },
+            function(FrameInterface $frame) use ($onControlFrame) {
+                $onControlFrame($frame, $this);
+            },
+            true,
+            function() use ($reusableUnderflowException) {
+                return $reusableUnderflowException;
+            },
+            null,
+            null,
+            [$conn, 'send'],
+            $pmdOptions
+        );
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -18,7 +54,7 @@ class WsConnection extends AbstractConnectionDecorator {
                 $msg = new Frame($msg);
             }
 
-            $this->getConnection()->send($msg->getContents());
+            $this->streamer->sendFrame($msg);
         }
 
         return $this;
@@ -41,5 +77,13 @@ class WsConnection extends AbstractConnectionDecorator {
         $this->getConnection()->close();
 
         $this->WebSocket->closing = true;
+    }
+
+    /**
+     * @return MessageBuffer
+     */
+    public function getStreamer()
+    {
+        return $this->streamer;
     }
 }

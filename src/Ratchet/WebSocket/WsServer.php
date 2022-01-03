@@ -6,10 +6,10 @@ use Ratchet\MessageComponentInterface as DataComponentInterface;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\CloseResponseTrait;
 use Psr\Http\Message\RequestInterface;
+use Ratchet\RFC6455\Handshake\PermessageDeflateOptions;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\RFC6455\Messaging\FrameInterface;
 use Ratchet\RFC6455\Messaging\Frame;
-use Ratchet\RFC6455\Messaging\MessageBuffer;
 use Ratchet\RFC6455\Messaging\CloseFrameChecker;
 use Ratchet\RFC6455\Handshake\ServerNegotiator;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
@@ -49,11 +49,6 @@ class WsServer implements HttpServerInterface {
     /**
      * @var \Closure
      */
-    private $ueFlowFactory;
-
-    /**
-     * @var \Closure
-     */
     private $pongReceiver;
 
     /**
@@ -63,9 +58,10 @@ class WsServer implements HttpServerInterface {
 
     /**
      * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
+     * @param bool $enablePermessageDeflate
      * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
-    public function __construct(ComponentInterface $component) {
+    public function __construct(ComponentInterface $component, $enablePermessageDeflate = false) {
         if ($component instanceof MessageComponentInterface) {
             $this->msgCb = function(ConnectionInterface $conn, MessageInterface $msg) {
                 $this->delegate->onMessage($conn, $msg);
@@ -86,7 +82,7 @@ class WsServer implements HttpServerInterface {
         $this->connections = new \SplObjectStorage;
 
         $this->closeFrameChecker   = new CloseFrameChecker;
-        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
+        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier, $enablePermessageDeflate);
         $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
 
         if ($component instanceof WsServerInterface) {
@@ -94,11 +90,6 @@ class WsServer implements HttpServerInterface {
         }
 
         $this->pongReceiver = function() {};
-
-        $reusableUnderflowException = new \UnderflowException;
-        $this->ueFlowFactory = function() use ($reusableUnderflowException) {
-            return $reusableUnderflowException;
-        };
     }
 
     /**
@@ -122,22 +113,16 @@ class WsServer implements HttpServerInterface {
             return $conn->close();
         }
 
-        $wsConn = new WsConnection($conn);
+        $pmdOptions = PermessageDeflateOptions::fromRequestOrResponse($response);
 
-        $streamer = new MessageBuffer(
-            $this->closeFrameChecker,
-            function(MessageInterface $msg) use ($wsConn) {
-                $cb = $this->msgCb;
-                $cb($wsConn, $msg);
-            },
-            function(FrameInterface $frame) use ($wsConn) {
-                $this->onControlFrame($frame, $wsConn);
-            },
-            true,
-            $this->ueFlowFactory
+        $wsConn = new WsConnection(
+            $conn,
+            $this->msgCb,
+            [$this, 'onControlFrame'],
+            $pmdOptions[0]
         );
 
-        $this->connections->attach($conn, new ConnContext($wsConn, $streamer));
+        $this->connections->attach($conn, new ConnContext($wsConn, $wsConn->getStreamer()));
 
         return $this->delegate->onOpen($wsConn);
     }
