@@ -1,22 +1,22 @@
 <?php
 namespace Ratchet\Session\Serialize;
-use Ratchet\Session\Serialize\PhpHandler;
+use Ratchet\Session\Serialize\PhpSerializeHandler;
 
 /**
- * @covers Ratchet\Session\Serialize\PhpHandler
+ * @covers Ratchet\Session\Serialize\PhpSerializeHandler
  */
-class PhpHandlerTest extends \PHPUnit_Framework_TestCase {
-    /** @var PhpHandler */
+class PhpSerializeHandlerTest extends \PHPUnit_Framework_TestCase {
+    /** @var PhpSerializeHandler */
     protected $_handler;
 
     public function setUp() {
-        $this->_handler = new PhpHandler;
+        $this->_handler = new PhpSerializeHandler;
     }
 
     public function serializedProvider() {
         return array(
             array(
-                '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}',
+                'a:2:{s:15:"_sf2_attributes";a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}s:12:"_sf2_flashes";a:0:{}}',
                 array(
                     '_sf2_attributes' => array(
                         'hello' => 'world',
