@@ -1,9 +1,10 @@
 <?php
 namespace Ratchet\Session\Storage;
 use Ratchet\Session\OptionsHandlerInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\MetadataBag;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
-use Ratchet\Session\Serialize\HandlerInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\Proxy\AbstractProxy;
 
 class VirtualSessionStorage extends NativeSessionStorage {
     /**
@@ -14,12 +15,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /** @var OptionsHandlerInterface */
     private $optionsHandler;
 
-    /**
-     * @param \SessionHandlerInterface                    $handler
-     * @param string                                      $sessionId The ID of the session to retrieve
-     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
-     */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer, OptionsHandlerInterface $optionsHandler) {
+    public function __construct(array $options = [], AbstractProxy|\SessionHandlerInterface $handler = null, MetadataBag $metaBag = null) {
         $this->optionsHandler = $optionsHandler;
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);
@@ -30,7 +26,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function start() {
+    public function start(): bool {
         if ($this->started && !$this->closed) {
             return true;
         }
@@ -56,8 +52,8 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false, $lifetime = null) {
-        // .. ?
+    public function regenerate(bool $destroy = false, int $lifetime = null): bool {
+        return true;
     }
 
     /**
