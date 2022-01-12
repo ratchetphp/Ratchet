@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Http;
 use Ratchet\ConnectionInterface;
-use GuzzleHttp\Psr7 as gPsr;
+use GuzzleHttp\Psr7\Message;
 use GuzzleHttp\Psr7\Response;
 
 trait CloseResponseTrait {
@@ -16,7 +16,7 @@ trait CloseResponseTrait {
             'X-Powered-By' => \Ratchet\VERSION
         ], $additional_headers));
 
-        $conn->send(gPsr\str($response));
+        $conn->send(Message::toString($response));
         $conn->close();
     }
 }
