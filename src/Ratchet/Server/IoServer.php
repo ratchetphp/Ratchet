@@ -3,9 +3,8 @@ namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
-use React\EventLoop\Factory as LoopFactory;
-use React\Socket\Server as Reactor;
-use React\Socket\SecureServer as SecureReactor;
+use React\EventLoop\Loop;
+use React\Socket\SocketServer;
 
 /**
  * Creates an open-ended socket to listen on a port for incoming connections.
@@ -55,8 +54,8 @@ class IoServer {
      * @return IoServer
      */
     public static function factory(MessageComponentInterface $component, $port = 80, $address = '0.0.0.0') {
-        $loop   = LoopFactory::create();
-        $socket = new Reactor($address . ':' . $port, $loop);
+        $loop   = Loop::get();
+        $socket = new SocketServer($address . ':' . $port, [], $loop);
 
         return new static($component, $socket, $loop);
     }

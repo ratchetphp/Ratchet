@@ -1,9 +1,6 @@
 <?php
 namespace Ratchet;
 use React\EventLoop\LoopInterface;
-use React\EventLoop\Factory as LoopFactory;
-use React\Socket\Server as Reactor;
-use React\Socket\SecureServer as SecureReactor;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\OriginCheck;
 use Ratchet\Wamp\WampServerInterface;
@@ -14,6 +11,8 @@ use Ratchet\Http\Router;
 use Ratchet\WebSocket\MessageComponentInterface as WsMessageComponentInterface;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Wamp\WampServer;
+use React\EventLoop\Loop;
+use React\Socket\SocketServer;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RequestContext;
@@ -69,13 +68,13 @@ class App {
         }
 
         if (null === $loop) {
-            $loop = LoopFactory::create();
+            $loop = Loop::get();
         }
 
         $this->httpHost = $httpHost;
         $this->port = $port;
 
-        $socket = new Reactor($address . ':' . $port, $loop, $context);
+        $socket = new SocketServer($address . ':' . $port, $context, $loop);
 
         $this->routes  = new RouteCollection;
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
@@ -84,12 +83,8 @@ class App {
         $policy->addAllowedAccess($httpHost, 80);
         $policy->addAllowedAccess($httpHost, $port);
 
-        if (80 == $port) {
-            $flashUri = '0.0.0.0:843';
-        } else {
-            $flashUri = 8843;
-        }
-        $flashSock = new Reactor($flashUri, $loop);
+        $flashUri = ($port === 80) ? '0.0.0.0:843' : '0.0.0.0:8843';
+        $flashSock = new SocketServer($flashUri, [], $loop);
         $this->flashServer = new IoServer($policy, $flashSock);
     }
 
