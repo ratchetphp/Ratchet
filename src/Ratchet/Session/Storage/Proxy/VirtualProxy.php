@@ -26,7 +26,7 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId(): string {
         return $this->_sessionId;
     }
 
@@ -40,7 +40,7 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * {@inheritdoc}
      */
-    public function getName() {
+    public function getName(): string {
         return $this->_sessionName;
     }
 
