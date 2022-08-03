@@ -8,6 +8,11 @@ CHANGELOG
 
 ---
 
+* 0.4.4 (2021-12-11)
+  * Correct and update dependencies for forward compatibility
+  * Added context for React Socket server to App
+  * Use non-deprecated Guzzle API calls
+
 * 0.4.3 (2020-06-04)
   * BF: Fixed interface acceptable regression in `App`
   * Update RFC6455 library with latest fixes

@@ -86,6 +86,7 @@ class Topic implements \IteratorAggregate, \Countable {
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function getIterator() {
         return $this->subscribers;
     }
@@ -93,6 +94,7 @@ class Topic implements \IteratorAggregate, \Countable {
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function count() {
         return $this->subscribers->count();
     }
