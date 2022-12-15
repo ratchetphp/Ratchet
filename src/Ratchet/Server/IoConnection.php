@@ -36,4 +36,8 @@ class IoConnection implements ConnectionInterface {
     public function close() {
         $this->conn->end();
     }
+
+    public function __call($method, $args) {
+        return $this->conn->$method(...$args);
+    }
 }
