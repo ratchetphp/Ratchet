@@ -57,13 +57,19 @@ class App {
     protected $_routeCounter = 0;
 
     /**
+     * @var bool
+     */
+    private $exposeXPoweredByHeader;
+
+    /**
      * @param string        $httpHost   HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost');`
      * @param int           $port       Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
      * @param string        $address    IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
      * @param LoopInterface $loop       Specific React\EventLoop to bind the application to. null will create one for you.
      * @param array         $context
+     * @param bool          $exposeXPoweredByHeader Exposes to users that Ratchet is installed, through the HTTP header named `X-Powered-By`
      */
-    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, $context = array()) {
+    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, $context = array(), $exposeXPoweredByHeader = true) {
         if (extension_loaded('xdebug') && getenv('RATCHET_DISABLE_XDEBUG_WARN') === false) {
             trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
         }
@@ -74,11 +80,22 @@ class App {
 
         $this->httpHost = $httpHost;
         $this->port = $port;
+        $this->exposeXPoweredByHeader = $exposeXPoweredByHeader;
 
         $socket = new Reactor($address . ':' . $port, $loop, $context);
 
         $this->routes  = new RouteCollection;
-        $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
+        $this->_server = new IoServer(
+            new HttpServer(
+                new Router(
+                    new UrlMatcher($this->routes, new RequestContext),
+                    $exposeXPoweredByHeader
+                ),
+                $exposeXPoweredByHeader
+            ),
+            $socket,
+            $loop
+        );
 
         $policy = new FlashPolicy;
         $policy->addAllowedAccess($httpHost, 80);
@@ -105,10 +122,10 @@ class App {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
-            $decorated = new WsServer(new WampServer($controller));
+            $decorated = new WsServer(new WampServer($controller), $this->exposeXPoweredByHeader);
             $decorated->enableKeepAlive($this->_server->loop);
         } elseif ($controller instanceof MessageComponentInterface || $controller instanceof WsMessageComponentInterface) {
-            $decorated = new WsServer($controller);
+            $decorated = new WsServer($controller, $this->exposeXPoweredByHeader);
             $decorated->enableKeepAlive($this->_server->loop);
         } else {
             $decorated = $controller;
@@ -123,7 +140,7 @@ class App {
             $allowedOrigins[] = $httpHost;
         }
         if ('*' !== $allowedOrigins[0]) {
-            $decorated = new OriginCheck($decorated, $allowedOrigins);
+            $decorated = new OriginCheck($decorated, $allowedOrigins, $this->exposeXPoweredByHeader);
         }
 
         //allow origins in flash policy server

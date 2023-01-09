@@ -62,10 +62,16 @@ class WsServer implements HttpServerInterface {
     private $msgCb;
 
     /**
+     * @var bool
+     */
+    private $exposeXPoweredByHeader;
+
+    /**
      * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
+     * @param bool $exposeXPoweredByHeader Exposes to users that Ratchet is installed, through the HTTP header named `X-Powered-By`
      * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
      */
-    public function __construct(ComponentInterface $component) {
+    public function __construct(ComponentInterface $component, $exposeXPoweredByHeader = true) {
         if ($component instanceof MessageComponentInterface) {
             $this->msgCb = function(ConnectionInterface $conn, MessageInterface $msg) {
                 $this->delegate->onMessage($conn, $msg);
@@ -99,6 +105,8 @@ class WsServer implements HttpServerInterface {
         $this->ueFlowFactory = function() use ($reusableUnderflowException) {
             return $reusableUnderflowException;
         };
+
+        $this->exposeXPoweredByHeader = $exposeXPoweredByHeader;
     }
 
     /**
@@ -114,7 +122,12 @@ class WsServer implements HttpServerInterface {
         $conn->WebSocket            = new \StdClass;
         $conn->WebSocket->closing   = false;
 
-        $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
+        $response = $this->handshakeNegotiator->handshake($request);
+
+        if ($this->exposeXPoweredByHeader)
+        {
+            $response = $response->withHeader('X-Powered-By', \Ratchet\VERSION);
+        }
 
         $conn->send(Message::toString($response));
 

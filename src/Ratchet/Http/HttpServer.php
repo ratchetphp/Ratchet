@@ -19,11 +19,18 @@ class HttpServer implements MessageComponentInterface {
     protected $_httpServer;
 
     /**
-     * @param HttpServerInterface
+     * @var bool
      */
-    public function __construct(HttpServerInterface $component) {
+    private $exposeXPoweredByHeader;
+
+    /**
+     * @param HttpServerInterface
+     * @param bool $exposeXPoweredByHeader Exposes to users that Ratchet is installed, through the HTTP header named `X-Powered-By`
+     */
+    public function __construct(HttpServerInterface $component, $exposeXPoweredByHeader = true) {
         $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
+        $this->exposeXPoweredByHeader = $exposeXPoweredByHeader;
     }
 
     /**
@@ -43,7 +50,7 @@ class HttpServer implements MessageComponentInterface {
                     return;
                 }
             } catch (\OverflowException $oe) {
-                return $this->close($from, 413);
+                return $this->close($from, 413, [], $this->exposeXPoweredByHeader);
             }
 
             $from->httpHeadersReceived = true;
@@ -70,7 +77,7 @@ class HttpServer implements MessageComponentInterface {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onError($conn, $e);
         } else {
-            $this->close($conn, 500);
+            $this->close($conn, 500, [], $this->exposeXPoweredByHeader);
         }
     }
 }

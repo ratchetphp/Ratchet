@@ -17,9 +17,18 @@ class Router implements HttpServerInterface {
 
     private $_noopController;
 
-    public function __construct(UrlMatcherInterface $matcher) {
+    /**
+     * @var bool
+     */
+    private $exposeXPoweredByHeader;
+
+    /**
+     * @param bool $exposeXPoweredByHeader Exposes to users that Ratchet is installed, through the HTTP header named `X-Powered-By`
+     */
+    public function __construct(UrlMatcherInterface $matcher, $exposeXPoweredByHeader = true) {
         $this->_matcher = $matcher;
         $this->_noopController = new NoOpHttpServerController;
+        $this->exposeXPoweredByHeader = $exposeXPoweredByHeader;
     }
 
     /**
@@ -42,9 +51,9 @@ class Router implements HttpServerInterface {
         try {
             $route = $this->_matcher->match($uri->getPath());
         } catch (MethodNotAllowedException $nae) {
-            return $this->close($conn, 405, array('Allow' => $nae->getAllowedMethods()));
+            return $this->close($conn, 405, array('Allow' => $nae->getAllowedMethods()), $this->exposeXPoweredByHeader);
         } catch (ResourceNotFoundException $nfe) {
-            return $this->close($conn, 404);
+            return $this->close($conn, 404, [], $this->exposeXPoweredByHeader);
         }
 
         if (is_string($route['_controller']) && class_exists($route['_controller'])) {

@@ -20,12 +20,19 @@ class OriginCheck implements HttpServerInterface {
     public $allowedOrigins = [];
 
     /**
+     * @var bool
+     */
+    private $exposeXPoweredByHeader;
+
+    /**
      * @param MessageComponentInterface $component Component/Application to decorate
      * @param array                     $allowed   An array of allowed domains that are allowed to connect from
+     * @param bool                      $exposeXPoweredByHeader Exposes to users that Ratchet is installed, through the HTTP header named `X-Powered-By`
      */
-    public function __construct(MessageComponentInterface $component, array $allowed = []) {
+    public function __construct(MessageComponentInterface $component, array $allowed = [], $exposeXPoweredByHeader = true) {
         $this->_component = $component;
         $this->allowedOrigins += $allowed;
+        $this->exposeXPoweredByHeader = $exposeXPoweredByHeader;
     }
 
     /**
@@ -36,7 +43,7 @@ class OriginCheck implements HttpServerInterface {
         $origin = parse_url($header, PHP_URL_HOST) ?: $header;
 
         if (!in_array($origin, $this->allowedOrigins)) {
-            return $this->close($conn, 403);
+            return $this->close($conn, 403, [], $this->exposeXPoweredByHeader);
         }
 
         return $this->_component->onOpen($conn, $request);
