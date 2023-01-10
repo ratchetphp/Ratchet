@@ -92,7 +92,7 @@ class WsServer implements HttpServerInterface {
         $this->connections = new \SplObjectStorage;
 
         $this->closeFrameChecker   = new CloseFrameChecker;
-        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
+        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier, false, $this->exposeXPoweredByHeader);
         $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
 
         if ($component instanceof WsServerInterface) {
