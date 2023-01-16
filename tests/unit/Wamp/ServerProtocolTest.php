@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Wamp;
+use PHPUnit\Framework\TestCase;
 use Ratchet\Mock\Connection;
 use Ratchet\Mock\WampComponent as TestComponent;
 
@@ -8,12 +9,12 @@ use Ratchet\Mock\WampComponent as TestComponent;
  * @covers \Ratchet\Wamp\WampServerInterface
  * @covers \Ratchet\Wamp\WampConnection
  */
-class ServerProtocolTest extends \PHPUnit_Framework_TestCase {
+class ServerProtocolTest extends TestCase {
     protected $_comp;
 
     protected $_app;
 
-    public function setUp() {
+    public function before() {
         $this->_app  = new TestComponent;
         $this->_comp = new ServerProtocol($this->_app);
     }

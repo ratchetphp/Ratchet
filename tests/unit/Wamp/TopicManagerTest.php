@@ -1,10 +1,12 @@
 <?php
 namespace Ratchet\Wamp;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers Ratchet\Wamp\TopicManager
  */
-class TopicManagerTest extends \PHPUnit_Framework_TestCase {
+class TopicManagerTest extends TestCase {
     private $mock;
 
     /**
@@ -17,7 +19,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
      */
     private $conn;
 
-    public function setUp() {
+    public function before() {
         $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);

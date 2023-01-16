@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Server;
+use PHPUnit\Framework\TestCase;
 use Ratchet\Server\IoServer;
 use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\LoopInterface;
@@ -8,7 +9,7 @@ use React\Socket\Server;
 /**
  * @covers Ratchet\Server\IoServer
  */
-class IoServerTest extends \PHPUnit_Framework_TestCase {
+class IoServerTest extends TestCase {
     protected $server;
 
     protected $app;
@@ -25,7 +26,7 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $loop->run();
     }
 
-    public function setUp() {
+    public function before() {
         $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;

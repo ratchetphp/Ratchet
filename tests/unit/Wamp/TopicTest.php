@@ -1,10 +1,12 @@
 <?php
 namespace Ratchet\Wamp;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers Ratchet\Wamp\Topic
  */
-class TopicTest extends \PHPUnit_Framework_TestCase {
+class TopicTest extends TestCase {
     public function testGetId() {
         $id    = uniqid();
         $topic = new Topic($id);

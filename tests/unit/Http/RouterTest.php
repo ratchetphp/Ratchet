@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Http;
+use PHPUnit\Framework\TestCase;
 use Ratchet\WebSocket\WsServerInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
@@ -11,14 +12,14 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 /**
  * @covers Ratchet\Http\Router
  */
-class RouterTest extends \PHPUnit_Framework_TestCase {
+class RouterTest extends TestCase {
     protected $_router;
     protected $_matcher;
     protected $_conn;
     protected $_uri;
     protected $_req;
 
-    public function setUp() {
+    public function before() {
         $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->_uri  = $this->getMock('Psr\Http\Message\UriInterface');
         $this->_req  = $this->getMock('\Psr\Http\Message\RequestInterface');
