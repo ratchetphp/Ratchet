@@ -12,6 +12,16 @@ class IoConnection implements ConnectionInterface {
      */
     protected $conn;
 
+    public $resourceId;
+    public $remoteAddress;
+    public $httpHeadersReceived;
+    public $httpBuffer;
+    public $Session;
+    public $httpRequest;
+    public $WebSocket;
+    public $PeriodicTimer;
+    public $WAMP;
+
 
     /**
      * @param \React\Socket\ConnectionInterface $conn
