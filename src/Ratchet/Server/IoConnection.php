@@ -11,8 +11,10 @@ class IoConnection implements ConnectionInterface {
      * @var \React\Socket\ConnectionInterface
      */
     protected $conn;
-
-
+    public $httpHeadersReceived;
+    public $remoteAddress;
+    public $resourceId;
+    
     /**
      * @param \React\Socket\ConnectionInterface $conn
      */
