@@ -21,17 +21,7 @@ class RouterTest extends TestCase {
 
     public function setUp() {
         $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
-        $uri = $this->getMock('Psr\Http\Message\UriInterface');
-        $uri->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
-        $uri->expects($this->any())->method('withQuery')->with($this->callback(function($val) use (&$uri) {
-            $uri->query_string = $val;
-
-            return true;
-        }))->will($this->returnSelf());
-        $uri->expects($this->any())->method('getQuery')->will($this->returnCallback(function() use (&$uri) {
-            return $uri->query_string ?: '';
-        }));
-        $this->_uri = $uri;
+        $this->_uri = $this->getMock('Psr\Http\Message\UriInterface');
         $this->_req  = $this->getMock('\Psr\Http\Message\RequestInterface');
         $this->_req
             ->expects($this->any())
@@ -43,6 +33,16 @@ class RouterTest extends TestCase {
             ->method('getContext')
             ->will($this->returnValue($this->getMock('Symfony\Component\Routing\RequestContext')));
         $this->_router  = new Router($this->_matcher);
+
+        $this->_uri->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
+        $this->_uri->expects($this->any())->method('withQuery')->with($this->callback(function($val) {
+            $this->setResult($val);
+
+            return true;
+        }))->will($this->returnSelf());
+        $this->_uri->expects($this->any())->method('getQuery')->will($this->returnCallback(function() {
+            return $this->getResult() ?: '';
+        }));
         $this->_req->expects($this->any())->method('withUri')->will($this->returnSelf());
     }
 
