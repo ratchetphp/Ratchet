@@ -42,7 +42,6 @@ class RouterTest extends TestCase {
         }))->will($this->returnSelf());
         $this->_uri->expects($this->any())->method('getQuery')->will($this->returnCallback([$this, 'getResult']));
         $this->_req->expects($this->any())->method('withUri')->will($this->returnSelf());
-        $this->_uri->setResult('');
     }
 
     public function testFourOhFour() {
