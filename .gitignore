@@ -3,3 +3,4 @@ reports
 sandbox
 vendor
 composer.lock
+.idea/
