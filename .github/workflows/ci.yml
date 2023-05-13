@@ -37,13 +37,13 @@ jobs:
             phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.3
-            phpunit: phpunit/phpunit ^9
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.4
-            phpunit: phpunit/phpunit ^9
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 8.0
-            phpunit: phpunit/phpunit ^9
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 8.1
             phpunit: phpunit/phpunit ^9
