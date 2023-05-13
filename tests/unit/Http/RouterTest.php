@@ -36,11 +36,13 @@ class RouterTest extends TestCase {
 
         $this->_uri->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
         $this->_uri->expects($this->any())->method('withQuery')->with($this->callback(function($val) {
-            $this->setResult($val);
+            $this->query_string = $val;
 
             return true;
         }))->will($this->returnSelf());
-        $this->_uri->expects($this->any())->method('getQuery')->will($this->returnCallback([$this, 'getResult']));
+        $this->_uri->expects($this->any())->method('getQuery')->will($this->callback(function() {
+            return $this->query_string ?: '';
+        }));
         $this->_req->expects($this->any())->method('withUri')->will($this->returnSelf());
     }
 
