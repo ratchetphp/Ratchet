@@ -43,13 +43,13 @@ jobs:
             phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 8.0
-            phpunit: phpunit/phpunit ^8
+            phpunit: phpunit/phpunit ^7
             can-fail: false
           - php: 8.1
-            phpunit: phpunit/phpunit ^8
+            phpunit: phpunit/phpunit ^7
             can-fail: false
           - php: 8.2
-            phpunit: phpunit/phpunit ^8
+            phpunit: phpunit/phpunit ^7
             can-fail: false
 
     steps:
