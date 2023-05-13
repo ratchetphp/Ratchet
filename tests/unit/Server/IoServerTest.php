@@ -103,11 +103,10 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnErrorPassesException() {
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $conn->decor = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
-        $this->app->expects($this->once())->method('onError')->with($conn->decor, $err);
+        $this->app->expects($this->once())->method('onError')->with($conn, $err);
 
         $this->server->handleError($err, $conn);
     }

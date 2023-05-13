@@ -139,7 +139,7 @@ class IoServer {
     /**
      * Data has been received from React
      * @param string                            $data
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
     public function handleData($data, $io_conn) {
         try {
@@ -151,7 +151,7 @@ class IoServer {
 
     /**
      * A connection has been closed by React
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
     public function handleEnd($io_conn) {
         try {
@@ -166,7 +166,7 @@ class IoServer {
     /**
      * An error has occurred, let the listening application know
      * @param \Exception                        $e
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
     public function handleError(\Exception $e, $io_conn) {
         $this->app->onError($io_conn, $e);
