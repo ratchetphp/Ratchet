@@ -40,7 +40,7 @@ class RouterTest extends TestCase {
 
             return true;
         }))->will($this->returnSelf());
-        $this->_uri->expects($this->any())->method('getQuery')->will($this->callback(function() {
+        $this->_uri->expects($this->any())->method('getQuery')->will($this->returnCallback(function() {
             return $this->query_string ?: '';
         }));
         $this->_req->expects($this->any())->method('withUri')->will($this->returnSelf());
