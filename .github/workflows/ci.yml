@@ -51,19 +51,19 @@ jobs:
           tools: phpunit:${{ matrix.phpunit-versions }}
 
       - name: "PHP < 7.0"
-        if: "${{ matrix.php-versions }} < 7.0"
+        if: "${{ matrix.php-version }} < 7.0"
         run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 4.8
 
       - name: "PHP 7.0"
-        if: "${{ matrix.php-versions }} == 7.0"
+        if: "${{ matrix.php-version }} == 7.0"
         run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 6.0
 
       - name: "PHP 7.4"
-        if: "${{ matrix.php-versions }} == 7.4"
+        if: "${{ matrix.php-version }} == 7.4"
         run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 8.0
 
       - name: "PHP >8.0"
-        if: "${{ matrix.php-versions }} >= 8.0"
+        if: "${{ matrix.php-version }} >= 8.0"
         run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit
 
       - name: "Install dependencies"
