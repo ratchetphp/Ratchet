@@ -28,6 +28,8 @@ jobs:
           - "8.0"
           - "8.1"
           - "8.2"
+        phpunit-versions:
+          - "latest"
         dependencies:
           - "highest"
         include:
@@ -46,11 +48,26 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           coverage: "none"
           ini-values: "zend.assertions=1"
+          tools: phpunit:${{ matrix.phpunit-versions }}
+      - run: echo "${{ matrix.php-versions }}"
 
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "${{ matrix.dependencies }}"
+      - name: "PHP < 7.0"
+        if: ${{ matrix.php-versions }} < 7.0
+        run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 4.8
 
+      - name: "PHP 7.0"
+        if: ${{ matrix.php-versions }} == 7.0
+        run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 6.0
+
+      - name: "PHP 7.4"
+        if: "${{ matrix.php-versions }} == 7.4"
+        run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit 8.0
+
+      - name: "PHP >8.0"
+        if: "${{ matrix.php-versions }} >= 8.0"
+        run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit
+
+      - run: composer install
+        
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit"
