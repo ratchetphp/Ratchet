@@ -51,8 +51,6 @@ jobs:
           - php: 8.2
             phpunit: ^10
             can-fail: false
-        dependencies:
-          - "highest"
 
     steps:
       - name: "Checkout"
