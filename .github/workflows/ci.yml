@@ -19,37 +19,37 @@ jobs:
       matrix:
         include:
           - php: 5.4
-            phpunit: ^4
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 5.5
-            phpunit: ^4
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 5.6
-            phpunit: ^5
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 7.0
-            phpunit: ^6
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 7.1
-            phpunit: ^7
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 7.2
-            phpunit: ^8
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 7.3
-            phpunit: ^9
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 7.4
-            phpunit: ^9
+            phpunit: phpunit/phpunit ~4.8
             can-fail: false
           - php: 8.0
-            phpunit: ^9
+            phpunit: phpunit/phpunit ^9
             can-fail: false
           - php: 8.1
-            phpunit: ^10
+            phpunit: phpunit/phpunit ^10
             can-fail: false
           - php: 8.2
-            phpunit: ^10
+            phpunit: phpunit/phpunit ^10
             can-fail: false
 
     steps:
@@ -66,7 +66,7 @@ jobs:
           ini-values: "zend.assertions=1"
 
       - name: "Update PHPUnit version"
-        run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit ${{ matrix.phpunit }}
+        run: composer require --dev --with-all-dependencies --no-install ${{ matrix.phpunit }}
 
       - name: "Install dependencies"
         run: composer update
