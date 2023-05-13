@@ -67,7 +67,7 @@ jobs:
         run: composer require --dev --with-all-dependencies --no-install phpunit/phpunit
 
       - name: "Install dependencies"
-      - run: composer update
+        run: composer update
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit"
