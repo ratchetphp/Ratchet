@@ -28,13 +28,13 @@ jobs:
             phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.0
-            phpunit: phpunit/phpunit ^6
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.1
-            phpunit: phpunit/phpunit ^7
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.2
-            phpunit: phpunit/phpunit ^8
+            phpunit: phpunit/phpunit ^5
             can-fail: false
           - php: 7.3
             phpunit: phpunit/phpunit ^9
