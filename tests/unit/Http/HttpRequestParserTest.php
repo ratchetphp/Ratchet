@@ -1,13 +1,15 @@
 <?php
 namespace Ratchet\Http;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers Ratchet\Http\HttpRequestParser
  */
-class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
+class HttpRequestParserTest extends TestCase {
     protected $parser;
 
-    public function setUp() {
+    public function before() {
         $this->parser = new HttpRequestParser;
     }
 

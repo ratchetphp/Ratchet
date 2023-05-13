@@ -6,8 +6,8 @@ use Ratchet\AbstractMessageComponentTestCase;
  * @covers Ratchet\Http\HttpServer
  */
 class HttpServerTest extends AbstractMessageComponentTestCase {
-    public function setUp() {
-        parent::setUp();
+    public function before() {
+        parent::before();
         $this->_conn->httpHeadersReceived = true;
     }
 

@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Http;
+use PHPUnit\Framework\TestCase;
 use Ratchet\WebSocket\WsServerInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
@@ -11,14 +12,14 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 /**
  * @covers Ratchet\Http\Router
  */
-class RouterTest extends \PHPUnit_Framework_TestCase {
+class RouterTest extends TestCase {
     protected $_router;
     protected $_matcher;
     protected $_conn;
     protected $_uri;
     protected $_req;
 
-    public function setUp() {
+    public function before() {
         $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->_uri  = $this->getMock('Psr\Http\Message\UriInterface');
         $this->_req  = $this->getMock('\Psr\Http\Message\RequestInterface');
@@ -151,10 +152,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->_conn->expects($this->once())->method('close');
 
         $header = "GET /nope HTTP/1.1
-Upgrade: websocket                                   
-Connection: upgrade                                  
-Host: localhost                                 
-Origin: http://localhost                        
+Upgrade: websocket
+Connection: upgrade
+Host: localhost
+Origin: http://localhost
 Sec-WebSocket-Version: 13\r\n\r\n";
 
         $app = new HttpServer(new Router(new UrlMatcher(new RouteCollection, new RequestContext)));
