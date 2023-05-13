@@ -14,7 +14,7 @@ class ServerProtocolTest extends TestCase {
 
     protected $_app;
 
-    public function before() {
+    public function setUp() {
         $this->_app  = new TestComponent;
         $this->_comp = new ServerProtocol($this->_app);
     }

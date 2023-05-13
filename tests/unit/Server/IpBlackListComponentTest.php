@@ -10,7 +10,7 @@ class IpBlackListTest extends TestCase {
     protected $blocker;
     protected $mock;
 
-    public function before() {
+    public function setUp() {
         $this->mock = $this->getMock('\\Ratchet\\MessageComponentInterface');
         $this->blocker = new IpBlackList($this->mock);
     }

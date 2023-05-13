@@ -8,11 +8,11 @@ use Ratchet\AbstractMessageComponentTestCase;
 class OriginCheckTest extends AbstractMessageComponentTestCase {
     protected $_reqStub;
 
-    public function before() {
+    public function setUp() {
         $this->_reqStub = $this->getMock('Psr\Http\Message\RequestInterface');
         $this->_reqStub->expects($this->any())->method('getHeader')->will($this->returnValue(['localhost']));
 
-        parent::before();
+        parent::setUp();
 
         $this->_serv->allowedOrigins[] = 'localhost';
     }

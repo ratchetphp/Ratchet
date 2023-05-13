@@ -19,7 +19,7 @@ class TopicManagerTest extends TestCase {
      */
     private $conn;
 
-    public function before() {
+    public function setUp() {
         $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);

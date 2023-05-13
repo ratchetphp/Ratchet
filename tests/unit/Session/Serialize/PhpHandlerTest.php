@@ -9,7 +9,7 @@ use Ratchet\Session\Serialize\PhpHandler;
 class PhpHandlerTest extends TestCase {
     protected $_handler;
 
-    public function before() {
+    public function setUp() {
         $this->_handler = new PhpHandler;
     }
 

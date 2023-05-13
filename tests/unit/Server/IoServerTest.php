@@ -26,7 +26,7 @@ class IoServerTest extends TestCase {
         $loop->run();
     }
 
-    public function before() {
+    public function setUp() {
         $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;
