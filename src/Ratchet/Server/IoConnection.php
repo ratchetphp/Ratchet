@@ -11,9 +11,20 @@ class IoConnection implements ConnectionInterface {
      * @var \React\Socket\ConnectionInterface
      */
     protected $conn;
-    public $httpHeadersReceived;
-    public $remoteAddress;
-    public $resourceId;
+
+    protected $properties = [];
+
+    public function __set($key, $value) {
+        if (!property_exists($this, $key)) {
+            $this->properties[$key] = $value;
+        }
+    }
+
+    public function __get($key) {
+        if (isset($this->properties[$key])) {
+            return $this->properties[$key];
+        }
+    }
     
     /**
      * @param \React\Socket\ConnectionInterface $conn
