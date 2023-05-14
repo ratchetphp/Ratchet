@@ -10,7 +10,6 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
  * @property \stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {
-    public $WAMP;
 
     /**
      * {@inheritdoc}

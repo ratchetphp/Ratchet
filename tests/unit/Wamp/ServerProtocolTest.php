@@ -142,7 +142,6 @@ class ServerProtocolTest extends RatchetTestCase {
 
         $this->_comp->onOpen($conn);
         $this->_comp->onMessage($conn, json_encode(array(7, 'topic', 'event', true)));
-
         $this->assertEquals($conn->WAMP->sessionId, $this->_app->last['onPublish'][3][0]);
     }
 
