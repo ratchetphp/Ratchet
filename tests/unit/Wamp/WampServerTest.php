@@ -40,7 +40,11 @@ class WampServerTest extends AbstractMessageComponentTestCase {
 
     public function testGetSubProtocols() {
         // todo: could expand on this
-        $this->assertInternalType('array', $this->_serv->getSubProtocols());
+        if ($this->_version() < 7.5) {
+            $this->assertInternalType('array', $this->_serv->getSubProtocols());
+        } else {
+            $this->assertIsArray($this->_serv->getSubProtocols());
+        }
     }
 
     public function testConnectionClosesOnInvalidJson() {

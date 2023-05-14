@@ -179,7 +179,7 @@ class TopicManagerTest extends RatchetTestCase {
 
     public function testConnIsRemovedFromTopicOnClose() {
         $name = 'State Testing';
-        list($topic, $attribute) = $this->topicProvider($name);
+        [$topic, $attribute] = $this->topicProvider($name);
 
         $this->assertCount(1, $attribute->getValue($this->mngr));
 
@@ -201,7 +201,7 @@ class TopicManagerTest extends RatchetTestCase {
      */
     public function testTopicRetentionFromLeavingConnections($methodCall, $expectation) {
         $topicName = 'checkTopic';
-        list($topic, $attribute) = $this->topicProvider($topicName);
+        [$topic, $attribute] = $this->topicProvider($topicName);
 
         $this->mngr->onSubscribe($this->conn, $topicName);
         call_user_func_array(array($this->mngr, $methodCall), array($this->conn, $topicName));
@@ -217,7 +217,11 @@ class TopicManagerTest extends RatchetTestCase {
     }
 
     public function testGetSubProtocolsReturnsArray() {
-        $this->assertInternalType('array', $this->mngr->getSubProtocols());
+        if ($this->_version() < 7.5) {
+            $this->assertInternalType('array', $this->mngr->getSubProtocols());
+        } else {
+            $this->assertIsArray($this->mngr->getSubProtocols());
+        }
     }
 
     public function testGetSubProtocolsBubbles() {
