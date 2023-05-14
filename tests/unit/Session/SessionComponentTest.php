@@ -58,7 +58,7 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
+        $component = new SessionProvider($this->createMock($this->getComponentClassString()), $this->createMock('\SessionHandlerInterface'));
         $this->assertEquals($out, $method->invokeArgs($component, array($in)));
     }
 
@@ -87,10 +87,10 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $pdoHandler = new PdoSessionHandler($pdo, $dbOptions);
         $pdoHandler->write($sessionId, '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}');
 
-        $component  = new SessionProvider($this->getMock($this->getComponentClassString()), $pdoHandler, array('auto_start' => 1));
-        $connection = $this->getMock('Ratchet\\ConnectionInterface');
+        $component  = new SessionProvider($this->createMock($this->getComponentClassString()), $pdoHandler, array('auto_start' => 1));
+        $connection = $this->createMock('Ratchet\\ConnectionInterface');
 
-        $headers = $this->getMock('Psr\Http\Message\RequestInterface');
+        $headers = $this->createMock('Psr\Http\Message\RequestInterface');
         $headers->expects($this->once())->method('getHeader')->will($this->returnValue([ini_get('session.name') . "={$sessionId};"]));
 
         $component->onOpen($connection, $headers);
@@ -99,9 +99,9 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
     }
 
     protected function newConn() {
-        $conn = $this->getMock('Ratchet\ConnectionInterface');
+        $conn = $this->createMock('Ratchet\ConnectionInterface');
 
-        $headers = $this->getMock('Psr\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
+        $headers = $this->createMock('Psr\Http\Message\Request', array('getCookie'), array('POST', '/', array()));
         $headers->expects($this->once())->method('getCookie', array(ini_get('session.name')))->will($this->returnValue(null));
 
         return $conn;
@@ -120,11 +120,11 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
 
         ini_set('session.serialize_handler', 'wddx');
         $this->setExpectedException('\RuntimeException');
-        new SessionProvider($this->getMock($this->getComponentClassString()), $this->getMock('\SessionHandlerInterface'));
+        new SessionProvider($this->createMock($this->getComponentClassString()), $this->createMock('\SessionHandlerInterface'));
     }
 
     protected function doOpen($conn) {
-        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $request = $this->createMock('Psr\Http\Message\RequestInterface');
         $request->expects($this->any())->method('getHeader')->will($this->returnValue([]));
 
         $this->_serv->onOpen($conn, $request);

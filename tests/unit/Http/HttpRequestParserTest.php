@@ -35,7 +35,7 @@ class HttpRequestParserTest extends TestCase {
     }
 
     public function testBufferOverflowResponse() {
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->createMock('\Ratchet\ConnectionInterface');
 
         $this->parser->maxSize = 20;
 
@@ -47,7 +47,7 @@ class HttpRequestParserTest extends TestCase {
     }
 
     public function testReturnTypeIsRequest() {
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->createMock('\Ratchet\ConnectionInterface');
         $return = $this->parser->onMessage($conn, "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n");
 
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $return);

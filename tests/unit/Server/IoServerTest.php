@@ -30,7 +30,7 @@ class IoServerTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
+        $this->app = $this->createMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;
         $this->reactor = new Server(0, $loop);
@@ -107,7 +107,7 @@ class IoServerTest extends TestCase {
     }
 
     public function testOnErrorPassesException() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->createMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
         $this->app->expects($this->once())->method('onError')->with($conn, $err);
@@ -118,7 +118,7 @@ class IoServerTest extends TestCase {
     public function onErrorCalledWhenExceptionThrown() {
         $this->markTestIncomplete("Need to learn how to throw an exception from a mock");
 
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
+        $conn = $this->createMock('\\React\\Socket\\ConnectionInterface');
         $this->server->handleConnect($conn);
 
         $e = new \Exception;
