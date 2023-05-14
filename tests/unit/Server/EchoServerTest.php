@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Server;
-use PHPUnit\Framework\TestCase;
+use Ratchet\RatchetTestCase;
 use Ratchet\Server\EchoServer;
 
 /**
  * @covers \Ratchet\Server\EchoServer
  */
-class EchoServerTest extends TestCase {
+class EchoServerTest extends RatchetTestCase {
     protected $_conn;
     protected $_comp;
 
@@ -14,7 +14,7 @@ class EchoServerTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = $this->_getMock('\Ratchet\ConnectionInterface');
         $this->_comp = new EchoServer;
     }
 

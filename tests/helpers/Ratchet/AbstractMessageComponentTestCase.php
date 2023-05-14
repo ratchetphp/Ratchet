@@ -1,8 +1,8 @@
 <?php
 namespace Ratchet;
+use Ratchet\RatchetTestCase;
 
-use PHPUnit\Framework\TestCase;
-abstract class AbstractMessageComponentTestCase extends TestCase {
+abstract class AbstractMessageComponentTestCase extends RatchetTestCase {
     protected $_app;
     protected $_serv;
     protected $_conn;
@@ -15,10 +15,10 @@ abstract class AbstractMessageComponentTestCase extends TestCase {
      * @before
      */
     public function before() {
-        $this->_app  = $this->getMock($this->getComponentClassString());
+        $this->_app  = $this->_getMock($this->getComponentClassString());
         $decorator   = $this->getDecoratorClassString();
         $this->_serv = new $decorator($this->_app);
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = $this->_getMock('\Ratchet\ConnectionInterface');
 
         $this->doOpen($this->_conn);
     }
@@ -33,7 +33,7 @@ abstract class AbstractMessageComponentTestCase extends TestCase {
 
     public function testOpen() {
         $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->doOpen($this->getMock('\Ratchet\ConnectionInterface'));
+        $this->doOpen($this->_getMock('\Ratchet\ConnectionInterface'));
     }
 
     public function testOnClose() {

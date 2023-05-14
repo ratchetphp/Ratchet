@@ -1,12 +1,12 @@
 <?php
 namespace Ratchet\Wamp;
 
-use PHPUnit\Framework\TestCase;
+use Ratchet\RatchetTestCase;
 
 /**
  * @covers Ratchet\Wamp\TopicManager
  */
-class TopicManagerTest extends TestCase {
+class TopicManagerTest extends RatchetTestCase {
     private $mock;
 
     /**
@@ -23,8 +23,8 @@ class TopicManagerTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
-        $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
+        $this->conn = $this->_getMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->_getMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);
 
         $this->conn->WAMP = new \StdClass;
@@ -222,7 +222,7 @@ class TopicManagerTest extends TestCase {
 
     public function testGetSubProtocolsBubbles() {
         $subs = array('hello', 'world');
-        $app  = $this->getMock('Ratchet\Wamp\Stub\WsWampServerInterface');
+        $app  = $this->_getMock('Ratchet\Wamp\Stub\WsWampServerInterface');
         $app->expects($this->once())->method('getSubProtocols')->will($this->returnValue($subs));
         $mngr = new TopicManager($app);
 

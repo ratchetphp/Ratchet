@@ -135,17 +135,17 @@ class AbstractConnectionDecoratorTest extends RatchetTestCase {
     }
 
     public function testWarningGettingNothing() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        $this->_setExpectedException('PHPUnit_Framework_Error');
         $var = $this->mock->nonExistant;
     }
 
     public function testWarningGettingNothingLevel1() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        $this->_setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l1->nonExistant;
     }
 
     public function testWarningGettingNothingLevel2() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        $this->_setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l2->nonExistant;
     }
 }

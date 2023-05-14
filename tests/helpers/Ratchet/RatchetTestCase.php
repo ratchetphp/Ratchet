@@ -21,4 +21,14 @@ class RatchetTestCase extends TestCase {
             return call_user_func_array([$this, 'createMock'], $params);
         }
     }
+
+    public function _setExpectedException() {
+        $num_params = func_num_args();
+        $params = func_get_args();
+        if ($this->_version() < 9) {
+            call_user_func_array([$this, 'setExpectedException'], $params);
+        } else {
+            call_user_func_array([$this, 'expectException'], $params);
+        }
+    }
 }
