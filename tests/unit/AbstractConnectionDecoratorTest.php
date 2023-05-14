@@ -16,7 +16,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->mock = $this->createMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);
     }
