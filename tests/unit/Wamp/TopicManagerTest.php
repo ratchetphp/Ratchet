@@ -179,7 +179,7 @@ class TopicManagerTest extends RatchetTestCase {
 
     public function testConnIsRemovedFromTopicOnClose() {
         $name = 'State Testing';
-        [$topic, $attribute] = $this->topicProvider($name);
+        list($topic, $attribute) = $this->topicProvider($name);
 
         $this->assertCount(1, $attribute->getValue($this->mngr));
 
