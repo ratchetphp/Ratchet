@@ -1,6 +1,5 @@
 <?php
 namespace Ratchet\Http;
-use GuzzleHttp\Psr7\Request;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
