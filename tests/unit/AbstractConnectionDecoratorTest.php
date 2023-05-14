@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet;
+use Ratchet\RatchetTestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
