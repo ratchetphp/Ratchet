@@ -25,7 +25,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function start(): bool {
+    public function start() {
         if ($this->started && !$this->closed) {
             return true;
         }
@@ -46,6 +46,13 @@ class VirtualSessionStorage extends NativeSessionStorage {
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function regenerate($destroy = false, $lifetime = null) {
+        // .. ?
     }
 
     /**
