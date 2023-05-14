@@ -201,7 +201,7 @@ class TopicManagerTest extends RatchetTestCase {
      */
     public function testTopicRetentionFromLeavingConnections($methodCall, $expectation) {
         $topicName = 'checkTopic';
-        [$topic, $attribute] = $this->topicProvider($topicName);
+        list($topic, $attribute) = $this->topicProvider($topicName);
 
         $this->mngr->onSubscribe($this->conn, $topicName);
         call_user_func_array(array($this->mngr, $methodCall), array($this->conn, $topicName));
