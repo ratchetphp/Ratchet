@@ -127,7 +127,7 @@ class FlashPolicyTest extends TestCase {
     }
 
     public function testErrorClosesConnection() {
-        $conn = $this->createMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $conn->expects($this->once())->method('close');
 
         $this->_policy->onError($conn, new \Exception);
@@ -136,7 +136,7 @@ class FlashPolicyTest extends TestCase {
     public function testOnMessageSendsString() {
         $this->_policy->addAllowedAccess('*', '*');
 
-        $conn = $this->createMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $conn->expects($this->once())->method('send')->with($this->isType('string'));
 
         $this->_policy->onMessage($conn, ' ');
@@ -144,13 +144,13 @@ class FlashPolicyTest extends TestCase {
 
     public function testOnOpenExists() {
         $this->assertTrue(method_exists($this->_policy, 'onOpen'));
-        $conn = $this->createMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->_policy->onOpen($conn);
     }
 
     public function testOnCloseExists() {
         $this->assertTrue(method_exists($this->_policy, 'onClose'));
-        $conn = $this->createMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMock('\Ratchet\ConnectionInterface');
         $this->_policy->onClose($conn);
     }
 }

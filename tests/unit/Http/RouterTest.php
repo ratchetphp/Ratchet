@@ -23,18 +23,18 @@ class RouterTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->_conn = $this->createMock('\Ratchet\ConnectionInterface');
-        $this->_uri = $this->createMock('Psr\Http\Message\UriInterface');
-        $this->_req  = $this->createMock('\Psr\Http\Message\RequestInterface');
+        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_uri = $this->getMock('Psr\Http\Message\UriInterface');
+        $this->_req  = $this->getMock('\Psr\Http\Message\RequestInterface');
         $this->_req
             ->expects($this->any())
             ->method('getUri')
             ->will($this->returnValue($this->_uri));
-        $this->_matcher = $this->createMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $this->_matcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
         $this->_matcher
             ->expects($this->any())
             ->method('getContext')
-            ->will($this->returnValue($this->createMock('Symfony\Component\Routing\RequestContext')));
+            ->will($this->returnValue($this->getMock('Symfony\Component\Routing\RequestContext')));
         $this->_router  = new Router($this->_matcher);
 
         $this->_uri->expects($this->any())->method('getPath')->will($this->returnValue('ws://doesnt.matter/'));
@@ -117,7 +117,7 @@ class RouterTest extends TestCase {
         $this->_matcher->expects($this->any())->method('match')->will(
             $this->returnValue(['_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'])
         );
-        $conn = $this->createMock('Ratchet\Mock\Connection');
+        $conn = $this->getMock('Ratchet\Mock\Connection');
 
         $router = new Router($this->_matcher);
 
@@ -132,8 +132,8 @@ class RouterTest extends TestCase {
             $this->returnValue(['_controller' => $controller, 'foo' => 'bar', 'baz' => 'qux'])
         );
 
-        $conn    = $this->createMock('Ratchet\Mock\Connection');
-        $request = $this->createMock('Psr\Http\Message\RequestInterface');
+        $conn    = $this->getMock('Ratchet\Mock\Connection');
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
         $uri = new \GuzzleHttp\Psr7\Uri('ws://doesnt.matter/endpoint?hello=world&foo=nope');
 
         $request->expects($this->any())->method('getUri')->will($this->returnCallback(function() use (&$uri) {

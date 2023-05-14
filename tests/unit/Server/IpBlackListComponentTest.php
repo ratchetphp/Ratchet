@@ -14,7 +14,7 @@ class IpBlackListTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->mock = $this->createMock('\\Ratchet\\MessageComponentInterface');
+        $this->mock = $this->getMock('\\Ratchet\\MessageComponentInterface');
         $this->blocker = new IpBlackList($this->mock);
     }
 
@@ -121,7 +121,7 @@ class IpBlackListTest extends TestCase {
     }
 
     protected function newConn() {
-        $conn = $this->createMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
         $conn->remoteAddress = '127.0.0.1';
 
         return $conn;
