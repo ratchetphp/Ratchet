@@ -30,7 +30,7 @@ class IoServerTest extends RatchetTestCase {
      * @before
      */
     public function before() {
-        $this->app = $this->getMockBuilder('\\Ratchet\\MessageComponentInterface')->getMock();
+        $this->app = $this->_getMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;
         $this->reactor = new Server(0, $loop);
@@ -107,7 +107,7 @@ class IoServerTest extends RatchetTestCase {
     }
 
     public function testOnErrorPassesException() {
-        $conn = $this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock();
+        $conn = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
         $this->app->expects($this->once())->method('onError')->with($conn, $err);
@@ -118,7 +118,7 @@ class IoServerTest extends RatchetTestCase {
     public function onErrorCalledWhenExceptionThrown() {
         $this->markTestIncomplete("Need to learn how to throw an exception from a mock");
 
-        $conn = $this->getMockBuilder('\\React\\Socket\\ConnectionInterface')->getMock();
+        $conn = $this->_getMock('\\React\\Socket\\ConnectionInterface');
         $this->server->handleConnect($conn);
 
         $e = new \Exception;

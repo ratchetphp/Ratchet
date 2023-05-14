@@ -14,7 +14,7 @@ class EchoServerTest extends RatchetTestCase {
      * @before
      */
     public function before() {
-        $this->_conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
+        $this->_conn = $this->_getMock('\Ratchet\ConnectionInterface');
         $this->_comp = new EchoServer;
     }
 

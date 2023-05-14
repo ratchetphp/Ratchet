@@ -245,7 +245,7 @@ class ServerProtocolTest extends RatchetTestCase {
     }
 
     public function testWampOnMessageApp() {
-        $app = $this->getMockBuilder('\\Ratchet\\Wamp\\WampServerInterface')->getMock();
+        $app = $this->_getMock('\\Ratchet\\Wamp\\WampServerInterface');
         $wamp = new ServerProtocol($app);
 
         $this->assertContains('wamp', $wamp->getSubProtocols());

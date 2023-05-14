@@ -13,7 +13,7 @@ class WampConnectionTest extends RatchetTestCase {
      * @before
      */
     public function before() {
-        $this->mock = $this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock();
+        $this->mock = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $this->conn = new WampConnection($this->mock);
     }
 
@@ -71,7 +71,7 @@ class WampConnectionTest extends RatchetTestCase {
     }
 
     public function testClose() {
-        $mock = $this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock();
+        $mock = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $conn = new WampConnection($mock);
 
         $mock->expects($this->once())->method('close');
