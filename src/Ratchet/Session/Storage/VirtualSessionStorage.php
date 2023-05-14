@@ -25,7 +25,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function start() {
+    public function start(): bool {
         if ($this->started && !$this->closed) {
             return true;
         }
