@@ -110,7 +110,7 @@ class TopicTest extends RatchetTestCase {
             $second = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->_getMock('\\Ratchet\\ConnectionInterface')))->getMock();
             $third = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->_getMock('\\Ratchet\\ConnectionInterface')))->getMock();
         }
-        
+
         $first->expects($this->once())
             ->method('send')
             ->with($this->equalTo($protocol));
