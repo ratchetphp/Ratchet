@@ -26,9 +26,6 @@ class RatchetTestCase extends TestCase {
         if ($this->_version() < 6) {
             call_user_func_array([$this, 'setExpectedException'], [$exception]);
         } else {
-            if (substr($exception, 0, 17) === 'PHPUnit_Framework') {
-                $exception = str_replace('_', '\\', $exception);
-            }
             call_user_func_array([$this, 'expectException'], [$exception]);
         }
     }
