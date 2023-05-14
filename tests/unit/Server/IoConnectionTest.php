@@ -14,7 +14,7 @@ class IoConnectionTest extends RatchetTestCase {
      * @before
      */
     public function before() {
-        $this->sock = $this->_getMock('\\React\\Socket\\ConnectionInterface');
+        $this->sock = $this->getMockBuilder('\\React\\Socket\\ConnectionInterface')->getMock();
         $this->conn = new IoConnection($this->sock);
     }
 

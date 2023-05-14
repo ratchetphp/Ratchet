@@ -40,8 +40,8 @@ class TopicTest extends RatchetTestCase {
         $name = 'Batman';
         $protocol = json_encode(array(8, $name, $msg));
 
-        $first  = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
-        $second = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
+        $first = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
+        $second = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
 
         $first->expects($this->once())
               ->method('send')
@@ -63,9 +63,9 @@ class TopicTest extends RatchetTestCase {
         $name = 'Excluding';
         $protocol = json_encode(array(8, $name, $msg));
 
-        $first  = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
-        $second = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
-        $third  = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
+        $first = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
+        $second = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
+        $third = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
 
         $first->expects($this->once())
             ->method('send')
@@ -90,9 +90,9 @@ class TopicTest extends RatchetTestCase {
         $name = 'Eligible';
         $protocol = json_encode(array(8, $name, $msg));
 
-        $first  = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
-        $second = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
-        $third  = $this->_getMock('Ratchet\\Wamp\\WampConnection', array('send'), array($this->_getMock('\\Ratchet\\ConnectionInterface')));
+        $first = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
+        $second = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
+        $third = $this->getMockBuilder('Ratchet\\Wamp\\WampConnection')->onlyMethods(array('send'))->setConstructorArgs(array($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock()))->getMock();
 
         $first->expects($this->once())
             ->method('send')
@@ -159,6 +159,6 @@ class TopicTest extends RatchetTestCase {
     }
 
     protected function newConn() {
-        return new WampConnection($this->_getMock('\\Ratchet\\ConnectionInterface'));
+        return new WampConnection($this->getMockBuilder('\\Ratchet\\ConnectionInterface')->getMock());
     }
 }

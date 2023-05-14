@@ -15,10 +15,10 @@ abstract class AbstractMessageComponentTestCase extends RatchetTestCase {
      * @before
      */
     public function before() {
-        $this->_app  = $this->_getMock($this->getComponentClassString());
+        $this->_app  = $this->getMockBuilder($this->getComponentClassString())->getMock();
         $decorator   = $this->getDecoratorClassString();
         $this->_serv = new $decorator($this->_app);
-        $this->_conn = $this->_getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = $this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock();
 
         $this->doOpen($this->_conn);
     }
@@ -37,7 +37,7 @@ abstract class AbstractMessageComponentTestCase extends RatchetTestCase {
 
     public function testOpen() {
         $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->doOpen($this->_getMock('\Ratchet\ConnectionInterface'));
+        $this->doOpen($this->getMockBuilder('\Ratchet\ConnectionInterface')->getMock());
     }
 
     public function testOnClose() {
