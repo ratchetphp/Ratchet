@@ -1,18 +1,22 @@
 <?php
 namespace Ratchet;
+use Ratchet\RatchetTestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
  * @covers Ratchet\AbstractConnectionDecorator
  * @covers Ratchet\ConnectionInterface
  */
-class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
+class AbstractConnectionDecoratorTest extends RatchetTestCase {
     protected $mock;
     protected $l1;
     protected $l2;
 
-    public function setUp() {
-        $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
+    /**
+     * @before
+     */
+    public function before() {
+        $this->mock = $this->_getMock('\Ratchet\ConnectionInterface');
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);
     }
@@ -131,17 +135,29 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testWarningGettingNothing() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if ($this->_version() < 6) {
+            $this->_setExpectedException('PHPUnit_Framework_Error');
+        } else {
+            $this->_setExpectedException('PHPUnit\Framework\Error\Warning');
+        }
         $var = $this->mock->nonExistant;
     }
 
     public function testWarningGettingNothingLevel1() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if ($this->_version() < 6) {
+            $this->_setExpectedException('PHPUnit_Framework_Error');
+        } else {
+            $this->_setExpectedException('PHPUnit\Framework\Error\Warning');
+        }
         $var = $this->l1->nonExistant;
     }
 
     public function testWarningGettingNothingLevel2() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if ($this->_version() < 6) {
+            $this->_setExpectedException('PHPUnit_Framework_Error');
+        } else {
+            $this->_setExpectedException('PHPUnit\Framework\Error\Warning');
+        }
         $var = $this->l2->nonExistant;
     }
 }

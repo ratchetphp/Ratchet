@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Server;
+use Ratchet\RatchetTestCase;
 use Ratchet\Server\IoServer;
 use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\LoopInterface;
@@ -8,7 +9,7 @@ use React\Socket\Server;
 /**
  * @covers Ratchet\Server\IoServer
  */
-class IoServerTest extends \PHPUnit_Framework_TestCase {
+class IoServerTest extends RatchetTestCase {
     protected $server;
 
     protected $app;
@@ -25,8 +26,11 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $loop->run();
     }
 
-    public function setUp() {
-        $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
+    /**
+     * @before
+     */
+    public function before() {
+        $this->app = $this->_getMock('\\Ratchet\\MessageComponentInterface');
 
         $loop = new StreamSelectLoop;
         $this->reactor = new Server(0, $loop);
@@ -96,14 +100,14 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testNoLoopProvidedError() {
-        $this->setExpectedException('RuntimeException');
+        $this->_setExpectedException('RuntimeException');
 
         $io   = new IoServer($this->app, $this->reactor);
         $io->run();
     }
 
     public function testOnErrorPassesException() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $err  = new \Exception("Nope");
 
         $this->app->expects($this->once())->method('onError')->with($conn, $err);
@@ -114,7 +118,7 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     public function onErrorCalledWhenExceptionThrown() {
         $this->markTestIncomplete("Need to learn how to throw an exception from a mock");
 
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
+        $conn = $this->_getMock('\\React\\Socket\\ConnectionInterface');
         $this->server->handleConnect($conn);
 
         $e = new \Exception;

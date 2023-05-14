@@ -21,9 +21,15 @@ class WampServerTest extends AbstractMessageComponentTestCase {
     public function testOnMessageToEvent() {
         $published = 'Client published this message';
 
+        if ($this->_version() < 6) {
+            $topic = new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\Wamp\Topic');
+        } else {
+            $topic = new \PHPUnit\Framework\Constraint\IsInstanceOf('\Ratchet\Wamp\Topic');
+        }
+
         $this->_app->expects($this->once())->method('onPublish')->with(
             $this->isExpectedConnection()
-          , new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\Wamp\Topic')
+          , $topic
           , $published
           , array()
           , array()
@@ -34,7 +40,11 @@ class WampServerTest extends AbstractMessageComponentTestCase {
 
     public function testGetSubProtocols() {
         // todo: could expand on this
-        $this->assertInternalType('array', $this->_serv->getSubProtocols());
+        if ($this->_version() < 7.5) {
+            $this->assertInternalType('array', $this->_serv->getSubProtocols());
+        } else {
+            $this->assertIsArray($this->_serv->getSubProtocols());
+        }
     }
 
     public function testConnectionClosesOnInvalidJson() {
