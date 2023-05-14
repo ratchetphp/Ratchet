@@ -28,7 +28,11 @@ abstract class AbstractMessageComponentTestCase extends RatchetTestCase {
     }
 
     public function isExpectedConnection() {
-        return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+        if ($this->_version() < 6) {
+            return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+        } else {
+            return new \PHPUnit\Framework\Constraint\IsInstanceOf($this->getConnectionClassString());
+        }
     }
 
     public function testOpen() {

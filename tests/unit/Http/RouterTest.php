@@ -74,7 +74,12 @@ class RouterTest extends RatchetTestCase {
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));
         $this->_router->onOpen($this->_conn, $this->_req);
 
-        $expectedConn = new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\ConnectionInterface');
+        if ($this->_version() < 6) {
+            $expectedConn = new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\ConnectionInterface');
+        } else {
+            $expectedConn = new \PHPUnit\Framework\Constraint\IsInstanceOf('\Ratchet\ConnectionInterface');
+        }
+
         $controller->expects($this->once())->method('onOpen')->with($expectedConn, $this->_req);
 
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));

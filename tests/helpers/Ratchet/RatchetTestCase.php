@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class RatchetTestCase extends TestCase {
 
-    private function _version() {
+    protected function _version() {
         if (class_exists('\PHPUnit_Runner_Version')) {
             return \PHPUnit_Runner_Version::id();
         } else {
@@ -15,20 +15,21 @@ class RatchetTestCase extends TestCase {
 
     public function _getMock() {
         $params = func_get_args();
-        if ($this->_version() < 9) {
+        if ($this->_version() < 6) {
             return call_user_func_array([$this, 'getMock'], $params);
         } else {
             return call_user_func_array([$this, 'createMock'], $params);
         }
     }
 
-    public function _setExpectedException() {
-        $num_params = func_num_args();
-        $params = func_get_args();
-        if ($this->_version() < 9) {
-            call_user_func_array([$this, 'setExpectedException'], $params);
+    public function _setExpectedException($exception) {
+        if ($this->_version() < 6) {
+            call_user_func_array([$this, 'setExpectedException'], $exception);
         } else {
-            call_user_func_array([$this, 'expectException'], $params);
+            if (substr($exception, 0, 17) === 'PHPUnit_Framework') {
+                $exception = str_replace('_', '\\', $exception);
+            }
+            call_user_func_array([$this, 'expectException'], [$exception]);
         }
     }
 }
