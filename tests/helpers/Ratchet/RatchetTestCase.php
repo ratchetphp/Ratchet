@@ -6,8 +6,8 @@ use PHPUnit\Framework\TestCase;
 class RatchetTestCase extends TestCase {
 
     private function _version() {
-        if (class_exists('\PHPUnit\Runner\PHPUnit_Runner_Version')) {
-            return \PHPUnit\Runner\PHPUnit_Runner_Version::id();
+        if (class_exists('\PHPUnit_Runner_Version')) {
+            return \PHPUnit_Runner_Version::id();
         } else {
             return \PHPUnit\Runner\Version::id();
         }
