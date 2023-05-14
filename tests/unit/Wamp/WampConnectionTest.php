@@ -9,7 +9,10 @@ class WampConnectionTest extends TestCase {
     protected $conn;
     protected $mock;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function before() {
         $this->mock = $this->getMock('\\Ratchet\\ConnectionInterface');
         $this->conn = new WampConnection($this->mock);
     }

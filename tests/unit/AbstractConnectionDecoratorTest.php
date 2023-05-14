@@ -12,7 +12,10 @@ class AbstractConnectionDecoratorTest extends TestCase {
     protected $l1;
     protected $l2;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function before() {
         $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);

@@ -10,7 +10,10 @@ class FlashPolicyTest extends TestCase {
 
     protected $_policy;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function before() {
         $this->_policy = new FlashPolicy();
     }
 

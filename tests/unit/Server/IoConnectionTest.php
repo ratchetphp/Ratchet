@@ -10,7 +10,10 @@ class IoConnectionTest extends TestCase {
     protected $sock;
     protected $conn;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function before() {
         $this->sock = $this->getMock('\\React\\Socket\\ConnectionInterface');
         $this->conn = new IoConnection($this->sock);
     }

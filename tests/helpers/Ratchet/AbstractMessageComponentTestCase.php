@@ -11,7 +11,10 @@ abstract class AbstractMessageComponentTestCase extends TestCase {
     abstract public function getDecoratorClassString();
     abstract public function getComponentClassString();
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function before() {
         $this->_app  = $this->getMock($this->getComponentClassString());
         $decorator   = $this->getDecoratorClassString();
         $this->_serv = new $decorator($this->_app);
