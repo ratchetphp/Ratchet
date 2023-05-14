@@ -1,13 +1,12 @@
 <?php
 namespace Ratchet;
-use PHPUnit\Framework\TestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
  * @covers Ratchet\AbstractConnectionDecorator
  * @covers Ratchet\ConnectionInterface
  */
-class AbstractConnectionDecoratorTest extends TestCase {
+class AbstractConnectionDecoratorTest extends RatchetTestCase {
     protected $mock;
     protected $l1;
     protected $l2;
@@ -16,7 +15,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
      * @before
      */
     public function before() {
-        $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->_getMock('\Ratchet\ConnectionInterface');
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);
     }
