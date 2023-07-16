@@ -1,7 +1,8 @@
 <?php
 namespace Ratchet;
+use Ratchet\RatchetTestCase;
 
-abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestCase {
+abstract class AbstractMessageComponentTestCase extends RatchetTestCase {
     protected $_app;
     protected $_serv;
     protected $_conn;
@@ -10,11 +11,14 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
     abstract public function getDecoratorClassString();
     abstract public function getComponentClassString();
 
-    public function setUp() {
-        $this->_app  = $this->getMock($this->getComponentClassString());
+    /**
+     * @before
+     */
+    public function before() {
+        $this->_app  = $this->_getMock($this->getComponentClassString());
         $decorator   = $this->getDecoratorClassString();
         $this->_serv = new $decorator($this->_app);
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $this->_conn = $this->_getMock('\Ratchet\ConnectionInterface');
 
         $this->doOpen($this->_conn);
     }
@@ -24,12 +28,16 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
     }
 
     public function isExpectedConnection() {
-        return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+        if ($this->_version() < 6) {
+            return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+        } else {
+            return new \PHPUnit\Framework\Constraint\IsInstanceOf($this->getConnectionClassString());
+        }
     }
 
     public function testOpen() {
         $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->doOpen($this->getMock('\Ratchet\ConnectionInterface'));
+        $this->doOpen($this->_getMock('\Ratchet\ConnectionInterface'));
     }
 
     public function testOnClose() {

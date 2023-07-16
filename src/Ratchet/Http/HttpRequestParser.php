@@ -20,6 +20,40 @@ class HttpRequestParser implements MessageInterface {
     public $maxSize = 4096;
 
     /**
+     * Storage for dynamic properties.
+     *
+     * @var array
+     */
+    protected $_properties = [];
+
+    /**
+     * Allow setting dynamic properties.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function __set($key, $value) {
+        if (property_exists($this, $key)) {
+            $this->_properties[$key] = $value;
+        }
+    }
+
+    /**
+     * Get a property that has been declared dynamically
+     *
+     * @param string $key
+     *
+     * @return mixed|void
+     */
+    public function __get($key) {
+        if (isset($this->_properties[$key])) {
+            return $this->_properties[$key];
+        }
+    }
+
+    /**
      * @param \Ratchet\ConnectionInterface $context
      * @param string                       $data Data stream to buffer
      * @return \Psr\Http\Message\RequestInterface
