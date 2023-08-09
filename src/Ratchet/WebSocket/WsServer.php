@@ -114,8 +114,14 @@ class WsServer implements HttpServerInterface {
         $conn->WebSocket            = new \StdClass;
         $conn->WebSocket->closing   = false;
 
-        $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
+        $response = $this->handshakeNegotiator->handshake($request);
+        $Sec_WebSocket_Protocol = $request->getHeader('Sec-WebSocket-Protocol');
 
+        if ($Sec_WebSocket_Protocol && $Sec_WebSocket_Protocol[0] == 'json'){
+            $response = $response->withHeader('Sec-WebSocket-Protocol', 'json');
+        }
+
+        $response = $response->withHeader('X-Powered-By', \Ratchet\VERSION);
         $conn->send(Message::toString($response));
 
         if (101 !== $response->getStatusCode()) {
