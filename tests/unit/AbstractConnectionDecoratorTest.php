@@ -131,16 +131,28 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testWarningGettingNothing() {
+        if (!(error_reporting() & E_NOTICE)) {
+            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
+        }
+
         $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->mock->nonExistant;
     }
 
     public function testWarningGettingNothingLevel1() {
+        if (!(error_reporting() & E_NOTICE)) {
+            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
+        }
+
         $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l1->nonExistant;
     }
 
     public function testWarningGettingNothingLevel2() {
+        if (!(error_reporting() & E_NOTICE)) {
+            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
+        }
+
         $this->setExpectedException('PHPUnit_Framework_Error');
         $var = $this->l2->nonExistant;
     }
