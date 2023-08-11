@@ -1,10 +1,12 @@
 <?php
 namespace Ratchet\Http;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers Ratchet\Http\HttpRequestParser
  */
-class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
+class HttpRequestParserTest extends TestCase {
     protected $parser;
 
     public function setUp() {
@@ -36,7 +38,11 @@ class HttpRequestParserTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertNull($this->parser->onMessage($conn, "GET / HTTP/1.1\r\n"));
 
-        $this->setExpectedException('OverflowException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('OverflowException');
+        } else {
+            $this->setExpectedException('OverflowException');
+        }
 
         $this->parser->onMessage($conn, "Header-Is: Too Big");
     }

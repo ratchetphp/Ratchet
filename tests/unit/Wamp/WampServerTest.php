@@ -23,7 +23,7 @@ class WampServerTest extends AbstractMessageComponentTestCase {
 
         $this->_app->expects($this->once())->method('onPublish')->with(
             $this->isExpectedConnection()
-          , new \PHPUnit_Framework_Constraint_IsInstanceOf('Ratchet\Wamp\Topic')
+          , $this->isInstanceOf('Ratchet\Wamp\Topic')
           , $published
           , array()
           , array()

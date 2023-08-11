@@ -1,11 +1,12 @@
 <?php
 namespace Ratchet\Application\Server;
+use PHPUnit\Framework\TestCase;
 use Ratchet\Server\FlashPolicy;
 
 /**
  * @covers Ratchet\Server\FlashPolicy
  */
-class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
+class FlashPolicyTest extends TestCase {
 
     protected $_policy;
 
@@ -22,12 +23,20 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testInvalidPolicyReader() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
         $this->_policy->renderPolicy();
     }
 
     public function testInvalidDomainPolicyReader() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('dev.example.*', '*');
         $this->_policy->renderPolicy();
@@ -111,13 +120,21 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testAddAllowedAccessOnlyAcceptsValidPorts() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
 
         $this->_policy->addAllowedAccess('*', 'nope');
     }
 
     public function testSetSiteControlThrowsException() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
 
         $this->_policy->setSiteControl('nope');
     }

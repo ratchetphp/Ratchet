@@ -1,7 +1,9 @@
 <?php
 namespace Ratchet;
 
-abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+abstract class AbstractMessageComponentTestCase extends TestCase {
     protected $_app;
     protected $_serv;
     protected $_conn;
@@ -24,7 +26,7 @@ abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestC
     }
 
     public function isExpectedConnection() {
-        return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+        return $this->isInstanceOf($this->getConnectionClassString());
     }
 
     public function testOpen() {

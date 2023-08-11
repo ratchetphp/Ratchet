@@ -1,6 +1,6 @@
 <?php
 namespace Ratchet\Server;
-use Ratchet\Server\IoServer;
+use PHPUnit\Framework\TestCase;
 use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\LoopInterface;
 use React\Socket\Server;
@@ -8,7 +8,7 @@ use React\Socket\Server;
 /**
  * @covers Ratchet\Server\IoServer
  */
-class IoServerTest extends \PHPUnit_Framework_TestCase {
+class IoServerTest extends TestCase {
     protected $server;
 
     protected $app;
@@ -102,7 +102,11 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testNoLoopProvidedError() {
-        $this->setExpectedException('RuntimeException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('RuntimeException');
+        } else {
+            $this->setExpectedException('RuntimeException');
+        }
 
         $io   = new IoServer($this->app, $this->reactor);
         $io->run();

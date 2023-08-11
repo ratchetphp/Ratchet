@@ -1,12 +1,13 @@
 <?php
 namespace Ratchet;
+use PHPUnit\Framework\TestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
  * @covers Ratchet\AbstractConnectionDecorator
  * @covers Ratchet\ConnectionInterface
  */
-class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
+class AbstractConnectionDecoratorTest extends TestCase {
     protected $mock;
     protected $l1;
     protected $l2;
@@ -135,7 +136,11 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
             $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
         }
 
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
+        } else {
+            $this->setExpectedException('PHPUnit_Framework_Error');
+        }
         $var = $this->mock->nonExistant;
     }
 
@@ -144,7 +149,11 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
             $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
         }
 
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
+        } else {
+            $this->setExpectedException('PHPUnit_Framework_Error');
+        }
         $var = $this->l1->nonExistant;
     }
 
@@ -153,7 +162,11 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
             $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
         }
 
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
+        } else {
+            $this->setExpectedException('PHPUnit_Framework_Error');
+        }
         $var = $this->l2->nonExistant;
     }
 }

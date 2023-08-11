@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Http;
+use PHPUnit\Framework\TestCase;
 use Ratchet\WebSocket\WsServerInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
@@ -7,11 +8,10 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 
-
 /**
  * @covers Ratchet\Http\Router
  */
-class RouterTest extends \PHPUnit_Framework_TestCase {
+class RouterTest extends TestCase {
     protected $_router;
     protected $_matcher;
     protected $_conn;
@@ -55,12 +55,20 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testNullRequest() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
         $this->_router->onOpen($this->_conn);
     }
 
     public function testControllerIsMessageComponentInterface() {
-        $this->setExpectedException('UnexpectedValueException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('UnexpectedValueException');
+        } else {
+            $this->setExpectedException('UnexpectedValueException');
+        }
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => new \StdClass)));
         $this->_router->onOpen($this->_conn, $this->_req);
     }
@@ -70,7 +78,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));
         $this->_router->onOpen($this->_conn, $this->_req);
 
-        $expectedConn = new \PHPUnit_Framework_Constraint_IsInstanceOf('Ratchet\ConnectionInterface');
+        $expectedConn = $this->isInstanceOf('Ratchet\ConnectionInterface');
         $controller->expects($this->once())->method('onOpen')->with($expectedConn, $this->_req);
 
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));
