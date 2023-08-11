@@ -12,15 +12,15 @@ class HttpServerTest extends AbstractMessageComponentTestCase {
     }
 
     public function getConnectionClassString() {
-        return '\Ratchet\ConnectionInterface';
+        return 'Ratchet\ConnectionInterface';
     }
 
     public function getDecoratorClassString() {
-        return '\Ratchet\Http\HttpServer';
+        return 'Ratchet\Http\HttpServer';
     }
 
     public function getComponentClassString() {
-        return '\Ratchet\Http\HttpServerInterface';
+        return 'Ratchet\Http\HttpServerInterface';
     }
 
     public function testOpen() {

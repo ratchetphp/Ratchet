@@ -7,7 +7,7 @@ use Ratchet\AbstractMessageComponentTestCase;
  */
 class WampServerTest extends AbstractMessageComponentTestCase {
     public function getConnectionClassString() {
-        return '\Ratchet\Wamp\WampConnection';
+        return 'Ratchet\Wamp\WampConnection';
     }
 
     public function getDecoratorClassString() {
@@ -15,7 +15,7 @@ class WampServerTest extends AbstractMessageComponentTestCase {
     }
 
     public function getComponentClassString() {
-        return '\Ratchet\Wamp\WampServerInterface';
+        return 'Ratchet\Wamp\WampServerInterface';
     }
 
     public function testOnMessageToEvent() {
@@ -23,7 +23,7 @@ class WampServerTest extends AbstractMessageComponentTestCase {
 
         $this->_app->expects($this->once())->method('onPublish')->with(
             $this->isExpectedConnection()
-          , new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\Wamp\Topic')
+          , new \PHPUnit_Framework_Constraint_IsInstanceOf('Ratchet\Wamp\Topic')
           , $published
           , array()
           , array()
