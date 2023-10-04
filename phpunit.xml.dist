@@ -5,7 +5,8 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          cacheResult="false"
-         colors="true">
+         colors="true"
+         convertDeprecationsToExceptions="true">
     <testsuites>
         <testsuite name="Ratchet test suite">
             <directory>./tests/unit/</directory>
@@ -16,4 +17,8 @@
             <directory>./src/</directory>
         </include>
     </coverage>
+    <php>
+        <!-- Report all errors except E_DEPRECATED -->
+        <ini name="error_reporting" value="24575" />
+    </php>
 </phpunit>
