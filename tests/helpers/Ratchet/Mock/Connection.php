@@ -2,6 +2,7 @@
 namespace Ratchet\Mock;
 use Ratchet\ConnectionInterface;
 
+#[\AllowDynamicProperties]
 class Connection implements ConnectionInterface {
     public $last = array(
         'send'  => ''

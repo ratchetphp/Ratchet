@@ -117,7 +117,12 @@ class IoServerTest extends TestCase {
 
     public function testOnErrorPassesException() {
         $conn = $this->getMockBuilder('React\\Socket\\ConnectionInterface')->getMock();
+
+        // assign dynamic property without raising notice on PHP 8.2+
+        set_error_handler(function () { }, E_DEPRECATED);
         $conn->decor = $this->getMockBuilder('Ratchet\\ConnectionInterface')->getMock();
+        restore_error_handler();
+
         $err  = new \Exception("Nope");
 
         $this->app->expects($this->once())->method('onError')->with($conn->decor, $err);

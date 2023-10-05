@@ -101,20 +101,9 @@ composer require cboden/ratchet:^0.4.4
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
-extensions and supports running on legacy PHP 5.4 through PHP 8.2+ with limited support for PHP 8.2+.
+extensions and supports running on legacy PHP 5.4 through PHP 8.2+ with limited support for newer PHP.
 It's *highly recommended to use the latest supported PHP version* for this project.
 
-Note that PHP 8.2+ has limited support due to a number of deprecation notices
-caused by dynamic property access. The code works without limitations otherwise,
-so for now, we recommend running without reporting deprecation notices like this:
-
-```php
-// Report all errors except E_DEPRECATED
-error_reporting(E_ALL & ~E_DEPRECATED);
-```
-
-Addressing these deprecation notices is on the roadmap for future releases, but
-requires major effort to refactor the codebase to avoid dynamic property access.
 See above note about [Reviving Ratchet](#reviving-ratchet) for newer PHP support.
 
 ## License
