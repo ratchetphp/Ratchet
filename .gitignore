@@ -5,5 +5,4 @@ composer.lock
 coverage
 docs
 phpunit.xml
-testbench.yaml
 vendor
