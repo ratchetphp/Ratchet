@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
  * @covers Ratchet\Session\Storage\VirtualSessionStorage
  * @covers Ratchet\Session\Storage\Proxy\VirtualProxy
  */
-class SessionProviderTest extends AbstractMessageComponentTestCase
+class SessionComponentTest extends AbstractMessageComponentTestCase
 {
     public function setUp(): void
     {

@@ -88,10 +88,17 @@ class ServerProtocolTest extends TestCase
         $this->assertEquals($uri, $this->app->last['onUnSubscribe'][1]);
     }
 
-    public function callProvider()
+    public static function callProvider(): array
     {
         return [
-            [2, 'a', 'b'], [2, ['a', 'b']], [1, 'one'], [3, 'one', 'two', 'three'], [3, ['un', 'deux', 'trois']], [2, 'hi', ['hello', 'world']], [2, ['hello', 'world'], 'hi'], [2, ['hello' => 'world', 'herp' => 'derp']],
+            [2, 'a', 'b'],
+            [2, ['a', 'b']],
+            [1, 'one'],
+            [3, 'one', 'two', 'three'],
+            [3, ['un', 'deux', 'trois']],
+            [2, 'hi', ['hello', 'world']],
+            [2, ['hello', 'world'], 'hi'],
+            [2, ['hello' => 'world', 'herp' => 'derp']],
         ];
     }
 
@@ -285,6 +292,8 @@ class ServerProtocolTest extends TestCase
      */
     public function testBadClientInputFromNonStringTopic(): void
     {
+        $this->expectException(\Ratchet\Wamp\Exception::class);
+
         $connection = new WampConnection($this->newConnection());
         $this->serverProtocol->onOpen($connection);
 

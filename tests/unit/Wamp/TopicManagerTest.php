@@ -175,7 +175,7 @@ class TopicManagerTest extends TestCase
         $this->manager->onClose($this->connection);
     }
 
-    protected function topicProvider($name): void
+    protected function topicProvider($name): array
     {
         $class = new \ReflectionClass(TopicManager::class);
         $method = $class->getMethod('getTopic');

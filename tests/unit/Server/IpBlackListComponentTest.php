@@ -9,7 +9,7 @@ use Ratchet\MessageComponentInterface;
 /**
  * @covers Ratchet\Server\IpBlackList
  */
-class IpBlackListTest extends TestCase
+class IpBlackListComponentTest extends TestCase
 {
     protected IpBlackList $blocker;
 
@@ -110,7 +110,7 @@ class IpBlackListTest extends TestCase
         $this->blocker->onError($connection, $exception);
     }
 
-    public function addressProvider(): array
+    public static function addressProvider(): array
     {
         return [
             ['127.0.0.1', '127.0.0.1'], ['localhost', 'localhost'], ['fe80::1%lo0', 'fe80::1%lo0'], ['127.0.0.1', '127.0.0.1:6392'],

@@ -10,7 +10,7 @@ use SimpleXMLElement;
 /**
  * @covers Ratchet\Server\FlashPolicy
  */
-class FlashPolicyTest extends TestCase
+class FlashPolicyComponentTest extends TestCase
 {
     protected FlashPolicy $policy;
 
@@ -41,6 +41,7 @@ class FlashPolicyTest extends TestCase
      */
     public function testInvalidDomainPolicyReader()
     {
+        $this->expectException(\UnexpectedValueException::class);
         $this->policy->setSiteControl('all');
         $this->policy->addAllowedAccess('dev.example.*', '*');
         $this->policy->renderPolicy();
