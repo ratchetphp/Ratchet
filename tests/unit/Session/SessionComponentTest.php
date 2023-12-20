@@ -71,10 +71,9 @@ class SessionProviderTest extends AbstractMessageComponentTestCase
         $method = $ref->getMethod('toClassCase');
         $method->setAccessible(true);
 
-        $component = new SessionProvider(
-            $this->createMock(HttpServerInterface::class),
-            $this->createMock(SessionHandlerInterface::class),
-        );
+        $componentMock = $this->getMockBuilder($this->getComponentClassString())->getMock();
+        $sessionHandlerMock = $this->getMockBuilder(SessionHandlerInterface::class)->getMock();
+        $component = new SessionProvider($componentMock, $sessionHandlerMock);
         $this->assertEquals($out, $method->invokeArgs($component, [$in]));
     }
 
@@ -92,7 +91,11 @@ class SessionProviderTest extends AbstractMessageComponentTestCase
         $sessionId = md5('testSession');
 
         $dbOptions = [
-            'db_table' => 'sessions', 'db_id_col' => 'id', 'db_data_col' => 'data', 'db_time_col' => 'time', 'db_lifetime_col' => 'lifetime',
+            'db_table' => 'sessions',
+            'db_id_col' => 'id',
+            'db_data_col' => 'data',
+            'db_time_col' => 'time',
+            'db_lifetime_col' => 'lifetime',
         ];
 
         $pdo = new \PDO('sqlite::memory:');
@@ -102,23 +105,23 @@ class SessionProviderTest extends AbstractMessageComponentTestCase
         $pdoHandler = new PdoSessionHandler($pdo, $dbOptions);
         $pdoHandler->write($sessionId, '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}');
 
-        $component = new SessionProvider($this->createMock(HttpServerInterface::class), $pdoHandler, ['auto_start' => 1]);
+        $component = new SessionProvider($this->createMock($this->getComponentClassString()), $pdoHandler, ['auto_start' => 1]);
         $connection = $this->createMock(ConnectionInterface::class);
 
         $headers = $this->createMock(RequestInterface::class);
-        $headers->expects($this->once())->method('getHeader')->willReturn([ini_get('session.name')."={$sessionId};"]);
+        $headers->expects($this->once())->method('getHeader')->will($this->returnValue([ini_get('session.name')."={$sessionId};"]));
 
         $component->onOpen($connection, $headers);
 
         $this->assertEquals('world', $connection->Session->get('hello'));
     }
 
-    protected function newConn(): ConnectionInterface
+    protected function newConnection(): ConnectionInterface
     {
         $connection = $this->createMock(ConnectionInterface::class);
 
         $headers = $this->createMock(Request::class, ['getCookie'], ['POST', '/', []]);
-        $headers->expects($this->once())->method('getCookie', [ini_get('session.name')])->willReturn(null);
+        $headers->expects($this->once())->method('getCookie', [ini_get('session.name')])->will($this->returnValue(null));
 
         return $connection;
     }
@@ -134,19 +137,17 @@ class SessionProviderTest extends AbstractMessageComponentTestCase
     {
         if (! function_exists('wddx_serialize_value')) {
             $this->markTestSkipped();
-
-            return;
         }
 
         ini_set('session.serialize_handler', 'wddx');
         $this->expectException(RuntimeException::class);
-        new SessionProvider($this->createMock(HttpServerInterface::class), $this->createMock(SessionHandlerInterface::class));
+        new SessionProvider($this->createMock($this->getComponentClassString()), $this->createMock(SessionHandlerInterface::class));
     }
 
-    public function doOpen(ConnectionInterface $connection): void
+    protected function doOpen(ConnectionInterface $connection): void
     {
-        $request = $this->createMock(RequestInterface::class);
-        $request->expects($this->any())->method('getHeader')->willReturn([]);
+        $request = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $request->expects($this->any())->method('getHeader')->will($this->returnValue([]));
 
         $this->server->onOpen($connection, $request);
     }

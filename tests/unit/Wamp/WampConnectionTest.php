@@ -16,11 +16,11 @@ class WampConnectionTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mock = $this->createMock(ConnectionInterface::class);
+        $this->mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->connection = new WampConnection($this->mock);
     }
 
-    public function testCallResult()
+    public function testCallResult(): void
     {
         $callId = uniqid();
         $data = ['hello' => 'world', 'herp' => 'derp'];
@@ -30,7 +30,7 @@ class WampConnectionTest extends TestCase
         $this->connection->callResult($callId, $data);
     }
 
-    public function testCallError()
+    public function testCallError(): void
     {
         $callId = uniqid();
         $uri = 'http://example.com/end/point';
@@ -40,7 +40,7 @@ class WampConnectionTest extends TestCase
         $this->connection->callError($callId, $uri);
     }
 
-    public function testCallErrorWithTopic()
+    public function testCallErrorWithTopic(): void
     {
         $callId = uniqid();
         $uri = 'http://example.com/end/point';
@@ -50,7 +50,7 @@ class WampConnectionTest extends TestCase
         $this->connection->callError($callId, new Topic($uri));
     }
 
-    public function testDetailedCallError()
+    public function testDetailedCallError(): void
     {
         $callId = uniqid();
         $uri = 'http://example.com/end/point';
@@ -62,7 +62,7 @@ class WampConnectionTest extends TestCase
         $this->connection->callError($callId, $uri, $desc, $detail);
     }
 
-    public function testPrefix()
+    public function testPrefix(): void
     {
         $shortOut = 'outgoing';
         $longOut = 'http://example.com/outgoing';
@@ -72,16 +72,16 @@ class WampConnectionTest extends TestCase
         $this->connection->prefix($shortOut, $longOut);
     }
 
-    public function testGetUriWhenNoCurieGiven()
+    public function testGetUriWhenNoCurieGiven(): void
     {
         $uri = 'http://example.com/noshort';
 
         $this->assertEquals($uri, $this->connection->getUri($uri));
     }
 
-    public function testClose()
+    public function testClose(): void
     {
-        $mock = $this->createMock(ConnectionInterface::class);
+        $mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $connection = new WampConnection($mock);
 
         $mock->expects($this->once())->method('close');

@@ -11,7 +11,7 @@ abstract class AbstractMessageComponentTestCase extends TestCase
 
     protected $server;
 
-    protected $connection;
+    protected ConnectionInterface $connection;
 
     abstract public function getConnectionClassString(): string;
 
@@ -21,11 +21,16 @@ abstract class AbstractMessageComponentTestCase extends TestCase
 
     public function setUp(): void
     {
-        $this->app = $this->createMock($this->getComponentClassString());
+        $this->app = $this->getMockBuilder($this->getComponentClassString())->getMock();
         $decorator = $this->getDecoratorClassString();
         $this->server = new $decorator($this->app);
-        $this->connection = $this->createMock(ConnectionInterface::class);
-        $this->server->onOpen($this->connection);
+        $this->connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $this->doOpen($this->connection);
+    }
+
+    protected function doOpen(ConnectionInterface $connection): void
+    {
+        $this->server->onOpen($connection);
     }
 
     public function isExpectedConnection(): IsInstanceOf
@@ -36,7 +41,7 @@ abstract class AbstractMessageComponentTestCase extends TestCase
     public function testOpen()
     {
         $this->app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->server->onOpen($this->createMock(ConnectionInterface::class));
+        $this->doOpen($this->getMockBuilder(ConnectionInterface::class)->getMock());
     }
 
     public function testOnClose()

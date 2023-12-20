@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Ratchet\ConnectionInterface;
 use Ratchet\Server\FlashPolicy;
 use SimpleXMLElement;
-use UnexpectedValueException;
 
 /**
  * @covers Ratchet\Server\FlashPolicy
@@ -29,15 +28,19 @@ class FlashPolicyTest extends TestCase
         $this->assertInstanceOf(SimpleXMLElement::class, $this->policy->renderPolicy());
     }
 
-    public function testInvalidPolicyReader(): void
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testInvalidPolicyReader()
     {
-        $this->expectException(UnexpectedValueException::class);
         $this->policy->renderPolicy();
     }
 
-    public function testInvalidDomainPolicyReader(): void
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testInvalidDomainPolicyReader()
     {
-        $this->expectException(UnexpectedValueException::class);
         $this->policy->setSiteControl('all');
         $this->policy->addAllowedAccess('dev.example.*', '*');
         $this->policy->renderPolicy();
@@ -88,23 +91,25 @@ class FlashPolicyTest extends TestCase
         ];
     }
 
-    public function testAddAllowedAccessOnlyAcceptsValidPorts(): void
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testAddAllowedAccessOnlyAcceptsValidPorts()
     {
-        $this->expectException(UnexpectedValueException::class);
-
         $this->policy->addAllowedAccess('*', 'nope');
     }
 
-    public function testSetSiteControlThrowsException(): void
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testSetSiteControlThrowsException()
     {
-        $this->expectException(UnexpectedValueException::class);
-
         $this->policy->setSiteControl('nope');
     }
 
     public function testErrorClosesConnection(): void
     {
-        $connection = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $connection->expects($this->once())->method('close');
 
         $this->policy->onError($connection, new \Exception);
@@ -114,7 +119,7 @@ class FlashPolicyTest extends TestCase
     {
         $this->policy->addAllowedAccess('*', '*');
 
-        $connection = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $connection->expects($this->once())->method('send')->with($this->isType('string'));
 
         $this->policy->onMessage($connection, ' ');
@@ -123,14 +128,14 @@ class FlashPolicyTest extends TestCase
     public function testOnOpenExists(): void
     {
         $this->assertTrue(method_exists($this->policy, 'onOpen'));
-        $connection = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->policy->onOpen($connection);
     }
 
     public function testOnCloseExists(): void
     {
         $this->assertTrue(method_exists($this->policy, 'onClose'));
-        $connection = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->policy->onClose($connection);
     }
 }

@@ -13,14 +13,14 @@ use Ratchet\Mock\WampComponent as TestComponent;
  */
 class ServerProtocolTest extends TestCase
 {
-    protected $component;
+    protected ServerProtocol $serverProtocol;
 
     protected $app;
 
     public function setUp(): void
     {
         $this->app = new TestComponent;
-        $this->component = new ServerProtocol($this->app);
+        $this->serverProtocol = new ServerProtocol($this->app);
     }
 
     protected function newConnection(): Connection
@@ -37,21 +37,21 @@ class ServerProtocolTest extends TestCase
 
     /**
      * @dataProvider invalidMessageProvider
+     *
+     * @expectedException \Ratchet\Wamp\Exception
      */
     public function testInvalidMessages($type)
     {
-        $this->expectException(\Ratchet\Wamp\Exception::class);
-
         $connection = $this->newConnection();
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode([$type]));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode([$type]));
     }
 
     public function testWelcomeMessage()
     {
         $connection = $this->newConnection();
 
-        $this->component->onOpen($connection);
+        $this->serverProtocol->onOpen($connection);
 
         $message = $connection->last['send'];
         $json = json_decode($message);
@@ -69,8 +69,8 @@ class ServerProtocolTest extends TestCase
 
         $connection = $this->newConnection();
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode($clientMessage));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode($clientMessage));
 
         $this->assertEquals($uri, $this->app->last['onSubscribe'][1]);
     }
@@ -82,13 +82,13 @@ class ServerProtocolTest extends TestCase
 
         $connection = $this->newConnection();
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode($clientMessage));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode($clientMessage));
 
         $this->assertEquals($uri, $this->app->last['onUnSubscribe'][1]);
     }
 
-    public static function callProvider(): array
+    public function callProvider()
     {
         return [
             [2, 'a', 'b'], [2, ['a', 'b']], [1, 'one'], [3, 'one', 'two', 'three'], [3, ['un', 'deux', 'trois']], [2, 'hi', ['hello', 'world']], [2, ['hello', 'world'], 'hi'], [2, ['hello' => 'world', 'herp' => 'derp']],
@@ -109,8 +109,8 @@ class ServerProtocolTest extends TestCase
 
         $connection = $this->newConnection();
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode($clientMessage));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode($clientMessage));
 
         $this->assertEquals($id, $this->app->last['onCall'][1]);
         $this->assertEquals($uri, $this->app->last['onCall'][2]);
@@ -127,8 +127,8 @@ class ServerProtocolTest extends TestCase
 
         $clientMessage = [7, $topic, $event];
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode($clientMessage));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode($clientMessage));
 
         $this->assertEquals($topic, $this->app->last['onPublish'][1]);
         $this->assertEquals($event, $this->app->last['onPublish'][2]);
@@ -140,8 +140,8 @@ class ServerProtocolTest extends TestCase
     {
         $connection = $this->newConnection();
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode([7, 'topic', 'event', true]));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode([7, 'topic', 'event', true]));
 
         $this->assertEquals($connection->WAMP->sessionId, $this->app->last['onPublish'][3][0]);
     }
@@ -153,8 +153,8 @@ class ServerProtocolTest extends TestCase
         $buddy = uniqid('', false);
         $friend = uniqid('', false);
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, json_encode([7, 'topic', 'event', false, [$buddy, $friend]]));
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, json_encode([7, 'topic', 'event', false, [$buddy, $friend]]));
 
         $this->assertEquals([], $this->app->last['onPublish'][3]);
         $this->assertEquals(2, count($this->app->last['onPublish'][4]));
@@ -184,10 +184,10 @@ class ServerProtocolTest extends TestCase
     {
         $connection = new Connection;
 
-        $this->component->onOpen($connection);
-        $this->component->onClose($connection);
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onClose($connection);
 
-        $class = new \ReflectionClass(WampConnection::class);
+        $class = new \ReflectionClass('\\Ratchet\\Wamp\\WampConnection');
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
@@ -202,8 +202,8 @@ class ServerProtocolTest extends TestCase
 
         $exception = new \Exception('Nope');
 
-        $this->component->onOpen($connection);
-        $this->component->onError($connection, $exception);
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onError($connection, $exception);
 
         $class = new \ReflectionClass(WampConnection::class);
         $method = $class->getMethod('getConnection');
@@ -218,43 +218,44 @@ class ServerProtocolTest extends TestCase
     public function testPrefix(): void
     {
         $connection = new WampConnection($this->newConnection());
-        $this->component->onOpen($connection);
+        $this->serverProtocol->onOpen($connection);
 
         $prefix = 'incoming';
         $fullURI = "http://example.com/$prefix";
         $method = 'call';
 
-        $this->component->onMessage($connection, json_encode([1, $prefix, $fullURI]));
+        $this->serverProtocol->onMessage($connection, json_encode([1, $prefix, $fullURI]));
 
         $this->assertEquals($fullURI, $connection->WAMP->prefixes[$prefix]);
         $this->assertEquals("$fullURI#$method", $connection->getUri("$prefix:$method"));
     }
 
+    /**
+     * @expectedException \Ratchet\Wamp\JsonException
+     */
     public function testMessageMustBeJson(): void
     {
-        $this->expectException(JsonException::class);
-
         $connection = new Connection;
 
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, 'Hello World!');
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, 'Hello World!');
     }
 
     public function testGetSubProtocolsReturnsArray(): void
     {
-        $this->assertTrue(is_array($this->component->getSubProtocols()));
+        $this->assertTrue(is_array($this->serverProtocol->getSubProtocols()));
     }
 
     public function testGetSubProtocolsGetFromApp(): void
     {
         $this->app->protocols = ['hello', 'world'];
 
-        $this->assertGreaterThanOrEqual(3, count($this->component->getSubProtocols()));
+        $this->assertGreaterThanOrEqual(3, count($this->serverProtocol->getSubProtocols()));
     }
 
     public function testWampOnMessageApp(): void
     {
-        $app = $this->createMock(WampServerInterface::class);
+        $app = $this->getMockBuilder(WampServerInterface::class)->getMock();
         $wamp = new ServerProtocol($app);
 
         $this->assertContains('wamp', $wamp->getSubProtocols());
@@ -269,43 +270,46 @@ class ServerProtocolTest extends TestCase
 
     /**
      * @dataProvider badFormatProvider
+     *
+     * @expectedException \Ratchet\Wamp\Exception
      */
     public function testValidJsonButInvalidProtocol($message)
     {
-        $this->expectException(\Ratchet\Wamp\Exception::class);
-
         $connection = $this->newConnection();
-        $this->component->onOpen($connection);
-        $this->component->onMessage($connection, $message);
+        $this->serverProtocol->onOpen($connection);
+        $this->serverProtocol->onMessage($connection, $message);
     }
 
-    public function testBadClientInputFromNonStringTopic()
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
+    public function testBadClientInputFromNonStringTopic(): void
     {
-        $this->expectException(\Ratchet\Wamp\Exception::class);
-
         $connection = new WampConnection($this->newConnection());
-        $this->component->onOpen($connection);
+        $this->serverProtocol->onOpen($connection);
 
-        $this->component->onMessage($connection, json_encode([5, ['hells', 'nope']]));
+        $this->serverProtocol->onMessage($connection, json_encode([5, ['hells', 'nope']]));
     }
 
-    public function testBadPrefixWithNonStringTopic()
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
+    public function testBadPrefixWithNonStringTopic(): void
     {
-        $this->expectException(\Ratchet\Wamp\Exception::class);
-
         $connection = new WampConnection($this->newConnection());
-        $this->component->onOpen($connection);
+        $this->serverProtocol->onOpen($connection);
 
-        $this->component->onMessage($connection, json_encode([1, ['hells', 'nope'], ['bad', 'input']]));
+        $this->serverProtocol->onMessage($connection, json_encode([1, ['hells', 'nope'], ['bad', 'input']]));
     }
 
-    public function testBadPublishWithNonStringTopic()
+    /**
+     * @expectedException \Ratchet\Wamp\Exception
+     */
+    public function testBadPublishWithNonStringTopic(): void
     {
-        $this->expectException(\Ratchet\Wamp\Exception::class);
-
         $connection = new WampConnection($this->newConnection());
-        $this->component->onOpen($connection);
+        $this->serverProtocol->onOpen($connection);
 
-        $this->component->onMessage($connection, json_encode([7, ['bad', 'input'], 'Hider']));
+        $this->serverProtocol->onMessage($connection, json_encode([7, ['bad', 'input'], 'Hider']));
     }
 }

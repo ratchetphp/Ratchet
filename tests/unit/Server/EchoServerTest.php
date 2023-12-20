@@ -13,7 +13,7 @@ class EchoServerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->connection = $this->createMock(ConnectionInterface::class);
+        $this->connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->component = new EchoServer;
     }
 

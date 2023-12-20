@@ -9,7 +9,6 @@ use React\EventLoop\LoopInterface;
 use React\EventLoop\StreamSelectLoop;
 use React\Socket\ConnectionInterface as SocketConnectionInterface;
 use React\Socket\SocketServer;
-use RuntimeException;
 
 /**
  * @covers Ratchet\Server\IoServer
@@ -35,7 +34,7 @@ class IoServerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->app = $this->createMock(MessageComponentInterface::class);
+        $this->app = $this->getMockBuilder(MessageComponentInterface::class)->getMock();
 
         $loop = new StreamSelectLoop;
         $this->reactor = new SocketServer(0, [], $loop);
@@ -80,7 +79,10 @@ class IoServerTest extends TestCase
 
     public function testOnClose(): void
     {
-        $this->app->expects($this->once())->method('onClose')->with($this->isInstanceOf(ConnectionInterface::class));
+        $this->app
+            ->expects($this->once())
+            ->method('onClose')
+            ->with($this->isInstanceOf(ConnectionInterface::class));
 
         $client = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         socket_set_option($client, SOL_SOCKET, SO_REUSEADDR, 1);
@@ -102,18 +104,19 @@ class IoServerTest extends TestCase
         $this->assertInstanceOf(IoServer::class, IoServer::factory($this->app, 0));
     }
 
-    public function testNoLoopProvidedError(): void
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testNoLoopProvidedError()
     {
-        $this->expectException(RuntimeException::class);
-
         $io = new IoServer($this->app, $this->reactor);
         $io->run();
     }
 
     public function testOnErrorPassesException()
     {
-        $connection = $this->createMock(SocketConnectionInterface::class);
-        $connection->decor = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $connection->decor = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $err = new \Exception('Nope');
 
         $this->app->expects($this->once())->method('onError')->with($connection->decor, $err);

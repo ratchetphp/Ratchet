@@ -19,7 +19,7 @@ class AbstractConnectionDecoratorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mock = $this->createMock(ConnectionInterface::class);
+        $this->mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->l1 = new ConnectionDecorator($this->mock);
         $this->l2 = new ConnectionDecorator($this->l1);
     }
@@ -98,7 +98,7 @@ class AbstractConnectionDecoratorTest extends TestCase
 
     public function testGetConnection(): void
     {
-        $class = new \ReflectionClass('\\Ratchet\\AbstractConnectionDecorator');
+        $class = new \ReflectionClass(AbstractConnectionDecorator::class);
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
@@ -109,7 +109,7 @@ class AbstractConnectionDecoratorTest extends TestCase
 
     public function testGetConnectionLevel2(): void
     {
-        $class = new \ReflectionClass('\\Ratchet\\AbstractConnectionDecorator');
+        $class = new \ReflectionClass(AbstractConnectionDecorator::class);
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 

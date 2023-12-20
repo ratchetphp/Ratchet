@@ -2,7 +2,6 @@
 
 namespace Ratchet\Http;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\RequestInterface;
 use Ratchet\AbstractMessageComponentTestCase;
 use Ratchet\ConnectionInterface;
@@ -12,15 +11,20 @@ use Ratchet\ConnectionInterface;
  */
 class OriginCheckTest extends AbstractMessageComponentTestCase
 {
-    protected MockObject $requestStub;
+    protected $requestStub;
 
     public function setUp(): void
     {
-        $this->requestStub = $this->createMock(RequestInterface::class);
-        $this->requestStub->expects($this->any())->method('getHeader')->willReturn(['localhost']);
+        $this->requestStub = $this->getMockBuilder(RequestInterface::class)->getMock();
+        $this->requestStub->expects($this->any())->method('getHeader')->will($this->returnValue(['localhost']));
 
         parent::setUp();
         $this->server->allowedOrigins[] = 'localhost';
+    }
+
+    protected function doOpen(ConnectionInterface $connection): void
+    {
+        $this->server->onOpen($connection, $this->requestStub);
     }
 
     public function getConnectionClassString(): string
@@ -42,6 +46,7 @@ class OriginCheckTest extends AbstractMessageComponentTestCase
     {
         $this->server->allowedOrigins = ['socketo.me'];
         $this->connection->expects($this->once())->method('close');
+        $this->server->onOpen($this->connection, $this->requestStub);
     }
 
     public function testOnMessage(): void

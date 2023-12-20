@@ -17,7 +17,7 @@ class IpBlackListTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mock = $this->createMock(MessageComponentInterface::class);
+        $this->mock = $this->getMockBuilder(MessageComponentInterface::class)->getMock();
         $this->blocker = new IpBlackList($this->mock);
     }
 
@@ -25,18 +25,18 @@ class IpBlackListTest extends TestCase
     {
         $this->mock->expects($this->exactly(3))->method('onOpen');
 
-        $conn1 = $this->newConn();
-        $conn2 = $this->newConn();
-        $conn3 = $this->newConn();
+        $connection1 = $this->newConnection();
+        $connection2 = $this->newConnection();
+        $connection3 = $this->newConnection();
 
-        $this->blocker->onOpen($conn1);
-        $this->blocker->onOpen($conn3);
-        $this->blocker->onOpen($conn2);
+        $this->blocker->onOpen($connection1);
+        $this->blocker->onOpen($connection3);
+        $this->blocker->onOpen($connection2);
     }
 
     public function testBlockDoesNotTriggerOnOpen()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
 
         $this->blocker->blockAddress($connection->remoteAddress);
 
@@ -47,7 +47,7 @@ class IpBlackListTest extends TestCase
 
     public function testBlockDoesNotTriggerOnClose()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
 
         $this->blocker->blockAddress($connection->remoteAddress);
 
@@ -58,7 +58,7 @@ class IpBlackListTest extends TestCase
 
     public function testOnMessageDecoration()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
         $message = 'Hello not being blocked';
 
         $this->mock->expects($this->once())->method('onMessage')->with($connection, $message);
@@ -68,7 +68,7 @@ class IpBlackListTest extends TestCase
 
     public function testOnCloseDecoration()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
 
         $this->mock->expects($this->once())->method('onClose')->with($connection);
 
@@ -77,7 +77,7 @@ class IpBlackListTest extends TestCase
 
     public function testBlockClosesConnection()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
         $this->blocker->blockAddress($connection->remoteAddress);
 
         $connection->expects($this->once())->method('close');
@@ -102,7 +102,7 @@ class IpBlackListTest extends TestCase
 
     public function testDecoratorPassesErrors()
     {
-        $connection = $this->newConn();
+        $connection = $this->newConnection();
         $exception = new \Exception('I threw an error');
 
         $this->mock->expects($this->once())->method('onError')->with($connection, $exception);
@@ -127,12 +127,12 @@ class IpBlackListTest extends TestCase
 
     public function testUnblockingSilentlyFails()
     {
-        $this->assertInstanceOf('\\Ratchet\\Server\\IpBlackList', $this->blocker->unblockAddress('localhost'));
+        $this->assertInstanceOf(IpBlackList::class, $this->blocker->unblockAddress('localhost'));
     }
 
-    protected function newConn(): ConnectionInterface
+    protected function newConnection(): ConnectionInterface
     {
-        $connection = $this->createMock(ConnectionInterface::class);
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $connection->remoteAddress = '127.0.0.1';
 
         return $connection;

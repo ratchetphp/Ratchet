@@ -17,7 +17,7 @@ class IoConnectionTest extends TestCase
 
     public function setUp(): void
     {
-        $this->socket = $this->createMock(ConnectionInterface::class);
+        $this->socket = $this->getMockBuilder(ConnectionInterface::class)->getMock();
         $this->connection = new IoConnection($this->socket);
     }
 

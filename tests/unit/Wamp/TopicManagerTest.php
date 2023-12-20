@@ -19,8 +19,8 @@ class TopicManagerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->connection = $this->createMock(ConnectionInterface::class);
-        $this->mock = $this->createMock(WampServerInterface::class);
+        $this->connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $this->mock = $this->getMockBuilder(WampServerInterface::class)->getMock();
         $this->manager = new TopicManager($this->mock);
 
         $this->connection->WAMP = new \StdClass;
@@ -154,7 +154,7 @@ class TopicManagerTest extends TestCase
         $this->assertFalse($this->connection->WAMP->subscriptions->contains($topic));
     }
 
-    public function testOnPublishBubbles()
+    public function testOnPublishBubbles(): void
     {
         $message = 'Cover all the code!';
 
@@ -169,13 +169,13 @@ class TopicManagerTest extends TestCase
         $this->manager->onPublish($this->connection, 'topic coverage', $message, [], []);
     }
 
-    public function testOnCloseBubbles()
+    public function testOnCloseBubbles(): void
     {
         $this->mock->expects($this->once())->method('onClose')->with($this->connection);
         $this->manager->onClose($this->connection);
     }
 
-    protected function topicProvider($name)
+    protected function topicProvider($name): void
     {
         $class = new \ReflectionClass(TopicManager::class);
         $method = $class->getMethod('getTopic');
@@ -189,7 +189,7 @@ class TopicManagerTest extends TestCase
         return [$topic, $attribute];
     }
 
-    public function testConnIsRemovedFromTopicOnClose()
+    public function testConnIsRemovedFromTopicOnClose(): void
     {
         $name = 'State Testing';
         [$topic, $attribute] = $this->topicProvider($name);
@@ -213,7 +213,7 @@ class TopicManagerTest extends TestCase
     /**
      * @dataProvider topicConnExpectationProvider
      */
-    public function testTopicRetentionFromLeavingConnections($methodCall, $expectation)
+    public function testTopicRetentionFromLeavingConnections($methodCall, $expectation): void
     {
         $topicName = 'checkTopic';
         [$topic, $attribute] = $this->topicProvider($topicName);
@@ -224,7 +224,7 @@ class TopicManagerTest extends TestCase
         $this->assertCount($expectation, $attribute->getValue($this->manager));
     }
 
-    public function testOnErrorBubbles()
+    public function testOnErrorBubbles(): void
     {
         $exception = new \Exception('All work and no play makes Chris a dull boy');
         $this->mock->expects($this->once())->method('onError')->with($this->connection, $exception);
@@ -232,16 +232,16 @@ class TopicManagerTest extends TestCase
         $this->manager->onError($this->connection, $exception);
     }
 
-    public function testGetSubProtocolsReturnsArray()
+    public function testGetSubProtocolsReturnsArray(): void
     {
         $this->assertIsArray($this->manager->getSubProtocols());
     }
 
-    public function testGetSubProtocolsBubbles()
+    public function testGetSubProtocolsBubbles(): void
     {
         $subs = ['hello', 'world'];
-        $app = $this->createMock(WsWampServerInterface::class);
-        $app->expects($this->once())->method('getSubProtocols')->willReturn($subs);
+        $app = $this->getMockBuilder(WsWampServerInterface::class)->getMock();
+        $app->expects($this->once())->method('getSubProtocols')->will($this->returnValue($subs));
         $manager = new TopicManager($app);
 
         $this->assertEquals($subs, $manager->getSubProtocols());
