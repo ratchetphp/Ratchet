@@ -30,7 +30,7 @@ CHANGELOG
   * BF: Raise error from invalid WAMP payload
 
 * 0.4 (2017-09-14)
-  * BC: $conn->WebSocket->request replaced with $conn->httpRequest which is a PSR-7 object
+  * BC: $connection->WebSocket->request replaced with $connection->httpRequest which is a PSR-7 object
   * Binary messages now supported via Ratchet\WebSocket\MessageComponentInterface
   * Added heartbeat support via ping/pong in WsServer
   * BC: No longer support old (and insecure) Hixie76 and Hybi protocols

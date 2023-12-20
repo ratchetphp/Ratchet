@@ -1,40 +1,52 @@
 {
-    "name": "cboden/ratchet"
-  , "type": "library"
-  , "description": "PHP WebSocket library"
-  , "keywords": ["WebSockets", "Server", "Ratchet", "Sockets", "WebSocket"]
-  , "homepage": "http://socketo.me"
-  , "license": "MIT"
-  , "authors": [
-        {
-            "name": "Chris Boden"
-          , "email": "cboden@gmail.com"
-          , "role": "Developer"
-        }
-      , {
-            "name": "Matt Bonneau"
-          , "role": "Developer"
-        }
-    ]
-  , "support": {
-        "issues": "https://github.com/ratchetphp/Ratchet/issues"
-      , "chat":    "https://gitter.im/reactphp/reactphp"
+  "name": "cboden/ratchet",
+  "type": "library",
+  "description": "PHP WebSocket library",
+  "keywords": [
+    "WebSockets",
+    "Server",
+    "Ratchet",
+    "Sockets",
+    "WebSocket"
+  ],
+  "homepage": "http://socketo.me",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Chris Boden",
+      "email": "cboden@gmail.com",
+      "role": "Developer"
+    },
+    {
+      "name": "Matt Bonneau",
+      "role": "Developer"
+    },
+    {
+      "name": "Michael Nabil",
+      "email": "michaelnabil926@gmail.com",
+      "role": "Developer"
     }
-  , "autoload": {
-        "psr-4": {
-            "Ratchet\\": "src/Ratchet"
-        }
+  ],
+  "support": {
+    "issues": "https://github.com/ratchetphp/Ratchet/issues",
+    "chat": "https://gitter.im/reactphp/reactphp"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ratchet\\": "src"
     }
-  , "require": {
-        "php": ">=5.4.2"
-      , "ratchet/rfc6455": "^0.3.1"
-      , "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5"
-      , "react/event-loop": ">=0.4"
-      , "guzzlehttp/psr7": "^1.7|^2.0"
-      , "symfony/http-foundation": "^2.6|^3.0|^4.0|^5.0|^6.0"
-      , "symfony/routing": "^2.6|^3.0|^4.0|^5.0|^6.0"
-    }
-  , "require-dev": {
-        "phpunit/phpunit": "~4.8"
-    }
+  },
+  "require": {
+    "php": "^8.1",
+    "ratchet/rfc6455": "^0.3.1",
+    "react/socket": "^v1.15.0",
+    "react/event-loop": ">=v1.5.0",
+    "guzzlehttp/psr7": "^2.6.2",
+    "symfony/http-foundation": "^v7.0.0",
+    "symfony/routing": "^v7.0.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~10.5.3",
+    "laravel/pint": "^v1.13.7"
+  }
 }

@@ -1,20 +1,28 @@
 <?php
+
 namespace Ratchet\Server;
-use Ratchet\Server\IpBlackList;
+
+use PHPUnit\Framework\TestCase;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 /**
  * @covers Ratchet\Server\IpBlackList
  */
-class IpBlackListTest extends \PHPUnit_Framework_TestCase {
-    protected $blocker;
-    protected $mock;
+class IpBlackListTest extends TestCase
+{
+    protected IpBlackList $blocker;
 
-    public function setUp() {
-        $this->mock = $this->getMock('\\Ratchet\\MessageComponentInterface');
+    protected MessageComponentInterface $mock;
+
+    public function setUp(): void
+    {
+        $this->mock = $this->createMock(MessageComponentInterface::class);
         $this->blocker = new IpBlackList($this->mock);
     }
 
-    public function testOnOpen() {
+    public function testOnOpen()
+    {
         $this->mock->expects($this->exactly(3))->method('onOpen');
 
         $conn1 = $this->newConn();
@@ -26,100 +34,107 @@ class IpBlackListTest extends \PHPUnit_Framework_TestCase {
         $this->blocker->onOpen($conn2);
     }
 
-    public function testBlockDoesNotTriggerOnOpen() {
-        $conn = $this->newConn();
+    public function testBlockDoesNotTriggerOnOpen()
+    {
+        $connection = $this->newConn();
 
-        $this->blocker->blockAddress($conn->remoteAddress);
+        $this->blocker->blockAddress($connection->remoteAddress);
 
         $this->mock->expects($this->never())->method('onOpen');
 
-        $ret = $this->blocker->onOpen($conn);
+        $this->blocker->onOpen($connection);
     }
 
-    public function testBlockDoesNotTriggerOnClose() {
-        $conn = $this->newConn();
+    public function testBlockDoesNotTriggerOnClose()
+    {
+        $connection = $this->newConn();
 
-        $this->blocker->blockAddress($conn->remoteAddress);
+        $this->blocker->blockAddress($connection->remoteAddress);
 
         $this->mock->expects($this->never())->method('onClose');
 
-        $ret = $this->blocker->onOpen($conn);
+        $this->blocker->onOpen($connection);
     }
 
-    public function testOnMessageDecoration() {
-        $conn = $this->newConn();
-        $msg  = 'Hello not being blocked';
+    public function testOnMessageDecoration()
+    {
+        $connection = $this->newConn();
+        $message = 'Hello not being blocked';
 
-        $this->mock->expects($this->once())->method('onMessage')->with($conn, $msg);
+        $this->mock->expects($this->once())->method('onMessage')->with($connection, $message);
 
-        $this->blocker->onMessage($conn, $msg);
+        $this->blocker->onMessage($connection, $message);
     }
 
-    public function testOnCloseDecoration() {
-        $conn = $this->newConn();
+    public function testOnCloseDecoration()
+    {
+        $connection = $this->newConn();
 
-        $this->mock->expects($this->once())->method('onClose')->with($conn);
+        $this->mock->expects($this->once())->method('onClose')->with($connection);
 
-        $this->blocker->onClose($conn);
+        $this->blocker->onClose($connection);
     }
 
-    public function testBlockClosesConnection() {
-        $conn = $this->newConn();
-        $this->blocker->blockAddress($conn->remoteAddress);
+    public function testBlockClosesConnection()
+    {
+        $connection = $this->newConn();
+        $this->blocker->blockAddress($connection->remoteAddress);
 
-        $conn->expects($this->once())->method('close');
+        $connection->expects($this->once())->method('close');
 
-        $this->blocker->onOpen($conn);
+        $this->blocker->onOpen($connection);
     }
 
-    public function testAddAndRemoveWithFluentInterfaces() {
+    public function testAddAndRemoveWithFluentInterfaces()
+    {
         $blockOne = '127.0.0.1';
         $blockTwo = '192.168.1.1';
-        $unblock  = '75.119.207.140';
+        $unblock = '75.119.207.140';
 
         $this->blocker
             ->blockAddress($unblock)
             ->blockAddress($blockOne)
             ->unblockAddress($unblock)
-            ->blockAddress($blockTwo)
-        ;
+            ->blockAddress($blockTwo);
 
-        $this->assertEquals(array($blockOne, $blockTwo), $this->blocker->getBlockedAddresses());
+        $this->assertEquals([$blockOne, $blockTwo], $this->blocker->getBlockedAddresses());
     }
 
-    public function testDecoratorPassesErrors() {
-        $conn = $this->newConn();
-        $e    = new \Exception('I threw an error');
+    public function testDecoratorPassesErrors()
+    {
+        $connection = $this->newConn();
+        $exception = new \Exception('I threw an error');
 
-        $this->mock->expects($this->once())->method('onError')->with($conn, $e);
+        $this->mock->expects($this->once())->method('onError')->with($connection, $exception);
 
-        $this->blocker->onError($conn, $e);
+        $this->blocker->onError($connection, $exception);
     }
 
-    public function addressProvider() {
-        return array(
-            array('127.0.0.1', '127.0.0.1')
-          , array('localhost', 'localhost')
-          , array('fe80::1%lo0', 'fe80::1%lo0')
-          , array('127.0.0.1', '127.0.0.1:6392')
-        );
+    public function addressProvider(): array
+    {
+        return [
+            ['127.0.0.1', '127.0.0.1'], ['localhost', 'localhost'], ['fe80::1%lo0', 'fe80::1%lo0'], ['127.0.0.1', '127.0.0.1:6392'],
+        ];
     }
 
     /**
      * @dataProvider addressProvider
      */
-    public function testFilterAddress($expected, $input) {
+    public function testFilterAddress($expected, $input)
+    {
         $this->assertEquals($expected, $this->blocker->filterAddress($input));
     }
 
-    public function testUnblockingSilentlyFails() {
+    public function testUnblockingSilentlyFails()
+    {
         $this->assertInstanceOf('\\Ratchet\\Server\\IpBlackList', $this->blocker->unblockAddress('localhost'));
     }
 
-    protected function newConn() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $conn->remoteAddress = '127.0.0.1';
+    protected function newConn(): ConnectionInterface
+    {
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->remoteAddress = '127.0.0.1';
 
-        return $conn;
+        return $connection;
     }
 }

@@ -1,46 +1,51 @@
 <?php
+
 namespace Ratchet\Http;
+
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\RequestInterface;
 use Ratchet\AbstractMessageComponentTestCase;
+use Ratchet\ConnectionInterface;
 
 /**
  * @covers Ratchet\Http\OriginCheck
  */
-class OriginCheckTest extends AbstractMessageComponentTestCase {
-    protected $_reqStub;
+class OriginCheckTest extends AbstractMessageComponentTestCase
+{
+    protected MockObject $requestStub;
 
-    public function setUp() {
-        $this->_reqStub = $this->getMock('Psr\Http\Message\RequestInterface');
-        $this->_reqStub->expects($this->any())->method('getHeader')->will($this->returnValue(['localhost']));
+    public function setUp(): void
+    {
+        $this->requestStub = $this->createMock(RequestInterface::class);
+        $this->requestStub->expects($this->any())->method('getHeader')->willReturn(['localhost']);
 
         parent::setUp();
-
-        $this->_serv->allowedOrigins[] = 'localhost';
+        $this->server->allowedOrigins[] = 'localhost';
     }
 
-    protected function doOpen($conn) {
-        $this->_serv->onOpen($conn, $this->_reqStub);
+    public function getConnectionClassString(): string
+    {
+        return ConnectionInterface::class;
     }
 
-    public function getConnectionClassString() {
-        return '\Ratchet\ConnectionInterface';
+    public function getDecoratorClassString(): string
+    {
+        return OriginCheck::class;
     }
 
-    public function getDecoratorClassString() {
-        return '\Ratchet\Http\OriginCheck';
+    public function getComponentClassString(): string
+    {
+        return HttpServerInterface::class;
     }
 
-    public function getComponentClassString() {
-        return '\Ratchet\Http\HttpServerInterface';
+    public function testCloseOnNonMatchingOrigin(): void
+    {
+        $this->server->allowedOrigins = ['socketo.me'];
+        $this->connection->expects($this->once())->method('close');
     }
 
-    public function testCloseOnNonMatchingOrigin() {
-        $this->_serv->allowedOrigins = ['socketo.me'];
-        $this->_conn->expects($this->once())->method('close');
-
-        $this->_serv->onOpen($this->_conn, $this->_reqStub);
-    }
-
-    public function testOnMessage() {
+    public function testOnMessage(): void
+    {
         $this->passthroughMessageTest('Hello World!');
     }
 }

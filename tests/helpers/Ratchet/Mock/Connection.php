@@ -1,20 +1,27 @@
 <?php
+
 namespace Ratchet\Mock;
+
 use Ratchet\ConnectionInterface;
 
-class Connection implements ConnectionInterface {
-    public $last = array(
-        'send'  => ''
-      , 'close' => false
-    );
+class Connection implements ConnectionInterface
+{
+    public $last = [
+        'send' => '',
+        'close' => false,
+    ];
 
-    public $remoteAddress = '127.0.0.1';
+    public string $remoteAddress = '127.0.0.1';
 
-    public function send($data) {
+    public function send(string $data): ConnectionInterface
+    {
         $this->last[__FUNCTION__] = $data;
+
+        return $this;
     }
 
-    public function close() {
+    public function close(): void
+    {
         $this->last[__FUNCTION__] = true;
     }
 }
