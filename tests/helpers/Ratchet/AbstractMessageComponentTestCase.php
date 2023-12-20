@@ -1,50 +1,65 @@
 <?php
+
 namespace Ratchet;
 
-abstract class AbstractMessageComponentTestCase extends \PHPUnit_Framework_TestCase {
-    protected $_app;
-    protected $_serv;
-    protected $_conn;
+use PHPUnit\Framework\Constraint\IsInstanceOf;
+use PHPUnit\Framework\TestCase;
 
-    abstract public function getConnectionClassString();
-    abstract public function getDecoratorClassString();
-    abstract public function getComponentClassString();
+abstract class AbstractMessageComponentTestCase extends TestCase
+{
+    protected $app;
 
-    public function setUp() {
-        $this->_app  = $this->getMock($this->getComponentClassString());
-        $decorator   = $this->getDecoratorClassString();
-        $this->_serv = new $decorator($this->_app);
-        $this->_conn = $this->getMock('\Ratchet\ConnectionInterface');
+    protected $server;
 
-        $this->doOpen($this->_conn);
+    protected ConnectionInterface $connection;
+
+    abstract public function getConnectionClassString(): string;
+
+    abstract public function getDecoratorClassString(): string;
+
+    abstract public function getComponentClassString(): string;
+
+    public function setUp(): void
+    {
+        $this->app = $this->getMockBuilder($this->getComponentClassString())->getMock();
+        $decorator = $this->getDecoratorClassString();
+        $this->server = new $decorator($this->app);
+        $this->connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $this->doOpen($this->connection);
     }
 
-    protected function doOpen($conn) {
-        $this->_serv->onOpen($conn);
+    protected function doOpen(ConnectionInterface $connection): void
+    {
+        $this->server->onOpen($connection);
     }
 
-    public function isExpectedConnection() {
-        return new \PHPUnit_Framework_Constraint_IsInstanceOf($this->getConnectionClassString());
+    public function isExpectedConnection(): IsInstanceOf
+    {
+        return new IsInstanceOf($this->getConnectionClassString());
     }
 
-    public function testOpen() {
-        $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->doOpen($this->getMock('\Ratchet\ConnectionInterface'));
+    public function testOpen()
+    {
+        $this->app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
+        $this->doOpen($this->getMockBuilder(ConnectionInterface::class)->getMock());
     }
 
-    public function testOnClose() {
-        $this->_app->expects($this->once())->method('onClose')->with($this->isExpectedConnection());
-        $this->_serv->onClose($this->_conn);
+    public function testOnClose()
+    {
+        $this->app->expects($this->once())->method('onClose')->with($this->isExpectedConnection());
+        $this->server->onClose($this->connection);
     }
 
-    public function testOnError() {
-        $e = new \Exception('Whoops!');
-        $this->_app->expects($this->once())->method('onError')->with($this->isExpectedConnection(), $e);
-        $this->_serv->onError($this->_conn, $e);
+    public function testOnError()
+    {
+        $exception = new \Exception('Whoops!');
+        $this->app->expects($this->once())->method('onError')->with($this->isExpectedConnection(), $exception);
+        $this->server->onError($this->connection, $exception);
     }
 
-    public function passthroughMessageTest($value) {
-        $this->_app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $value);
-        $this->_serv->onMessage($this->_conn, $value);
+    public function passthroughMessageTest($value)
+    {
+        $this->app->expects($this->once())->method('onMessage')->with($this->isExpectedConnection(), $value);
+        $this->server->onMessage($this->connection, $value);
     }
 }

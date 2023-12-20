@@ -1,49 +1,60 @@
 <?php
+
 namespace Ratchet\Wamp;
+
+use PHPUnit\Framework\Constraint\IsInstanceOf;
 use Ratchet\AbstractMessageComponentTestCase;
 
 /**
  * @covers Ratchet\Wamp\WampServer
  */
-class WampServerTest extends AbstractMessageComponentTestCase {
-    public function getConnectionClassString() {
-        return '\Ratchet\Wamp\WampConnection';
+class WampServerTest extends AbstractMessageComponentTestCase
+{
+    public function getConnectionClassString(): string
+    {
+        return WampConnection::class;
     }
 
-    public function getDecoratorClassString() {
-        return 'Ratchet\Wamp\WampServer';
+    public function getDecoratorClassString(): string
+    {
+        return WampServer::class;
     }
 
-    public function getComponentClassString() {
-        return '\Ratchet\Wamp\WampServerInterface';
+    public function getComponentClassString(): string
+    {
+        return WampServerInterface::class;
     }
 
-    public function testOnMessageToEvent() {
+    public function testOnMessageToEvent(): void
+    {
         $published = 'Client published this message';
 
-        $this->_app->expects($this->once())->method('onPublish')->with(
-            $this->isExpectedConnection()
-          , new \PHPUnit_Framework_Constraint_IsInstanceOf('\Ratchet\Wamp\Topic')
-          , $published
-          , array()
-          , array()
+        $this->app->expects($this->once())->method('onPublish')->with(
+            $this->isExpectedConnection(),
+            new IsInstanceOf(Topic::class),
+            $published,
+            [],
+            []
         );
 
-        $this->_serv->onMessage($this->_conn, json_encode(array(7, 'topic', $published)));
+        $this->server->onMessage($this->connection, json_encode([7, 'topic', $published]));
     }
 
-    public function testGetSubProtocols() {
+    public function testGetSubProtocols(): void
+    {
         // todo: could expand on this
-        $this->assertInternalType('array', $this->_serv->getSubProtocols());
+        $this->assertIsArray($this->server->getSubProtocols());
     }
 
-    public function testConnectionClosesOnInvalidJson() {
-        $this->_conn->expects($this->once())->method('close');
-        $this->_serv->onMessage($this->_conn, 'invalid json');
+    public function testConnectionClosesOnInvalidJson(): void
+    {
+        $this->connection->expects($this->once())->method('close');
+        $this->server->onMessage($this->connection, 'invalid json');
     }
 
-    public function testConnectionClosesOnProtocolError() {
-        $this->_conn->expects($this->once())->method('close');
-        $this->_serv->onMessage($this->_conn, json_encode(array('valid' => 'json', 'invalid' => 'protocol')));
+    public function testConnectionClosesOnProtocolError(): void
+    {
+        $this->connection->expects($this->once())->method('close');
+        $this->server->onMessage($this->connection, json_encode(['valid' => 'json', 'invalid' => 'protocol']));
     }
 }

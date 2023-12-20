@@ -31,38 +31,44 @@ Need help?  Have a question?  Want to provide feedback?  Write a message on the 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-    // Make sure composer dependencies have been installed
-    require __DIR__ . '/vendor/autoload.php';
+// Make sure composer dependencies have been installed
+require __DIR__ . '/vendor/autoload.php';
 
 /**
  * chat.php
  * Send any incoming messages to all connected clients (except sender)
  */
-class MyChat implements MessageComponentInterface {
-    protected $clients;
+class MyChat implements MessageComponentInterface 
+{
+    protected \SplObjectStorage $clients;
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->clients = new \SplObjectStorage;
     }
 
-    public function onOpen(ConnectionInterface $conn) {
-        $this->clients->attach($conn);
+    public function onOpen(ConnectionInterface $connection) 
+    {
+        $this->clients->attach($connection);
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $connection, string $message)
+    {
         foreach ($this->clients as $client) {
-            if ($from != $client) {
-                $client->send($msg);
+            if ($connection != $client) {
+                $client->send($message);
             }
         }
     }
 
-    public function onClose(ConnectionInterface $conn) {
-        $this->clients->detach($conn);
+    public function onClose(ConnectionInterface $connection) 
+    {
+        $this->clients->detach($connection);
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
-        $conn->close();
+    public function onError(ConnectionInterface $connection, \Exception $exception) 
+    {
+        $connection->close();
     }
 }
 

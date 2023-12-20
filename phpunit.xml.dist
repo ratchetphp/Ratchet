@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    forceCoversAnnotation="true"
-    mapTestClassNameToCoveredClassName="true"
-    bootstrap="tests/bootstrap.php"
-    colors="true"
-    backupGlobals="false"
-    backupStaticAttributes="false"
-    syntaxCheck="false"
-    stopOnError="false"
->
-
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" processIsolation="false" stopOnFailure="false" executionOrder="random" failOnWarning="true" failOnRisky="true" failOnEmptyTestSuite="true" beStrictAboutOutputDuringTests="true" cacheDirectory=".phpunit.cache">
     <testsuites>
-        <testsuite name="unit">
-            <directory>./tests/unit/</directory>
+        <testsuite name="Test Suite">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
-
-    <testsuites>
-        <testsuite name="integration">
-            <directory>./tests/integration/</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>./src/</directory>
-        </whitelist>
-    </filter>
+    <coverage>
+        <report>
+            <html outputDirectory="build/coverage"/>
+            <text outputFile="build/coverage.txt"/>
+            <clover outputFile="build/logs/clover.xml"/>
+        </report>
+    </coverage>
+    <logging>
+        <junit outputFile="build/report.junit.xml"/>
+    </logging>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
 </phpunit>

@@ -1,77 +1,91 @@
 <?php
+
 namespace Ratchet\Wamp;
+
+use PHPUnit\Framework\TestCase;
+use Ratchet\ConnectionInterface;
 
 /**
  * @covers Ratchet\Wamp\WampConnection
  */
-class WampConnectionTest extends \PHPUnit_Framework_TestCase {
-    protected $conn;
+class WampConnectionTest extends TestCase
+{
+    protected $connection;
+
     protected $mock;
 
-    public function setUp() {
-        $this->mock = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $this->conn = new WampConnection($this->mock);
+    public function setUp(): void
+    {
+        $this->mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $this->connection = new WampConnection($this->mock);
     }
 
-    public function testCallResult() {
+    public function testCallResult(): void
+    {
         $callId = uniqid();
-        $data   = array('hello' => 'world', 'herp' => 'derp');
+        $data = ['hello' => 'world', 'herp' => 'derp'];
 
-        $this->mock->expects($this->once())->method('send')->with(json_encode(array(3, $callId, $data)));
+        $this->mock->expects($this->once())->method('send')->with(json_encode([3, $callId, $data]));
 
-        $this->conn->callResult($callId, $data);
+        $this->connection->callResult($callId, $data);
     }
 
-    public function testCallError() {
+    public function testCallError(): void
+    {
         $callId = uniqid();
-        $uri    = 'http://example.com/end/point';
+        $uri = 'http://example.com/end/point';
 
-        $this->mock->expects($this->once())->method('send')->with(json_encode(array(4, $callId, $uri, '')));
+        $this->mock->expects($this->once())->method('send')->with(json_encode([4, $callId, $uri, '']));
 
-        $this->conn->callError($callId, $uri);
+        $this->connection->callError($callId, $uri);
     }
 
-    public function testCallErrorWithTopic() {
+    public function testCallErrorWithTopic(): void
+    {
         $callId = uniqid();
-        $uri    = 'http://example.com/end/point';
+        $uri = 'http://example.com/end/point';
 
-        $this->mock->expects($this->once())->method('send')->with(json_encode(array(4, $callId, $uri, '')));
+        $this->mock->expects($this->once())->method('send')->with(json_encode([4, $callId, $uri, '']));
 
-        $this->conn->callError($callId, new Topic($uri));
+        $this->connection->callError($callId, new Topic($uri));
     }
 
-    public function testDetailedCallError() {
+    public function testDetailedCallError(): void
+    {
         $callId = uniqid();
-        $uri    = 'http://example.com/end/point';
-        $desc   = 'beep boop beep';
+        $uri = 'http://example.com/end/point';
+        $desc = 'beep boop beep';
         $detail = 'Error: Too much awesome';
 
-        $this->mock->expects($this->once())->method('send')->with(json_encode(array(4, $callId, $uri, $desc, $detail)));
+        $this->mock->expects($this->once())->method('send')->with(json_encode([4, $callId, $uri, $desc, $detail]));
 
-        $this->conn->callError($callId, $uri, $desc, $detail);
+        $this->connection->callError($callId, $uri, $desc, $detail);
     }
 
-    public function testPrefix() {
+    public function testPrefix(): void
+    {
         $shortOut = 'outgoing';
-        $longOut  = 'http://example.com/outgoing';
+        $longOut = 'http://example.com/outgoing';
 
-        $this->mock->expects($this->once())->method('send')->with(json_encode(array(1, $shortOut, $longOut)));
+        $this->mock->expects($this->once())->method('send')->with(json_encode([1, $shortOut, $longOut]));
 
-        $this->conn->prefix($shortOut, $longOut);
+        $this->connection->prefix($shortOut, $longOut);
     }
 
-    public function testGetUriWhenNoCurieGiven() {
-        $uri  = 'http://example.com/noshort';
+    public function testGetUriWhenNoCurieGiven(): void
+    {
+        $uri = 'http://example.com/noshort';
 
-        $this->assertEquals($uri, $this->conn->getUri($uri));
+        $this->assertEquals($uri, $this->connection->getUri($uri));
     }
 
-    public function testClose() {
-        $mock = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $conn = new WampConnection($mock);
+    public function testClose(): void
+    {
+        $mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $connection = new WampConnection($mock);
 
         $mock->expects($this->once())->method('close');
 
-        $conn->close();
+        $connection->close();
     }
 }

@@ -1,5 +1,8 @@
-phpunit.xml
-reports
-sandbox
-vendor
+.idea
+.phpunit.result.cache
+build
 composer.lock
+coverage
+docs
+phpunit.xml
+vendor

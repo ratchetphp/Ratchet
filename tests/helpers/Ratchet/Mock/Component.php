@@ -1,35 +1,45 @@
 <?php
+
 namespace Ratchet\Mock;
+
+use Ratchet\ComponentInterface;
+use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
-use Ratchet\ConnectionInterface;
 
-class Component implements MessageComponentInterface, WsServerInterface {
-    public $last = array();
+class Component implements MessageComponentInterface, WsServerInterface
+{
+    public array $last = [];
 
-    public $protocols = array();
+    public array $protocols = [];
 
-    public function __construct(ComponentInterface $app = null) {
+    public function __construct(?ComponentInterface $app = null)
+    {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onOpen(ConnectionInterface $conn) {
+    public function onOpen(ConnectionInterface $connection)
+    {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
+    public function onMessage(ConnectionInterface $connection, string $message)
+    {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $connection)
+    {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $connection, \Exception $exception)
+    {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function getSubProtocols() {
+    public function getSubProtocols(): array
+    {
         return $this->protocols;
     }
 }

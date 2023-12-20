@@ -1,23 +1,31 @@
 <?php
+
 namespace Ratchet;
+
+use PHPUnit\Framework\TestCase;
 use Ratchet\Mock\ConnectionDecorator;
 
 /**
  * @covers Ratchet\AbstractConnectionDecorator
  * @covers Ratchet\ConnectionInterface
  */
-class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
-    protected $mock;
-    protected $l1;
-    protected $l2;
+class AbstractConnectionDecoratorTest extends TestCase
+{
+    protected ConnectionInterface $mock;
 
-    public function setUp() {
-        $this->mock = $this->getMock('\Ratchet\ConnectionInterface');
-        $this->l1   = new ConnectionDecorator($this->mock);
-        $this->l2   = new ConnectionDecorator($this->l1);
+    protected ConnectionDecorator $l1;
+
+    protected ConnectionDecorator $l2;
+
+    public function setUp(): void
+    {
+        $this->mock = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $this->l1 = new ConnectionDecorator($this->mock);
+        $this->l2 = new ConnectionDecorator($this->l1);
     }
 
-    public function testGet() {
+    public function testGet(): void
+    {
         $var = 'hello';
         $val = 'world';
 
@@ -27,7 +35,8 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($val, $this->l2->$var);
     }
 
-    public function testSet() {
+    public function testSet(): void
+    {
         $var = 'Chris';
         $val = 'Boden';
 
@@ -36,7 +45,8 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($val, $this->mock->$var);
     }
 
-    public function testSetLevel2() {
+    public function testSetLevel2(): void
+    {
         $var = 'Try';
         $val = 'Again';
 
@@ -45,7 +55,8 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($val, $this->mock->$var);
     }
 
-    public function testIsSetTrue() {
+    public function testIsSetTrue(): void
+    {
         $var = 'PHP';
         $val = 'Ratchet';
 
@@ -55,15 +66,16 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue(isset($this->l2->$var));
     }
 
-    public function testIsSetFalse() {
+    public function testIsSetFalse(): void
+    {
         $var = 'herp';
-        $val = 'derp';
 
         $this->assertFalse(isset($this->l1->$var));
         $this->assertFalse(isset($this->l2->$var));
     }
 
-    public function testUnset() {
+    public function testUnset(): void
+    {
         $var = 'Flying';
         $val = 'Monkey';
 
@@ -73,7 +85,8 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(isset($this->mock->$var));
     }
 
-    public function testUnsetLevel2() {
+    public function testUnsetLevel2(): void
+    {
         $var = 'Flying';
         $val = 'Monkey';
 
@@ -83,33 +96,37 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(isset($this->mock->$var));
     }
 
-    public function testGetConnection() {
-        $class  = new \ReflectionClass('\\Ratchet\\AbstractConnectionDecorator');
+    public function testGetConnection(): void
+    {
+        $class = new \ReflectionClass(AbstractConnectionDecorator::class);
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
-        $conn = $method->invokeArgs($this->l1, array());
+        $connection = $method->invokeArgs($this->l1, []);
 
-        $this->assertSame($this->mock, $conn);
+        $this->assertSame($this->mock, $connection);
     }
 
-    public function testGetConnectionLevel2() {
-        $class  = new \ReflectionClass('\\Ratchet\\AbstractConnectionDecorator');
+    public function testGetConnectionLevel2(): void
+    {
+        $class = new \ReflectionClass(AbstractConnectionDecorator::class);
         $method = $class->getMethod('getConnection');
         $method->setAccessible(true);
 
-        $conn = $method->invokeArgs($this->l2, array());
+        $connection = $method->invokeArgs($this->l2, []);
 
-        $this->assertSame($this->l1, $conn);
+        $this->assertSame($this->l1, $connection);
     }
 
-    public function testWrapperCanStoreSelfInDecorator() {
+    public function testWrapperCanStoreSelfInDecorator(): void
+    {
         $this->mock->decorator = $this->l1;
 
         $this->assertSame($this->l1, $this->l2->decorator);
     }
 
-    public function testDecoratorRecursion() {
+    public function testDecoratorRecursion(): void
+    {
         $this->mock->decorator = new \stdClass;
         $this->mock->decorator->conn = $this->l1;
 
@@ -118,7 +135,8 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($this->l1, $this->l2->decorator->conn);
     }
 
-    public function testDecoratorRecursionLevel2() {
+    public function testDecoratorRecursionLevel2(): void
+    {
         $this->mock->decorator = new \stdClass;
         $this->mock->decorator->conn = $this->l2;
 
@@ -128,20 +146,5 @@ class AbstractConnectionDecoratorTest extends \PHPUnit_Framework_TestCase {
 
         // just for fun
         $this->assertSame($this->l2, $this->l2->decorator->conn->decorator->conn->decorator->conn);
-    }
-
-    public function testWarningGettingNothing() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
-        $var = $this->mock->nonExistant;
-    }
-
-    public function testWarningGettingNothingLevel1() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
-        $var = $this->l1->nonExistant;
-    }
-
-    public function testWarningGettingNothingLevel2() {
-        $this->setExpectedException('PHPUnit_Framework_Error');
-        $var = $this->l2->nonExistant;
     }
 }

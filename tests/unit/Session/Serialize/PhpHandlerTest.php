@@ -1,43 +1,47 @@
 <?php
+
 namespace Ratchet\Session\Serialize;
-use Ratchet\Session\Serialize\PhpHandler;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers Ratchet\Session\Serialize\PhpHandler
  */
-class PhpHandlerTest extends \PHPUnit_Framework_TestCase {
-    protected $_handler;
+class PhpHandlerTest extends TestCase
+{
+    protected PhpHandler $handler;
 
-    public function setUp() {
-        $this->_handler = new PhpHandler;
+    public function setUp(): void
+    {
+        $this->handler = new PhpHandler;
     }
 
-    public function serializedProvider() {
-        return array(
-            array(
-                '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}'
-              , array(
-                    '_sf2_attributes' => array(
-                        'hello' => 'world'
-                      , 'last'  => 1332872102
-                    )
-                  , '_sf2_flashes' => array()
-                )
-            )
-        );
-    }
-
-    /**
-     * @dataProvider serializedProvider
-     */
-    public function testUnserialize($in, $expected) {
-        $this->assertEquals($expected, $this->_handler->unserialize($in));
+    public static function serializedProvider(): array
+    {
+        return [
+            [
+                '_sf2_attributes|a:2:{s:5:"hello";s:5:"world";s:4:"last";i:1332872102;}_sf2_flashes|a:0:{}', [
+                    '_sf2_attributes' => [
+                        'hello' => 'world', 'last' => 1332872102,
+                    ], '_sf2_flashes' => [],
+                ],
+            ],
+        ];
     }
 
     /**
      * @dataProvider serializedProvider
      */
-    public function testSerialize($serialized, $original) {
-        $this->assertEquals($serialized, $this->_handler->serialize($original));
+    public function testUnserialize($in, $expected)
+    {
+        $this->assertEquals($expected, $this->handler->unserialize($in));
+    }
+
+    /**
+     * @dataProvider serializedProvider
+     */
+    public function testSerialize($serialized, $original)
+    {
+        $this->assertEquals($serialized, $this->handler->serialize($original));
     }
 }
