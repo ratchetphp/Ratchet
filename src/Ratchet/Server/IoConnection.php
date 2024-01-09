@@ -25,7 +25,11 @@ class IoConnection implements ConnectionInterface {
             return $this->properties[$key];
         }
     }
-    
+
+    public function __isset($key) {
+        return isset($this->properties[$key]);
+    }
+
     /**
      * @param \React\Socket\ConnectionInterface $conn
      */
