@@ -3,10 +3,13 @@ namespace Ratchet\Session;
 use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
 use Psr\Http\Message\RequestInterface;
+use Ratchet\Session\OptionsHandlerInterface;
+use Ratchet\Session\IniOptionsHandler;
 use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
+use Throwable;
 
 /**
  * This component will allow access to session data from your website for each user connected
@@ -37,26 +40,31 @@ class SessionProvider implements HttpServerInterface {
      */
     protected $_serializer;
 
+    /** @var OptionsHandlerInterface */
+    private $optionsHandler;
+
     /**
-     * @param \Ratchet\Http\HttpServerInterface           $app
-     * @param \SessionHandlerInterface                    $handler
-     * @param array                                       $options
-     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
+     * @param array<string, mixed> $options
      * @throws \RuntimeException
      */
-    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
-        $this->_app     = $app;
-        $this->_handler = $handler;
-        $this->_null    = new NullSessionHandler;
+    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null, ?OptionsHandlerInterface $optionsHandler = null) {
+        $this->_app           = $app;
+        $this->_handler       = $handler;
+        $this->_null          = new NullSessionHandler;
+        $this->optionsHandler = $optionsHandler;
 
-        ini_set('session.auto_start', 0);
-        ini_set('session.cache_limiter', '');
-        ini_set('session.use_cookies', 0);
+        if($optionsHandler === null){
+            $optionsHandler = new IniOptionsHandler();
+        }
+
+        $optionsHandler->set('session.auto_start', 0);
+        $optionsHandler->set('session.cache_limiter', '');
+        $optionsHandler->set('session.use_cookies', 0);
 
         $this->setOptions($options);
 
         if (null === $serializer) {
-            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
+            $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase($optionsHandler->get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
             if (!class_exists($serialClass)) {
                 throw new \RuntimeException('Unable to parse session serialize handler');
             }
@@ -71,7 +79,7 @@ class SessionProvider implements HttpServerInterface {
      * {@inheritdoc}
      */
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
-        $sessionName = ini_get('session.name');
+        $sessionName = $this->optionsHandler->get('session.name');
 
         $id = array_reduce($request->getHeader('Cookie'), function($accumulator, $cookie) use ($sessionName) {
             if ($accumulator) {
@@ -90,9 +98,9 @@ class SessionProvider implements HttpServerInterface {
             $saveHandler = $this->_handler;
         }
 
-        $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id, $this->_serializer));
+        $conn->Session = new Session(new VirtualSessionStorage($saveHandler, $id, $this->_serializer, $this->optionsHandler));
 
-        if (ini_get('session.auto_start')) {
+        if ($this->optionsHandler->get('session.auto_start')) {
             $conn->Session->start();
         }
 
@@ -118,15 +126,15 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    function onError(ConnectionInterface $conn, \Exception $e) {
+    function onError(ConnectionInterface $conn, Throwable $e) {
         return $this->_app->onError($conn, $e);
     }
 
     /**
      * Set all the php session. ini options
      * © Symfony
-     * @param array $options
-     * @return array
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
     protected function setOptions(array $options) {
         $all = array(
@@ -143,9 +151,9 @@ class SessionProvider implements HttpServerInterface {
 
         foreach ($all as $key) {
             if (!array_key_exists($key, $options)) {
-                $options[$key] = ini_get("session.{$key}");
+                $options[$key] = $this->optionsHandler->get("session.{$key}");
             } else {
-                ini_set("session.{$key}", $options[$key]);
+                $this->optionsHandler->set("session.{$key}", $options[$key]);
             }
         }
 

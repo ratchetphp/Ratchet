@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
     forceCoversAnnotation="true"
-    mapTestClassNameToCoveredClassName="true"
     bootstrap="tests/bootstrap.php"
     colors="true"
-    backupGlobals="false"
-    backupStaticAttributes="false"
-    syntaxCheck="false"
-    stopOnError="false"
 >
 
     <testsuites>
         <testsuite name="unit">
             <directory>./tests/unit/</directory>
         </testsuite>
-    </testsuites>
 
-    <testsuites>
         <testsuite name="integration">
             <directory>./tests/integration/</directory>
         </testsuite>
