@@ -31,7 +31,7 @@ class WsServer implements HttpServerInterface
 
     /**
      * Decorated component
-     * @var \Ratchet\ComponentInterface
+     * @var \Ratchet\MessageComponentInterface
      */
     private $delegate;
 
