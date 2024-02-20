@@ -6,7 +6,7 @@ use Ratchet\RFC6455\Messaging\Frame;
 
 /**
  * {@inheritdoc}
- * @property \StdClass $WebSocket
+ * @property \stdClass $WebSocket
  */
 class WsConnection extends AbstractConnectionDecorator {
     /**

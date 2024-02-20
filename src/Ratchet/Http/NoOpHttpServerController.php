@@ -2,6 +2,7 @@
 namespace Ratchet\Http;
 use Ratchet\ConnectionInterface;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 class NoOpHttpServerController implements HttpServerInterface {
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
@@ -13,6 +14,6 @@ class NoOpHttpServerController implements HttpServerInterface {
     public function onClose(ConnectionInterface $conn) {
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
     }
 }

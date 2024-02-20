@@ -3,6 +3,7 @@ namespace Ratchet\Wamp;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 /**
  * WebSocket Application Messaging Protocol
@@ -155,7 +156,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         return $this->_decorating->onError($this->connections[$conn], $e);
     }
 }
