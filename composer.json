@@ -41,8 +41,6 @@
     }
   , "require-dev": {
         "phpunit/phpunit": "^8.5|^10.5",
-        "react/event-loop": "^1.0|^1.5",
-        "react/socket": "^1.0|1.15",
         "react/stream": "^1.0|^1.3"
     }
 }
