@@ -2,6 +2,7 @@
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 /**
  * An app to go on a server stack to pass a policy file to a Flash socket
@@ -132,7 +133,7 @@ class FlashPolicy implements MessageComponentInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         $conn->close();
     }
 
