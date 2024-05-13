@@ -1,6 +1,8 @@
 <?php
 namespace Ratchet;
 
+use Ratchet\WebSocket\WebSocket;
+
 /**
  * Wraps ConnectionInterface objects via the decorator pattern but allows
  * parameters to bubble through with magic methods
@@ -11,9 +13,11 @@ abstract class AbstractConnectionDecorator implements ConnectionInterface {
      * @var ConnectionInterface
      */
     protected $wrappedConn;
+    public WebSocket $WebSocket;
 
     public function __construct(ConnectionInterface $conn) {
         $this->wrappedConn = $conn;
+        $this->WebSocket = new WebSocket();
     }
 
     /**
