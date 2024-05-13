@@ -5,7 +5,8 @@ use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use GuzzleHttp\Psr7\Query;
+use GuzzleHttp\Psr7 as gPsr;
+use Throwable;
 
 class Router implements HttpServerInterface {
     use CloseResponseTrait;
@@ -88,7 +89,7 @@ class Router implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         if (isset($conn->controller)) {
             $conn->controller->onError($conn, $e);
         }

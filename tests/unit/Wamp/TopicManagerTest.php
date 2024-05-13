@@ -1,10 +1,12 @@
 <?php
 namespace Ratchet\Wamp;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers Ratchet\Wamp\TopicManager
  */
-class TopicManagerTest extends \PHPUnit_Framework_TestCase {
+class TopicManagerTest extends TestCase {
     private $mock;
 
     /**
@@ -17,12 +19,12 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
      */
     private $conn;
 
-    public function setUp() {
-        $this->conn = $this->getMock('\Ratchet\ConnectionInterface');
-        $this->mock = $this->getMock('\Ratchet\Wamp\WampServerInterface');
+    public function setUp() : void {
+        $this->conn = $this->createMock('\Ratchet\ConnectionInterface');
+        $this->mock = $this->createMock('\Ratchet\Wamp\WampServerInterface');
         $this->mngr = new TopicManager($this->mock);
 
-        $this->conn->WAMP = new \StdClass;
+        $this->conn->WAMP = new \stdClass;
         $this->mngr->onOpen($this->conn);
     }
 
@@ -174,7 +176,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
 
     public function testConnIsRemovedFromTopicOnClose() {
         $name = 'State Testing';
-        list($topic, $attribute) = $this->topicProvider($name);
+        [$topic, $attribute] = $this->topicProvider($name);
 
         $this->assertCount(1, $attribute->getValue($this->mngr));
 
@@ -196,7 +198,7 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
      */
     public function testTopicRetentionFromLeavingConnections($methodCall, $expectation) {
         $topicName = 'checkTopic';
-        list($topic, $attribute) = $this->topicProvider($topicName);
+        [$topic, $attribute] = $this->topicProvider($topicName);
 
         $this->mngr->onSubscribe($this->conn, $topicName);
         call_user_func_array(array($this->mngr, $methodCall), array($this->conn, $topicName));
@@ -212,12 +214,12 @@ class TopicManagerTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetSubProtocolsReturnsArray() {
-        $this->assertInternalType('array', $this->mngr->getSubProtocols());
+        $this->assertIsArray($this->mngr->getSubProtocols());
     }
 
     public function testGetSubProtocolsBubbles() {
         $subs = array('hello', 'world');
-        $app  = $this->getMock('Ratchet\Wamp\Stub\WsWampServerInterface');
+        $app  = $this->createMock('Ratchet\Wamp\Stub\WsWampServerInterface');
         $app->expects($this->once())->method('getSubProtocols')->will($this->returnValue($subs));
         $mngr = new TopicManager($app);
 

@@ -3,6 +3,7 @@ namespace Ratchet\Wamp;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 /**
  * Enable support for the official WAMP sub-protocol in your application
@@ -39,7 +40,7 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
     public function onMessage(ConnectionInterface $conn, $msg) {
         try {
             $this->wampProtocol->onMessage($conn, $msg);
-        } catch (Exception $we) {
+        } catch (Throwable $we) {
             $conn->close(1007);
         }
     }
@@ -54,7 +55,7 @@ class WampServer implements MessageComponentInterface, WsServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         $this->wampProtocol->onError($conn, $e);
     }
 

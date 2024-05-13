@@ -7,6 +7,10 @@ CHANGELOG
 * "BF": Bug fix
 
 ---
+* 0.5.0
+  * PHP 7.2 is minimum supported version
+  * BC: `Ratchet\Session\Storage\Proxy\VirtualSessionStorage` requires `Ratchet\Session\OptionsHandler`
+  * `ComponentInterface::onError()` now accepts `Throwable` instead of `Exception`
 
 * 0.4.4 (2021-12-11)
   * Correct and update dependencies for forward compatibility

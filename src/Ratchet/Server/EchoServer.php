@@ -2,6 +2,7 @@
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 /**
  * A simple Ratchet application that will reply to all messages with the message it received
@@ -17,7 +18,7 @@ class EchoServer implements MessageComponentInterface {
     public function onClose(ConnectionInterface $conn) {
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         $conn->close();
     }
 }

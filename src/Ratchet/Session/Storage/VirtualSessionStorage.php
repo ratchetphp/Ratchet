@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\Session\Storage;
+use Ratchet\Session\OptionsHandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
 use Ratchet\Session\Serialize\HandlerInterface;
@@ -10,12 +11,16 @@ class VirtualSessionStorage extends NativeSessionStorage {
      */
     protected $_serializer;
 
+    /** @var OptionsHandlerInterface */
+    private $optionsHandler;
+
     /**
      * @param \SessionHandlerInterface                    $handler
      * @param string                                      $sessionId The ID of the session to retrieve
      * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
+    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer, OptionsHandlerInterface $optionsHandler) {
+        $this->optionsHandler = $optionsHandler;
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);
         $this->_serializer = $serializer;
@@ -25,7 +30,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function start() {
+    public function start(): bool {
         if ($this->started && !$this->closed) {
             return true;
         }
@@ -51,14 +56,14 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false, $lifetime = null) {
+    public function regenerate($destroy = false, $lifetime = null): bool {
         // .. ?
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save() {
+    public function save(): void {
         // get the data from the bags?
         // serialize the data
         // save the data using the saveHandler
@@ -74,13 +79,13 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function setSaveHandler($saveHandler = null) {
+    public function setSaveHandler($saveHandler = null): void {
         if (!($saveHandler instanceof \SessionHandlerInterface)) {
             throw new \InvalidArgumentException('Handler must be instance of SessionHandlerInterface');
         }
 
         if (!($saveHandler instanceof VirtualProxy)) {
-            $saveHandler = new VirtualProxy($saveHandler);
+            $saveHandler = new VirtualProxy($saveHandler, $this->optionsHandler);
         }
 
         $this->saveHandler = $saveHandler;
