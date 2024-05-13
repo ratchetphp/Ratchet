@@ -99,9 +99,10 @@ class App {
      * @param ComponentInterface $controller Your application to server for the route. If not specified, assumed to be for a WebSocket
      * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), ['*'] for any
      * @param string             $httpHost Override the $httpHost variable provided in the __construct
+     * @param array              $defaulValues An array of default parameter values passed to symfony route config
      * @return ComponentInterface|WsServer
      */
-    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null) {
+    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null,$defaulValues=array()) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
@@ -133,7 +134,9 @@ class App {
             }
         }
 
-        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost, array(), array('GET')));
+        $defaulValues['_controller'] = $decorated;
+
+        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, $defaulValues, array('Origin' => $this->httpHost), array(), $httpHost, array(), array('GET')));
 
         return $decorated;
     }
