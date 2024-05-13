@@ -19,11 +19,45 @@ class HttpServer implements MessageComponentInterface {
     protected $_httpServer;
 
     /**
+     * Storage for dynamic properties.
+     *
+     * @var array
+     */
+    protected $_properties = [];
+
+    /**
      * @param HttpServerInterface
      */
     public function __construct(HttpServerInterface $component) {
         $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
+    }
+
+    /**
+     * Allow setting dynamic properties.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function __set($key, $value) {
+        if (property_exists($this, $key)) {
+            $this->_properties[$key] = $value;
+        }
+    }
+
+    /**
+     * Get a property that has been declared dynamically
+     *
+     * @param string $key
+     *
+     * @return mixed|void
+     */
+    public function __get($key) {
+        if (isset($this->_properties[$key])) {
+            return $this->_properties[$key];
+        }
     }
 
     /**
