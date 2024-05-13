@@ -38,7 +38,15 @@ class PhpHandler implements HandlerInterface {
             $num     = $pos - $offset;
             $varname = substr($raw, $offset, $num);
             $offset += $num + 1;
-            $data    = unserialize(substr($raw, $offset));
+             $pos2 = strpos($raw, '_sf2_', $offset);
+            if ($pos2 !== false) {
+                $rawdata = substr($raw, $offset, $pos2 - $offset);
+            } else {
+                $rawdata = substr($raw, $offset);
+            }
+            $data = unserialize($rawdata);
+            
+           // $data    = unserialize(substr($raw, $offset));
 
             $returnData[$varname] = $data;
             $offset += strlen(serialize($data));
