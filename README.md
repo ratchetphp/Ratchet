@@ -7,6 +7,11 @@
 A PHP library for asynchronously serving WebSockets.
 Build up your application through simple interfaces and re-use your application without changing any of its code just by combining different components.
 
+## Reviving Ratchet!
+
+We're currently aiming to revive Ratchet to get it up to date with the latest versions and use this as a starting point for bigger updates to come.
+We need your help to achieve this goal, see [ticket #1054](https://github.com/ratchetphp/Ratchet/issues/1054) for ways to help out. ❤️
+
 ## Requirements
 
 Shell access is required and root access is recommended.
