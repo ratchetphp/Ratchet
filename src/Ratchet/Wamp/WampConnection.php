@@ -3,6 +3,7 @@ namespace Ratchet\Wamp;
 use Ratchet\ConnectionInterface;
 use Ratchet\AbstractConnectionDecorator;
 use Ratchet\Wamp\ServerProtocol as WAMP;
+use stdClass;
 
 /**
  * A ConnectionInterface object wrapper that is passed to your WAMP application
@@ -16,7 +17,7 @@ class WampConnection extends AbstractConnectionDecorator {
     public function __construct(ConnectionInterface $conn) {
         parent::__construct($conn);
 
-        $this->WAMP            = new \StdClass;
+        $this->WAMP            = new stdClass;
         $this->WAMP->sessionId = str_replace('.', '', uniqid(mt_rand(), true));
         $this->WAMP->prefixes  = array();
 
@@ -85,7 +86,7 @@ class WampConnection extends AbstractConnectionDecorator {
 
         if (preg_match('/http(s*)\:\/\//', $uri) == false) {
             if (strpos($uri, $curieSeperator) !== false) {
-                list($prefix, $action) = explode($curieSeperator, $uri);
+                [$prefix, $action] = explode($curieSeperator, $uri);
                 
                 if(isset($this->WAMP->prefixes[$prefix]) === true){
                   return $this->WAMP->prefixes[$prefix] . '#' . $action;

@@ -3,6 +3,7 @@ namespace Ratchet\Mock;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket\WsServerInterface;
 use Ratchet\ConnectionInterface;
+use Throwable;
 
 class Component implements MessageComponentInterface, WsServerInterface {
     public $last = array();
@@ -25,7 +26,7 @@ class Component implements MessageComponentInterface, WsServerInterface {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, Throwable $e) {
         $this->last[__FUNCTION__] = func_get_args();
     }
 
