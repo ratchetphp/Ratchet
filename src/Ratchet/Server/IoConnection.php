@@ -6,6 +6,7 @@ use React\Socket\ConnectionInterface as ReactConn;
 /**
  * {@inheritdoc}
  */
+#[\AllowDynamicProperties]
 class IoConnection implements ConnectionInterface {
     /**
      * @var \React\Socket\ConnectionInterface
