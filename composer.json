@@ -31,7 +31,7 @@
       , "react/socket": "^1.0 || ^0.8 || ^0.7 || ^0.6 || ^0.5"
       , "react/event-loop": ">=0.4"
       , "guzzlehttp/psr7": "^1.7|^2.0"
-      , "symfony/http-foundation": "^2.6|^3.0|^4.0|^5.0|^6.0"
+      , "symfony/http-foundation": "^2.6|^3.0|^4.0|^5.0|^6.0|^7.0"
       , "symfony/routing": "^2.6|^3.0|^4.0|^5.0|^6.0"
     }
   , "require-dev": {
