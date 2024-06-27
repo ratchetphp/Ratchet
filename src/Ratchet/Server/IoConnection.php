@@ -1,7 +1,7 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\ConnectionInterface;
-use Ratchet\WebSocket\Connection as ReactConn;
+use React\Socket\ConnectionInterface as ReactConn;
 
 /**
  * {@inheritdoc}
