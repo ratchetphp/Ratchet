@@ -5,7 +5,7 @@ use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use GuzzleHttp\Psr7 as gPsr;
+use GuzzleHttp\Query;
 use Throwable;
 
 class Router implements HttpServerInterface {
