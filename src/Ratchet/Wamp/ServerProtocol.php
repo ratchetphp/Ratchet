@@ -7,7 +7,6 @@ use Ratchet\ConnectionInterface;
 /**
  * WebSocket Application Messaging Protocol
  *
- * @link http://wamp.ws/spec
  * @link https://github.com/oberstet/autobahn-js
  *
  * +--------------+----+------------------+
