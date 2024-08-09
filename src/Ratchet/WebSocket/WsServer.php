@@ -1,20 +1,21 @@
 <?php
 namespace Ratchet\WebSocket;
+use GuzzleHttp\Psr7\Message;
+use Psr\Http\Message\RequestInterface;
 use Ratchet\ComponentInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface as DataComponentInterface;
-use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\CloseResponseTrait;
-use Psr\Http\Message\RequestInterface;
-use Ratchet\RFC6455\Messaging\MessageInterface;
-use Ratchet\RFC6455\Messaging\FrameInterface;
-use Ratchet\RFC6455\Messaging\Frame;
-use Ratchet\RFC6455\Messaging\MessageBuffer;
-use Ratchet\RFC6455\Messaging\CloseFrameChecker;
-use Ratchet\RFC6455\Handshake\ServerNegotiator;
+use Ratchet\Http\HttpServerInterface;
+use Ratchet\MessageComponentInterface as DataComponentInterface;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
+use Ratchet\RFC6455\Handshake\ServerNegotiator;
+use Ratchet\RFC6455\Messaging\CloseFrameChecker;
+use Ratchet\RFC6455\Messaging\Frame;
+use Ratchet\RFC6455\Messaging\FrameInterface;
+use Ratchet\RFC6455\Messaging\MessageBuffer;
+use Ratchet\RFC6455\Messaging\MessageInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 use React\EventLoop\LoopInterface;
-use GuzzleHttp\Psr7\Message;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -23,7 +24,7 @@ use GuzzleHttp\Psr7\Message;
  * @link http://dev.w3.org/html5/websockets/
  */
 class WsServer implements HttpServerInterface {
-    use CloseResponseTrait;
+    use CloseResponseTrait, DynamicPropertiesTrait;
 
     /**
      * Decorated component
@@ -60,13 +61,6 @@ class WsServer implements HttpServerInterface {
      * @var \Closure
      */
     private $msgCb;
-
-    /**
-     * Storage for dynamic properties.
-     *
-     * @var array
-     */
-    protected $_properties = [];
 
     /**
      * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
@@ -106,34 +100,6 @@ class WsServer implements HttpServerInterface {
         $this->ueFlowFactory = function() use ($reusableUnderflowException) {
             return $reusableUnderflowException;
         };
-    }
-
-
-    /**
-     * Allow setting dynamic properties.
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function __set($key, $value) {
-        if (property_exists($this, $key)) {
-            $this->_properties[$key] = $value;
-        }
-    }
-
-    /**
-     * Get a property that has been declared dynamically
-     *
-     * @param string $key
-     *
-     * @return mixed|void
-     */
-    public function __get($key) {
-        if (isset($this->_properties[$key])) {
-            return $this->_properties[$key];
-        }
     }
 
     /**

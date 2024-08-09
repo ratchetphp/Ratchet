@@ -3,6 +3,7 @@ namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
 use GuzzleHttp\Psr7\Message;
+use Ratchet\Traits\DynamicPropertiesTrait;
 
 /**
  * This class receives streaming data from a client request
@@ -10,6 +11,8 @@ use GuzzleHttp\Psr7\Message;
  * once it's been buffered
  */
 class HttpRequestParser implements MessageInterface {
+    use DynamicPropertiesTrait;
+
     const EOM = "\r\n\r\n";
 
     /**
@@ -18,40 +21,6 @@ class HttpRequestParser implements MessageInterface {
      * @var int
      */
     public $maxSize = 4096;
-
-    /**
-     * Storage for dynamic properties.
-     *
-     * @var array
-     */
-    protected $_properties = [];
-
-    /**
-     * Allow setting dynamic properties.
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function __set($key, $value) {
-        if (property_exists($this, $key)) {
-            $this->_properties[$key] = $value;
-        }
-    }
-
-    /**
-     * Get a property that has been declared dynamically
-     *
-     * @param string $key
-     *
-     * @return mixed|void
-     */
-    public function __get($key) {
-        if (isset($this->_properties[$key])) {
-            return $this->_properties[$key];
-        }
-    }
 
     /**
      * @param \Ratchet\ConnectionInterface $context

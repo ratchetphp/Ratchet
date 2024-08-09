@@ -1,11 +1,11 @@
 <?php
 namespace Ratchet\Http;
-use Ratchet\ConnectionInterface;
+use GuzzleHttp\Psr7\Query;
 use Psr\Http\Message\RequestInterface;
-use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Ratchet\ConnectionInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use GuzzleHttp\Psr7\Query;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 
 class Router implements HttpServerInterface {
     use CloseResponseTrait;

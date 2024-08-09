@@ -25,9 +25,10 @@ class WsConnection extends AbstractConnectionDecorator {
     }
 
     /**
-     * @param int|\Ratchet\RFC6455\Messaging\DataInterface
+     * @param int|\Ratchet\RFC6455\Messaging\DataInterface $code
+     * @param null|string $reason
      */
-    public function close($code = 1000) {
+    public function close($code = 1000, $reason = null) {
         if ($this->WebSocket->closing) {
             return;
         }
@@ -35,7 +36,17 @@ class WsConnection extends AbstractConnectionDecorator {
         if ($code instanceof DataInterface) {
             $this->send($code);
         } else {
-            $this->send(new Frame(pack('n', $code), true, Frame::OP_CLOSE));
+            if (!is_string($reason)) {
+                $frame = new Frame(pack('n', $code), true, Frame::OP_CLOSE);
+            } else {
+                // Limit reason to 123 bytes to fit into the remainder of the 125 byte payload limit
+                while (strlen($reason) > 123) {
+                    $reason = substr($reason, 0, -1);
+                }
+                $frame = new Frame(pack('nA*', $code, $reason), true, Frame::OP_CLOSE);
+            }
+
+            $this->send($frame);
         }
 
         $this->getConnection()->close();
