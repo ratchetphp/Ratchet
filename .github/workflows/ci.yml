@@ -5,9 +5,8 @@ on:
   push:
     branches:
       - "master"
-    schedule:
-     - cron: "42 3 * * *"
-  workflow_dispatch:
+  schedule:
+    - cron: "42 3 * * *"
 
 jobs:
   phpunit:
