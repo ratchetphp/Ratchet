@@ -1,10 +1,11 @@
 <?php
 namespace Ratchet\Http;
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 
 class HttpServer implements MessageComponentInterface {
-    use CloseResponseTrait;
+    use CloseResponseTrait, DynamicPropertiesTrait;
 
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
@@ -19,13 +20,6 @@ class HttpServer implements MessageComponentInterface {
     protected $_httpServer;
 
     /**
-     * Storage for dynamic properties.
-     *
-     * @var array
-     */
-    protected $_properties = [];
-
-    /**
      * @param HttpServerInterface
      */
     public function __construct(HttpServerInterface $component) {
@@ -33,32 +27,6 @@ class HttpServer implements MessageComponentInterface {
         $this->_reqParser  = new HttpRequestParser;
     }
 
-    /**
-     * Allow setting dynamic properties.
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function __set($key, $value) {
-        if (property_exists($this, $key)) {
-            $this->_properties[$key] = $value;
-        }
-    }
-
-    /**
-     * Get a property that has been declared dynamically
-     *
-     * @param string $key
-     *
-     * @return mixed|void
-     */
-    public function __get($key) {
-        if (isset($this->_properties[$key])) {
-            return $this->_properties[$key];
-        }
-    }
 
     /**
      * {@inheritdoc}

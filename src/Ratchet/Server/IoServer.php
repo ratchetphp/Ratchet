@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
@@ -12,6 +13,8 @@ use React\Socket\SecureServer as SecureReactor;
  * Events are delegated through this to attached applications
  */
 class IoServer {
+    use DynamicPropertiesTrait;
+
     /**
      * @var \React\EventLoop\LoopInterface
      */
@@ -27,13 +30,6 @@ class IoServer {
      * @var \React\Socket\ServerInterface
      */
     public $socket;
-
-    /**
-     * Storage for dynamic properties.
-     * 
-     * @var array
-     */
-    protected $_properties = [];
 
     /**
      * @param \Ratchet\MessageComponentInterface  $app      The Ratchet application stack to host
@@ -53,33 +49,6 @@ class IoServer {
         $this->socket = $socket;
 
         $socket->on('connection', array($this, 'handleConnect'));
-    }
-
-    /**
-     * Allow setting dynamic properties.
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function __set($key, $value) {
-        if (property_exists($this, $key)) {
-            $this->_properties[$key] = $value;
-        }
-    }
-
-    /**
-     * Get a property that has been declared dynamically
-     *
-     * @param string $key
-     *
-     * @return mixed|void
-     */
-    public function __get($key) {
-        if (isset($this->_properties[$key])) {
-            return $this->_properties[$key];
-        }
     }
 
     /**
