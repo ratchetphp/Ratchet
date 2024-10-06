@@ -1,5 +1,5 @@
 {
-  "name": "cboden/ratchet",
+  "name": "stryxx/ratchet",
   "type": "library",
   "description": "PHP WebSocket library",
   "keywords": [
@@ -20,12 +20,12 @@
     {
       "name": "Matt Bonneau",
       "role": "Developer"
+    },
+    {
+      "name": "Rafał Wyciślik",
+      "role": "Developer"
     }
   ],
-  "support": {
-    "issues": "https://github.com/ratchetphp/Ratchet/issues",
-    "chat": "https://gitter.im/reactphp/reactphp"
-  },
   "autoload": {
     "psr-4": {
       "Ratchet\\": "src/Ratchet"
