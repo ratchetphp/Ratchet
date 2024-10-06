@@ -1,6 +1,7 @@
 <?php
 
 namespace Ratchet\Wamp;
+use Override;
 use Ratchet\AbstractConnectionDecorator;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\ServerProtocol as WAMP;
@@ -11,7 +12,9 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
  * @property \stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {
-    public function __construct(ConnectionInterface $conn) {
+
+    public function __construct(ConnectionInterface $conn)
+    {
         parent::__construct($conn);
 
         $this->WAMP = new \StdClass;
@@ -26,12 +29,13 @@ class WampConnection extends AbstractConnectionDecorator {
      * @param string $uri
      * @return string
      */
-    public function getUri($uri) {
-        $curieSeperator = ':';
+    public function getUri(string $uri): string
+    {
+        $curieSeparator = ':';
 
-        if (preg_match('/http(s*)\:\/\//', $uri) == false) {
-            if (str_contains($uri, $curieSeperator)) {
-                [$prefix, $action] = explode($curieSeperator, $uri);
+        if (false === preg_match('/http(s*)\:\/\//', $uri)) {
+            if (str_contains($uri, $curieSeparator)) {
+                [$prefix, $action] = explode($curieSeparator, $uri);
 
                 if(isset($this->WAMP->prefixes[$prefix]) === true){
                   return $this->WAMP->prefixes[$prefix] . '#' . $action;
@@ -44,18 +48,18 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * @internal
-     *
-     * @return static
      */
-    #[\Override]
-    public function send(string|false $data) {
+    #[Override]
+    public function send(string $data): ConnectionInterface
+    {
         $this->getConnection()->send($data);
 
         return $this;
     }
 
-    #[\Override]
-    public function close($opt = null) {
+    #[Override]
+    public function close($opt = null): void
+    {
         $this->getConnection()->close($opt);
     }
 }

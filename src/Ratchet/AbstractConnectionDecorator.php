@@ -12,18 +12,18 @@ use Psr\Http\Message\RequestInterface;
 abstract class AbstractConnectionDecorator implements ConnectionInterface {
     public RequestInterface $httpRequest;
 
-    protected $WebSocket;
+    protected \stdClass $WebSocket;
 
     public function __construct(
-        protected \Ratchet\ConnectionInterface $wrappedConn
-    )
-    {
+        protected ConnectionInterface $wrappedConn
+    ) {
     }
 
     /**
      * @return ConnectionInterface
      */
-    protected function getConnection() {
+    protected function getConnection(): ConnectionInterface
+    {
         return $this->wrappedConn;
     }
 

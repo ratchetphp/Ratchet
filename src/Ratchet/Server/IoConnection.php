@@ -1,33 +1,32 @@
 <?php
 
 namespace Ratchet\Server;
+use Override;
 use Psr\Http\Message\RequestInterface;
 use Ratchet\ConnectionInterface;
 use React\Socket\ConnectionInterface as ReactConn;
+use stdClass;
 
 class IoConnection implements ConnectionInterface {
-    protected RequestInterface $httpRequest;
+    public RequestInterface $httpRequest;
 
-    protected $WebSocket;
+    protected stdClass $WebSocket;
 
-    public function __construct(
-        protected ReactConn $conn
-    )
+    public function __construct(protected ReactConn $conn)
     {
     }
 
-    /**
-     * @return static
-     */
-    #[\Override]
-    public function send($data) {
+    #[Override]
+    public function send(string $data): ConnectionInterface
+    {
         $this->conn->write($data);
 
         return $this;
     }
 
-    #[\Override]
-    public function close() {
+    #[Override]
+    public function close(): void
+    {
         $this->conn->end();
     }
 }

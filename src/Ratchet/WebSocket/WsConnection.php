@@ -1,37 +1,39 @@
 <?php
 
 namespace Ratchet\WebSocket;
+use Override;
 use Ratchet\AbstractConnectionDecorator;
+use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\DataInterface;
 use Ratchet\RFC6455\Messaging\Frame;
+use Ratchet\RFC6455\Messaging\FrameInterface;
 
 /**
  * @property \StdClass $WebSocket
  */
-class WsConnection extends AbstractConnectionDecorator {
-    /**
-     * @return static
-     */
-    #[\Override]
-    public function send(\Ratchet\RFC6455\Messaging\FrameInterface $msg) {
+class WsConnection extends AbstractConnectionDecorator
+{
+    #[Override]
+    public function send(string $data): ConnectionInterface
+    {
         if (! $this->WebSocket->closing) {
-            if (! ($msg instanceof DataInterface)) {
-                $msg = new Frame($msg);
+            if (! ($data instanceof DataInterface)) {
+                $data = new Frame($data);
             }
 
-            $this->getConnection()->send($msg->getContents());
+            $this->getConnection()->send($data->getContents());
         }
 
         return $this;
     }
 
     /**
-     * @param int|\Ratchet\RFC6455\Messaging\DataInterface
+     * @param int|FrameInterface $code
      *
-     * @psalm-param 1000|\Ratchet\RFC6455\Messaging\FrameInterface $code
      */
-    #[\Override]
-    public function close(int|\Ratchet\RFC6455\Messaging\FrameInterface $code = 1000) {
+    #[Override]
+    public function close(int|FrameInterface $code = 1000): void
+    {
         if ($this->WebSocket->closing) {
             return;
         }
