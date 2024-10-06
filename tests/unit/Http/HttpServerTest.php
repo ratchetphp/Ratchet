@@ -1,4 +1,5 @@
 <?php
+
 namespace Ratchet\Http;
 use Ratchet\AbstractMessageComponentTestCase;
 
@@ -6,24 +7,29 @@ use Ratchet\AbstractMessageComponentTestCase;
  * @covers Ratchet\Http\HttpServer
  */
 class HttpServerTest extends AbstractMessageComponentTestCase {
+    #[\Override]
     public function setUp() {
         parent::setUp();
         $this->_conn->httpHeadersReceived = true;
     }
 
-    public function getConnectionClassString() {
-        return '\Ratchet\ConnectionInterface';
+    #[\Override]
+    public function getConnectionClassString(): string {
+        return \Ratchet\ConnectionInterface::class;
     }
 
-    public function getDecoratorClassString() {
-        return '\Ratchet\Http\HttpServer';
+    #[\Override]
+    public function getDecoratorClassString(): string {
+        return \Ratchet\Http\HttpServer::class;
     }
 
-    public function getComponentClassString() {
-        return '\Ratchet\Http\HttpServerInterface';
+    #[\Override]
+    public function getComponentClassString(): string {
+        return \Ratchet\Http\HttpServerInterface::class;
     }
 
-    public function testOpen() {
+    #[\Override]
+    public function testOpen(): void {
         $headers = "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n";
 
         $this->_conn->httpHeadersReceived = false;
@@ -31,7 +37,7 @@ class HttpServerTest extends AbstractMessageComponentTestCase {
         $this->_serv->onMessage($this->_conn, $headers);
     }
 
-    public function testOnMessageAfterHeaders() {
+    public function testOnMessageAfterHeaders(): void {
         $headers = "GET / HTTP/1.1\r\nHost: socketo.me\r\n\r\n";
         $this->_conn->httpHeadersReceived = false;
         $this->_serv->onMessage($this->_conn, $headers);
@@ -41,20 +47,20 @@ class HttpServerTest extends AbstractMessageComponentTestCase {
         $this->_serv->onMessage($this->_conn, $message);
     }
 
-    public function testBufferOverflow() {
+    public function testBufferOverflow(): void {
         $this->_conn->expects($this->once())->method('close');
         $this->_conn->httpHeadersReceived = false;
 
         $this->_serv->onMessage($this->_conn, str_repeat('a', 5000));
     }
 
-    public function testCloseIfNotEstablished() {
+    public function testCloseIfNotEstablished(): void {
         $this->_conn->httpHeadersReceived = false;
         $this->_conn->expects($this->once())->method('close');
         $this->_serv->onError($this->_conn, new \Exception('Whoops!'));
     }
 
-    public function testBufferHeaders() {
+    public function testBufferHeaders(): void {
         $this->_conn->httpHeadersReceived = false;
         $this->_app->expects($this->never())->method('onOpen');
         $this->_app->expects($this->never())->method('onMessage');

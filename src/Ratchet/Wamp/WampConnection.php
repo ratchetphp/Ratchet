@@ -1,7 +1,8 @@
 <?php
+
 namespace Ratchet\Wamp;
-use Ratchet\ConnectionInterface;
 use Ratchet\AbstractConnectionDecorator;
+use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\ServerProtocol as WAMP;
 
 /**
@@ -10,69 +11,14 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
  * @property \stdClass $WAMP
  */
 class WampConnection extends AbstractConnectionDecorator {
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(ConnectionInterface $conn) {
         parent::__construct($conn);
 
-        $this->WAMP            = new \StdClass;
+        $this->WAMP = new \StdClass;
         $this->WAMP->sessionId = str_replace('.', '', uniqid(mt_rand(), true));
-        $this->WAMP->prefixes  = array();
+        $this->WAMP->prefixes = [];
 
-        $this->send(json_encode(array(WAMP::MSG_WELCOME, $this->WAMP->sessionId, 1, \Ratchet\VERSION)));
-    }
-
-    /**
-     * Successfully respond to a call made by the client
-     * @param string $id   The unique ID given by the client to respond to
-     * @param array $data an object or array
-     * @return WampConnection
-     */
-    public function callResult($id, $data = array()) {
-        return $this->send(json_encode(array(WAMP::MSG_CALL_RESULT, $id, $data)));
-    }
-
-    /**
-     * Respond with an error to a client call
-     * @param string $id The   unique ID given by the client to respond to
-     * @param string $errorUri The URI given to identify the specific error
-     * @param string $desc     A developer-oriented description of the error
-     * @param string $details An optional human readable detail message to send back
-     * @return WampConnection
-     */
-    public function callError($id, $errorUri, $desc = '', $details = null) {
-        if ($errorUri instanceof Topic) {
-            $errorUri = (string)$errorUri;
-        }
-
-        $data = array(WAMP::MSG_CALL_ERROR, $id, $errorUri, $desc);
-
-        if (null !== $details) {
-            $data[] = $details;
-        }
-
-        return $this->send(json_encode($data));
-    }
-
-    /**
-     * @param string $topic The topic to broadcast to
-     * @param mixed  $msg   Data to send with the event.  Anything that is json'able
-     * @return WampConnection
-     */
-    public function event($topic, $msg) {
-        return $this->send(json_encode(array(WAMP::MSG_EVENT, (string)$topic, $msg)));
-    }
-
-    /**
-     * @param string $curie
-     * @param string $uri
-     * @return WampConnection
-     */
-    public function prefix($curie, $uri) {
-        $this->WAMP->prefixes[$curie] = (string)$uri;
-
-        return $this->send(json_encode(array(WAMP::MSG_PREFIX, $curie, (string)$uri)));
+        $this->send(json_encode([WAMP::MSG_WELCOME, $this->WAMP->sessionId, 1, \Ratchet\VERSION]));
     }
 
     /**
@@ -84,9 +30,9 @@ class WampConnection extends AbstractConnectionDecorator {
         $curieSeperator = ':';
 
         if (preg_match('/http(s*)\:\/\//', $uri) == false) {
-            if (strpos($uri, $curieSeperator) !== false) {
-                list($prefix, $action) = explode($curieSeperator, $uri);
-                
+            if (str_contains($uri, $curieSeperator)) {
+                [$prefix, $action] = explode($curieSeperator, $uri);
+
                 if(isset($this->WAMP->prefixes[$prefix]) === true){
                   return $this->WAMP->prefixes[$prefix] . '#' . $action;
                 }
@@ -98,18 +44,18 @@ class WampConnection extends AbstractConnectionDecorator {
 
     /**
      * @internal
+     *
+     * @return static
      */
-    public function send($data) {
+    #[\Override]
+    public function send(string|false $data) {
         $this->getConnection()->send($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function close($opt = null) {
         $this->getConnection()->close($opt);
     }
-
 }

@@ -1,32 +1,29 @@
 <?php
+
 namespace Ratchet\Session\Storage;
-use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
-use Ratchet\Session\Serialize\HandlerInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class VirtualSessionStorage extends NativeSessionStorage {
     /**
-     * @var \Ratchet\Session\Serialize\HandlerInterface
-     */
-    protected $_serializer;
-
-    /**
-     * @param \SessionHandlerInterface                    $handler
      * @param string                                      $sessionId The ID of the session to retrieve
-     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      */
-    public function __construct(\SessionHandlerInterface $handler, $sessionId, HandlerInterface $serializer) {
+    public function __construct(
+        \SessionHandlerInterface $handler,
+        $sessionId,
+        protected \Ratchet\Session\Serialize\HandlerInterface $_serializer
+    ) {
         $this->setSaveHandler($handler);
         $this->saveHandler->setId($sessionId);
-        $this->_serializer = $serializer;
         $this->setMetadataBag(null);
     }
 
     /**
-     * {@inheritdoc}
+     * @return true
      */
+    #[\Override]
     public function start() {
-        if ($this->started && !$this->closed) {
+        if ($this->started && ! $this->closed) {
             return true;
         }
 
@@ -36,50 +33,44 @@ class VirtualSessionStorage extends NativeSessionStorage {
         // framework in this case. This must not be the best choice, but it works.
         $this->saveHandler->open(session_save_path(), session_name());
 
-        $rawData     = $this->saveHandler->read($this->saveHandler->getId());
+        $rawData = $this->saveHandler->read($this->saveHandler->getId());
         $sessionData = $this->_serializer->unserialize($rawData);
 
         $this->loadSession($sessionData);
 
-        if (!$this->saveHandler->isWrapper() && !$this->saveHandler->isSessionHandlerInterface()) {
+        if (! $this->saveHandler->isWrapper() && ! $this->saveHandler->isSessionHandlerInterface()) {
             $this->saveHandler->setActive(false);
         }
 
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function regenerate($destroy = false, $lifetime = null) {
         // .. ?
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function save() {
         // get the data from the bags?
         // serialize the data
         // save the data using the saveHandler
 //        $this->saveHandler->write($this->saveHandler->getId(),
 
-        if (!$this->saveHandler->isWrapper() && !$this->getSaveHandler()->isSessionHandlerInterface()) {
+        if (! $this->saveHandler->isWrapper() && ! $this->getSaveHandler()->isSessionHandlerInterface()) {
             $this->saveHandler->setActive(false);
         }
 
         $this->closed = true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setSaveHandler($saveHandler = null) {
-        if (!($saveHandler instanceof \SessionHandlerInterface)) {
+    #[\Override]
+    public function setSaveHandler(\SessionHandlerInterface|null $saveHandler = null) {
+        if (! ($saveHandler instanceof \SessionHandlerInterface)) {
             throw new \InvalidArgumentException('Handler must be instance of SessionHandlerInterface');
         }
 
-        if (!($saveHandler instanceof VirtualProxy)) {
+        if (! ($saveHandler instanceof VirtualProxy)) {
             $saveHandler = new VirtualProxy($saveHandler);
         }
 

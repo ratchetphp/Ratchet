@@ -1,10 +1,11 @@
 <?php
+
 namespace Ratchet\Session;
+use Psr\Http\Message\RequestInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Http\HttpServerInterface;
-use Psr\Http\Message\RequestInterface;
-use Ratchet\Session\Storage\VirtualSessionStorage;
 use Ratchet\Session\Serialize\HandlerInterface;
+use Ratchet\Session\Storage\VirtualSessionStorage;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
 
@@ -16,38 +17,24 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  */
 class SessionProvider implements HttpServerInterface {
     /**
-     * @var \Ratchet\MessageComponentInterface
-     */
-    protected $_app;
-
-    /**
-     * Selected handler storage assigned by the developer
-     * @var \SessionHandlerInterface
-     */
-    protected $_handler;
-
-    /**
      * Null storage handler if no previous session was found
-     * @var \SessionHandlerInterface
      */
-    protected $_null;
+    protected \Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler $_null;
+
+    protected ?\Ratchet\Session\Serialize\HandlerInterface $_serializer;
 
     /**
-     * @var \Ratchet\Session\Serialize\HandlerInterface
-     */
-    protected $_serializer;
-
-    /**
-     * @param \Ratchet\Http\HttpServerInterface           $app
-     * @param \SessionHandlerInterface                    $handler
-     * @param array                                       $options
-     * @param \Ratchet\Session\Serialize\HandlerInterface $serializer
      * @throws \RuntimeException
      */
-    public function __construct(HttpServerInterface $app, \SessionHandlerInterface $handler, array $options = array(), HandlerInterface $serializer = null) {
-        $this->_app     = $app;
-        $this->_handler = $handler;
-        $this->_null    = new NullSessionHandler;
+    public function __construct(
+        protected \Ratchet\Http\HttpServerInterface $_app, /**
+     * Selected handler storage assigned by the developer
+     */
+    protected \SessionHandlerInterface $_handler,
+        array $options = [],
+        HandlerInterface $serializer = null
+    ) {
+        $this->_null = new NullSessionHandler;
 
         ini_set('session.auto_start', 0);
         ini_set('session.cache_limiter', '');
@@ -57,7 +44,7 @@ class SessionProvider implements HttpServerInterface {
 
         if (null === $serializer) {
             $serialClass = __NAMESPACE__ . "\\Serialize\\{$this->toClassCase(ini_get('session.serialize_handler'))}Handler"; // awesome/terrible hack, eh?
-            if (!class_exists($serialClass)) {
+            if (! class_exists($serialClass)) {
                 throw new \RuntimeException('Unable to parse session serialize handler');
             }
 
@@ -67,9 +54,7 @@ class SessionProvider implements HttpServerInterface {
         $this->_serializer = $serializer;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         $sessionName = ini_get('session.name');
 
@@ -80,7 +65,7 @@ class SessionProvider implements HttpServerInterface {
 
             $crumbs = $this->parseCookie($cookie);
 
-            return isset($crumbs['cookies'][$sessionName]) ? $crumbs['cookies'][$sessionName] : false;
+            return $crumbs['cookies'][$sessionName] ?? false;
         }, false);
 
         if (null === $request || false === $id) {
@@ -99,25 +84,19 @@ class SessionProvider implements HttpServerInterface {
         return $this->_app->onOpen($conn, $request);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     function onMessage(ConnectionInterface $from, $msg) {
         return $this->_app->onMessage($from, $msg);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     function onClose(ConnectionInterface $conn) {
         // "close" session for Connection
 
         return $this->_app->onClose($conn);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     function onError(ConnectionInterface $conn, \Exception $e) {
         return $this->_app->onError($conn, $e);
     }
@@ -125,11 +104,10 @@ class SessionProvider implements HttpServerInterface {
     /**
      * Set all the php session. ini options
      * © Symfony
-     * @param array $options
      * @return array
      */
     protected function setOptions(array $options) {
-        $all = array(
+        $all = [
             'auto_start', 'cache_limiter', 'cookie_domain', 'cookie_httponly',
             'cookie_lifetime', 'cookie_path', 'cookie_secure',
             'entropy_file', 'entropy_length', 'gc_divisor',
@@ -138,11 +116,11 @@ class SessionProvider implements HttpServerInterface {
             'serialize_handler', 'use_cookies',
             'use_only_cookies', 'use_trans_sid', 'upload_progress.enabled',
             'upload_progress.cleanup', 'upload_progress.prefix', 'upload_progress.name',
-            'upload_progress.freq', 'upload_progress.min-freq', 'url_rewriter.tags'
-        );
+            'upload_progress.freq', 'upload_progress.min-freq', 'url_rewriter.tags',
+        ];
 
         foreach ($all as $key) {
-            if (!array_key_exists($key, $options)) {
+            if (! array_key_exists($key, $options)) {
                 $options[$key] = ini_get("session.{$key}");
             } else {
                 ini_set("session.{$key}", $options[$key]);
@@ -162,42 +140,50 @@ class SessionProvider implements HttpServerInterface {
 
     /**
      * Taken from Guzzle3
+     *
+     * @var string[]
+     *
+     * @psalm-var array{domain: 'Domain', path: 'Path', max_age: 'Max-Age', expires: 'Expires', version: 'Version', secure: 'Secure', port: 'Port', discard: 'Discard', comment: 'Comment', comment_url: 'Comment-Url', http_only: 'HttpOnly'}
      */
-    private static $cookieParts = array(
-        'domain'      => 'Domain',
-        'path'        => 'Path',
-        'max_age'     => 'Max-Age',
-        'expires'     => 'Expires',
-        'version'     => 'Version',
-        'secure'      => 'Secure',
-        'port'        => 'Port',
-        'discard'     => 'Discard',
-        'comment'     => 'Comment',
+    private static array $cookieParts = [
+        'domain' => 'Domain',
+        'path' => 'Path',
+        'max_age' => 'Max-Age',
+        'expires' => 'Expires',
+        'version' => 'Version',
+        'secure' => 'Secure',
+        'port' => 'Port',
+        'discard' => 'Discard',
+        'comment' => 'Comment',
         'comment_url' => 'Comment-Url',
-        'http_only'   => 'HttpOnly'
-    );
+        'http_only' => 'HttpOnly',
+    ];
 
     /**
      * Taken from Guzzle3
+     *
+     * @return ((string|true)[]|bool|int|mixed|null|string)[]|false
+     *
+     * @psalm-return array{cookies: array<string, string|true>, data: array<string, string|true>, path: list{string,...}|mixed|string|true, http_only: bool|list{string,...}|string, discard: bool|list{string,...}|string, domain: list{string,...}|mixed|string|true, port?: list{string,...}|null|string|true, max_age?: list{string,...}|null|string|true, expires?: int<min, max>|list{string,...}|null|string|true, version?: list{string,...}|null|string|true, secure?: list{string,...}|null|string|true, comment?: list{string,...}|null|string|true, comment_url?: list{string,...}|null|string|true,...}|false
      */
-    private function parseCookie($cookie, $host = null, $path = null, $decode = false) {
+    private function parseCookie($cookie, $host = null, $path = null, $decode = false): array|false|false|false|false|false|false|false|false {
         // Explode the cookie string using a series of semicolons
-        $pieces = array_filter(array_map('trim', explode(';', $cookie)));
+        $pieces = array_filter(array_map('trim', explode(';', (string) $cookie)));
 
         // The name of the cookie (first kvp) must include an equal sign.
-        if (empty($pieces) || !strpos($pieces[0], '=')) {
+        if (empty($pieces) || ! strpos($pieces[0], '=')) {
             return false;
         }
 
         // Create the default return array
-        $data = array_merge(array_fill_keys(array_keys(self::$cookieParts), null), array(
-            'cookies'   => array(),
-            'data'      => array(),
-            'path'      => $path ?: '/',
+        $data = array_merge(array_fill_keys(array_keys(self::$cookieParts), null), [
+            'cookies' => [],
+            'data' => [],
+            'path' => $path ?: '/',
             'http_only' => false,
-            'discard'   => false,
-            'domain'    => $host
-        ));
+            'discard' => false,
+            'domain' => $host,
+        ]);
         $foundNonCookies = 0;
 
         // Add the cookie pieces into the parsed data array
@@ -218,9 +204,9 @@ class SessionProvider implements HttpServerInterface {
             }
 
             // Only check for non-cookies when cookies have been found
-            if (!empty($data['cookies'])) {
+            if (! empty($data['cookies'])) {
                 foreach (self::$cookieParts as $mapValue => $search) {
-                    if (!strcasecmp($search, $key)) {
+                    if (! strcasecmp($search, $key)) {
                         $data[$mapValue] = $mapValue == 'port' ? array_map('trim', explode(',', $value)) : $value;
                         $foundNonCookies++;
                         continue 2;
@@ -234,7 +220,7 @@ class SessionProvider implements HttpServerInterface {
         }
 
         // Calculate the expires date
-        if (!$data['expires'] && $data['max_age']) {
+        if (! $data['expires'] && $data['max_age']) {
             $data['expires'] = time() + (int) $data['max_age'];
         }
 

@@ -1,41 +1,33 @@
 <?php
+
 namespace Ratchet\Wamp;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\WsServerInterface;
 
 class TopicManager implements WsServerInterface, WampServerInterface {
     /**
-     * @var WampServerInterface
-     */
-    protected $app;
-
-    /**
      * @var array
      */
-    protected $topicLookup = array();
+    protected $topicLookup = [];
 
-    public function __construct(WampServerInterface $app) {
-        $this->app = $app;
+    public function __construct(
+        protected \Ratchet\Wamp\WampServerInterface $app
+    )
+    {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onOpen(ConnectionInterface $conn) {
         $conn->WAMP->subscriptions = new \SplObjectStorage;
         $this->app->onOpen($conn);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onCall(ConnectionInterface $conn, $id, $topic, array $params) {
         $this->app->onCall($conn, $id, $this->getTopic($topic), $params);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onSubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
@@ -48,13 +40,11 @@ class TopicManager implements WsServerInterface, WampServerInterface {
         $this->app->onSubscribe($conn, $topicObj);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onUnsubscribe(ConnectionInterface $conn, $topic) {
         $topicObj = $this->getTopic($topic);
 
-        if (!$conn->WAMP->subscriptions->contains($topicObj)) {
+        if (! $conn->WAMP->subscriptions->contains($topicObj)) {
             return;
         }
 
@@ -63,16 +53,12 @@ class TopicManager implements WsServerInterface, WampServerInterface {
         $this->app->onUnsubscribe($conn, $topicObj);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible) {
         $this->app->onPublish($conn, $this->getTopic($topic), $event, $exclude, $eligible);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onClose(ConnectionInterface $conn) {
         $this->app->onClose($conn);
 
@@ -81,37 +67,34 @@ class TopicManager implements WsServerInterface, WampServerInterface {
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onError(ConnectionInterface $conn, \Exception $e) {
         $this->app->onError($conn, $e);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function getSubProtocols() {
         if ($this->app instanceof WsServerInterface) {
             return $this->app->getSubProtocols();
         }
 
-        return array();
+        return [];
     }
 
     /**
      * @param string
+     *
      * @return Topic
      */
-    protected function getTopic($topic) {
-        if (!array_key_exists($topic, $this->topicLookup)) {
+    protected function getTopic(string|Topic $topic) {
+        if (! array_key_exists($topic, $this->topicLookup)) {
             $this->topicLookup[$topic] = new Topic($topic);
         }
 
         return $this->topicLookup[$topic];
     }
 
-    protected function cleanTopic(Topic $topic, ConnectionInterface $conn) {
+    protected function cleanTopic(Topic $topic, ConnectionInterface $conn): void {
         if ($conn->WAMP->subscriptions->contains($topic)) {
             $conn->WAMP->subscriptions->detach($topic);
         }

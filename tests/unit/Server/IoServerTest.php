@@ -1,8 +1,8 @@
 <?php
+
 namespace Ratchet\Server;
-use Ratchet\Server\IoServer;
-use React\EventLoop\StreamSelectLoop;
 use React\EventLoop\LoopInterface;
+use React\EventLoop\StreamSelectLoop;
 use React\Socket\Server;
 
 /**
@@ -18,26 +18,27 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     protected $reactor;
 
     protected function tickLoop(LoopInterface $loop) {
-        $loop->futureTick(function () use ($loop) {
+        $loop->futureTick(function () use ($loop): void {
             $loop->stop();
         });
 
         $loop->run();
     }
 
+    #[\Override]
     public function setUp() {
-        $this->app = $this->getMock('\\Ratchet\\MessageComponentInterface');
+        $this->app = $this->getMock(\Ratchet\MessageComponentInterface::class);
 
         $loop = new StreamSelectLoop;
         $this->reactor = new Server(0, $loop);
 
         $uri = $this->reactor->getAddress();
-        $this->port   = parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_PORT);
+        $this->port = parse_url((! str_contains((string) $uri, '://') ? 'tcp://' : '') . $uri, PHP_URL_PORT);
         $this->server = new IoServer($this->app, $this->reactor, $loop);
     }
 
-    public function testOnOpen() {
-        $this->app->expects($this->once())->method('onOpen')->with($this->isInstanceOf('\\Ratchet\\ConnectionInterface'));
+    public function testOnOpen(): void {
+        $this->app->expects($this->once())->method('onOpen')->with($this->isInstanceOf(\Ratchet\ConnectionInterface::class));
 
         $client = stream_socket_client("tcp://localhost:{$this->port}");
 
@@ -47,12 +48,12 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         //$this->assertTrue(is_int($this->app->last['onOpen'][0]->resourceId));
     }
 
-    public function testOnData() {
+    public function testOnData(): void {
         $msg = 'Hello World!';
 
         $this->app->expects($this->once())->method('onMessage')->with(
-            $this->isInstanceOf('\\Ratchet\\ConnectionInterface')
-          , $msg
+            $this->isInstanceOf(\Ratchet\ConnectionInterface::class),
+            $msg
         );
 
         $client = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -73,8 +74,8 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $this->tickLoop($this->server->loop);
     }
 
-    public function testOnClose() {
-        $this->app->expects($this->once())->method('onClose')->with($this->isInstanceOf('\\Ratchet\\ConnectionInterface'));
+    public function testOnClose(): void {
+        $this->app->expects($this->once())->method('onClose')->with($this->isInstanceOf(\Ratchet\ConnectionInterface::class));
 
         $client = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         socket_set_option($client, SOL_SOCKET, SO_REUSEADDR, 1);
@@ -91,21 +92,21 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $this->tickLoop($this->server->loop);
     }
 
-    public function testFactory() {
-        $this->assertInstanceOf('\\Ratchet\\Server\\IoServer', IoServer::factory($this->app, 0));
+    public function testFactory(): void {
+        $this->assertInstanceOf(\Ratchet\Server\IoServer::class, IoServer::factory($this->app, 0));
     }
 
-    public function testNoLoopProvidedError() {
+    public function testNoLoopProvidedError(): void {
         $this->setExpectedException('RuntimeException');
 
-        $io   = new IoServer($this->app, $this->reactor);
+        $io = new IoServer($this->app, $this->reactor);
         $io->run();
     }
 
-    public function testOnErrorPassesException() {
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
-        $conn->decor = $this->getMock('\\Ratchet\\ConnectionInterface');
-        $err  = new \Exception("Nope");
+    public function testOnErrorPassesException(): void {
+        $conn = $this->getMock(\React\Socket\ConnectionInterface::class);
+        $conn->decor = $this->getMock(\Ratchet\ConnectionInterface::class);
+        $err = new \Exception("Nope");
 
         $this->app->expects($this->once())->method('onError')->with($conn->decor, $err);
 
@@ -115,12 +116,12 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
     public function onErrorCalledWhenExceptionThrown() {
         $this->markTestIncomplete("Need to learn how to throw an exception from a mock");
 
-        $conn = $this->getMock('\\React\\Socket\\ConnectionInterface');
+        $conn = $this->getMock(\React\Socket\ConnectionInterface::class);
         $this->server->handleConnect($conn);
 
         $e = new \Exception;
-        $this->app->expects($this->once())->method('onMessage')->with($this->isInstanceOf('\\Ratchet\\ConnectionInterface'), 'f')->will($e);
-        $this->app->expects($this->once())->method('onError')->with($this->instanceOf('\\Ratchet\\ConnectionInterface', $e));
+        $this->app->expects($this->once())->method('onMessage')->with($this->isInstanceOf(\Ratchet\ConnectionInterface::class), 'f')->will($e);
+        $this->app->expects($this->once())->method('onError')->with($this->instanceOf(\Ratchet\ConnectionInterface::class, $e));
 
         $this->server->handleData('f', $conn);
     }

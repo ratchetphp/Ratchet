@@ -1,48 +1,40 @@
 <?php
+
 namespace Ratchet\Http;
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 class HttpServer implements MessageComponentInterface {
     use CloseResponseTrait;
 
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
-     * @var HttpRequestParser
      * @note May not expose this in the future, may do through facade methods
      */
-    protected $_reqParser;
-
-    /**
-     * @var \Ratchet\Http\HttpServerInterface
-     */
-    protected $_httpServer;
+    protected \Ratchet\Http\HttpRequestParser $_reqParser;
 
     /**
      * @param HttpServerInterface
      */
-    public function __construct(HttpServerInterface $component) {
-        $this->_httpServer = $component;
-        $this->_reqParser  = new HttpRequestParser;
+    public function __construct(
+        protected \Ratchet\Http\HttpServerInterface $_httpServer
+    ) {
+        $this->_reqParser = new HttpRequestParser;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onOpen(ConnectionInterface $conn) {
         $conn->httpHeadersReceived = false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onMessage(ConnectionInterface $from, $msg) {
         if (true !== $from->httpHeadersReceived) {
             try {
                 if (null === ($request = $this->_reqParser->onMessage($from, $msg))) {
                     return;
                 }
-            } catch (\OverflowException $oe) {
+            } catch (\OverflowException) {
                 return $this->close($from, 413);
             }
 
@@ -54,18 +46,14 @@ class HttpServer implements MessageComponentInterface {
         $this->_httpServer->onMessage($from, $msg);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onClose(ConnectionInterface $conn) {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onClose($conn);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if ($conn->httpHeadersReceived) {
             $this->_httpServer->onError($conn, $e);

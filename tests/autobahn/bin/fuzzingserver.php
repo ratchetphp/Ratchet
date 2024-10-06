@@ -1,19 +1,24 @@
 <?php
+
 use Ratchet\ConnectionInterface;
 
-    require dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php';
+    require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 class BinaryEcho implements \Ratchet\WebSocket\MessageComponentInterface {
+    #[\Override]
     public function onMessage(ConnectionInterface $from, \Ratchet\RFC6455\Messaging\MessageInterface $msg) {
         $from->send($msg);
     }
 
+    #[\Override]
     public function onOpen(ConnectionInterface $conn) {
     }
 
+    #[\Override]
     public function onClose(ConnectionInterface $conn) {
     }
 
+    #[\Override]
     public function onError(ConnectionInterface $conn, \Exception $e) {
     }
 }

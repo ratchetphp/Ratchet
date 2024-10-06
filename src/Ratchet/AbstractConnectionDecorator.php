@@ -1,5 +1,8 @@
 <?php
+
 namespace Ratchet;
+
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Wraps ConnectionInterface objects via the decorator pattern but allows
@@ -7,13 +10,14 @@ namespace Ratchet;
  * @todo It sure would be nice if I could make most of this a trait...
  */
 abstract class AbstractConnectionDecorator implements ConnectionInterface {
-    /**
-     * @var ConnectionInterface
-     */
-    protected $wrappedConn;
+    public RequestInterface $httpRequest;
 
-    public function __construct(ConnectionInterface $conn) {
-        $this->wrappedConn = $conn;
+    protected $WebSocket;
+
+    public function __construct(
+        protected \Ratchet\ConnectionInterface $wrappedConn
+    )
+    {
     }
 
     /**

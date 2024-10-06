@@ -1,28 +1,29 @@
 <?php
+
 namespace Ratchet\Session\Serialize;
 
 class PhpBinaryHandler implements HandlerInterface {
-    /**
-     * {@inheritdoc}
-     */
-    function serialize(array $data) {
+    #[\Override]
+    function serialize(array $data): never {
         throw new \RuntimeException("Serialize PhpHandler:serialize code not written yet, write me!");
     }
 
     /**
-     * {@inheritdoc}
      * @link http://ca2.php.net/manual/en/function.session-decode.php#108037 Code from this comment on php.net
+     *
+     * @psalm-return array<string, mixed>
      */
-    public function unserialize($raw) {
-        $returnData = array();
-        $offset     = 0;
+    #[\Override]
+    public function unserialize($raw): array {
+        $returnData = [];
+        $offset = 0;
 
-        while ($offset < strlen($raw)) {
-            $num     = ord($raw[$offset]);
+        while ($offset < strlen((string) $raw)) {
+            $num = ord($raw[$offset]);
             $offset += 1;
-            $varname = substr($raw, $offset, $num);
+            $varname = substr((string) $raw, $offset, $num);
             $offset += $num;
-            $data    = unserialize(substr($raw, $offset));
+            $data = unserialize(substr((string) $raw, $offset));
 
             $returnData[$varname] = $data;
             $offset += strlen(serialize($data));

@@ -1,7 +1,8 @@
 <?php
+
 namespace Ratchet\Server;
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 /**
  * An app to go on a server stack to pass a policy file to a Flash socket
@@ -14,7 +15,6 @@ use Ratchet\ConnectionInterface;
  * @link view-source:http://www.adobe.com/xml/schemas/PolicyFileSocket.xsd
  */
 class FlashPolicy implements MessageComponentInterface {
-
     /**
      * Contains the root policy node
      * @var string
@@ -25,7 +25,7 @@ class FlashPolicy implements MessageComponentInterface {
      * Stores an array of allowed domains and their ports
      * @var array
      */
-    protected $_access = array();
+    protected $_access = [];
 
     /**
      * @var string
@@ -58,27 +58,15 @@ class FlashPolicy implements MessageComponentInterface {
      * @return FlashPolicy
      */
     public function addAllowedAccess($domain, $ports = '*', $secure = false) {
-        if (!$this->validateDomain($domain)) {
+        if (! $this->validateDomain($domain)) {
            throw new \UnexpectedValueException('Invalid domain');
         }
 
-        if (!$this->validatePorts($ports)) {
+        if (! $this->validatePorts($ports)) {
            throw new \UnexpectedValueException('Invalid Port');
         }
 
-        $this->_access[]   = array($domain, $ports, (boolean)$secure);
-        $this->_cacheValid = false;
-
-        return $this;
-    }
-    
-    /**
-     * Removes all domains from the allowed access list.
-     * 
-     * @return \Ratchet\Server\FlashPolicy
-     */
-    public function clearAllowedAccess() {
-        $this->_access      = array();
+        $this->_access[] = [$domain, $ports, $secure];
         $this->_cacheValid = false;
 
         return $this;
@@ -94,28 +82,24 @@ class FlashPolicy implements MessageComponentInterface {
      * @return FlashPolicy
      */
     public function setSiteControl($permittedCrossDomainPolicies = 'all') {
-        if (!$this->validateSiteControl($permittedCrossDomainPolicies)) {
+        if (! $this->validateSiteControl($permittedCrossDomainPolicies)) {
             throw new \UnexpectedValueException('Invalid site control set');
         }
 
         $this->_siteControl = $permittedCrossDomainPolicies;
-        $this->_cacheValid  = false;
+        $this->_cacheValid = false;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onOpen(ConnectionInterface $conn) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onMessage(ConnectionInterface $from, $msg) {
-        if (!$this->_cacheValid) {
-            $this->_cache      = $this->renderPolicy()->asXML();
+        if (! $this->_cacheValid) {
+            $this->_cache = $this->renderPolicy()->asXML();
             $this->_cacheValid = true;
         }
 
@@ -123,15 +107,11 @@ class FlashPolicy implements MessageComponentInterface {
         $from->close();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onClose(ConnectionInterface $conn) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onError(ConnectionInterface $conn, \Exception $e) {
         $conn->close();
     }
@@ -175,7 +155,7 @@ class FlashPolicy implements MessageComponentInterface {
      */
     public function validateSiteControl($permittedCrossDomainPolicies) {
         //'by-content-type' and 'by-ftp-filename' are not available for sockets
-        return (bool)in_array($permittedCrossDomainPolicies, array('none', 'master-only', 'all'));
+        return in_array($permittedCrossDomainPolicies, ['none', 'master-only', 'all']);
     }
 
     /**
@@ -185,7 +165,7 @@ class FlashPolicy implements MessageComponentInterface {
      * @return bool
      */
     public function validateDomain($domain) {
-        return (bool)preg_match("/^((http(s)?:\/\/)?([a-z0-9-_]+\.|\*\.)*([a-z0-9-_\.]+)|\*)$/i", $domain);
+        return (bool) preg_match("/^((http(s)?:\/\/)?([a-z0-9-_]+\.|\*\.)*([a-z0-9-_\.]+)|\*)$/i", $domain);
     }
 
     /**
@@ -195,6 +175,6 @@ class FlashPolicy implements MessageComponentInterface {
      * @return bool
      */
     public function validatePorts($port) {
-        return (bool)preg_match('/^(\*|(\d+[,-]?)*\d+)$/', $port);
+        return (bool) preg_match('/^(\*|(\d+[,-]?)*\d+)$/', $port);
     }
 }

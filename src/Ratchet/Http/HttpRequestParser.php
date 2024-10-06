@@ -1,8 +1,9 @@
 <?php
+
 namespace Ratchet\Http;
-use Ratchet\MessageInterface;
-use Ratchet\ConnectionInterface;
 use GuzzleHttp\Psr7\Message;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageInterface;
 
 /**
  * This class receives streaming data from a client request
@@ -20,19 +21,21 @@ class HttpRequestParser implements MessageInterface {
     public $maxSize = 4096;
 
     /**
-     * @param \Ratchet\ConnectionInterface $context
      * @param string                       $data Data stream to buffer
-     * @return \Psr\Http\Message\RequestInterface
+     *
+     * @return \Psr\Http\Message\RequestInterface|null
+     *
      * @throws \OverflowException If the message buffer has become too large
      */
+    #[\Override]
     public function onMessage(ConnectionInterface $context, $data) {
-        if (!isset($context->httpBuffer)) {
+        if (! isset($context->httpBuffer)) {
             $context->httpBuffer = '';
         }
 
         $context->httpBuffer .= $data;
 
-        if (strlen($context->httpBuffer) > (int)$this->maxSize) {
+        if (strlen($context->httpBuffer) > $this->maxSize) {
             throw new \OverflowException("Maximum buffer size of {$this->maxSize} exceeded parsing HTTP header");
         }
 
@@ -51,7 +54,7 @@ class HttpRequestParser implements MessageInterface {
      * @return boolean
      */
     public function isEom($message) {
-        return (boolean)strpos($message, static::EOM);
+        return (boolean) strpos($message, (string) static::EOM);
     }
 
     /**

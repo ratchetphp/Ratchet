@@ -1,4 +1,5 @@
 <?php
+
 namespace Ratchet\Session\Serialize;
 
 class PhpHandler implements HandlerInterface {
@@ -6,8 +7,9 @@ class PhpHandler implements HandlerInterface {
      * Simply reverse behaviour of unserialize method.
      * {@inheritdoc}
      */
-    function serialize(array $data) {
-        $preSerialized = array();
+    #[\Override]
+    function serialize(array $data): string {
+        $preSerialized = [];
         $serialized = '';
 
         if (count($data)) {
@@ -21,24 +23,27 @@ class PhpHandler implements HandlerInterface {
     }
 
     /**
-     * {@inheritdoc}
      * @link http://ca2.php.net/manual/en/function.session-decode.php#108037 Code from this comment on php.net
+     *
      * @throws \UnexpectedValueException If there is a problem parsing the data
+     *
+     * @psalm-return array<string, mixed>
      */
-    public function unserialize($raw) {
-        $returnData = array();
-        $offset     = 0;
+    #[\Override]
+    public function unserialize($raw): array {
+        $returnData = [];
+        $offset = 0;
 
-        while ($offset < strlen($raw)) {
-            if (!strstr(substr($raw, $offset), "|")) {
-                throw new \UnexpectedValueException("invalid data, remaining: " . substr($raw, $offset));
+        while ($offset < strlen((string) $raw)) {
+            if (! strstr(substr((string) $raw, $offset), "|")) {
+                throw new \UnexpectedValueException("invalid data, remaining: " . substr((string) $raw, $offset));
             }
 
-            $pos     = strpos($raw, "|", $offset);
-            $num     = $pos - $offset;
-            $varname = substr($raw, $offset, $num);
+            $pos = strpos((string) $raw, "|", $offset);
+            $num = $pos - $offset;
+            $varname = substr((string) $raw, $offset, $num);
             $offset += $num + 1;
-            $data    = unserialize(substr($raw, $offset));
+            $data = unserialize(substr((string) $raw, $offset));
 
             $returnData[$varname] = $data;
             $offset += strlen(serialize($data));

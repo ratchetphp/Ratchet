@@ -1,4 +1,5 @@
 <?php
+
 namespace Ratchet\WebSocket;
 use Ratchet\ComponentInterface;
 

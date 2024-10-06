@@ -1,23 +1,23 @@
 <?php
+
 namespace Ratchet;
-use React\EventLoop\LoopInterface;
-use React\EventLoop\Factory as LoopFactory;
-use React\Socket\Server as Reactor;
-use React\Socket\SecureServer as SecureReactor;
+use Ratchet\Http\HttpServer;
 use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\OriginCheck;
-use Ratchet\Wamp\WampServerInterface;
-use Ratchet\Server\IoServer;
-use Ratchet\Server\FlashPolicy;
-use Ratchet\Http\HttpServer;
 use Ratchet\Http\Router;
+use Ratchet\Server\FlashPolicy;
+use Ratchet\Server\IoServer;
+use Ratchet\Wamp\WampServer;
+use Ratchet\Wamp\WampServerInterface;
 use Ratchet\WebSocket\MessageComponentInterface as WsMessageComponentInterface;
 use Ratchet\WebSocket\WsServer;
-use Ratchet\Wamp\WampServer;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RequestContext;
+use React\EventLoop\Factory as LoopFactory;
+use React\EventLoop\LoopInterface;
+use React\Socket\Server as Reactor;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * An opinionated facade class to quickly and easily create a WebSocket server.
@@ -34,22 +34,7 @@ class App {
      */
     public $flashServer;
 
-    /**
-     * @var \Ratchet\Server\IoServer
-     */
-    protected $_server;
-
-    /**
-     * The Host passed in construct used for same origin policy
-     * @var string
-     */
-    protected $httpHost;
-
-    /***
-     * The port the socket is listening
-     * @var int
-     */
-    protected $port;
+    protected \Ratchet\Server\IoServer $_server;
 
     /**
      * @var int
@@ -63,7 +48,16 @@ class App {
      * @param LoopInterface $loop       Specific React\EventLoop to bind the application to. null will create one for you.
      * @param array         $context
      */
-    public function __construct($httpHost = 'localhost', $port = 8080, $address = '127.0.0.1', LoopInterface $loop = null, $context = array()) {
+    public function __construct(
+    /**
+     * The Host passed in construct used for same origin policy
+     */
+    protected $httpHost = 'localhost',
+        protected $port = 8080,
+        $address = '127.0.0.1',
+        LoopInterface $loop = null,
+        $context = []
+    ) {
         if (extension_loaded('xdebug') && getenv('RATCHET_DISABLE_XDEBUG_WARN') === false) {
             trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
         }
@@ -72,19 +66,16 @@ class App {
             $loop = LoopFactory::create();
         }
 
-        $this->httpHost = $httpHost;
-        $this->port = $port;
+        $socket = new Reactor($address . ':' . $this->port, $loop, $context);
 
-        $socket = new Reactor($address . ':' . $port, $loop, $context);
-
-        $this->routes  = new RouteCollection;
+        $this->routes = new RouteCollection;
         $this->_server = new IoServer(new HttpServer(new Router(new UrlMatcher($this->routes, new RequestContext))), $socket, $loop);
 
         $policy = new FlashPolicy;
-        $policy->addAllowedAccess($httpHost, 80);
-        $policy->addAllowedAccess($httpHost, $port);
+        $policy->addAllowedAccess($this->httpHost, 80);
+        $policy->addAllowedAccess($this->httpHost, $this->port);
 
-        if (80 == $port) {
+        if (80 == $this->port) {
             $flashUri = '0.0.0.0:843';
         } else {
             $flashUri = 8843;
@@ -101,7 +92,7 @@ class App {
      * @param string             $httpHost Override the $httpHost variable provided in the __construct
      * @return ComponentInterface|WsServer
      */
-    public function route($path, ComponentInterface $controller, array $allowedOrigins = array(), $httpHost = null) {
+    public function route($path, ComponentInterface $controller, array $allowedOrigins = [], $httpHost = null) {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
@@ -133,7 +124,11 @@ class App {
             }
         }
 
-        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, array('_controller' => $decorated), array('Origin' => $this->httpHost), array(), $httpHost, array(), array('GET')));
+        $this->routes->add('rr-' . ++$this->_routeCounter, new Route($path, [
+            '_controller' => $decorated,
+        ], [
+            'Origin' => $this->httpHost,
+        ], [], $httpHost, [], ['GET']));
 
         return $decorated;
     }
@@ -141,7 +136,7 @@ class App {
     /**
      * Run the server by entering the event loop
      */
-    public function run() {
+    public function run(): void {
         $this->_server->run();
     }
 }

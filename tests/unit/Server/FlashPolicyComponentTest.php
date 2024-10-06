@@ -1,4 +1,5 @@
 <?php
+
 namespace Ratchet\Application\Server;
 use Ratchet\Server\FlashPolicy;
 
@@ -6,14 +7,14 @@ use Ratchet\Server\FlashPolicy;
  * @covers Ratchet\Server\FlashPolicy
  */
 class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
-
     protected $_policy;
 
+    #[\Override]
     public function setUp() {
         $this->_policy = new FlashPolicy();
     }
 
-    public function testPolicyRender() {
+    public function testPolicyRender(): void {
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('example.com', '*');
         $this->_policy->addAllowedAccess('dev.example.com', '*');
@@ -21,12 +22,12 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('SimpleXMLElement', $this->_policy->renderPolicy());
     }
 
-    public function testInvalidPolicyReader() {
+    public function testInvalidPolicyReader(): void {
         $this->setExpectedException('UnexpectedValueException');
         $this->_policy->renderPolicy();
     }
 
-    public function testInvalidDomainPolicyReader() {
+    public function testInvalidDomainPolicyReader(): void {
         $this->setExpectedException('UnexpectedValueException');
         $this->_policy->setSiteControl('all');
         $this->_policy->addAllowedAccess('dev.example.*', '*');
@@ -36,117 +37,79 @@ class FlashPolicyTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider siteControl
      */
-    public function testSiteControlValidation($accept, $permittedCrossDomainPolicies) {
+    public function testSiteControlValidation($accept, $permittedCrossDomainPolicies): void {
         $this->assertEquals($accept, $this->_policy->validateSiteControl($permittedCrossDomainPolicies));
     }
 
     public static function siteControl() {
-        return array(
-            array(true, 'all')
-          , array(true, 'none')
-          , array(true, 'master-only')
-          , array(false, 'by-content-type')
-          , array(false, 'by-ftp-filename')
-          , array(false, '')
-          , array(false, 'all ')
-          , array(false, 'asdf')
-          , array(false, '@893830')
-          , array(false, '*')
-        );
+        return [
+            [true, 'all'], [true, 'none'], [true, 'master-only'], [false, 'by-content-type'], [false, 'by-ftp-filename'], [false, ''], [false, 'all '], [false, 'asdf'], [false, '@893830'], [false, '*'],
+        ];
     }
 
     /**
      * @dataProvider URI
      */
-    public function testDomainValidation($accept, $domain) {
+    public function testDomainValidation($accept, $domain): void {
         $this->assertEquals($accept, $this->_policy->validateDomain($domain));
     }
 
     public static function URI() {
-        return array(
-            array(true, '*')
-          , array(true, 'example.com')
-          , array(true, 'exam-ple.com')
-          , array(true, '*.example.com')
-          , array(true, 'www.example.com')
-          , array(true, 'dev.dev.example.com')
-          , array(true, 'http://example.com')
-          , array(true, 'https://example.com')
-          , array(true, 'http://*.example.com')
-          , array(false, 'exam*ple.com')
-          , array(true, '127.0.255.1')
-          , array(true, 'localhost')
-          , array(false, 'www.example.*')
-          , array(false, 'www.exa*le.com')
-          , array(false, 'www.example.*com')
-          , array(false, '*.example.*')
-          , array(false, 'gasldf*$#a0sdf0a8sdf')
-        );
+        return [
+            [true, '*'], [true, 'example.com'], [true, 'exam-ple.com'], [true, '*.example.com'], [true, 'www.example.com'], [true, 'dev.dev.example.com'], [true, 'http://example.com'], [true, 'https://example.com'], [true, 'http://*.example.com'], [false, 'exam*ple.com'], [true, '127.0.255.1'], [true, 'localhost'], [false, 'www.example.*'], [false, 'www.exa*le.com'], [false, 'www.example.*com'], [false, '*.example.*'], [false, 'gasldf*$#a0sdf0a8sdf'],
+        ];
     }
 
     /**
      * @dataProvider ports
      */
-    public function testPortValidation($accept, $ports) {
+    public function testPortValidation($accept, $ports): void {
         $this->assertEquals($accept, $this->_policy->validatePorts($ports));
     }
 
     public static function ports() {
-        return array(
-            array(true, '*')
-          , array(true, '80')
-          , array(true, '80,443')
-          , array(true, '507,516-523')
-          , array(true, '507,516-523,333')
-          , array(true, '507,516-523,507,516-523')
-          , array(false, '516-')
-          , array(true, '516-523,11')
-          , array(false, '516,-523,11')
-          , array(false, 'example')
-          , array(false, 'asdf,123')
-          , array(false, '--')
-          , array(false, ',,,')
-          , array(false, '838*')
-        );
+        return [
+            [true, '*'], [true, '80'], [true, '80,443'], [true, '507,516-523'], [true, '507,516-523,333'], [true, '507,516-523,507,516-523'], [false, '516-'], [true, '516-523,11'], [false, '516,-523,11'], [false, 'example'], [false, 'asdf,123'], [false, '--'], [false, ',,,'], [false, '838*'],
+        ];
     }
 
-    public function testAddAllowedAccessOnlyAcceptsValidPorts() {
+    public function testAddAllowedAccessOnlyAcceptsValidPorts(): void {
         $this->setExpectedException('UnexpectedValueException');
 
         $this->_policy->addAllowedAccess('*', 'nope');
     }
 
-    public function testSetSiteControlThrowsException() {
+    public function testSetSiteControlThrowsException(): void {
         $this->setExpectedException('UnexpectedValueException');
 
         $this->_policy->setSiteControl('nope');
     }
 
-    public function testErrorClosesConnection() {
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+    public function testErrorClosesConnection(): void {
+        $conn = $this->getMock(\Ratchet\ConnectionInterface::class);
         $conn->expects($this->once())->method('close');
 
         $this->_policy->onError($conn, new \Exception);
     }
 
-    public function testOnMessageSendsString() {
+    public function testOnMessageSendsString(): void {
         $this->_policy->addAllowedAccess('*', '*');
 
-        $conn = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $conn = $this->getMock(\Ratchet\ConnectionInterface::class);
         $conn->expects($this->once())->method('send')->with($this->isType('string'));
 
         $this->_policy->onMessage($conn, ' ');
     }
 
-    public function testOnOpenExists() {
+    public function testOnOpenExists(): void {
         $this->assertTrue(method_exists($this->_policy, 'onOpen'));
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMock(\Ratchet\ConnectionInterface::class);
         $this->_policy->onOpen($conn);
     }
 
-    public function testOnCloseExists() {
+    public function testOnCloseExists(): void {
         $this->assertTrue(method_exists($this->_policy, 'onClose'));
-        $conn = $this->getMock('\Ratchet\ConnectionInterface');
+        $conn = $this->getMock(\Ratchet\ConnectionInterface::class);
         $this->_policy->onClose($conn);
     }
 }

@@ -1,31 +1,27 @@
 <?php
+
 namespace Ratchet\Http;
-use Ratchet\ConnectionInterface;
+use GuzzleHttp\Psr7\Query;
 use Psr\Http\Message\RequestInterface;
-use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Ratchet\ConnectionInterface;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use GuzzleHttp\Psr7\Query;
 
 class Router implements HttpServerInterface {
     use CloseResponseTrait;
 
-    /**
-     * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
-     */
-    protected $_matcher;
+    private NoOpHttpServerController $_noopController;
 
-    private $_noopController;
-
-    public function __construct(UrlMatcherInterface $matcher) {
-        $this->_matcher = $matcher;
+    public function __construct(
+        protected \Symfony\Component\Routing\Matcher\UrlMatcherInterface $_matcher
+    ) {
         $this->_noopController = new NoOpHttpServerController;
     }
 
     /**
-     * {@inheritdoc}
      * @throws \UnexpectedValueException If a controller is not \Ratchet\Http\HttpServerInterface
      */
+    #[\Override]
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
@@ -42,8 +38,10 @@ class Router implements HttpServerInterface {
         try {
             $route = $this->_matcher->match($uri->getPath());
         } catch (MethodNotAllowedException $nae) {
-            return $this->close($conn, 405, array('Allow' => $nae->getAllowedMethods()));
-        } catch (ResourceNotFoundException $nfe) {
+            return $this->close($conn, 405, [
+                'Allow' => $nae->getAllowedMethods(),
+            ]);
+        } catch (ResourceNotFoundException) {
             return $this->close($conn, 404);
         }
 
@@ -51,13 +49,13 @@ class Router implements HttpServerInterface {
             $route['_controller'] = new $route['_controller'];
         }
 
-        if (!($route['_controller'] instanceof HttpServerInterface)) {
+        if (! ($route['_controller'] instanceof HttpServerInterface)) {
             throw new \UnexpectedValueException('All routes must implement Ratchet\Http\HttpServerInterface');
         }
 
         $parameters = [];
         foreach($route as $key => $value) {
-            if ((is_string($key)) && ('_' !== substr($key, 0, 1))) {
+            if ((is_string($key)) && (! str_starts_with($key, '_'))) {
                 $parameters[$key] = $value;
             }
         }
@@ -69,25 +67,19 @@ class Router implements HttpServerInterface {
         $conn->controller->onOpen($conn, $request);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onMessage(ConnectionInterface $from, $msg) {
         $from->controller->onMessage($from, $msg);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onClose(ConnectionInterface $conn) {
         if (isset($conn->controller)) {
             $conn->controller->onClose($conn);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[\Override]
     public function onError(ConnectionInterface $conn, \Exception $e) {
         if (isset($conn->controller)) {
             $conn->controller->onError($conn, $e);
