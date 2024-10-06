@@ -13,7 +13,7 @@ use stdClass;
 abstract class AbstractConnectionDecorator implements ConnectionInterface
 {
     public RequestInterface $httpRequest;
-    public stdClass $WebSocket;
+    public ?stdClass $WebSocket = null;
 
     public function __construct(
         protected ConnectionInterface $wrappedConn

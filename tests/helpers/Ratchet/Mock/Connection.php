@@ -16,7 +16,7 @@ class Connection implements ConnectionInterface
 
     public string $remoteAddress = '127.0.0.1';
     public RequestInterface $httpRequest;
-    public stdClass $WebSocket;
+    public ?stdClass $WebSocket = null;
 
     #[Override]
     public function send(string $data): ConnectionInterface

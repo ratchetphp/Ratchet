@@ -11,8 +11,8 @@ use Ratchet\Wamp\ServerProtocol as WAMP;
  * representing a client. Methods on this Connection are therefore different.
  * @property \stdClass $WAMP
  */
-class WampConnection extends AbstractConnectionDecorator {
-
+class WampConnection extends AbstractConnectionDecorator
+{
     public function __construct(ConnectionInterface $conn)
     {
         parent::__construct($conn);
