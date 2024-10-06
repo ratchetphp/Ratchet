@@ -13,7 +13,7 @@ class WsConnection extends AbstractConnectionDecorator
     #[Override]
     public function send(string $data): ConnectionInterface
     {
-        if (! $this->WebSocket->closing) {
+        if (! $this->WebSocket->closing ?? false) {
             if (! ($data instanceof DataInterface)) {
                 $data = new Frame($data);
             }
@@ -31,7 +31,7 @@ class WsConnection extends AbstractConnectionDecorator
     #[Override]
     public function close(int|FrameInterface $code = 1000): void
     {
-        if ($this->WebSocket->closing) {
+        if ($this->WebSocket->closing ?? false) {
             return;
         }
 
