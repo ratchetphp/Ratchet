@@ -23,19 +23,20 @@ use React\EventLoop\LoopInterface;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
-class WsServer implements HttpServerInterface {
+class WsServer implements HttpServerInterface
+{
     use CloseResponseTrait;
 
     /**
      * Decorated component
      */
-    private \Ratchet\ComponentInterface $delegate;
+    private ComponentInterface $delegate;
 
     protected \SplObjectStorage $connections;
 
-    private \Ratchet\RFC6455\Messaging\CloseFrameChecker $closeFrameChecker;
+    private CloseFrameChecker $closeFrameChecker;
 
-    private \Ratchet\RFC6455\Handshake\ServerNegotiator $handshakeNegotiator;
+    private ServerNegotiator $handshakeNegotiator;
 
     private \Closure $ueFlowFactory;
 

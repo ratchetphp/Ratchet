@@ -24,39 +24,24 @@ use Symfony\Component\Routing\RouteCollection;
  * A few configuration assumptions are made and some best-practice security conventions are applied by default.
  */
 class App {
-    /**
-     * @var \Symfony\Component\Routing\RouteCollection
-     */
-    public $routes;
 
-    /**
-     * @var \Ratchet\Server\IoServer
-     */
-    public $flashServer;
+    public RouteCollection $routes;
 
-    protected \Ratchet\Server\IoServer $_server;
+    public IoServer $flashServer;
+
+    protected IoServer $_server;
 
     /**
      * @var int
      */
-    protected $_routeCounter = 0;
+    protected int $_routeCounter = 0;
 
-    /**
-     * @param string        $httpHost   HTTP hostname clients intend to connect to. MUST match JS `new WebSocket('ws://$httpHost');`
-     * @param int           $port       Port to listen on. If 80, assuming production, Flash on 843 otherwise expecting Flash to be proxied through 8843
-     * @param string        $address    IP address to bind to. Default is localhost/proxy only. '0.0.0.0' for any machine.
-     * @param LoopInterface $loop       Specific React\EventLoop to bind the application to. null will create one for you.
-     * @param array         $context
-     */
     public function __construct(
-    /**
-     * The Host passed in construct used for same origin policy
-     */
-    protected $httpHost = 'localhost',
-        protected $port = 8080,
-        $address = '127.0.0.1',
-        LoopInterface $loop = null,
-        $context = []
+        protected string $httpHost = 'localhost',
+        protected int $port = 8080,
+        string $address = '127.0.0.1',
+        ?LoopInterface $loop = null,
+        array $context = []
     ) {
         if (extension_loaded('xdebug') && getenv('RATCHET_DISABLE_XDEBUG_WARN') === false) {
             trigger_error('XDebug extension detected. Remember to disable this if performance testing or going live!', E_USER_WARNING);
@@ -86,13 +71,17 @@ class App {
 
     /**
      * Add an endpoint/application to the server
-     * @param string             $path The URI the client will connect to
+     * @param string $path The URI the client will connect to
      * @param ComponentInterface $controller Your application to server for the route. If not specified, assumed to be for a WebSocket
      * @param array              $allowedOrigins An array of hosts allowed to connect (same host by default), ['*'] for any
-     * @param string             $httpHost Override the $httpHost variable provided in the __construct
+     * @param string|null $httpHost Override the $httpHost variable provided in the __construct
      * @return ComponentInterface|WsServer
      */
-    public function route($path, ComponentInterface $controller, array $allowedOrigins = [], $httpHost = null) {
+    public function route(
+        string $path,
+        ComponentInterface $controller,
+        array $allowedOrigins = [],
+        ?string $httpHost = null): WsServer|OriginCheck|ComponentInterface {
         if ($controller instanceof HttpServerInterface || $controller instanceof WsServer) {
             $decorated = $controller;
         } elseif ($controller instanceof WampServerInterface) {
@@ -119,8 +108,8 @@ class App {
 
         //allow origins in flash policy server
         if(empty($this->flashServer) === false) {
-            foreach($allowedOrigins as $allowedOrgin) {
-                $this->flashServer->app->addAllowedAccess($allowedOrgin, $this->port);
+            foreach($allowedOrigins as $allowedOrigin) {
+                $this->flashServer->app->addAllowedAccess($allowedOrigin, $this->port);
             }
         }
 

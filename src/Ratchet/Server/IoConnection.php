@@ -11,6 +11,8 @@ class IoConnection implements ConnectionInterface
 {
     public RequestInterface $httpRequest;
     public ?stdClass $WebSocket = null;
+    public int $resourceId;
+    public string $remoteAddress;
 
     public function __construct(protected ReactConn $conn)
     {
