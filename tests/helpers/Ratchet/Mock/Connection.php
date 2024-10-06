@@ -7,17 +7,16 @@ use Psr\Http\Message\RequestInterface;
 use Ratchet\ConnectionInterface;
 use stdClass;
 
-class Connection implements ConnectionInterface {
+class Connection implements ConnectionInterface
+{
     public array $last = [
         'send' => '',
         'close' => false,
     ];
 
     public string $remoteAddress = '127.0.0.1';
-
     public RequestInterface $httpRequest;
-
-    protected stdClass $WebSocket;
+    public stdClass $WebSocket;
 
     #[Override]
     public function send(string $data): ConnectionInterface

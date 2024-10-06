@@ -7,10 +7,10 @@ use Ratchet\ConnectionInterface;
 use React\Socket\ConnectionInterface as ReactConn;
 use stdClass;
 
-class IoConnection implements ConnectionInterface {
+class IoConnection implements ConnectionInterface
+{
     public RequestInterface $httpRequest;
-
-    protected stdClass $WebSocket;
+    public stdClass $WebSocket;
 
     public function __construct(protected ReactConn $conn)
     {

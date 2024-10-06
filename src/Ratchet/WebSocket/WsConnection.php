@@ -8,9 +8,6 @@ use Ratchet\RFC6455\Messaging\DataInterface;
 use Ratchet\RFC6455\Messaging\Frame;
 use Ratchet\RFC6455\Messaging\FrameInterface;
 
-/**
- * @property \StdClass $WebSocket
- */
 class WsConnection extends AbstractConnectionDecorator
 {
     #[Override]
