@@ -20,9 +20,7 @@ trait DynamicPropertiesTrait
      * @return void
      */
     public function __set($key, $value) {
-        if (property_exists($this, $key)) {
-            $this->_dynamic_properties[$key] = $value;
-        }
+        $this->_dynamic_properties[$key] = $value;
     }
 
     /**
@@ -45,5 +43,9 @@ trait DynamicPropertiesTrait
      */
     public function __isset($key) {
         return isset($this->_dynamic_properties[$key]);
+    }
+
+    public function __unset($key) {
+      unset($this->_dynamic_properties[$key]);
     }
 }
