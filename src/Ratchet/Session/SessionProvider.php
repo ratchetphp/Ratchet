@@ -70,7 +70,7 @@ class SessionProvider implements HttpServerInterface {
     /**
      * {@inheritdoc}
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+    public function onOpen(ConnectionInterface $conn, ?RequestInterface $request = null) {
         $sessionName = ini_get('session.name');
 
         $id = array_reduce($request->getHeader('Cookie'), function($accumulator, $cookie) use ($sessionName) {
