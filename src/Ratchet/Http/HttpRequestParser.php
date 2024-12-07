@@ -3,6 +3,7 @@ namespace Ratchet\Http;
 use Ratchet\MessageInterface;
 use Ratchet\ConnectionInterface;
 use GuzzleHttp\Psr7\Message;
+use Ratchet\Traits\DynamicPropertiesTrait;
 
 /**
  * This class receives streaming data from a client request
@@ -10,6 +11,8 @@ use GuzzleHttp\Psr7\Message;
  * once it's been buffered
  */
 class HttpRequestParser implements MessageInterface {
+    use DynamicPropertiesTrait;
+
     const EOM = "\r\n\r\n";
 
     /**

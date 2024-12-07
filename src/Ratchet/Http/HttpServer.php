@@ -1,10 +1,11 @@
 <?php
 namespace Ratchet\Http;
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 
 class HttpServer implements MessageComponentInterface {
-    use CloseResponseTrait;
+    use CloseResponseTrait, DynamicPropertiesTrait;
 
     /**
      * Buffers incoming HTTP requests returning a Guzzle Request when coalesced
@@ -25,6 +26,7 @@ class HttpServer implements MessageComponentInterface {
         $this->_httpServer = $component;
         $this->_reqParser  = new HttpRequestParser;
     }
+
 
     /**
      * {@inheritdoc}

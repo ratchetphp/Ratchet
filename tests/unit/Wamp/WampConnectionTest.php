@@ -1,15 +1,19 @@
 <?php
 namespace Ratchet\Wamp;
+use Ratchet\RatchetTestCase;
 
 /**
  * @covers Ratchet\Wamp\WampConnection
  */
-class WampConnectionTest extends \PHPUnit_Framework_TestCase {
+class WampConnectionTest extends RatchetTestCase {
     protected $conn;
     protected $mock;
 
-    public function setUp() {
-        $this->mock = $this->getMock('\\Ratchet\\ConnectionInterface');
+    /**
+     * @before
+     */
+    public function before() {
+        $this->mock = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $this->conn = new WampConnection($this->mock);
     }
 
@@ -67,7 +71,7 @@ class WampConnectionTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testClose() {
-        $mock = $this->getMock('\\Ratchet\\ConnectionInterface');
+        $mock = $this->_getMock('\\Ratchet\\ConnectionInterface');
         $conn = new WampConnection($mock);
 
         $mock->expects($this->once())->method('close');

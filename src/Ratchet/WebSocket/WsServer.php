@@ -1,20 +1,21 @@
 <?php
 namespace Ratchet\WebSocket;
+use GuzzleHttp\Psr7\Message;
+use Psr\Http\Message\RequestInterface;
 use Ratchet\ComponentInterface;
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface as DataComponentInterface;
-use Ratchet\Http\HttpServerInterface;
 use Ratchet\Http\CloseResponseTrait;
-use Psr\Http\Message\RequestInterface;
-use Ratchet\RFC6455\Messaging\MessageInterface;
-use Ratchet\RFC6455\Messaging\FrameInterface;
-use Ratchet\RFC6455\Messaging\Frame;
-use Ratchet\RFC6455\Messaging\MessageBuffer;
-use Ratchet\RFC6455\Messaging\CloseFrameChecker;
-use Ratchet\RFC6455\Handshake\ServerNegotiator;
+use Ratchet\Http\HttpServerInterface;
+use Ratchet\MessageComponentInterface as DataComponentInterface;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
+use Ratchet\RFC6455\Handshake\ServerNegotiator;
+use Ratchet\RFC6455\Messaging\CloseFrameChecker;
+use Ratchet\RFC6455\Messaging\Frame;
+use Ratchet\RFC6455\Messaging\FrameInterface;
+use Ratchet\RFC6455\Messaging\MessageBuffer;
+use Ratchet\RFC6455\Messaging\MessageInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 use React\EventLoop\LoopInterface;
-use GuzzleHttp\Psr7\Message;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -23,7 +24,7 @@ use GuzzleHttp\Psr7\Message;
  * @link http://dev.w3.org/html5/websockets/
  */
 class WsServer implements HttpServerInterface {
-    use CloseResponseTrait;
+    use CloseResponseTrait, DynamicPropertiesTrait;
 
     /**
      * Decorated component
@@ -115,7 +116,6 @@ class WsServer implements HttpServerInterface {
         $conn->WebSocket->closing   = false;
 
         $response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
-
         $conn->send(Message::toString($response));
 
         if (101 !== $response->getStatusCode()) {

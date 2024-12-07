@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
@@ -12,6 +13,8 @@ use React\Socket\SecureServer as SecureReactor;
  * Events are delegated through this to attached applications
  */
 class IoServer {
+    use DynamicPropertiesTrait;
+
     /**
      * @var \React\EventLoop\LoopInterface
      */
@@ -80,61 +83,61 @@ class IoServer {
      * @param \React\Socket\ConnectionInterface $conn
      */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn);
-        $conn->decor->resourceId = (int)$conn->stream;
+        $io_conn = new IoConnection($conn);
+        $io_conn->resourceId = (int)$conn->stream;
 
         $uri = $conn->getRemoteAddress();
-        $conn->decor->remoteAddress = trim(
+        $io_conn->remoteAddress = trim(
             parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_HOST),
             '[]'
         );
 
-        $this->app->onOpen($conn->decor);
+        $this->app->onOpen($io_conn);
 
-        $conn->on('data', function ($data) use ($conn) {
-            $this->handleData($data, $conn);
+        $conn->on('data', function ($data) use ($io_conn) {
+            $this->handleData($data, $io_conn);
         });
-        $conn->on('close', function () use ($conn) {
-            $this->handleEnd($conn);
+        $conn->on('close', function () use ($io_conn) {
+            $this->handleEnd($io_conn);
         });
-        $conn->on('error', function (\Exception $e) use ($conn) {
-            $this->handleError($e, $conn);
+        $conn->on('error', function (\Exception $e) use ($io_conn) {
+            $this->handleError($e, $io_conn);
         });
     }
 
     /**
      * Data has been received from React
      * @param string                            $data
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
-    public function handleData($data, $conn) {
+    public function handleData($data, $io_conn) {
         try {
-            $this->app->onMessage($conn->decor, $data);
+            $this->app->onMessage($io_conn, $data);
         } catch (\Exception $e) {
-            $this->handleError($e, $conn);
+            $this->handleError($e, $io_conn);
         }
     }
 
     /**
      * A connection has been closed by React
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
-    public function handleEnd($conn) {
+    public function handleEnd($io_conn) {
         try {
-            $this->app->onClose($conn->decor);
+            $this->app->onClose($io_conn);
         } catch (\Exception $e) {
-            $this->handleError($e, $conn);
+            $this->handleError($e, $io_conn);
         }
 
-        unset($conn->decor);
+        unset($io_conn);
     }
 
     /**
      * An error has occurred, let the listening application know
      * @param \Exception                        $e
-     * @param \React\Socket\ConnectionInterface $conn
+     * @param \Ratchet\ConnectionInterface $io_conn
      */
-    public function handleError(\Exception $e, $conn) {
-        $this->app->onError($conn->decor, $e);
+    public function handleError(\Exception $e, $io_conn) {
+        $this->app->onError($io_conn, $e);
     }
 }

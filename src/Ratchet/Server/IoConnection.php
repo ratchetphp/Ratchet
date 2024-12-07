@@ -1,17 +1,18 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\ConnectionInterface;
+use Ratchet\Traits\DynamicPropertiesTrait;
 use React\Socket\ConnectionInterface as ReactConn;
 
 /**
  * {@inheritdoc}
  */
 class IoConnection implements ConnectionInterface {
+    use DynamicPropertiesTrait;
     /**
      * @var \React\Socket\ConnectionInterface
      */
     protected $conn;
-
 
     /**
      * @param \React\Socket\ConnectionInterface $conn

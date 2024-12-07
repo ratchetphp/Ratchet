@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  * This component will allow access to session data from your website for each user connected
  * Symfony HttpFoundation is required for this component to work
  * Your website must also use Symfony HttpFoundation Sessions to read your sites session data
- * If your are not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer)
+ * If you're not using at least PHP 5.4 you must include a SessionHandlerInterface stub (is included in Symfony HttpFoundation, loaded w/ composer)
  */
 class SessionProvider implements HttpServerInterface {
     /**
