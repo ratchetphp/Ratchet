@@ -39,7 +39,6 @@ class RouterTest extends TestCase {
 
             return true;
         }))->will($this->returnSelf());
-        $this->_uri->expects($this->any())->method('getQuery')->will($this->returnCallback([$this, 'getResult']));
         $this->_uri->expects($this->any())->method('getHost')->willReturn('example.com');
         $this->_req->expects($this->any())->method('withUri')->will($this->returnSelf());
         $this->_req->expects($this->any())->method('getMethod')->willReturn('GET');
@@ -123,11 +122,12 @@ class RouterTest extends TestCase {
         );
         $conn = $this->getMockBuilder('Ratchet\Mock\Connection')->getMock();
 
+        $this->_uri->expects($this->once())->method('withQuery')->with('foo=bar&baz=qux')->willReturnSelf();
+        $this->_req->expects($this->once())->method('withUri')->will($this->returnSelf());
+
         $router = new Router($this->_matcher);
 
         $router->onOpen($conn, $this->_req);
-
-        $this->assertEquals('foo=bar&baz=qux', $this->_req->getUri()->getQuery());
     }
 
     public function testQueryParams() {
