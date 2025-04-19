@@ -138,7 +138,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
         $error = false;
         set_error_handler(function () use (&$error) {
             $error = true;
-        }, E_NOTICE);
+        }, PHP_VERSION_ID >= 80000 ? E_WARNING : E_NOTICE);
 
         $var = $this->mock->nonExistant;
 
@@ -152,7 +152,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
         $error = false;
         set_error_handler(function () use (&$error) {
             $error = true;
-        }, E_NOTICE);
+        }, PHP_VERSION_ID >= 80000 ? E_WARNING : E_NOTICE);
 
         $var = $this->l1->nonExistant;
 
@@ -166,7 +166,7 @@ class AbstractConnectionDecoratorTest extends TestCase {
         $error = false;
         set_error_handler(function () use (&$error) {
             $error = true;
-        }, E_NOTICE);
+        }, PHP_VERSION_ID >= 80000 ? E_WARNING : E_NOTICE);
 
         $var = $this->l2->nonExistant;
 
