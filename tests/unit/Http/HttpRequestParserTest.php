@@ -9,7 +9,10 @@ use PHPUnit\Framework\TestCase;
 class HttpRequestParserTest extends TestCase {
     protected $parser;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpParser() {
         $this->parser = new HttpRequestParser;
     }
 

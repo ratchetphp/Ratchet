@@ -14,7 +14,10 @@ class VirtualSessionStoragePDOTest extends TestCase {
 
     protected $_pathToDB;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpHandler() {
         if (!extension_loaded('PDO') || !extension_loaded('pdo_sqlite')) {
             return $this->markTestSkipped('Session test requires PDO and pdo_sqlite');
         }
@@ -42,7 +45,10 @@ SQL;
         $this->_virtualSessionStorage->registerBag(new AttributeBag());
     }
 
-    public function tearDown() {
+    /**
+     * @after
+     */
+    public function tearDownHandler() {
         unlink($this->_pathToDB);
     }
 

@@ -12,7 +12,10 @@ class AbstractConnectionDecoratorTest extends TestCase {
     protected $l1;
     protected $l2;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpConnection() {
         $this->mock = $this->getMockBuilder('Ratchet\ConnectionInterface')->getMock();
         $this->l1   = new ConnectionDecorator($this->mock);
         $this->l2   = new ConnectionDecorator($this->l1);
@@ -132,41 +135,44 @@ class AbstractConnectionDecoratorTest extends TestCase {
     }
 
     public function testWarningGettingNothing() {
-        if (!(error_reporting() & E_NOTICE)) {
-            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
-        }
+        $error = false;
+        set_error_handler(function () use (&$error) {
+            $error = true;
+        }, E_NOTICE);
 
-        if (method_exists($this, 'expectException')) {
-            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
-        } else {
-            $this->setExpectedException('PHPUnit_Framework_Error');
-        }
         $var = $this->mock->nonExistant;
+
+        restore_error_handler();
+
+        $this->assertTrue($error);
+        $this->assertNull($var);
     }
 
     public function testWarningGettingNothingLevel1() {
-        if (!(error_reporting() & E_NOTICE)) {
-            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
-        }
+        $error = false;
+        set_error_handler(function () use (&$error) {
+            $error = true;
+        }, E_NOTICE);
 
-        if (method_exists($this, 'expectException')) {
-            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
-        } else {
-            $this->setExpectedException('PHPUnit_Framework_Error');
-        }
         $var = $this->l1->nonExistant;
+
+        restore_error_handler();
+
+        $this->assertTrue($error);
+        $this->assertNull($var);
     }
 
     public function testWarningGettingNothingLevel2() {
-        if (!(error_reporting() & E_NOTICE)) {
-            $this->markTestSkipped('Requires error_reporting to include E_NOTICE');
-        }
+        $error = false;
+        set_error_handler(function () use (&$error) {
+            $error = true;
+        }, E_NOTICE);
 
-        if (method_exists($this, 'expectException')) {
-            $this->expectException(class_exists('PHPUnit\Framework\Error\Error') ? 'PHPUnit\Framework\Error\Error' : 'PHPUnit_Framework_Error');
-        } else {
-            $this->setExpectedException('PHPUnit_Framework_Error');
-        }
         $var = $this->l2->nonExistant;
+
+        restore_error_handler();
+
+        $this->assertTrue($error);
+        $this->assertNull($var);
     }
 }

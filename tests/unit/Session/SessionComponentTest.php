@@ -10,18 +10,24 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\NullSessionHandler;
  * @covers Ratchet\Session\Storage\Proxy\VirtualProxy
  */
 class SessionProviderTest extends AbstractMessageComponentTestCase {
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpProvider() {
         return $this->markTestIncomplete('Test needs to be updated for ini_set issue in PHP 7.2');
 
         if (!class_exists('Symfony\Component\HttpFoundation\Session\Session')) {
             return $this->markTestSkipped('Dependency of Symfony HttpFoundation failed');
         }
 
-        parent::setUp();
+        parent::setUpConnection();
         $this->_serv = new SessionProvider($this->_app, new NullSessionHandler);
     }
 
-    public function tearDown() {
+    /**
+     * @after
+     */
+    public function tearDownHandler() {
         ini_set('session.serialize_handler', 'php');
     }
 
