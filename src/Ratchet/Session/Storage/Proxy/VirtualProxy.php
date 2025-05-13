@@ -26,7 +26,8 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    #[HackSupportForSymfony6] public function getId(): string { /*
+    public function getId() { /**/
         return $this->_sessionId;
     }
 
@@ -40,7 +41,8 @@ class VirtualProxy extends SessionHandlerProxy {
     /**
      * {@inheritdoc}
      */
-    public function getName() {
+    #[HackSupportForSymfony6] public function getName(): string { /*
+    public function getName() { /**/
         return $this->_sessionName;
     }
 
