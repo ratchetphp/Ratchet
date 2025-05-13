@@ -1,17 +1,13 @@
 name: "CI"
 
 on:
-  pull_request:
   push:
-    branches:
-      - "master"
-  schedule:
-    - cron: "42 3 * * *"
+  pull_request:
 
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-24.04"
 
     strategy:
       matrix:
@@ -32,7 +28,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -44,7 +40,7 @@ jobs:
           ini-values: "zend.assertions=1"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
 

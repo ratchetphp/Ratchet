@@ -47,6 +47,9 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         //$this->assertTrue(is_int($this->app->last['onOpen'][0]->resourceId));
     }
 
+    /**
+     * @requires extension sockets
+     */
     public function testOnData() {
         $msg = 'Hello World!';
 
@@ -73,6 +76,9 @@ class IoServerTest extends \PHPUnit_Framework_TestCase {
         $this->tickLoop($this->server->loop);
     }
 
+    /**
+     * @requires extension sockets
+     */
     public function testOnClose() {
         $this->app->expects($this->once())->method('onClose')->with($this->isInstanceOf('\\Ratchet\\ConnectionInterface'));
 
