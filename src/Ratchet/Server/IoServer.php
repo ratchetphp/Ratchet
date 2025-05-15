@@ -33,7 +33,7 @@ class IoServer {
      * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
      * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
      */
-    public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop = null) {
+    public function __construct(MessageComponentInterface $app, ServerInterface $socket, ?LoopInterface $loop = null) {
         if (false === strpos(PHP_VERSION, "hiphop")) {
             gc_enable();
         }
