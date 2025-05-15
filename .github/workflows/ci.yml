@@ -45,4 +45,4 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit"
+        run: "vendor/bin/phpunit ${{ matrix.php-version < 7.3 && ' -c phpunit.xml.legacy' || '' }}"

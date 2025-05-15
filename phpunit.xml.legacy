@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- PHPUnit configuration file with new format for PHPUnit 9.6+ -->
+<!-- PHPUnit configuration file with old format for legacy PHPUnit -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/4.8/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
-         cacheResult="false"
          colors="true">
     <testsuites>
-        <testsuite name="Ratchet test suite">
+        <testsuite name="Ratchet Test Suite">
             <directory>./tests/unit/</directory>
         </testsuite>
     </testsuites>
-    <coverage>
-        <include>
+    <filter>
+        <whitelist>
             <directory>./src/</directory>
-        </include>
-    </coverage>
+        </whitelist>
+    </filter>
 </phpunit>

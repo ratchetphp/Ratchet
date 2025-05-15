@@ -18,7 +18,10 @@ class RouterTest extends TestCase {
     protected $_uri;
     protected $_req;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpConnection() {
         $this->_conn = $this->getMockBuilder('Ratchet\ConnectionInterface')->getMock();
         $this->_uri  = $this->getMockBuilder('Psr\Http\Message\UriInterface')->getMock();
         $this->_req  = $this->getMockBuilder('Psr\Http\Message\RequestInterface')->getMock();

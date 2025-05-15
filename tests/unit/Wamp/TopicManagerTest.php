@@ -19,7 +19,10 @@ class TopicManagerTest extends TestCase {
      */
     private $conn;
 
-    public function setUp() {
+    /**
+     * @before
+     */
+    public function setUpManager() {
         $this->conn = $this->getMockBuilder('Ratchet\ConnectionInterface')->getMock();
         $this->mock = $this->getMockBuilder('Ratchet\Wamp\WampServerInterface')->getMock();
         $this->mngr = new TopicManager($this->mock);
@@ -214,7 +217,13 @@ class TopicManagerTest extends TestCase {
     }
 
     public function testGetSubProtocolsReturnsArray() {
-        $this->assertInternalType('array', $this->mngr->getSubProtocols());
+        if (method_exists($this, 'assertIsArray')) {
+            // PHPUnit 7+
+            $this->assertIsArray($this->mngr->getSubProtocols());
+        } else {
+            // legacy PHPUnit
+            $this->assertInternalType('array', $this->mngr->getSubProtocols());
+        }
     }
 
     public function testGetSubProtocolsBubbles() {
