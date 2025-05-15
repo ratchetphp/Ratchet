@@ -1,6 +1,7 @@
 <?php
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
+use Ratchet\WebSocket\ReactConnection;
 use React\EventLoop\LoopInterface;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
@@ -75,66 +76,71 @@ class IoServer {
         // @codeCoverageIgnoreEnd
     }
 
-    /**
-     * Triggered when a new connection is received from React
-     * @param \React\Socket\ConnectionInterface $conn
-     */
+	/**
+	 * Triggered when a new connection is received from React
+	 * @param \React\Socket\ConnectionInterface $conn
+	 * @throws \Exception
+	 */
     public function handleConnect($conn) {
-        $conn->decor = new IoConnection($conn);
-        $conn->decor->resourceId = (int)$conn->stream;
+	    $reactConn = new ReactConnection($conn->stream, $this->loop);
+	    $reactConn->decor = new IoConnection($reactConn);
+	    $reactConn->decor->resourceId = (int)$reactConn->stream;
 
-        $uri = $conn->getRemoteAddress();
-        $conn->decor->remoteAddress = trim(
+        $uri = $reactConn->getRemoteAddress();
+	    $reactConn->decor->remoteAddress = trim(
             parse_url((strpos($uri, '://') === false ? 'tcp://' : '') . $uri, PHP_URL_HOST),
             '[]'
         );
 
-        $this->app->onOpen($conn->decor);
+        $this->app->onOpen($reactConn->decor);
 
-        $conn->on('data', function ($data) use ($conn) {
-            $this->handleData($data, $conn);
+	    $conn->on('data', function ($data) use ($reactConn) {
+            $this->handleData($data, $reactConn);
         });
-        $conn->on('close', function () use ($conn) {
-            $this->handleEnd($conn);
+	    $conn->on('close', function () use ($reactConn) {
+            $this->handleEnd($reactConn);
         });
-        $conn->on('error', function (\Exception $e) use ($conn) {
-            $this->handleError($e, $conn);
+	    $conn->on('error', function (\Exception $e) use ($reactConn) {
+            $this->handleError($e, $reactConn);
         });
     }
 
-    /**
-     * Data has been received from React
-     * @param string                            $data
-     * @param \React\Socket\ConnectionInterface $conn
-     */
-    public function handleData($data, $conn) {
+	/**
+	 * Data has been received from React
+	 * @param string $data
+	 * @param ReactConnection $reactConn
+	 * @throws \Exception
+	 */
+    public function handleData($data, $reactConn) {
         try {
-            $this->app->onMessage($conn->decor, $data);
+            $this->app->onMessage($reactConn->decor, $data);
         } catch (\Exception $e) {
-            $this->handleError($e, $conn);
+            $this->handleError($e, $reactConn);
         }
     }
 
-    /**
-     * A connection has been closed by React
-     * @param \React\Socket\ConnectionInterface $conn
-     */
-    public function handleEnd($conn) {
+	/**
+	 * A connection has been closed by React
+	 * @param $reactConn
+	 * @throws \Exception
+	 */
+    public function handleEnd($reactConn) {
         try {
-            $this->app->onClose($conn->decor);
+            $this->app->onClose($reactConn->decor);
         } catch (\Exception $e) {
-            $this->handleError($e, $conn);
+            $this->handleError($e, $reactConn);
         }
 
-        unset($conn->decor);
+        unset($reactConn->decor);
     }
 
-    /**
-     * An error has occurred, let the listening application know
-     * @param \Exception                        $e
-     * @param \React\Socket\ConnectionInterface $conn
-     */
-    public function handleError(\Exception $e, $conn) {
-        $this->app->onError($conn->decor, $e);
+	/**
+	 * An error has occurred, let the listening application know
+	 * @param \Exception $e
+	 * @param $reactConn
+	 * @throws \Exception
+	 */
+    public function handleError(\Exception $e, $reactConn) {
+        $this->app->onError($reactConn->decor, $e);
     }
 }
