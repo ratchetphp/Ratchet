@@ -4,13 +4,13 @@ use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
 use Ratchet\Session\Serialize\HandlerInterface;
 
-if (PHP_VERSION_ID > 80000 && (new \ReflectionMethod('Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage','start'))->hasReturnType()) {
-    // alias to class for Symfony 6 on PHP 8+ that uses native types like `start(): bool`
-    class_alias(__NAMESPACE__ . '\\VirtualSessionStorageForSymfony6', __NAMESPACE__ . '\\VirtualSessionStorage');
-} else {
-    // fall back to class without native types
-
-class VirtualSessionStorage extends NativeSessionStorage {
+/**
+ * [internal] VirtualSessionStorage for Symfony 6 on PHP 8+ using native types like `start(): bool`
+ *
+ * @internal used internally only, should not be referenced directly
+ * @see VirtualSessionStorage
+ */
+class VirtualSessionStorageForSymfony6 extends NativeSessionStorage {
     /**
      * @var \Ratchet\Session\Serialize\HandlerInterface
      */
@@ -31,7 +31,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function start() {
+    public function start(): bool {
         if ($this->started && !$this->closed) {
             return true;
         }
@@ -57,7 +57,7 @@ class VirtualSessionStorage extends NativeSessionStorage {
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false, $lifetime = null) {
+    public function regenerate(bool $destroy = false, ?int $lifetime = null): bool {
         // .. ?
         return false;
     }
@@ -92,6 +92,4 @@ class VirtualSessionStorage extends NativeSessionStorage {
 
         $this->saveHandler = $saveHandler;
     }
-}
-
 }
