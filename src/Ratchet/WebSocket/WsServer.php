@@ -15,6 +15,7 @@ use Ratchet\RFC6455\Handshake\ServerNegotiator;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
 use React\EventLoop\LoopInterface;
 use GuzzleHttp\Psr7\Message;
+use GuzzleHttp\Psr7\HttpFactory;
 
 /**
  * The adapter to handle WebSocket requests/responses
@@ -86,7 +87,7 @@ class WsServer implements HttpServerInterface {
         $this->connections = new \SplObjectStorage;
 
         $this->closeFrameChecker   = new CloseFrameChecker;
-        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
+        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier, new HttpFactory());
         $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
 
         if ($component instanceof WsServerInterface) {
