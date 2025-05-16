@@ -2,6 +2,7 @@
 namespace Ratchet\Server;
 use Ratchet\MessageComponentInterface;
 use React\EventLoop\LoopInterface;
+use React\Socket\ConnectionInterface as SocketConnection;
 use React\Socket\ServerInterface;
 use React\EventLoop\Factory as LoopFactory;
 use React\Socket\Server as Reactor;
@@ -79,8 +80,13 @@ class IoServer {
      * Triggered when a new connection is received from React
      * @param \React\Socket\ConnectionInterface $conn
      */
-    public function handleConnect($conn) {
+    public function handleConnect(SocketConnection $conn) {
+        // assign dynamic `$decor` property used by Ratchet without raising notice on PHP 8.2+
+        // need this hack because we can't use `#[\AllowDynamicProperties]` on vendor code
+        set_error_handler(function () { }, E_DEPRECATED);
         $conn->decor = new IoConnection($conn);
+        restore_error_handler();
+
         $conn->decor->resourceId = (int)$conn->stream;
 
         $uri = $conn->getRemoteAddress();

@@ -19,7 +19,7 @@ abstract class AbstractMessageComponentTestCase extends TestCase {
         $this->_app  = $this->getMockBuilder($this->getComponentClassString())->getMock();
         $decorator   = $this->getDecoratorClassString();
         $this->_serv = new $decorator($this->_app);
-        $this->_conn = $this->getMockBuilder('Ratchet\ConnectionInterface')->getMock();
+        $this->_conn = $this->getMockBuilder('Ratchet\Mock\Connection')->getMock();
 
         $this->doOpen($this->_conn);
     }
@@ -34,7 +34,7 @@ abstract class AbstractMessageComponentTestCase extends TestCase {
 
     public function testOpen() {
         $this->_app->expects($this->once())->method('onOpen')->with($this->isExpectedConnection());
-        $this->doOpen($this->getMockBuilder('Ratchet\ConnectionInterface')->getMock());
+        $this->doOpen($this->getMockBuilder('Ratchet\Mock\Connection')->getMock());
     }
 
     public function testOnClose() {

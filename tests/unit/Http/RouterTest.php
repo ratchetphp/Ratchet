@@ -22,7 +22,7 @@ class RouterTest extends TestCase {
      * @before
      */
     public function setUpConnection() {
-        $this->_conn = $this->getMockBuilder('Ratchet\ConnectionInterface')->getMock();
+        $this->_conn = $this->getMockBuilder('Ratchet\Mock\Connection')->getMock();
         $this->_uri  = $this->getMockBuilder('Psr\Http\Message\UriInterface')->getMock();
         $this->_req  = $this->getMockBuilder('Psr\Http\Message\RequestInterface')->getMock();
         $this->_req
@@ -80,7 +80,7 @@ class RouterTest extends TestCase {
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));
         $this->_router->onOpen($this->_conn, $this->_req);
 
-        $expectedConn = $this->isInstanceOf('Ratchet\ConnectionInterface');
+        $expectedConn = $this->isInstanceOf('Ratchet\Mock\Connection');
         $controller->expects($this->once())->method('onOpen')->with($expectedConn, $this->_req);
 
         $this->_matcher->expects($this->any())->method('match')->will($this->returnValue(array('_controller' => $controller)));

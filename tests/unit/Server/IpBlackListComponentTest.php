@@ -121,7 +121,7 @@ class IpBlackListTest extends TestCase {
     }
 
     protected function newConn() {
-        $conn = $this->getMockBuilder('Ratchet\\ConnectionInterface')->getMock();
+        $conn = $this->getMockBuilder('Ratchet\Mock\Connection')->getMock();
         $conn->remoteAddress = '127.0.0.1';
 
         return $conn;
