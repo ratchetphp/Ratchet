@@ -19,8 +19,8 @@ use GuzzleHttp\Psr7\Message;
 /**
  * The adapter to handle WebSocket requests/responses
  * This is a mediator between the Server and your application to handle real-time messaging through a web browser
- * @link http://ca.php.net/manual/en/ref.http.php
- * @link http://dev.w3.org/html5/websockets/
+ * @link https://www.php.net/manual/en/ref.http.php
+ * @link https://websockets.spec.whatwg.org
  */
 class WsServer implements HttpServerInterface {
     use CloseResponseTrait;

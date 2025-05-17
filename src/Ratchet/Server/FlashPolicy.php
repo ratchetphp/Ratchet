@@ -9,8 +9,6 @@ use Ratchet\ConnectionInterface;
  * Be sure to run your server instance on port 843
  * By default this lets accepts everything, make sure you tighten the rules up for production
  * @final
- * @link http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html
- * @link http://learn.adobe.com/wiki/download/attachments/64389123/CrossDomain_PolicyFile_Specification.pdf?version=1
  * @link view-source:http://www.adobe.com/xml/schemas/PolicyFileSocket.xsd
  */
 class FlashPolicy implements MessageComponentInterface {
