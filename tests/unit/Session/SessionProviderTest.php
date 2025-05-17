@@ -24,6 +24,16 @@ class SessionProviderTest extends AbstractMessageComponentTestCase {
         $this->_serv = new SessionProvider($this->_app, new NullSessionHandler);
     }
 
+    public function testCtorThrowsForInvalidSerializer() {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+            $this->expectExceptionMessage('Argument #4 ($serializer) expected null|Ratchet\Session\Serialize\HandlerInterface');
+        } else {
+            $this->setExpectedException('InvalidArgumentException', 'Argument #4 ($serializer) expected null|Ratchet\Session\Serialize\HandlerInterface');
+        }
+        new SessionProvider($this->_app, new NullSessionHandler(), [], 'serializer');
+    }
+
     /**
      * @after
      */

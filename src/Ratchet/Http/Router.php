@@ -26,7 +26,8 @@ class Router implements HttpServerInterface {
      * {@inheritdoc}
      * @throws \UnexpectedValueException If a controller is not \Ratchet\Http\HttpServerInterface
      */
-    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
+    #[HackSupportForPHP8] public function onOpen(ConnectionInterface $conn, ?RequestInterface $request = null) { /*
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) { /**/
         if (null === $request) {
             throw new \UnexpectedValueException('$request can not be null');
         }
