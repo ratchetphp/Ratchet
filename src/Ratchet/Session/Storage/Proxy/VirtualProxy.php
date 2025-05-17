@@ -2,8 +2,11 @@
 namespace Ratchet\Session\Storage\Proxy;
 use Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy;
 
-if (PHP_VERSION_ID > 80000 && (new \ReflectionMethod('Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy','getId'))->hasReturnType()) {
-    // alias to class for Symfony 6 on PHP 8+ that uses native types like `getId(): string`
+if (PHP_VERSION_ID > 80200 && (new \ReflectionMethod('Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy','setId'))->hasReturnType()) {
+    // alias to class for Symfony 7 on PHP 8.2+ using native types like `setId(string $id): void`
+    class_alias(__NAMESPACE__ . '\\VirtualProxyForSymfony7', __NAMESPACE__ . '\\VirtualProxy');
+} elseif (PHP_VERSION_ID > 80000 && (new \ReflectionMethod('Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy','getId'))->hasReturnType()) {
+    // alias to class for Symfony 6 on PHP 8+ using native types like `getId(): string`
     class_alias(__NAMESPACE__ . '\\VirtualProxyForSymfony6', __NAMESPACE__ . '\\VirtualProxy');
 } else {
     // fall back to class without native types
