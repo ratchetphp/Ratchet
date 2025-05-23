@@ -34,7 +34,11 @@ class IoServer {
      * @param \React\Socket\ServerInterface       $socket   The React socket server to run the Ratchet application off of
      * @param \React\EventLoop\LoopInterface|null $loop     The React looper to run the Ratchet application off of
      */
-    public function __construct(MessageComponentInterface $app, ServerInterface $socket, LoopInterface $loop = null) {
+    public function __construct(MessageComponentInterface $app, ServerInterface $socket, $loop = null) {
+        if ($loop !== null && !$loop instanceof LoopInterface) { // manual type check to support legacy PHP < 7.1
+            throw new \InvalidArgumentException('Argument #3 ($loop) expected null|React\EventLoop\LoopInterface');
+        }
+
         if (false === strpos(PHP_VERSION, "hiphop")) {
             gc_enable();
         }

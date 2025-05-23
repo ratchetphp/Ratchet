@@ -39,6 +39,16 @@ class IoServerTest extends TestCase {
         $this->server = new IoServer($this->app, $this->reactor, $loop);
     }
 
+    public function testCtorThrowsForInvalidLoop() {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+            $this->expectExceptionMessage('Argument #3 ($loop) expected null|React\EventLoop\LoopInterface');
+        } else {
+            $this->setExpectedException('InvalidArgumentException', 'Argument #3 ($loop) expected null|React\EventLoop\LoopInterface');
+        }
+        new IoServer($this->app, $this->reactor, 'loop');
+    }
+
     public function testOnOpen() {
         $this->app->expects($this->once())->method('onOpen')->with($this->isInstanceOf('Ratchet\\ConnectionInterface'));
 
