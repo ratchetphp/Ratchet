@@ -66,7 +66,7 @@ class FlashPolicy implements MessageComponentInterface {
            throw new \UnexpectedValueException('Invalid Port');
         }
 
-        $this->_access[]   = array($domain, $ports, (boolean)$secure);
+        $this->_access[]   = [$domain, $ports, (bool) $secure];
         $this->_cacheValid = false;
 
         return $this;
