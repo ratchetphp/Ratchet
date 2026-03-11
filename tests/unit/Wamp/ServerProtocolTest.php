@@ -79,7 +79,7 @@ class ServerProtocolTest extends TestCase {
 
     public function testUnSubscribe() {
         $uri = 'http://example.com/endpoint';
-        $clientMessage = array(6, $uri);
+        $clientMessage = [6, $uri];
 
         $conn = $this->newConn();
 
@@ -190,9 +190,9 @@ class ServerProtocolTest extends TestCase {
 
         $class  = new \ReflectionClass('Ratchet\\Wamp\\WampConnection');
         $method = $class->getMethod('getConnection');
-        $method->setAccessible(true);
+        // $method->setAccessible(true);
 
-        $check = $method->invokeArgs($this->_app->last['onClose'][0], array());
+        $check = $method->invokeArgs($this->_app->last['onClose'][0], []);
 
         $this->assertSame($conn, $check);
     }
@@ -207,9 +207,9 @@ class ServerProtocolTest extends TestCase {
 
         $class  = new \ReflectionClass('Ratchet\\Wamp\\WampConnection');
         $method = $class->getMethod('getConnection');
-        $method->setAccessible(true);
+        // $method->setAccessible(true);
 
-        $check = $method->invokeArgs($this->_app->last['onError'][0], array());
+        $check = $method->invokeArgs($this->_app->last['onError'][0], []);
 
         $this->assertSame($conn, $check);
         $this->assertSame($e, $this->_app->last['onError'][1]);

@@ -23,7 +23,7 @@ class AppTest extends TestCase {
         $app = new App();
 
         $ref = new \ReflectionProperty($app, '_server');
-        $ref->setAccessible(true);
+        // $ref->setAccessible(true);
         $server = $ref->getValue($app);
         assert($server instanceof IoServer);
 

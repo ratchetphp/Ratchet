@@ -34,9 +34,9 @@ class TopicManagerTest extends TestCase {
     public function testGetTopicReturnsTopicObject() {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        // $method->setAccessible(true);
 
-        $topic = $method->invokeArgs($this->mngr, array('The Topic'));
+        $topic = $method->invokeArgs($this->mngr, ['The Topic']);
 
         $this->assertInstanceOf('Ratchet\Wamp\Topic', $topic);
     }
@@ -46,9 +46,9 @@ class TopicManagerTest extends TestCase {
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        //$method->setAccessible(true);
 
-        $topic = $method->invokeArgs($this->mngr, array($name));
+        $topic = $method->invokeArgs($this->mngr, [$name]);
 
         $this->assertEquals($name, $topic->getId());
     }
@@ -56,10 +56,10 @@ class TopicManagerTest extends TestCase {
     public function testGetTopicReturnsSameObject() {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        // $method->setAccessible(true);
 
-        $topic = $method->invokeArgs($this->mngr, array('No copy'));
-        $again = $method->invokeArgs($this->mngr, array('No copy'));
+        $topic = $method->invokeArgs($this->mngr, ['No copy']);
+        $again = $method->invokeArgs($this->mngr, ['No copy']);
 
         $this->assertSame($topic, $again);
     }
@@ -95,13 +95,13 @@ class TopicManagerTest extends TestCase {
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        // $method->setAccessible(true);
 
-        $topic = $method->invokeArgs($this->mngr, array($name));
+        $topic = $method->invokeArgs($this->mngr, [$name]);
 
         $this->mngr->onSubscribe($this->conn, $name);
 
-        $this->assertTrue($this->conn->WAMP->subscriptions->contains($topic));
+        $this->assertTrue($this->conn->WAMP->subscriptions->offsetExists($topic));
     }
 
     public function testDoubleSubscriptionFiresOnce() {
@@ -135,14 +135,14 @@ class TopicManagerTest extends TestCase {
 
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        //$method->setAccessible(true);
 
         $topic = $method->invokeArgs($this->mngr, array($name));
 
         $this->mngr->onSubscribe($this->conn, $name);
         $this->mngr->onUnsubscribe($this->conn, $name);
 
-        $this->assertFalse($this->conn->WAMP->subscriptions->contains($topic));
+        $this->assertFalse($this->conn->WAMP->subscriptions->offsetExists($topic));
     }
 
     public function testOnPublishBubbles() {
@@ -167,10 +167,10 @@ class TopicManagerTest extends TestCase {
     protected function topicProvider($name) {
         $class  = new \ReflectionClass('Ratchet\Wamp\TopicManager');
         $method = $class->getMethod('getTopic');
-        $method->setAccessible(true);
+        //$method->setAccessible(true);
 
         $attribute = $class->getProperty('topicLookup');
-        $attribute->setAccessible(true);
+        //$attribute->setAccessible(true);
 
         $topic = $method->invokeArgs($this->mngr, array($name));
 

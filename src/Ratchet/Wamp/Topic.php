@@ -58,7 +58,7 @@ class Topic implements \IteratorAggregate, \Countable {
      * @return boolean
      */
     public function has(ConnectionInterface $conn) {
-        return $this->subscribers->contains($conn);
+        return $this->subscribers->offsetExists($conn);
     }
 
     /**
@@ -66,7 +66,7 @@ class Topic implements \IteratorAggregate, \Countable {
      * @return Topic
      */
     public function add(ConnectionInterface $conn) {
-        $this->subscribers->attach($conn);
+        $this->subscribers->offsetSet($conn);
 
         return $this;
     }
@@ -76,8 +76,8 @@ class Topic implements \IteratorAggregate, \Countable {
      * @return Topic
      */
     public function remove(ConnectionInterface $conn) {
-        if ($this->subscribers->contains($conn)) {
-            $this->subscribers->detach($conn);
+        if ($this->subscribers->offsetExists($conn)) {
+            $this->subscribers->offsetUnset($conn);
         }
 
         return $this;
