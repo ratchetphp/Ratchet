@@ -14,7 +14,6 @@ use Ratchet\RFC6455\Messaging\CloseFrameChecker;
 use Ratchet\RFC6455\Handshake\ServerNegotiator;
 use Ratchet\RFC6455\Handshake\RequestVerifier;
 use React\EventLoop\LoopInterface;
-use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Message;
 
 /**
@@ -91,7 +90,7 @@ class WsServer implements HttpServerInterface {
         if (self::isRFC6455v03()) {
             $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
         } else {
-            $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier, new HttpFactory);
+            $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier, new StringHeaderResponseFactory);
         }
 
         $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
